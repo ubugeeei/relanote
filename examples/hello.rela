@@ -1,0 +1,12 @@
+-- Hello World in relanote
+-- A simple melody using the major scale
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+chord Tonic = [ R, M3, P5 ]
+
+let melody = | <1> <2> <3> <4> <5> <4> <3> <2> |
+
+let bass_line = | R - R - |
+
+let my_song = melody |> repeat(2)

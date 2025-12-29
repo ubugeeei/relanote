@@ -1,0 +1,14 @@
+[package]
+name = "relanote-resolver"
+description = "Module resolution and loading for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+relanote-core.workspace = true
+relanote-ast.workspace = true
+relanote-parser.workspace = true
+thiserror.workspace = true
+indexmap.workspace = true

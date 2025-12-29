@@ -1,0 +1,29 @@
+[package]
+name = "relanote-wasm"
+description = "WebAssembly bindings for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+relanote-core.workspace = true
+relanote-lexer.workspace = true
+relanote-ast.workspace = true
+relanote-parser.workspace = true
+relanote-types.workspace = true
+relanote-eval.workspace = true
+relanote-format.workspace = true
+relanote-render.workspace = true
+
+wasm-bindgen = "0.2"
+serde.workspace = true
+serde_json.workspace = true
+serde-wasm-bindgen = "0.6"
+console_error_panic_hook = "0.1"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+

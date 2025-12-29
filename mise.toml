@@ -1,0 +1,151 @@
+# mise configuration for relanote
+# https://mise.jdx.dev/
+
+[tools]
+rust = "1.83.0"
+node = "22"
+pnpm = "latest"
+"cargo:wasm-pack" = "latest"
+
+[env]
+CARGO_TERM_COLOR = "always"
+
+[tasks.build]
+description = "Build all crates"
+run = "cargo build"
+
+[tasks.release]
+description = "Build in release mode"
+run = "cargo build --release"
+
+[tasks.check]
+description = "Run cargo check"
+run = "cargo check"
+
+[tasks.test]
+description = "Run all tests"
+run = "cargo test"
+
+[tasks.lint]
+description = "Run clippy"
+run = "cargo clippy -- -D warnings"
+
+[tasks.fmt]
+description = "Format code"
+run = "cargo fmt"
+
+[tasks.fmt-check]
+description = "Check formatting"
+run = "cargo fmt -- --check"
+
+[tasks.clean]
+description = "Clean build artifacts"
+run = "cargo clean"
+
+[tasks.doc]
+description = "Build documentation"
+run = "cargo doc --no-deps --open"
+
+[tasks.run]
+description = "Run the CLI"
+run = "cargo run -p relanote-cli --"
+
+[tasks.parse]
+description = "Parse a relanote file"
+run = "cargo run -p relanote-cli -- parse"
+
+[tasks.eval]
+description = "Evaluate a relanote file"
+run = "cargo run -p relanote-cli -- run"
+
+[tasks.lsp]
+description = "Start the LSP server"
+run = "cargo run -p relanote-cli -- lsp"
+
+[tasks.render]
+description = "Render a relanote file to MIDI"
+run = "cargo run -p relanote-cli -- render"
+
+[tasks.format-file]
+description = "Format a relanote file"
+run = "cargo run -p relanote-cli -- format"
+
+[tasks.ci]
+description = "Run all CI checks"
+depends = ["fmt-check", "lint", "test"]
+
+[tasks.dev]
+description = "Start web dev server"
+dir = "web"
+run = "pnpm dev"
+
+[tasks."dev:rust"]
+description = "Rust development mode: watch and rebuild"
+run = "cargo watch -x check -x 'test --lib'"
+
+# ============================================
+# Web / WASM Tasks
+# ============================================
+
+[tasks."wasm:build"]
+description = "Build WASM package"
+run = "wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg"
+
+[tasks."wasm:build:release"]
+description = "Build WASM package (release)"
+run = "wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg --release"
+
+[tasks."web:install"]
+description = "Install web dependencies"
+dir = "web"
+run = "pnpm install"
+
+[tasks."web:build"]
+description = "Build web app"
+dir = "web"
+run = "pnpm build"
+
+[tasks."web:prepare"]
+description = "Prepare Nuxt types"
+dir = "web"
+run = "pnpm exec nuxt prepare"
+
+[tasks."web:preview"]
+description = "Preview production build"
+dir = "web"
+run = "pnpm preview"
+
+[tasks.setup]
+description = "Initial project setup (install deps, build WASM)"
+run = """
+echo "==> Installing web dependencies..."
+(cd web && pnpm install)
+echo "==> Building WASM..."
+wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg
+echo "==> Preparing Nuxt types..."
+(cd web && pnpm exec nuxt prepare)
+echo "==> Setup complete!"
+"""
+
+[tasks."build:all"]
+description = "Build everything (Rust + WASM + Web)"
+depends = ["build", "wasm:build", "web:build"]
+
+# ============================================
+# Documentation Tasks
+# ============================================
+
+[tasks."docs:dev"]
+description = "Start docs dev server"
+dir = "docs"
+run = "pnpm dev"
+
+[tasks."docs:build"]
+description = "Build documentation"
+dir = "docs"
+run = "pnpm build"
+
+[tasks."docs:install"]
+description = "Install docs dependencies"
+dir = "docs"
+run = "pnpm install"

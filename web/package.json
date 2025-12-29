@@ -1,0 +1,22 @@
+{
+  "name": "relanote-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "wasm:build": "cd .. && wasm-pack build crates/relanote-wasm --target web --out-dir ../web/wasm/pkg"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.52.2",
+    "nuxt": "^3.17.4",
+    "vue": "^3.5.16"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^2.4.4",
+    "typescript": "^5.8.3"
+  }
+}

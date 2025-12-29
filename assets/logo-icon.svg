@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1" />
+      <stop offset="100%" style="stop-color:#a855f7" />
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ec4899" />
+      <stop offset="100%" style="stop-color:#f472b6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="28" fill="#0f0f23"/>
+
+  <!-- Connection lines (relative intervals) -->
+  <g stroke="url(#g1)" stroke-width="2" fill="none" opacity="0.5">
+    <line x1="32" y1="88" x2="64" y2="48" />
+    <line x1="64" y1="48" x2="96" y2="72" />
+  </g>
+
+  <!-- Lambda/functional symbol -->
+  <g fill="url(#g1)">
+    <polygon points="64,28 52,28 64,60 76,28" />
+  </g>
+
+  <!-- Nodes (relative positions) -->
+  <circle cx="32" cy="88" r="10" fill="url(#g2)" />
+  <circle cx="64" cy="48" r="10" fill="url(#g1)" />
+  <circle cx="96" cy="72" r="10" fill="url(#g2)" />
+
+  <!-- Inner dots -->
+  <circle cx="32" cy="88" r="4" fill="#0f0f23" />
+  <circle cx="64" cy="48" r="4" fill="#0f0f23" />
+  <circle cx="96" cy="72" r="4" fill="#0f0f23" />
+</svg>

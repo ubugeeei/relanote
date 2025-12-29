@@ -1,0 +1,80 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/relanote-core",
+    "crates/relanote-lexer",
+    "crates/relanote-ast",
+    "crates/relanote-parser",
+    "crates/relanote-types",
+    "crates/relanote-hir",
+    "crates/relanote-eval",
+    "crates/relanote-stdlib",
+    "crates/relanote-resolver",
+    "crates/relanote-format",
+    "crates/relanote-lsp",
+    "crates/relanote-render",
+    "crates/relanote-cli",
+    "crates/relanote-wasm",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["ubugeeei"]
+license = "MIT"
+repository = "https://github.com/ubugeeei/relanote"
+
+[workspace.dependencies]
+# Core utilities
+thiserror = "2.0"
+internment = "0.8"
+indexmap = "2.7"
+smallvec = "1.13"
+
+# Lexer
+logos = "0.14"
+
+# Parser
+chumsky = "0.9"
+
+# Diagnostics
+ariadne = "0.4"
+miette = { version = "7.4", features = ["fancy"] }
+
+# LSP
+tower-lsp = "0.20"
+tokio = { version = "1.42", features = ["full"] }
+async-trait = "0.1"
+
+# CLI
+clap = { version = "4.5", features = ["derive"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# MIDI
+midly = "0.5"
+
+# NAPI (for Node.js/WASI integration)
+napi = { version = "2.16", default-features = false, features = ["napi9"] }
+napi-derive = "2.16"
+
+# Internal crates
+relanote-core = { path = "crates/relanote-core" }
+relanote-lexer = { path = "crates/relanote-lexer" }
+relanote-ast = { path = "crates/relanote-ast" }
+relanote-parser = { path = "crates/relanote-parser" }
+relanote-types = { path = "crates/relanote-types" }
+relanote-hir = { path = "crates/relanote-hir" }
+relanote-eval = { path = "crates/relanote-eval" }
+relanote-stdlib = { path = "crates/relanote-stdlib" }
+relanote-resolver = { path = "crates/relanote-resolver" }
+relanote-format = { path = "crates/relanote-format" }
+relanote-lsp = { path = "crates/relanote-lsp" }
+relanote-render = { path = "crates/relanote-render" }
+relanote-cli = { path = "crates/relanote-cli" }
+
+[profile.release]
+opt-level = "s"
+lto = true
