@@ -16,7 +16,7 @@ Let's create a complete piece:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Define our musical material
+; Define our musical material
 let melody = | <5> <6> <7> <8> <8> <7> <6> <5> <5> <6> <7> <8> <8>:2 - - |
 
 let bass = | <1>:2 <5>:2 <4>:2 <1>:2 <1>:2 <5>:2 <1>:4 |
@@ -33,12 +33,12 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let theme = | <1> <3> <5> <3> |
 
--- Variations
+; Variations
 let theme_high = theme |> transpose(P8)
 let theme_reverse = theme |> reverse
 let theme_twice = theme |> repeat(2)
 
--- Combine all variations
+; Combine all variations
 let full = theme ++ theme_high ++ theme_reverse ++ theme_twice
 
 full
@@ -49,13 +49,13 @@ full
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Main theme
+; Main theme
 let theme = | <1> <2> <3> <4> <5> <5> <4> <3> <2> <1> <1>:2 |
 
--- Variation - transposed up
+; Variation - transposed up
 let variation = theme |> transpose(P5)
 
--- Combine
+; Combine
 let fullSong = theme ++ variation ++ theme
 
 fullSong
@@ -79,7 +79,7 @@ Create your own song with:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Your song here!
+; Your song here!
 let myTheme = | <1> <3> <5> <3> |
 
 let myVariation = myTheme |> transpose(P4)

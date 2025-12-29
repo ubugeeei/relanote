@@ -1,20 +1,20 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/relanote-core",
-    "crates/relanote-lexer",
-    "crates/relanote-ast",
-    "crates/relanote-parser",
-    "crates/relanote-types",
-    "crates/relanote-hir",
-    "crates/relanote-eval",
-    "crates/relanote-stdlib",
-    "crates/relanote-resolver",
-    "crates/relanote-format",
-    "crates/relanote-lsp",
-    "crates/relanote-render",
-    "crates/relanote-cli",
-    "crates/relanote-wasm",
+    "crates/relanote_core",
+    "crates/relanote_lexer",
+    "crates/relanote_ast",
+    "crates/relanote_parser",
+    "crates/relanote_types",
+    "crates/relanote_hir",
+    "crates/relanote_eval",
+    "crates/relanote_stdlib",
+    "crates/relanote_resolver",
+    "crates/relanote_format",
+    "crates/relanote_lsp",
+    "crates/relanote_render",
+    "crates/relanote_cli",
+    "crates/relanote_wasm",
 ]
 
 [workspace.package]
@@ -61,19 +61,19 @@ napi = { version = "2.16", default-features = false, features = ["napi9"] }
 napi-derive = "2.16"
 
 # Internal crates
-relanote-core = { path = "crates/relanote-core" }
-relanote-lexer = { path = "crates/relanote-lexer" }
-relanote-ast = { path = "crates/relanote-ast" }
-relanote-parser = { path = "crates/relanote-parser" }
-relanote-types = { path = "crates/relanote-types" }
-relanote-hir = { path = "crates/relanote-hir" }
-relanote-eval = { path = "crates/relanote-eval" }
-relanote-stdlib = { path = "crates/relanote-stdlib" }
-relanote-resolver = { path = "crates/relanote-resolver" }
-relanote-format = { path = "crates/relanote-format" }
-relanote-lsp = { path = "crates/relanote-lsp" }
-relanote-render = { path = "crates/relanote-render" }
-relanote-cli = { path = "crates/relanote-cli" }
+relanote_core = { path = "crates/relanote_core" }
+relanote_lexer = { path = "crates/relanote_lexer" }
+relanote_ast = { path = "crates/relanote_ast" }
+relanote_parser = { path = "crates/relanote_parser" }
+relanote_types = { path = "crates/relanote_types" }
+relanote_hir = { path = "crates/relanote_hir" }
+relanote_eval = { path = "crates/relanote_eval" }
+relanote_stdlib = { path = "crates/relanote_stdlib" }
+relanote_resolver = { path = "crates/relanote_resolver" }
+relanote_format = { path = "crates/relanote_format" }
+relanote_lsp = { path = "crates/relanote_lsp" }
+relanote_render = { path = "crates/relanote_render" }
+relanote_cli = { path = "crates/relanote_cli" }
 
 [profile.release]
 opt-level = "s"

@@ -1,0 +1,188 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Relanote",
+  "scopeName": "source.relanote",
+  "fileTypes": ["rela"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#music-primitives" },
+    { "include": "#scale-index" },
+    { "include": "#intervals" },
+    { "include": "#dynamics" },
+    { "include": "#durations" },
+    { "include": "#operators" },
+    { "include": "#numbers" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.relanote",
+          "match": "--.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.relanote",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.relanote",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.relanote",
+          "match": "\\b(if|then|else|match|with|in)\\b"
+        },
+        {
+          "name": "keyword.declaration.relanote",
+          "match": "\\b(let|scale|chord|section|layer|Part|env)\\b"
+        },
+        {
+          "name": "keyword.module.relanote",
+          "match": "\\b(import|export|from|as)\\b"
+        },
+        {
+          "name": "keyword.other.relanote",
+          "match": "\\b(render|Context|Key)\\b"
+        },
+        {
+          "name": "constant.language.boolean.relanote",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "music-primitives": {
+      "patterns": [
+        {
+          "name": "constant.language.root.relanote",
+          "match": "\\bR\\b"
+        }
+      ]
+    },
+    "scale-index": {
+      "patterns": [
+        {
+          "name": "variable.other.scale-index.relanote",
+          "match": "<[0-9]+>"
+        }
+      ]
+    },
+    "intervals": {
+      "patterns": [
+        {
+          "name": "constant.numeric.interval.relanote",
+          "match": "\\b[PMmAd][1-9][0-9]*[+-]*\\b"
+        }
+      ]
+    },
+    "dynamics": {
+      "patterns": [
+        {
+          "name": "constant.language.dynamics.relanote",
+          "match": "\\b(ppp|pp|p|mp|mf|f|ff|fff|sfz|fp)\\b"
+        }
+      ]
+    },
+    "durations": {
+      "patterns": [
+        {
+          "name": "constant.numeric.duration.relanote",
+          "match": "\\b[0-9]+(bars?|beats?)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pipe.relanote",
+          "match": "\\|>"
+        },
+        {
+          "name": "keyword.operator.arrow.relanote",
+          "match": "->"
+        },
+        {
+          "name": "keyword.operator.lambda.relanote",
+          "match": "\\\\"
+        },
+        {
+          "name": "keyword.operator.assignment.relanote",
+          "match": "="
+        },
+        {
+          "name": "punctuation.separator.colon.relanote",
+          "match": ":"
+        },
+        {
+          "name": "punctuation.separator.comma.relanote",
+          "match": ","
+        },
+        {
+          "name": "punctuation.accessor.dot.relanote",
+          "match": "\\."
+        },
+        {
+          "name": "punctuation.definition.bar.relanote",
+          "match": "\\|(?!>)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.relanote",
+          "match": "[+\\-]"
+        },
+        {
+          "name": "keyword.operator.articulation.staccato.relanote",
+          "match": "\\*"
+        },
+        {
+          "name": "keyword.operator.articulation.accent.relanote",
+          "match": "\\^"
+        },
+        {
+          "name": "keyword.operator.articulation.portamento.relanote",
+          "match": "~"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.relanote",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.relanote",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "entity.name.function.relanote",
+          "match": "\\b[a-z_][a-zA-Z0-9_]*(?=\\s*\\()"
+        },
+        {
+          "name": "entity.name.type.relanote",
+          "match": "\\b[A-Z][a-zA-Z0-9_]*\\b"
+        },
+        {
+          "name": "variable.other.relanote",
+          "match": "\\b[a-z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}

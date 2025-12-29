@@ -31,11 +31,19 @@ export function useFileManager() {
         id: generateId(),
         name: "main.rela",
         content: `-- Welcome to Relanote!
--- A functional music notation language
+-- A functional music notation language where everything is relative.
 
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let melody = | <1> <2> <3> <4> <5> <4> <3> <2> |
+-- Relative Rhythm: slots are equally divided within a block
+let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |
+let slow = | <1> <3> <5> <3> |
+
+-- Semitone modifiers
+let chromatic = | P1 P1+ M2 M2+ M3 |
+
+-- Combine patterns
+let melody = fast ++ slow ++ chromatic
 
 melody
 `,

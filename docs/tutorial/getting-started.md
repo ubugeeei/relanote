@@ -13,7 +13,7 @@ Welcome to Relanote! This tutorial will guide you through creating your first mu
 
 Make sure you have Relanote installed. If not, see the [Installation Guide](/guide/installation).
 
-Or use the [Web Playground](https://relanote.dev/playground) to follow along in your browser.
+Or use the [Web Playground](https://ubugeeei.github.io/relanote/playground/) to follow along in your browser.
 
 ## Your First Program
 

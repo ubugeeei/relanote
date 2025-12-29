@@ -7,10 +7,10 @@ Learn to create chord progressions and harmonic structures.
 A chord is multiple notes played simultaneously. Define them with the `chord` keyword:
 
 ```rela
--- Major triad
+; Major triad
 chord MajorTriad = [ R, M3, P5 ]
 
--- Minor triad
+; Minor triad
 chord MinorTriad = [ R, m3, P5 ]
 
 MajorTriad
@@ -21,19 +21,19 @@ MajorTriad
 Define reusable chord structures:
 
 ```rela
--- Major triad
+; Major triad
 chord MajorTriad = [ R, M3, P5 ]
 
--- Minor triad
+; Minor triad
 chord MinorTriad = [ R, m3, P5 ]
 
--- Dominant 7th
+; Dominant 7th
 chord Dom7 = [ R, M3, P5, m7 ]
 
--- Major 7th
+; Major 7th
 chord Maj7 = [ R, M3, P5, M7 ]
 
--- Minor 7th
+; Minor 7th
 chord Min7 = [ R, m3, P5, m7 ]
 ```
 
@@ -44,7 +44,7 @@ Create progressions using scale degrees:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- I-IV-V-I (the classic progression)
+; I-IV-V-I (the classic progression)
 let progression = | <1> <4> <5> <1> |
 
 progression
@@ -57,10 +57,10 @@ Play chord notes sequentially:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Chord as arpeggio
+; Chord as arpeggio
 let arpeggio = | <1> <3> <5> <8> |
 
--- Descending arpeggio
+; Descending arpeggio
 let descArp = arpeggio |> reverse
 
 arpeggio
@@ -93,7 +93,7 @@ jazzProgression
 ```rela
 scale Blues = { R, m3, P4, A4, P5, m7 }
 
--- Simplified 12-bar blues
+; Simplified 12-bar blues
 let bluesProgression = | <1> <1> <1> <1> <4> <4> <1> <1> <5> <4> <1> <5> |
 
 bluesProgression
@@ -106,7 +106,7 @@ Create your own chord progression:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Try: vi-IV-I-V (another popular progression)
+; Try: vi-IV-I-V (another popular progression)
 let myProgression = | <6> <4> <1> <5> |
 
 myProgression

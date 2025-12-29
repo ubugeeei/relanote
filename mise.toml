@@ -48,34 +48,35 @@ run = "cargo doc --no-deps --open"
 
 [tasks.run]
 description = "Run the CLI"
-run = "cargo run -p relanote-cli --"
+run = "cargo run -p relanote_cli --"
 
 [tasks.parse]
 description = "Parse a relanote file"
-run = "cargo run -p relanote-cli -- parse"
+run = "cargo run -p relanote_cli -- parse"
 
 [tasks.eval]
 description = "Evaluate a relanote file"
-run = "cargo run -p relanote-cli -- run"
+run = "cargo run -p relanote_cli -- run"
 
 [tasks.lsp]
 description = "Start the LSP server"
-run = "cargo run -p relanote-cli -- lsp"
+run = "cargo run -p relanote_cli -- lsp"
 
 [tasks.render]
 description = "Render a relanote file to MIDI"
-run = "cargo run -p relanote-cli -- render"
+run = "cargo run -p relanote_cli -- render"
 
 [tasks.format-file]
 description = "Format a relanote file"
-run = "cargo run -p relanote-cli -- format"
+run = "cargo run -p relanote_cli -- format"
 
 [tasks.ci]
 description = "Run all CI checks"
 depends = ["fmt-check", "lint", "test"]
 
 [tasks.dev]
-description = "Start web dev server"
+description = "Build WASM and start web dev server"
+depends = ["wasm:build"]
 dir = "web"
 run = "pnpm dev"
 
@@ -89,11 +90,11 @@ run = "cargo watch -x check -x 'test --lib'"
 
 [tasks."wasm:build"]
 description = "Build WASM package"
-run = "wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg"
+run = "wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg"
 
 [tasks."wasm:build:release"]
 description = "Build WASM package (release)"
-run = "wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg --release"
+run = "wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg --release"
 
 [tasks."web:install"]
 description = "Install web dependencies"
@@ -120,8 +121,10 @@ description = "Initial project setup (install deps, build WASM)"
 run = """
 echo "==> Installing web dependencies..."
 (cd web && pnpm install)
+echo "==> Installing docs dependencies..."
+(cd docs && pnpm install)
 echo "==> Building WASM..."
-wasm-pack build crates/relanote-wasm --target web --out-dir ../../web/wasm/pkg
+wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg
 echo "==> Preparing Nuxt types..."
 (cd web && pnpm exec nuxt prepare)
 echo "==> Setup complete!"

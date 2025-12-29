@@ -1,0 +1,13 @@
+[package]
+name = "relanote_core"
+description = "Core types, spans, source management, and diagnostics for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+internment.workspace = true
+indexmap.workspace = true
+ariadne.workspace = true

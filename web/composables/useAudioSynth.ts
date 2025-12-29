@@ -1,14 +1,30 @@
-import type { NoteEvent } from "../types/relanote";
+import type { AudioNoteEvent, SynthData, ADSRData } from "../types/relanote";
 
 interface Voice {
-  oscillator: OscillatorNode;
+  oscillators: OscillatorNode[];
+  noiseSource?: AudioBufferSourceNode;
   gainNode: GainNode;
+  filterNode?: BiquadFilterNode;
 }
+
+// Create a unique key for each voice (synth name + pitch)
+const getVoiceKey = (midiNote: number, synthName?: string): string => {
+  return synthName ? `${synthName}:${midiNote}` : `default:${midiNote}`;
+};
+
+// Default ADSR for notes without synth data
+const DEFAULT_ADSR: ADSRData = {
+  attack: 0.02,
+  decay: 0.1,
+  sustain: 0.7,
+  release: 0.1,
+};
 
 export function useAudioSynth() {
   let audioContext: AudioContext | null = null;
   let masterGain: GainNode | null = null;
-  const activeVoices = new Map<number, Voice>();
+  let noiseBuffer: AudioBuffer | null = null;
+  const activeVoices = new Map<string, Voice>();
 
   const isInitialized = ref(false);
 
@@ -20,6 +36,9 @@ export function useAudioSynth() {
     masterGain.gain.value = 0.3;
     masterGain.connect(audioContext.destination);
 
+    // Create noise buffer for noise oscillators
+    noiseBuffer = createNoiseBuffer(audioContext);
+
     // Resume context if suspended (required by browsers)
     if (audioContext.state === "suspended") {
       await audioContext.resume();
@@ -28,61 +47,210 @@ export function useAudioSynth() {
     isInitialized.value = true;
   };
 
+  // Create white noise buffer
+  const createNoiseBuffer = (ctx: AudioContext): AudioBuffer => {
+    const bufferSize = ctx.sampleRate * 2; // 2 seconds of noise
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
+  };
+
+  // Create pulse wave using PeriodicWave
+  const createPulseOscillator = (
+    ctx: AudioContext,
+    frequency: number,
+    dutyCycle: number
+  ): OscillatorNode => {
+    const oscillator = ctx.createOscillator();
+    oscillator.frequency.value = frequency;
+
+    // Create pulse wave using Fourier series
+    const harmonics = 64;
+    const real = new Float32Array(harmonics);
+    const imag = new Float32Array(harmonics);
+
+    real[0] = 0;
+    imag[0] = 0;
+
+    for (let n = 1; n < harmonics; n++) {
+      // Pulse wave Fourier series: (2/nπ) * sin(n * π * duty) for cosine terms
+      real[n] = 0;
+      imag[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * dutyCycle);
+    }
+
+    const wave = ctx.createPeriodicWave(real, imag, { disableNormalization: true });
+    oscillator.setPeriodicWave(wave);
+
+    return oscillator;
+  };
+
   const midiToFrequency = (midiNote: number): number => {
     return 440 * Math.pow(2, (midiNote - 69) / 12);
   };
 
-  const noteOn = (midiNote: number, velocity: number = 100) => {
+  const noteOn = (midiNote: number, velocity: number = 100, synth?: SynthData) => {
     if (!audioContext || !masterGain) return;
 
-    // Stop existing voice on same note
-    noteOff(midiNote);
+    const voiceKey = getVoiceKey(midiNote, synth?.name);
 
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    // Stop existing voice on same note (same synth + pitch)
+    noteOffByKey(voiceKey);
 
-    // Use a warm sine-like tone (combination of sine and triangle)
-    oscillator.type = "triangle";
-    oscillator.frequency.value = midiToFrequency(midiNote);
-
-    // Velocity-based volume with envelope
+    const adsr = synth?.envelope || DEFAULT_ADSR;
+    const baseFreq = midiToFrequency(midiNote);
     const volume = (velocity / 127) * 0.5;
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.02);
 
-    oscillator.connect(gainNode);
+    const gainNode = audioContext.createGain();
+    const oscillators: OscillatorNode[] = [];
+    let noiseSource: AudioBufferSourceNode | undefined;
+    let filterNode: BiquadFilterNode | undefined;
+
+    // Create filter if synth has one
+    if (synth?.filter) {
+      filterNode = audioContext.createBiquadFilter();
+      filterNode.type = synth.filter.filter_type;
+      filterNode.frequency.value = synth.filter.cutoff;
+      // Convert resonance 0-1 to Q value (0.0001 to 30)
+      filterNode.Q.value = synth.filter.resonance * 25 + 0.5;
+    }
+
+    // Create oscillators based on synth data or default
+    if (synth && synth.oscillators.length > 0) {
+      for (const oscData of synth.oscillators) {
+        // Calculate frequency with octave offset
+        const freq = baseFreq * Math.pow(2, oscData.octave_offset);
+
+        if (oscData.waveform === "noise") {
+          // Create noise source
+          if (noiseBuffer) {
+            noiseSource = audioContext.createBufferSource();
+            noiseSource.buffer = noiseBuffer;
+            noiseSource.loop = true;
+
+            const noiseGain = audioContext.createGain();
+            noiseGain.gain.value = oscData.mix;
+
+            noiseSource.connect(noiseGain);
+            if (filterNode) {
+              noiseGain.connect(filterNode);
+            } else {
+              noiseGain.connect(gainNode);
+            }
+            noiseSource.start();
+          }
+        } else if (oscData.waveform === "pulse") {
+          // Create pulse wave oscillator
+          const osc = createPulseOscillator(audioContext, freq, oscData.pulse_duty);
+          osc.detune.value = oscData.detune_cents + (synth.detune_cents || 0);
+
+          const oscGain = audioContext.createGain();
+          oscGain.gain.value = oscData.mix;
+
+          osc.connect(oscGain);
+          if (filterNode) {
+            oscGain.connect(filterNode);
+          } else {
+            oscGain.connect(gainNode);
+          }
+          osc.start();
+          oscillators.push(osc);
+        } else {
+          // Standard waveforms
+          const osc = audioContext.createOscillator();
+          osc.type = oscData.waveform;
+          osc.frequency.value = freq;
+          osc.detune.value = oscData.detune_cents + (synth.detune_cents || 0);
+
+          const oscGain = audioContext.createGain();
+          oscGain.gain.value = oscData.mix;
+
+          osc.connect(oscGain);
+          if (filterNode) {
+            oscGain.connect(filterNode);
+          } else {
+            oscGain.connect(gainNode);
+          }
+          osc.start();
+          oscillators.push(osc);
+        }
+      }
+    } else {
+      // Default: single triangle oscillator
+      const osc = audioContext.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.value = baseFreq;
+      osc.connect(gainNode);
+      osc.start();
+      oscillators.push(osc);
+    }
+
+    // Connect filter to gain if present
+    if (filterNode) {
+      filterNode.connect(gainNode);
+    }
+
+    // ADSR envelope
+    const now = audioContext.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(volume, now + adsr.attack);
+    gainNode.gain.linearRampToValueAtTime(
+      volume * adsr.sustain,
+      now + adsr.attack + adsr.decay
+    );
+
     gainNode.connect(masterGain);
-    oscillator.start();
 
-    activeVoices.set(midiNote, { oscillator, gainNode });
+    activeVoices.set(voiceKey, { oscillators, noiseSource, gainNode, filterNode });
   };
 
-  const noteOff = (midiNote: number) => {
+  const noteOffByKey = (voiceKey: string) => {
     if (!audioContext) return;
 
-    const voice = activeVoices.get(midiNote);
+    const voice = activeVoices.get(voiceKey);
     if (voice) {
-      const { oscillator, gainNode } = voice;
+      const { oscillators, noiseSource, gainNode, filterNode } = voice;
+      const now = audioContext.currentTime;
 
-      // Fade out to avoid clicks
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
+      // Get release time from current gain envelope or use default
+      const releaseTime = 0.1;
+
+      // Fade out
+      gainNode.gain.cancelScheduledValues(now);
+      gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+      gainNode.gain.linearRampToValueAtTime(0, now + releaseTime);
 
       setTimeout(() => {
-        oscillator.stop();
-        oscillator.disconnect();
+        for (const osc of oscillators) {
+          osc.stop();
+          osc.disconnect();
+        }
+        if (noiseSource) {
+          noiseSource.stop();
+          noiseSource.disconnect();
+        }
         gainNode.disconnect();
-      }, 150);
+        if (filterNode) {
+          filterNode.disconnect();
+        }
+      }, releaseTime * 1000 + 50);
 
-      activeVoices.delete(midiNote);
+      activeVoices.delete(voiceKey);
     }
   };
 
+  const noteOff = (midiNote: number, synthName?: string) => {
+    noteOffByKey(getVoiceKey(midiNote, synthName));
+  };
+
   const stopAll = () => {
-    activeVoices.forEach((_, midiNote) => noteOff(midiNote));
+    activeVoices.forEach((_, voiceKey) => noteOffByKey(voiceKey));
   };
 
   const playNotes = async (
-    notes: NoteEvent[],
+    notes: AudioNoteEvent[],
     tempo: number,
     onBeatUpdate?: (beat: number) => void,
     signal?: AbortSignal
@@ -99,6 +267,7 @@ export function useAudioSynth() {
       type: "on" | "off";
       pitch: number;
       velocity: number;
+      synth?: SynthData;
     }> = [];
 
     for (const note of notes) {
@@ -110,20 +279,19 @@ export function useAudioSynth() {
         type: "on",
         pitch: note.pitch,
         velocity: note.velocity,
+        synth: note.synth,
       });
       scheduledEvents.push({
         time: noteEndTime,
         type: "off",
         pitch: note.pitch,
         velocity: 0,
+        synth: note.synth,
       });
     }
 
     // Sort by time
     scheduledEvents.sort((a, b) => a.time - b.time);
-
-    // Find total duration
-    const totalDuration = Math.max(...notes.map((n) => n.start + n.duration)) / beatsPerSecond;
 
     // Play events
     for (const event of scheduledEvents) {
@@ -154,9 +322,9 @@ export function useAudioSynth() {
       }
 
       if (event.type === "on") {
-        noteOn(event.pitch, event.velocity);
+        noteOn(event.pitch, event.velocity, event.synth);
       } else {
-        noteOff(event.pitch);
+        noteOff(event.pitch, event.synth?.name);
       }
 
       // Update beat position
@@ -177,6 +345,7 @@ export function useAudioSynth() {
       audioContext.close();
       audioContext = null;
       masterGain = null;
+      noiseBuffer = null;
     }
     isInitialized.value = false;
   };

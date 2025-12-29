@@ -24,29 +24,38 @@ Relanote uses static typing with Hindley-Milner type inference.
 | `Section` | Song section | `section "Verse" ...` |
 | `Song` | Complete composition | `render ...` |
 
+## Synth Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `Synth` | Synthesizer definition | `synth Lead = {...}` |
+| `Oscillator` | Waveform type | `Sine`, `Square`, `Saw` |
+| `Filter` | Filter type | `LowPass(1000, 0.5)` |
+| `Envelope` | ADSR envelope | `{ A: 0.01, D: 0.1, S: 0.7, R: 0.2 }` |
+
 ## Compound Types
 
 ### Arrays
 
 ```rela
-[1, 2, 3]           -- [Int]
-["a", "b", "c"]     -- [String]
-[R, M3, P5]         -- [Interval]
+[1, 2, 3]           ; [Int]
+["a", "b", "c"]     ; [String]
+[R, M3, P5]         ; [Interval]
 ```
 
 ### Functions
 
 ```rela
-Int -> Int              -- Function from Int to Int
-(Int, Int) -> Int       -- Function with two Int parameters
-Block -> Block          -- Block transformation
+Int -> Int              ; Function from Int to Int
+(Int, Int) -> Int       ; Function with two Int parameters
+Block -> Block          ; Block transformation
 ```
 
 ### Tuples
 
 ```rela
-(Int, String)           -- Pair of Int and String
-(Interval, Interval)    -- Pair of intervals
+(Int, String)           ; Pair of Int and String
+(Interval, Interval)    ; Pair of intervals
 ```
 
 ## Type Inference
@@ -54,10 +63,10 @@ Block -> Block          -- Block transformation
 Types are inferred automatically:
 
 ```rela
-let x = 42              -- x: Int
-let s = "hello"         -- s: String
-let i = P5              -- i: Interval
-let f = \n -> n + 1     -- f: Int -> Int
+let x = 42              ; x: Int
+let s = "hello"         ; s: String
+let i = P5              ; i: Interval
+let f = \n -> n + 1     ; f: Int -> Int
 ```
 
 ## Type Annotations
@@ -74,13 +83,13 @@ let transpose: Interval -> Block -> Block = ...
 The type checker catches errors at compile time:
 
 ```rela
--- Error: cannot add Scale to Interval
+; Error: cannot add Scale to Interval
 let wrong = Major + P5
 
--- Error: type mismatch
+; Error: type mismatch
 let also_wrong: Int = "hello"
 
--- Error: cannot apply Scale to Int
+; Error: cannot apply Scale to Int
 Major |> 42
 ```
 
@@ -91,18 +100,18 @@ Some operations work on multiple types:
 ### Eq (Equality)
 
 ```rela
-P5 == P5    -- true
-M3 != m3    -- true
+P5 == P5    ; true
+M3 != m3    ; true
 ```
 
 ### Add
 
 ```rela
--- Intervals can be added
-P5 + M3     -- M7
+; Intervals can be added
+P5 + M3     ; M7
 
--- Blocks can be concatenated
-| <1> | ++ | <2> |   -- | <1> <2> |
+; Blocks can be concatenated
+| <1> | ++ | <2> |   ; | <1> <2> |
 ```
 
 ### Show
@@ -110,9 +119,9 @@ P5 + M3     -- M7
 All values can be displayed:
 
 ```rela
--- In the REPL or debug output
-P5          -- "P5 (7 semitones)"
-Major       -- "Scale { R, M2, M3, P4, P5, M6, M7 }"
+; In the REPL or debug output
+P5          ; "P5 (7 semitones)"
+Major       ; "Scale { R, M2, M3, P4, P5, M6, M7 }"
 ```
 
 ## Generic Functions
@@ -120,9 +129,9 @@ Major       -- "Scale { R, M2, M3, P4, P5, M6, M7 }"
 Some built-in functions are generic:
 
 ```rela
--- map works on any Block content
+; map works on any Block content
 map: (a -> b) -> [a] -> [b]
 
--- repeat works on any Block
+; repeat works on any Block
 repeat: Int -> Block -> Block
 ```

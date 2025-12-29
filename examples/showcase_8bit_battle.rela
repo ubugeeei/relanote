@@ -1,0 +1,346 @@
+; ============================================
+; GYM LEADER BATTLE - Harmonic Minor Edition
+; Dark, melodic, intense 8-bit battle theme
+; ============================================
+
+set tempo = 290
+set key = E3
+
+; ============================================
+; INTRO - Mysterious tremolo (Harmonic Minor)
+; ============================================
+
+; Harmonic minor uses m6 and M7 for that dark exotic sound
+let intro = |
+  R m3 R m3 R m3 R m3
+  P5 m6 P5 m6 P5 m6 P5 m6
+  M7 P8 M7 P8 M7 P8 M7 P8
+  m6 M7 P8 m10 P8 M7 m6 P5
+  m3 P5 m6 M7 P8 M7 m6 P5
+  P8 m10 P8 m10 P12 m13 P12 m13
+  M14 m13 P12 m10 P8 M7 m6 P5
+  m3 P5 M7 P8 m10 m13 M14 m10
+|:32
+
+let intro_harmony = |
+  m3 P5 m3 P5 m3 P5 m3 P5
+  M7 P8 M7 P8 M7 P8 M7 P8
+  m10 P12 m10 P12 m10 P12 m10 P12
+  P8 m10 P12 m13 P12 m10 P8 M7
+  P5 M7 P8 m10 P12 m10 P8 M7
+  P12 m13 P12 m13 M14 m17 M14 m17
+  M17 m17 M14 m13 P12 m10 P8 M7
+  P5 M7 m10 P12 m13 m17 M17 m13
+|:32
+
+; ============================================
+; THEME A - Melodic mid-range (E Harmonic Minor)
+; ============================================
+
+let theme_A = |
+  P8 m10 P12 m13 M14 m13 P12 m10
+  P8 M7 m6 P5 m3 P5 m6 M7
+  P8 m10 P12 m13 M14 m17 M14 m13
+  P12 m10 P8 M7 m6 P5 m3 P5
+  m6 M7 P8 M7 m6 P5 m3 P5
+  M7 P8 m10 P8 M7 m6 P5 m6
+  M7 P8 m10 P12 m13 M14 m13 P12
+  m10 P12 m13 M14 m17 M14 m13 m10
+|:32
+
+let theme_A_harmony = |
+  m10 P12 M14 m17 M17 m17 M14 m13
+  P12 m10 P8 M7 P5 M7 P8 m10
+  P12 m13 M14 m17 M17 M21 M17 m17
+  M14 m13 P12 m10 P8 M7 P5 M7
+  P8 m10 P12 m10 P8 M7 P5 M7
+  m10 P12 m13 P12 m10 P8 M7 P8
+  m10 P12 m13 M14 m17 M17 m17 M14
+  m13 M14 m17 M17 M21 M17 m17 m13
+|:32
+
+; ============================================
+; THEME B - Rising tension (melodic phrase)
+; ============================================
+
+let theme_B = |
+  m6 M7 P8 m10 P12 m13 M14 m17
+  M14 m13 P12 m10 P8 M7 m6 P5
+  m3 P5 m6 M7 P8 m10 P12 m13
+  M14 m17 M14 m13 P12 m10 P8 M7
+  P8 M7 P8 m10 P12 m10 P8 M7
+  m6 M7 P8 M7 m6 P5 m3 P5
+  m6 M7 P8 m10 P12 m13 M14 m17
+  M21 M17 M14 m13 P12 m10 P8 M7
+|:32
+
+let theme_B_harmony = |
+  P8 m10 P12 m13 M14 m17 M17 M21
+  M17 m17 M14 m13 P12 m10 P8 M7
+  P5 M7 P8 m10 P12 m13 M14 m17
+  M17 M21 M17 m17 M14 m13 P12 m10
+  P12 m10 P12 m13 M14 m13 P12 m10
+  P8 m10 P12 m10 P8 M7 P5 M7
+  P8 m10 P12 m13 M14 m17 M17 M21
+  M24 M21 M17 m17 M14 m13 P12 m10
+|:32
+
+; ============================================
+; THEME C - High intensity (minor 3rd jumps)
+; ============================================
+
+let theme_C = |
+  m10 m13 m10 m13 P8 m10 P8 m10
+  M7 P8 M7 P8 m6 M7 m6 M7
+  P8 m10 P12 m10 P8 m10 P12 m13
+  M14 m13 P12 m10 P8 M7 m6 P5
+  m10 P12 m13 M14 m17 M14 m13 P12
+  m10 P8 M7 P8 m10 P12 m13 M14
+  m17 M14 m13 P12 m10 P8 M7 P8
+  m10 m13 M14 m17 M21 M17 M14 m10
+|:32
+
+let theme_C_harmony = |
+  m13 m17 m13 m17 P12 m13 P12 m13
+  m10 P12 m10 P12 P8 m10 P8 m10
+  P12 m13 M14 m13 P12 m13 M14 m17
+  M17 m17 M14 m13 P12 m10 P8 M7
+  m13 M14 m17 M17 M21 M17 m17 M14
+  m13 P12 m10 P12 m13 M14 m17 M17
+  M21 M17 m17 M14 m13 P12 m10 P12
+  m13 m17 M17 M21 M24 M21 M17 m13
+|:32
+
+; ============================================
+; THEME D - Climactic melody (high register)
+; ============================================
+
+let theme_D = |
+  M14 m17 M21 m17 M14 m17 M21 M24
+  M21 m17 M14 m13 P12 m10 P8 m10
+  P12 m13 M14 m17 M21 M17 M14 m13
+  P12 m13 M14 m17 M21 M24 M21 m17
+  M14 M17 M14 m13 P12 m10 P8 M7
+  m6 M7 P8 m10 P12 m13 M14 m17
+  M21 m17 M14 m13 P12 m10 P8 m10
+  P12 m13 M14 m17 M21 M24 M21 m17
+|:32
+
+let theme_D_harmony = |
+  M17 M21 M24 M21 M17 M21 M24 M28
+  M24 M21 M17 m17 M14 m13 P12 m13
+  M14 m17 M17 M21 M24 M21 M17 m17
+  M14 m17 M17 M21 M24 M28 M24 M21
+  M17 M21 M17 m17 M14 m13 P12 m10
+  P8 m10 P12 m13 M14 m17 M17 M21
+  M24 M21 M17 m17 M14 m13 P12 m13
+  M14 m17 M17 M21 M24 M28 M24 M21
+|:32
+
+; ============================================
+; THEME E - Final push (octave jumps)
+; ============================================
+
+let theme_E = |
+  P8 M21 P8 M21 m10 M14 m10 M14
+  P12 m17 P12 m17 m13 M17 m13 M17
+  M14 M21 M14 M21 m17 M24 m17 M24
+  M21 M17 M14 m17 M21 M24 M21 m17
+  M14 m13 P12 m10 P8 M7 m6 M7
+  P8 m10 P12 m13 M14 m17 M21 M17
+  M14 m13 P12 m10 P8 M7 m6 M7
+  P8 m10 P12 m13 M14 m17 M21 M24
+|:32
+
+let theme_E_harmony = |
+  P12 M24 P12 M24 m13 M17 m13 M17
+  M14 M21 M14 M21 m17 M21 m17 M21
+  M17 M24 M17 M24 M21 M28 M21 M28
+  M24 M21 M17 M21 M24 M28 M24 M21
+  M17 m17 M14 m13 P12 m10 P8 m10
+  P12 m13 M14 m17 M17 M21 M24 M21
+  M17 m17 M14 m13 P12 m10 P8 m10
+  P12 m13 M14 m17 M17 M21 M24 M28
+|:32
+
+; ============================================
+; FINALE - Grand conclusion
+; ============================================
+
+let finale = |
+  m10 P12 m13 M14 m17 M21 M24 M21
+  m17 M14 m13 P12 m10 P8 M7 P8
+  m10 P12 m13 M14 m17 M21 M24 M28
+  M24 M21 m17 M14 m13 P12 m10 P12
+  m13 M14 m17 M21 M24 M21 m17 M14
+  m13 P12 m10 P8 M7 m6 P5 m6
+  M7 P8 m10 P12 m13 M14 m17 M21
+  M24 M28 M24 M21 M28:4
+|:32
+
+let finale_harmony = |
+  m13 M14 m17 M17 M21 M24 M28 M24
+  M21 M17 m17 M14 m13 P12 m10 P12
+  m13 M14 m17 M17 M21 M24 M28 M31
+  M28 M24 M21 M17 m17 M14 m13 M14
+  m17 M17 M21 M24 M28 M24 M21 M17
+  m17 M14 m13 P12 m10 P8 M7 P8
+  m10 P12 m13 M14 m17 M17 M21 M24
+  M28 M31 M28 M24 M31:4
+|:32
+
+let full_lead = intro ++ theme_A ++ theme_B ++ theme_C ++ theme_D ++ theme_E ++ finale
+let full_harmony = intro_harmony ++ theme_A_harmony ++ theme_B_harmony ++ theme_C_harmony ++ theme_D_harmony ++ theme_E_harmony ++ finale_harmony
+
+; ============================================
+; ARPEGGIOS (Harmonic minor flavored)
+; ============================================
+
+let arp_intro = |
+  R m3 P5 M7 P5 m3 R m3
+  m6 M7 P8 m10 P8 M7 m6 M7
+  P8 m10 P12 m10 P8 m10 P12 m13
+  M14 m13 P12 m10 P8 M7 m6 M7
+  R m3 P5 M7 P8 M7 P5 m3
+  P5 M7 P8 m10 P12 m10 P8 M7
+  m6 M7 P8 m10 P12 m13 M14 m13
+  P12 m10 P8 M7 m6 M7 P8 m10
+|:32
+
+let arp_main = |
+  R P5 P8 P5 R P5 P8 m10
+  m3 M7 P8 M7 m3 M7 P8 M7
+  P5 m10 P12 m10 P5 m10 P12 m13
+  m6 m10 P12 m10 m6 P8 M7 m6
+|:32
+
+let arp_high = |
+  P8 P12 M14 P12 P8 P12 M14 m17
+  m10 M14 m17 M14 m10 M14 m17 M21
+  P12 m17 M21 m17 P12 m17 M21 M24
+  m13 M17 M21 M17 m13 M14 P12 m10
+|:32
+
+let arp_climax = |
+  R M7 P12 M7 R M7 P12 M14
+  m3 P8 m13 P8 m3 P8 m13 m17
+  P5 m10 M14 m10 P5 m10 M14 M21
+  m6 P12 m17 P12 m6 P8 M7 m6
+|:32
+
+let full_arp = arp_intro ++ arp_main ++ arp_main ++ arp_high ++ arp_high ++ arp_climax ++ arp_climax
+
+; ============================================
+; SECOND ARPEGGIO (Higher octave)
+; ============================================
+
+let arp2_intro = |
+  P5 M7 P8 M7 P5 M7 P8 m10
+  P8 m10 P12 m10 P8 m10 P12 m13
+  M14 m13 P12 m10 P8 M7 m6 M7
+  P8 m10 P12 m13 M14 m17 M14 m13
+  P5 M7 P8 M7 P5 M7 P8 M7
+  M7 P8 m10 P8 M7 P8 m10 P12
+  P8 m10 P12 m13 M14 m17 M14 m13
+  P12 m10 P8 M7 P8 m10 P12 m13
+|:32 |> transpose P8
+
+let arp2_main = |
+  m3 M7 P12 M7 m3 M7 P12 m13
+  P5 m10 M14 m10 P5 m10 M14 m17
+  m6 P12 m17 P12 m6 P12 m17 M21
+  M7 m13 M17 m13 M7 m10 P8 M7
+|:32 |> transpose P8
+
+let arp2_high = |
+  m10 M14 m17 M14 m10 M14 m17 M21
+  P12 m17 M21 m17 P12 m17 M21 M24
+  m13 M17 M21 M17 m13 M17 M21 M24
+  M14 M21 M24 M21 M14 m17 M14 m10
+|:32 |> transpose P8
+
+let arp2_climax = |
+  m3 P12 m17 P12 m3 P12 m17 M21
+  P5 M14 M21 M14 P5 M14 M21 M24
+  m6 m17 M24 m17 m6 m17 M24 M28
+  M7 M17 M24 M17 M7 M14 P12 M7
+|:32 |> transpose P8
+
+let full_arp2 = arp2_intro ++ arp2_main ++ arp2_main ++ arp2_high ++ arp2_high ++ arp2_climax ++ arp2_climax
+
+; ============================================
+; BASS (Harmonic minor root movement)
+; ============================================
+
+let bass_pattern = |
+  R R R R R R R R
+  P5 P5 P5 P5 m6 m6 M7 M7
+  R R R R P4 P4 P4 P4
+  m6 m6 M7 M7 R R R R
+  P5 P5 P5 P5 m6 m6 m6 m6
+  M7 M7 R R R R R R
+  P4 P4 P4 P4 P5 P5 P5 P5
+  m6 m6 M7 M7 R R R R
+|:32 |> transpose (R - P8)
+
+let bass_intense = |
+  R R R R P5 P5 m6 m6
+  M7 M7 P8 P8 M7 M7 m6 m6
+  P5 P5 P4 P4 m3 m3 P4 P4
+  P5 P5 m6 m6 M7 M7 R R
+  R P5 R P5 R m6 R m6
+  R M7 R M7 R P8 R M7
+  m6 m6 m6 m6 P5 P5 P5 P5
+  P4 P4 m3 m3 R R M7 M7
+|:32 |> transpose (R - P8)
+
+let full_bass = bass_pattern ++ bass_intense ++ bass_pattern ++ bass_intense ++ bass_pattern ++ bass_intense ++ bass_intense
+
+; ============================================
+; SUB BASS
+; ============================================
+
+let sub_bass = |
+  R:2 R:2 P5:2 m6:2
+  M7:2 R:2 P5:2 m6:2
+  M7:2 P8:2 M7:2 m6:2
+  P5:2 P4:2 m3:2 R:2
+|:56 |> transpose (R - P15)
+
+; ============================================
+; DRUMS (high energy patterns)
+; ============================================
+
+let kick = |
+  R - R - R - R -
+  R - R - R R R R
+  R - R - R - R -
+  R R R R R - R -
+|:56
+
+let snare = |
+  - - R - - - R -
+  - - R - R R R R
+  - - R - - - R -
+  R R R R - - R -
+|:56
+
+let hihat = |
+  R R R R R R R R
+|:224
+
+; ============================================
+; FINAL MIX - 9 layers!
+; ============================================
+
+layer [
+  full_lead |> voice NES,
+  full_harmony |> voice NES |> volume 0.35,
+  full_arp |> voice GameBoy |> volume 0.4,
+  full_arp2 |> voice Chip8bit |> volume 0.25,
+  full_bass |> voice Chiptune,
+  sub_bass |> voice FatBass |> volume 0.5,
+  kick |> voice Kick8bit |> volume 1.0,
+  snare |> voice Snare8bit |> volume 0.85,
+  hihat |> voice HiHat8bit |> volume 0.25
+]

@@ -3,6 +3,7 @@ import type {
   FormatResult,
   RenderResult,
   StaffData,
+  AudioPlaybackData,
 } from "../types/relanote";
 
 let wasmModule: typeof import("../wasm/pkg/relanote_wasm") | null = null;
@@ -58,6 +59,11 @@ export function useRelanote() {
     return wasmModule.get_staff_data(source) as StaffData;
   };
 
+  const getAudioData = (source: string): AudioPlaybackData | null => {
+    if (!wasmModule) return null;
+    return wasmModule.get_audio_data(source) as AudioPlaybackData;
+  };
+
   const getTokens = (
     source: string
   ): Array<{ start: number; end: number; kind: string }> | null => {
@@ -77,6 +83,7 @@ export function useRelanote() {
     format,
     renderMidi,
     getStaffData,
+    getAudioData,
     getTokens,
   };
 }

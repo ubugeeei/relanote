@@ -1,0 +1,51 @@
+; ============================================
+; Block Concatenation
+; Combining blocks while preserving their original rhythms
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Basic Concatenation with ++
+; ============================================
+
+let phrase_a = | <1> <2> <3> |
+let phrase_b = | <5> <4> <3> <2> <1> |
+
+; Concatenate: phrase_a has 3 slots, phrase_b has 5 slots
+; Each block's internal rhythm is preserved!
+let combined = phrase_a ++ phrase_b
+
+; ============================================
+; Mixing Different Rhythms
+; ============================================
+
+; Fast run: 8 notes in 1 beat (each note = 0.125 beats)
+let fast_run = | <1> <2> <3> <4> <5> <4> <3> <2> |
+
+; Slow passage: 2 notes in 1 beat (each note = 0.5 beats)
+let slow_passage = | <1> <5> |
+
+; Long held note: 1 note in 2 beats
+let held_note = | <1> |:2
+
+; Combine them: each preserves its original duration!
+let melody = fast_run ++ slow_passage ++ held_note
+
+; ============================================
+; Building Complex Rhythms
+; ============================================
+
+; Pickup notes (fast)
+let pickup = | <5> <6> <7> |
+
+; Main phrase (medium speed)
+let main_phrase = | <8> <7> <6> <5> |:2
+
+; Resolution (slow)
+let resolution = | <1> |:2
+
+; Full phrase with varied rhythm
+let full_phrase = pickup ++ main_phrase ++ resolution
+
+full_phrase

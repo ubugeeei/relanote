@@ -5,6 +5,24 @@ export default defineNuxtConfig({
 
   ssr: false,
 
+  dir: {
+    public: "../assets",
+  },
+
+  app: {
+    baseURL: process.env.NUXT_APP_BASE_URL || "/",
+    head: {
+      title: "Relanote Playground",
+      meta: [
+        {
+          name: "description",
+          content: "Functional music notation language",
+        },
+      ],
+      link: [{ rel: "icon", href: "/logo-icon.svg" }],
+    },
+  },
+
   vite: {
     optimizeDeps: {
       exclude: ["relanote-wasm"],
@@ -12,13 +30,8 @@ export default defineNuxtConfig({
     },
   },
 
-  app: {
-    head: {
-      title: "Relanote Playground",
-      meta: [
-        { name: "description", content: "Functional music notation language" },
-      ],
-    },
+  nitro: {
+    preset: "static",
   },
 
   modules: [],

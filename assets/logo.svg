@@ -1,61 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1" />
-      <stop offset="100%" style="stop-color:#a855f7" />
+    <!-- Score/Ink palette -->
+    <linearGradient id="inkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#44403c" />
+      <stop offset="100%" style="stop-color:#292524" />
     </linearGradient>
-    <linearGradient id="grad2" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#ec4899" />
-      <stop offset="100%" style="stop-color:#f472b6" />
+    <linearGradient id="sepiaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d97706" />
+      <stop offset="100%" style="stop-color:#b45309" />
     </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="#0f0f23"/>
+  <!-- Background - aged paper -->
+  <rect width="512" height="512" rx="96" fill="#faf6f1"/>
 
-  <!-- Relative intervals represented as connected nodes -->
-  <!-- Three nodes at different "pitches" connected by lines showing relationships -->
+  <!-- Subtle staff lines -->
+  <g stroke="#e7e5e4" stroke-width="2" opacity="0.5">
+    <line x1="80" y1="180" x2="432" y2="180" />
+    <line x1="80" y1="220" x2="432" y2="220" />
+    <line x1="80" y1="260" x2="432" y2="260" />
+    <line x1="80" y1="300" x2="432" y2="300" />
+    <line x1="80" y1="340" x2="432" y2="340" />
+  </g>
 
   <!-- Connection lines (intervals/relationships) -->
-  <g stroke="url(#grad1)" stroke-width="6" fill="none" opacity="0.6">
-    <!-- Interval connections -->
+  <g stroke="url(#inkGrad)" stroke-width="5" fill="none" opacity="0.7">
     <line x1="128" y1="320" x2="256" y2="192" />
     <line x1="256" y1="192" x2="384" y2="288" />
-    <line x1="128" y1="320" x2="384" y2="288" />
+    <line x1="128" y1="320" x2="384" y2="288" stroke-dasharray="10,5" opacity="0.3" />
   </g>
 
-  <!-- Lambda symbol (functional) integrated as the central structure -->
-  <g fill="url(#grad1)">
-    <!-- Lambda arms forming a V that connects the nodes -->
+  <!-- Lambda symbol (functional) - ink style -->
+  <g fill="url(#inkGrad)">
     <polygon points="256,140 220,140 256,260 292,140" />
-    <!-- Lambda crossbar -->
-    <rect x="200" y="200" width="112" height="16" rx="8" transform="rotate(-25 256 208)" />
+    <rect x="200" y="200" width="112" height="14" rx="7" transform="rotate(-25 256 208)" />
   </g>
 
-  <!-- Nodes representing notes at relative positions -->
+  <!-- Nodes as note heads (elliptical, tilted) -->
   <g>
-    <!-- Node 1 (lower left) - P1 reference -->
-    <circle cx="128" cy="320" r="32" fill="url(#grad2)" />
-    <circle cx="128" cy="320" r="16" fill="#0f0f23" />
+    <!-- Note 1 (lower left) - P1 reference -->
+    <ellipse cx="128" cy="320" rx="28" ry="22" fill="url(#inkGrad)" transform="rotate(-20 128 320)" />
 
-    <!-- Node 2 (top center) - interval up -->
-    <circle cx="256" cy="192" r="32" fill="url(#grad1)" />
-    <circle cx="256" cy="192" r="16" fill="#0f0f23" />
+    <!-- Note 2 (top center) - interval up -->
+    <ellipse cx="256" cy="192" rx="28" ry="22" fill="url(#sepiaGrad)" transform="rotate(-20 256 192)" />
 
-    <!-- Node 3 (lower right) - relative to others -->
-    <circle cx="384" cy="288" r="32" fill="url(#grad2)" />
-    <circle cx="384" cy="288" r="16" fill="#0f0f23" />
+    <!-- Note 3 (lower right) - relative to others -->
+    <ellipse cx="384" cy="288" rx="28" ry="22" fill="url(#inkGrad)" transform="rotate(-20 384 288)" />
   </g>
 
-  <!-- Pipe symbol |> representing functional composition -->
-  <g fill="#ffffff" opacity="0.9">
-    <rect x="180" y="360" width="8" height="48" rx="4" />
-    <polygon points="200,384 232,384 200,408" />
+  <!-- Pipe symbol |> - calligraphic -->
+  <g fill="#44403c" opacity="0.8">
+    <rect x="180" y="370" width="6" height="44" rx="3" />
+    <polygon points="198,392 228,392 198,414" />
   </g>
 
-  <!-- Small interval markers -->
-  <g fill="#ffffff" opacity="0.4">
-    <text x="168" y="260" font-family="monospace" font-size="24">M3</text>
-    <text x="310" y="252" font-family="monospace" font-size="24">P5</text>
+  <!-- Interval markers - sepia -->
+  <g fill="#b45309" opacity="0.6" font-family="'Georgia', serif" font-style="italic">
+    <text x="165" y="260" font-size="22">M3</text>
+    <text x="305" y="248" font-size="22">P5</text>
   </g>
 </svg>

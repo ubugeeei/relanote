@@ -8,6 +8,7 @@ const relaLanguage = {
     { include: "#comments" },
     { include: "#keywords" },
     { include: "#intervals" },
+    { include: "#absolute-pitches" },
     { include: "#scale-degrees" },
     { include: "#strings" },
     { include: "#numbers" },
@@ -19,8 +20,8 @@ const relaLanguage = {
     comments: {
       patterns: [
         {
-          name: "comment.line.double-dash.rela",
-          match: "--.*$",
+          name: "comment.line.semicolon.rela",
+          match: ";.*",
         },
       ],
     },
@@ -28,11 +29,11 @@ const relaLanguage = {
       patterns: [
         {
           name: "keyword.control.rela",
-          match: "\\b(if|then|else|match|with|let|in)\\b",
+          match: "\\b(if|then|else|match|with|let|set|in|mod|use)\\b",
         },
         {
           name: "keyword.declaration.rela",
-          match: "\\b(scale|chord|part|section|layer|render)\\b",
+          match: "\\b(scale|chord|part|section|layer|render|synth)\\b",
         },
         {
           name: "constant.language.boolean.rela",
@@ -49,6 +50,14 @@ const relaLanguage = {
         {
           name: "constant.numeric.interval.rela",
           match: "\\b(R|[PMmAd][1-9][0-9]?[+-]*)\\b",
+        },
+      ],
+    },
+    "absolute-pitches": {
+      patterns: [
+        {
+          name: "constant.numeric.pitch.rela",
+          match: "\\b[CDEFGAB][#b]?[0-9]\\b",
         },
       ],
     },
@@ -104,6 +113,10 @@ const relaLanguage = {
         {
           name: "keyword.operator.arrow.rela",
           match: "->",
+        },
+        {
+          name: "keyword.operator.path.rela",
+          match: "::",
         },
         {
           name: "keyword.operator.comparison.rela",
@@ -162,31 +175,63 @@ const relaLanguage = {
   },
 };
 
+// For GitHub Pages: https://ubugeeei.github.io/relanote/
+const base = process.env.GITHUB_ACTIONS ? "/relanote/" : "/";
+
 export default defineConfig({
   title: "Relanote",
   description: "A pure functional, statically-typed music notation language",
+  base,
+
+  vite: {
+    publicDir: "../assets",
+  },
 
   head: [
-    ["link", { rel: "icon", href: "/logo-icon.svg" }],
-    ["meta", { name: "theme-color", content: "#6366f1" }],
+    ["link", { rel: "icon", href: `${base}logo-icon.svg` }],
+    ["meta", { name: "theme-color", content: "#b45309" }],
+    // Open Graph
+    ["meta", { property: "og:type", content: "website" }],
+    ["meta", { property: "og:title", content: "Relanote" }],
+    [
+      "meta",
+      {
+        property: "og:description",
+        content: "Everything is relative. A pure functional music notation language.",
+      },
+    ],
+    ["meta", { property: "og:image", content: `https://ubugeeei.github.io${base}og-image.svg` }],
+    ["meta", { property: "og:url", content: "https://ubugeeei.github.io/relanote/" }],
+    ["meta", { property: "og:site_name", content: "Relanote" }],
+    // Twitter Card
+    ["meta", { name: "twitter:card", content: "summary_large_image" }],
+    ["meta", { name: "twitter:title", content: "Relanote" }],
+    [
+      "meta",
+      {
+        name: "twitter:description",
+        content: "Everything is relative. A pure functional music notation language.",
+      },
+    ],
+    ["meta", { name: "twitter:image", content: `https://ubugeeei.github.io${base}og-image.svg` }],
   ],
 
   markdown: {
     languages: [relaLanguage as any],
     theme: {
-      light: "github-light",
-      dark: "github-dark",
+      light: "github-light-default",
+      dark: "github-dark-dimmed",
     },
   },
 
   themeConfig: {
-    logo: "/logo-icon.svg",
+    logo: `${base}logo-icon.svg`,
 
     nav: [
       { text: "Guide", link: "/guide/introduction" },
       { text: "Tutorial", link: "/tutorial/getting-started" },
       { text: "Reference", link: "/reference/syntax" },
-      { text: "Playground", link: "https://relanote.dev/playground" },
+      { text: "Playground", link: `${base}playground/` },
     ],
 
     sidebar: {
@@ -213,6 +258,7 @@ export default defineConfig({
           items: [
             { text: "Parts & Sections", link: "/guide/parts-and-sections" },
             { text: "Layers", link: "/guide/layers" },
+            { text: "Synthesizers", link: "/guide/synth" },
             { text: "Functions", link: "/guide/functions" },
             { text: "Pattern Matching", link: "/guide/pattern-matching" },
           ],
@@ -226,6 +272,7 @@ export default defineConfig({
             { text: "Your First Melody", link: "/tutorial/first-melody" },
             { text: "Building Chords", link: "/tutorial/building-chords" },
             { text: "Creating a Song", link: "/tutorial/creating-a-song" },
+            { text: "Adding Synth Sounds", link: "/tutorial/synth-sounds" },
           ],
         },
       ],
@@ -236,6 +283,7 @@ export default defineConfig({
             { text: "Syntax", link: "/reference/syntax" },
             { text: "Types", link: "/reference/types" },
             { text: "Intervals", link: "/reference/intervals" },
+            { text: "Modules", link: "/reference/modules" },
             { text: "Built-in Functions", link: "/reference/builtins" },
             { text: "CLI", link: "/reference/cli" },
           ],

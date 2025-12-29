@@ -1,0 +1,17 @@
+[package]
+name = "relanote_eval"
+description = "Interpreter/evaluator for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+relanote_core.workspace = true
+relanote_ast.workspace = true
+relanote_lexer.workspace = true
+relanote_parser.workspace = true
+relanote_stdlib.workspace = true
+relanote_types.workspace = true
+thiserror.workspace = true
+indexmap.workspace = true

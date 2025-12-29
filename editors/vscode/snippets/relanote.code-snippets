@@ -1,0 +1,125 @@
+{
+  "Scale Definition": {
+    "prefix": "scale",
+    "body": [
+      "scale ${1:Name} = { ${2:R, M2, M3, P4, P5, M6, M7} }"
+    ],
+    "description": "Define a musical scale"
+  },
+  "Chord Definition": {
+    "prefix": "chord",
+    "body": [
+      "chord ${1:Name} = [ ${2:R, M3, P5} ]"
+    ],
+    "description": "Define a chord"
+  },
+  "Let Binding": {
+    "prefix": "let",
+    "body": [
+      "let ${1:name} = ${2:value}"
+    ],
+    "description": "Define a variable binding"
+  },
+  "Let In Expression": {
+    "prefix": "letin",
+    "body": [
+      "let ${1:name} = ${2:value} in",
+      "  ${3:expression}"
+    ],
+    "description": "Local binding expression"
+  },
+  "Section": {
+    "prefix": "section",
+    "body": [
+      "section \"${1:Name}\" {",
+      "  ${2:content}",
+      "}"
+    ],
+    "description": "Define a section"
+  },
+  "Layer": {
+    "prefix": "layer",
+    "body": [
+      "layer [",
+      "  ${1:part1},",
+      "  ${2:part2}",
+      "]"
+    ],
+    "description": "Layer multiple parts"
+  },
+  "Part": {
+    "prefix": "part",
+    "body": [
+      "Part \"${1:Instrument}\"",
+      "  |> play(${2:block})"
+    ],
+    "description": "Define an instrument part"
+  },
+  "Lambda": {
+    "prefix": "lambda",
+    "body": [
+      "\\\\${1:x} -> ${2:body}"
+    ],
+    "description": "Lambda expression"
+  },
+  "If Then Else": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition} then",
+      "  ${2:true_branch}",
+      "else",
+      "  ${3:false_branch}"
+    ],
+    "description": "Conditional expression"
+  },
+  "Match With": {
+    "prefix": "match",
+    "body": [
+      "match ${1:expr} with",
+      "  | ${2:pattern} -> ${3:result}"
+    ],
+    "description": "Pattern matching"
+  },
+  "Block": {
+    "prefix": "block",
+    "body": [
+      "| ${1:<1> <2> <3> <4>} |"
+    ],
+    "description": "Music block with notes"
+  },
+  "Major Scale": {
+    "prefix": "major",
+    "body": [
+      "scale Major = { R, M2, M3, P4, P5, M6, M7 }"
+    ],
+    "description": "Major scale definition"
+  },
+  "Minor Scale": {
+    "prefix": "minor",
+    "body": [
+      "scale Minor = { R, M2, m3, P4, P5, m6, m7 }"
+    ],
+    "description": "Natural minor scale definition"
+  },
+  "Pipe Transform": {
+    "prefix": "pipe",
+    "body": [
+      "${1:expression} |> ${2:transform}"
+    ],
+    "description": "Pipe operator for transformation"
+  },
+  "Repeat": {
+    "prefix": "repeat",
+    "body": [
+      "${1:expression} |> repeat(${2:n})"
+    ],
+    "description": "Repeat expression n times"
+  },
+  "Transpose": {
+    "prefix": "transpose",
+    "body": [
+      "${1:expression} |> transpose(${2:P5})"
+    ],
+    "description": "Transpose by interval"
+  }
+}

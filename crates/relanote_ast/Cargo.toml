@@ -1,0 +1,11 @@
+[package]
+name = "relanote_ast"
+description = "Abstract Syntax Tree definitions for relanote language"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+relanote_core.workspace = true
+relanote_lexer.workspace = true

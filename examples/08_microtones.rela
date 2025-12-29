@@ -1,0 +1,66 @@
+; ============================================
+; Microtones
+; Relanote uses cents (100 cents = 1 semitone) internally,
+; enabling microtonal music via MIDI pitch bend.
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Semitone Modifiers: + and -
+; ============================================
+; Each + adds 1 semitone (100 cents)
+; Each - subtracts 1 semitone (100 cents)
+
+; Chromatic ascending
+let chromatic = | P1 P1+ M2 M2+ M3 P4 |
+
+; Descending with flats
+let descending = | P5 P5- P4 P4- M3 M3- M2 |
+
+; ============================================
+; Blue Notes
+; ============================================
+; Blues uses "bent" notes, slightly flat 3rd and 7th
+
+let blues_phrase = | P1 m3 P4 P4+ P5 m7 P1 - |
+
+; ============================================
+; Neighbor Tones
+; ============================================
+; Creating tension with semitone movements
+
+; Upper neighbor
+let upper_neighbor = | P5 P5+ P5 - |
+
+; Lower neighbor
+let lower_neighbor = | P5 P5- P5 - |
+
+; Combined
+let neighbors = | P5 P5+ P5 - P5 P5- P5 - |
+
+; ============================================
+; Enharmonic Equivalents
+; ============================================
+; Same pitch, different spelling
+
+; M3- = m3 (both are 3 semitones from root)
+let enharmonic = | M3 M3- m3 |
+
+; ============================================
+; Chromatic Scales
+; ============================================
+
+let chromatic_scale = |
+  P1 P1+ M2 M2+ M3 P4
+  P4+ P5 P5+ M6 M6+ M7
+  P8
+|
+
+; ============================================
+; Whole Tone Scale
+; ============================================
+
+let wholetone = | P1 M2 M3 A4 m6+ M7 |
+
+chromatic_scale

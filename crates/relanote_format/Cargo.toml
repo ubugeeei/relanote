@@ -1,0 +1,12 @@
+[package]
+name = "relanote_format"
+description = "Code formatter for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+relanote_core.workspace = true
+relanote_ast.workspace = true
+relanote_lexer.workspace = true

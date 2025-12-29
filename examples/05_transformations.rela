@@ -1,0 +1,69 @@
+; ============================================
+; Transformations
+; Modifying melodies with pipe operations
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Basic Transformations
+; ============================================
+
+let motif = | <1> <3> <5> <3> |
+
+; Transpose: shift all notes by an interval
+let up_fifth = motif |> transpose P5
+let down_third = motif |> transpose m3
+
+; Reverse: play backwards
+let backwards = motif |> reverse
+
+; Repeat: play multiple times
+let twice = motif |> repeat 2
+let four_times = motif |> repeat 4
+
+; ============================================
+; Chaining Transformations
+; ============================================
+
+; Pipe multiple transformations together
+let variation = motif
+  |> transpose P5
+  |> reverse
+
+; Create call and response
+let call = motif
+let response = motif |> transpose P5 |> reverse
+
+; ============================================
+; Motif Development
+; ============================================
+
+let theme = | <1> <2> <3> <5> |
+
+; Sequence: same pattern at different pitches
+let sequence = theme
+  ++ (theme |> transpose M2)
+  ++ (theme |> transpose M3)
+  ++ (theme |> transpose P4)
+
+; Theme and variations
+let var1 = theme |> reverse
+let var2 = theme |> transpose P5
+let var3 = theme |> reverse |> transpose P5
+
+let development = theme ++ var1 ++ var2 ++ var3
+
+; ============================================
+; Custom Transformations with Lambdas
+; ============================================
+
+; Define your own transformation
+let up_octave = \b -> b |> transpose P8
+let double_reverse = \b -> b |> repeat 2 |> reverse
+
+; Apply custom transformations
+let high_motif = motif |> up_octave
+let complex = motif |> double_reverse
+
+development

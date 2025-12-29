@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <!-- Score/Ink palette -->
+    <linearGradient id="inkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#44403c" />
+      <stop offset="100%" style="stop-color:#292524" />
+    </linearGradient>
+    <linearGradient id="sepiaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d97706" />
+      <stop offset="100%" style="stop-color:#b45309" />
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#292524" />
+      <stop offset="100%" style="stop-color:#44403c" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background - aged paper -->
+  <rect width="1200" height="630" fill="#faf6f1"/>
+
+  <!-- Subtle staff lines pattern -->
+  <g stroke="#e7e5e4" stroke-width="1" opacity="0.6">
+    <line x1="0" y1="180" x2="1200" y2="180" />
+    <line x1="0" y1="210" x2="1200" y2="210" />
+    <line x1="0" y1="240" x2="1200" y2="240" />
+    <line x1="0" y1="270" x2="1200" y2="270" />
+    <line x1="0" y1="300" x2="1200" y2="300" />
+    <line x1="0" y1="400" x2="1200" y2="400" />
+    <line x1="0" y1="430" x2="1200" y2="430" />
+    <line x1="0" y1="460" x2="1200" y2="460" />
+    <line x1="0" y1="490" x2="1200" y2="490" />
+    <line x1="0" y1="520" x2="1200" y2="520" />
+  </g>
+
+  <!-- Logo area (left side) - Relative intervals visualization -->
+  <g transform="translate(100, 140)">
+    <!-- Connection lines showing RELATIVE relationships -->
+    <g stroke="url(#inkGrad)" stroke-width="4" fill="none" opacity="0.8">
+      <line x1="60" y1="220" x2="150" y2="110" />
+      <line x1="150" y1="110" x2="260" y2="180" />
+      <line x1="60" y1="220" x2="260" y2="180" stroke-dasharray="8,4" opacity="0.3" />
+    </g>
+
+    <!-- Interval labels on connections - emphasizing RELATIVE -->
+    <g fill="#b45309" font-family="'Georgia', serif" font-style="italic" font-weight="500">
+      <text x="75" y="160" font-size="20">+M3</text>
+      <text x="195" y="135" font-size="20">+m3</text>
+    </g>
+
+    <!-- Lambda symbol (functional) - ink style -->
+    <g fill="url(#inkGrad)" opacity="0.9">
+      <polygon points="150,50 128,50 150,115 172,50" />
+      <rect x="112" y="90" width="76" height="10" rx="5" transform="rotate(-25 150 95)" />
+    </g>
+
+    <!-- Nodes representing RELATIVE positions - note heads -->
+    <g>
+      <!-- Reference node (P1) -->
+      <ellipse cx="60" cy="220" rx="22" ry="18" fill="url(#inkGrad)" transform="rotate(-20 60 220)" />
+      <text x="60" y="260" font-family="'Georgia', serif" font-size="14" fill="#b45309" text-anchor="middle" font-style="italic">P1</text>
+
+      <!-- Relative node (+M3) -->
+      <ellipse cx="150" cy="110" rx="22" ry="18" fill="url(#sepiaGrad)" transform="rotate(-20 150 110)" />
+
+      <!-- Relative node (+P5) -->
+      <ellipse cx="260" cy="180" rx="22" ry="18" fill="url(#inkGrad)" transform="rotate(-20 260 180)" />
+      <text x="260" y="220" font-family="'Georgia', serif" font-size="14" fill="#b45309" text-anchor="middle" font-style="italic">P5</text>
+    </g>
+
+    <!-- Pipe operator |> - calligraphic style -->
+    <g fill="#44403c" opacity="0.7">
+      <rect x="90" y="280" width="4" height="32" rx="2" />
+      <polygon points="100,296 122,296 100,312" />
+    </g>
+  </g>
+
+  <!-- Title and description (right side) -->
+  <g transform="translate(420, 160)">
+    <text x="0" y="80" font-family="'Georgia', serif" font-size="88" font-weight="400" fill="url(#inkGrad)" font-style="italic">Relanote</text>
+
+    <!-- Catchphrase - everything is relative -->
+    <text x="0" y="145" font-family="'Georgia', serif" font-size="32" fill="#44403c" font-style="italic">
+      Everything is relative.
+    </text>
+
+    <text x="0" y="195" font-family="system-ui, -apple-system, sans-serif" font-size="21" fill="#78716c">Pitch, rhythm, structure — all in</text>
+    <text x="0" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="21" fill="#78716c">pure functional notation</text>
+
+    <!-- Code sample showing relative notation -->
+    <g transform="translate(0, 260)">
+      <rect x="-10" y="-5" width="400" height="120" rx="4" fill="#292524" opacity="0.95" />
+      <text font-family="monospace" font-size="17" fill="#a8a29e">
+        <tspan x="12" y="22" fill="#d97706">scale</tspan>
+        <tspan fill="#faf6f1"> Major = { </tspan>
+        <tspan fill="#fbbf24">R, M2, M3, P4, P5</tspan>
+        <tspan fill="#faf6f1"> }</tspan>
+      </text>
+      <text font-family="monospace" font-size="17" fill="#a8a29e">
+        <tspan x="12" y="47" fill="#faf6f1">| </tspan>
+        <tspan fill="#fbbf24">&lt;1&gt; &lt;3&gt; &lt;5&gt;</tspan>
+        <tspan fill="#faf6f1"> |   </tspan>
+        <tspan fill="#78716c">; 3 notes = triplet</tspan>
+      </text>
+      <text font-family="monospace" font-size="17" fill="#a8a29e">
+        <tspan x="12" y="72" fill="#faf6f1">| </tspan>
+        <tspan fill="#fbbf24">&lt;1&gt; &lt;5&gt;</tspan>
+        <tspan fill="#faf6f1"> |       </tspan>
+        <tspan fill="#78716c">; 2 notes = halves</tspan>
+      </text>
+      <text font-family="monospace" font-size="17" fill="#a8a29e">
+        <tspan x="12" y="97" fill="#faf6f1">melody </tspan>
+        <tspan fill="#d97706">|></tspan>
+        <tspan fill="#faf6f1"> transpose(</tspan>
+        <tspan fill="#fbbf24">P5</tspan>
+        <tspan fill="#faf6f1">)</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Decorative musical elements -->
+  <g opacity="0.08" fill="#292524">
+    <!-- Treble clef hint -->
+    <text x="1050" y="150" font-family="serif" font-size="180">&#119070;</text>
+  </g>
+
+  <!-- Bottom accent line - sepia -->
+  <rect x="0" y="618" width="1200" height="12" fill="url(#sepiaGrad)" />
+</svg>

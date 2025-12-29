@@ -3,8 +3,7 @@ import type * as Monaco from "monaco-editor";
 // Relanote language configuration
 export const languageConfiguration: Monaco.languages.LanguageConfiguration = {
   comments: {
-    lineComment: "//",
-    blockComment: ["/*", "*/"],
+    lineComment: ";",
   },
   brackets: [
     ["{", "}"],
@@ -141,15 +140,7 @@ export const monarchTokensProvider: Monaco.languages.IMonarchLanguage = {
 
     whitespace: [
       [/[ \t\r\n]+/, "white"],
-      [/\/\*/, "comment", "@comment"],
-      [/\/\/.*$/, "comment"],
-    ],
-
-    comment: [
-      [/[^\/*]+/, "comment"],
-      [/\/\*/, "comment", "@push"],
-      [/\*\//, "comment", "@pop"],
-      [/[\/*]/, "comment"],
+      [/;.*$/, "comment"],
     ],
 
     string_double: [

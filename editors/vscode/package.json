@@ -1,0 +1,106 @@
+{
+  "name": "relanote",
+  "displayName": "Relanote",
+  "description": "Language support for Relanote - a functional music notation language",
+  "version": "0.1.0",
+  "publisher": "ubugeeei",
+  "author": "ubugeeei",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ubugeeei/relanote"
+  },
+  "bugs": {
+    "url": "https://github.com/ubugeeei/relanote/issues"
+  },
+  "homepage": "https://github.com/ubugeeei/relanote",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "relanote",
+    "music",
+    "notation",
+    "functional",
+    "midi"
+  ],
+  "activationEvents": [
+    "onLanguage:relanote"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "relanote",
+        "aliases": [
+          "Relanote",
+          "rela"
+        ],
+        "extensions": [
+          ".rela"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/relanote-file.svg",
+          "dark": "./icons/relanote-file.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "relanote",
+        "scopeName": "source.relanote",
+        "path": "./syntaxes/relanote.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "relanote",
+        "path": "./snippets/relanote.code-snippets"
+      }
+    ],
+    "configuration": {
+      "title": "Relanote",
+      "properties": {
+        "relanote.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable the Relanote language server"
+        },
+        "relanote.lsp.path": {
+          "type": "string",
+          "default": "relanote",
+          "description": "Path to the relanote CLI executable"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "relanote.restartServer",
+        "title": "Relanote: Restart Language Server"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.0"
+  }
+}

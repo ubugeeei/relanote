@@ -1,0 +1,13 @@
+; ============================================
+; Hello Relanote!
+; A simple introduction to the language
+; ============================================
+
+; Define a major scale
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; A simple ascending melody using scale degrees
+let melody = | <1> <2> <3> <4> <5> |
+
+; Play it!
+melody

@@ -1,0 +1,215 @@
+; ============================================
+; "Bebop Improvisation" - A Study in Jazz Lines
+; Authentic bebop style with chromatic lines
+; ============================================
+
+set tempo = 280
+
+; ============================================
+; Jazz Scales
+; ============================================
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Dorian = { R, M2, m3, P4, P5, M6, m7 }
+scale Mixolydian = { R, M2, M3, P4, P5, M6, m7 }
+scale Altered = { R, m2, m3, M3, A4, m6, m7 }
+scale BebopDominant = { R, M2, M3, P4, P5, M6, m7, M7 }
+
+; ============================================
+; Jazz Voicings
+; ============================================
+
+; Shell voicings (root, 3rd, 7th)
+let shell_maj7 = [R, M3, M7]
+let shell_dom7 = [R, M3, m7]
+let shell_min7 = [R, m3, m7]
+
+; Rootless voicings A (3rd on bottom)
+let rootless_A_maj7 = [M3, P5, M7, M9]
+let rootless_A_dom7 = [M3, M6, m7, M9]
+let rootless_A_min7 = [m3, P5, m7, M9]
+
+; ============================================
+; Bebop Vocabulary - Enclosures & Chromatic Lines
+; ============================================
+
+; Enclosure pattern: approach target from half-step above and below
+; Target: M3, approach from P4 (above) and M2+ (chromatic below)
+let enclosure_3 = | P4 M2+ M3 |:3
+
+; Bebop scale descending line (adds M7 passing tone to dominant)
+let bebop_desc = | P8 M7 m7 M6 P5 P4+ P4 M3 |:8
+
+; Classic ii-V-I lick with enclosures
+let ii_V_I_lick = |
+  ; ii (Dm7): start on 5th, descend with enclosure to 3rd
+  P5 P4 m3 M2
+  ; V (G7): bebop scale fragment with chromatic approach
+  P5 P4+ P4 M3 M2+ M2 R m7-
+  ; I (Cmaj7): resolve to 3rd with enclosure
+  M6- P5- P4 M2+ M3~ - - -
+|:16
+
+; ============================================
+; Charlie Parker Style Lines
+; ============================================
+
+; Bird's "Donna Lee" style line
+let bird_line_1 = |
+  ; Ascending arpeggio with chromatic passing
+  R M2+ M3 P5 m7 P8 M7 P5
+  ; Descending with bebop scale
+  M6 P5 P4+ P4 M3 M2+ M2 R
+|:16
+
+; "Confirmation" inspired phrase
+let confirmation_phrase = |
+  ; Opening motif with enclosure
+  M3 P4 P4+ P5 M7 P8 m7 M6
+  ; Chromatic descent
+  P5+ P5 P4+ P4 M3 m3 M2 R
+|:16
+
+; "Ornithology" style bebop run
+let ornithology_line = |
+  R m3 M3 P5 m7 M7 P8 M9
+  P8 m7 M6 P5 P4+ P4 M3 M2
+  R M2 m3 M3 P4 P4+ P5 M6
+  m7 M6 P5 P4 M3 M2 R M7-
+|:32
+
+; ============================================
+; A Section (32 bars) - Rhythm Changes Style
+; ============================================
+
+; 8 bars with bebop vocabulary
+let rhythm_A1 = |
+  ; Bar 1-2: Opening statement
+  R M3 P5 P8 m7 M6 P5 M3
+  M2+ M3 P4 P4+ P5 M6 m7 P8
+  ; Bar 3-4: Development with chromaticism
+  M9 P8 M7 m7 M6 P5+ P5 P4+
+  P4 M3 m3 M2 R m7- M6- P5-
+  ; Bar 5-6: Enclosure to 3rd
+  P4- M2- M3- P5- m7- P8- M7- M6-
+  P5 M6 m7 P8 M7 P5 M3 M2+
+  ; Bar 7-8: Resolution
+  M3 P4 P4+ P5 M6 M7 P8 M9
+  P8 m7 M6 P5 P4 M3 M2 R
+|:64
+
+; Second A with variation
+let rhythm_A2 = |
+  ; Bar 1-2: Different opening
+  P5 P4+ P4 M3 m3 M2 R M7-
+  M6- P5- P4 M3 P5 m7 P8 M9
+  ; Bar 3-4: Upper register exploration
+  M10 P8 M7 m7 M6 P5 P4+ P4
+  M3 P4 P4+ P5 M6 m7 M7 P8
+  ; Bar 5-6: Descending sequence
+  M9 M7 P5 M3 P8 M6 P4 M2
+  R m3 P4 m6 m7 P8 M9 M10
+  ; Bar 7-8: Chromatic turnaround
+  P8 M7+ P8 m7 M6+ m7 M6 P5+
+  P5 P4+ P4 M3 m3 M2 R~ -
+|:64
+
+; Bridge section with different harmony
+let rhythm_B = |
+  ; Bar 1-2: III7 area
+  P5 M6 M7 P8 M9 P8 m7 M6
+  P5+ P5 P4+ P4 M3 m3 M2+ M2
+  ; Bar 3-4: VI7 area
+  R m2 M2 m3 M3 P4 P4+ P5
+  M6 m7 M7 P8 m7 M6 P5 P4+
+  ; Bar 5-6: II7 area
+  P4 M3 m3 M2 R m7- M6- P5-
+  P4 P5 M6 m7 P8 M7 M6 P5
+  ; Bar 7-8: V7 turnaround
+  P4+ P4 M3 m3 M2 m2 R M7-
+  M6- m6- P5- P4 M3 m3 M2 R
+|:64
+
+; ============================================
+; Walking Bass with Chromatic Approaches
+; ============================================
+
+; A section bass (8 bars = 32 beats)
+let walk_A = |
+  ; Using chord tones with chromatic approach
+  R M3 P5 P4+    ; approach 5th from below
+  P5 m7 M6 M6+   ; approach m7 from below
+  m7 P5 M3 M2+   ; chromatic approach to M3
+  M3 R P5- P4    ; approach P5 from above
+  P4+ P5 M6 M6+  ; chromatic motion
+  m7 M6 P5 P4+   ; bebop descending
+  P5 M3 R m7-    ; big leap, then descend
+  M6- P5- P4 M7- ; approach to R
+|:32
+
+; Bridge bass with more movement
+let walk_B = |
+  ; III7 chord
+  M3 P5 m7 M6+
+  m7 P5 M3 M2+
+  ; VI7 chord
+  M6 P8 m3+ M3
+  P5 M3 R m7-
+  ; II7 chord
+  M2 P4 M6 P5+
+  M6 P4 M2 R
+  ; V7 chord
+  P5 m7 M6 P5+
+  P5 M3 R M7-
+|:32
+
+; Full walking bass (AABA = 192 beats), 2 octaves down
+let walking_bass = walk_A ++ walk_A ++ walk_B ++ walk_A |> transpose (R - P8 - P8)
+
+; ============================================
+; Sparse Bebop Comping
+; ============================================
+
+; A section comping - Charleston-style hits with sustained chords
+let comp_A = |
+  [M3, m7]~ - - -    ; sustained chord on 1
+  - - [M3, m7]^ -    ; accent on the and of 2
+  - - - -
+  - [M3, m7]~ - -    ; sustained on 2
+  - - - [M3, m7]^    ; accent on the and of 4
+  - - - -
+  [M3, m7]~ - - -    ; sustained on 1
+  - [M3, m7]^ - -    ; short accent
+|:32
+
+; Bridge comping - slightly more active with sustains
+let comp_B = |
+  [m3, m7]~ - [m3, m7]^ -   ; sustained then accent
+  - - - -
+  [M3, m7]~ - - [M3, m7]^   ; long sustain then accent
+  - - - -
+  [m3, m7]~ - [m3, m7]^ -
+  - - - -
+  [M3, m7]~ - - -           ; full bar sustain
+  - - - -
+|:32
+
+; Full comping (AABA), 1 octave down
+let full_comping = comp_A ++ comp_A ++ comp_B ++ comp_A |> transpose (R - P8)
+
+; ============================================
+; Complete Bebop Head
+; ============================================
+
+; Full AABA chorus
+let bebop_head = rhythm_A1 ++ rhythm_A2 ++ rhythm_B ++ rhythm_A1
+
+; ============================================
+; Output with Reverb
+; ============================================
+
+layer [
+  bebop_head |> double_time |> room_reverb,
+  full_comping |> volume 0.6,
+  walking_bass |> volume 0.7,
+  metronome(24, 4) |> volume 0.25
+]

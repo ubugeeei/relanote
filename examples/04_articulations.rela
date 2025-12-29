@@ -1,0 +1,55 @@
+; ============================================
+; Articulations
+; Adding expression to notes
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Available Articulations
+; ============================================
+; * = Staccato (short, detached)
+; ^ = Accent (emphasized)
+; ~ = Portamento (connected, sliding)
+
+; ============================================
+; Staccato (*)
+; ============================================
+; Short, detached notes (played at 50% duration)
+
+let staccato_scale = | <1>* <2>* <3>* <4>* <5>* |
+
+; Bouncy, playful feel
+let bouncy = | <1>* - <3>* - <5>* - <3>* - |
+
+; ============================================
+; Accent (^)
+; ============================================
+; Emphasized, louder notes
+
+let accented_beats = | <1>^ <2> <3> <4> <1>^ <2> <3> <4> |
+
+; Syncopated accents
+let syncopated = | <1> <2>^ - <4>^ <5> <6>^ - <8>^ |
+
+; ============================================
+; Portamento (~)
+; ============================================
+; Connected, flowing notes
+
+let legato_melody = | <1>~ <2> <3>~ <4> <5>~ - - - |
+
+; Smooth phrases
+let smooth = | <5>~ <4> <3>~ <2> <1>~ - - - |
+
+; ============================================
+; Combining Articulations
+; ============================================
+
+; Mixed expression
+let expressive = | <1>^ <2>* <3>~ <4> <5>^ - <3>* - |
+
+; Opening with fanfare feel
+let fanfare = | <1>^ <1>^ - <3>^ <5>^ - <8>~ - |
+
+fanfare

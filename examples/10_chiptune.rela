@@ -1,0 +1,93 @@
+; ============================================
+; Chiptune / 8-bit Sound
+; Creating retro video game style music
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+; ============================================
+; 8-bit Preset Synths
+; ============================================
+
+; Chiptune: classic square wave sound
+let chip_melody = | <1> <3> <5> <8> | |> voice Chiptune
+
+; Chip8bit: pure square, very short decay
+let beepy = | <1> <2> <3> <4> | |> voice Chip8bit
+
+; NES: Nintendo Entertainment System style
+let nes_lead = | <5> <6> <5> <3> | |> voice NES
+
+; GameBoy: narrow pulse wave
+let gameboy = | <1> <1> <3> <5> | |> voice GameBoy
+
+; ============================================
+; 8-bit Melody Patterns
+; ============================================
+
+; Classic arpeggio pattern
+let arp = | <1> <3> <5> <8> <5> <3> |
+let chip_arp = arp |> voice Chiptune
+
+; Jumping melody (Mario-style)
+let jump = | <5> <6> <8> - <8> <6> <5> - |
+let mario_jump = jump |> voice NES
+
+; Fast blip pattern
+let blips = | <1> - <3> - <5> - <8> - |
+let chip_blips = blips |> voice Chip8bit
+
+; ============================================
+; 8-bit Bass Lines
+; ============================================
+
+; Simple pumping bass
+let pump_bass = | <1> - <1> - | |> repeat 2 |> voice Chiptune |> cutoff 500
+
+; Walking bass
+let walk_bass = | <1> <3> <5> <3> | |> voice Chiptune |> cutoff 400
+
+; ============================================
+; 8-bit Drums
+; ============================================
+
+; Use noise-based synth presets
+let kick_pattern = | R - - - | |> voice Kick |> repeat 4
+let snare_pattern = | - - R - | |> voice Snare |> repeat 4
+let hihat_pattern = | R R R R | |> voice HiHat |> volume 0.5
+
+; ============================================
+; Full 8-bit Song
+; ============================================
+
+let intro = section "Intro" {
+  layer [
+    (| <5> <6> <5> <3> | ++ | <1> <2> <3> <5> |) |> voice Chiptune,
+    (| <1> - <1> <5> | ++ | <4> - <4> <1> |) |> voice Chiptune |> cutoff 400
+  ]
+}
+
+let verse = section "Verse" {
+  layer [
+    (| <1> <3> <5> <8> | ++ | <8> <5> <3> <1> |) |> voice NES,
+    (| <3> <5> <8> <10> | ++ | <10> <8> <5> <3> |) |> voice GameBoy |> volume 0.6,
+    (| <1> <1> <5> <5> | ++ | <4> <4> <1> <1> |) |> voice Chiptune |> cutoff 300,
+    (| R - R - | ++ | R - R R |) |> voice Snare |> volume 0.4
+  ]
+}
+
+let chorus = section "Chorus" {
+  layer [
+    (| <8> <8> <5> <3> | ++ | <5> <5> <3> <1> |) |> voice Chiptune,
+    (| <5> <5> <3> <1> | ++ | <3> <3> <1> <5> |) |> voice NES |> volume 0.7,
+    (| <1> <3> <5> <3> | ++ | <4> <5> <6> <5> |) |> voice Chiptune |> cutoff 350
+  ]
+}
+
+; TODO: compose is not implemented yet, using layer for now
+layer [
+  intro,
+  verse,
+  chorus
+]

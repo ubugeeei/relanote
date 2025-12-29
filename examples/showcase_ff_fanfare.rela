@@ -1,0 +1,37 @@
+; ============================================
+; Victory Fanfare (Inspired)
+; The classic celebration tune
+; ============================================
+
+set tempo = 160
+
+; ============================================
+; Scale & Chord Definitions
+; ============================================
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+chord I = [ R, M3, P5 ]
+chord IV = [ P4, M6, R ]
+chord V = [ P5, M7, M2 ]
+
+; ============================================
+; Fanfare Melody
+; ============================================
+; Opening triplets "da-da-da"
+let opening = | { <5> <5> <5> }:2 <5>~ - - |
+
+; Rising phrase "da DA-da"
+let rise = | <3> <5>^ - <6> <5>^ - - - |
+
+; Triumphant ending
+let triumph = | <8>^ - <6> <8> <10>~ - - - |
+
+; Chord hits
+let chords = | [R, M3, P5]^ - - - [P4, M6, R]^ - [P5, M7, M2]^ - |
+
+; ============================================
+; Full Fanfare
+; ============================================
+let fanfare = opening
+
+fanfare

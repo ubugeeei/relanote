@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "typecheck": "nuxt typecheck",
-    "wasm:build": "cd .. && wasm-pack build crates/relanote-wasm --target web --out-dir ../web/wasm/pkg"
+    "wasm:build": "cd .. && wasm-pack build crates/relanote_wasm --target web --out-dir web/wasm/pkg"
   },
   "dependencies": {
     "monaco-editor": "^0.52.2",

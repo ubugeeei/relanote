@@ -1,0 +1,40 @@
+; ============================================
+; Relative Rhythm
+; Relanote uses relative rhythm: slots are equally divided within a block.
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; Each block is 1 beat by default.
+; The number of slots determines the rhythm.
+
+; 4 notes in 1 beat = 16th notes (if quarter = 1 beat)
+let fast = | <1> <2> <3> <4> |
+
+; 2 notes in 1 beat = 8th notes
+let medium = | <1> <5> |
+
+; 1 note per beat = quarter note
+let slow = | <1> |
+
+; 8 notes in 1 beat = 32nd notes
+let very_fast = | <1> <2> <3> <4> <5> <4> <3> <2> |
+
+; ============================================
+; Explicit Block Duration with :n
+; ============================================
+
+; 3 notes in 2 beats (triplet-like feel)
+let triplet = | <1> <3> <5> |:2
+
+; 4 notes in 4 beats = 1 note per beat (quarter notes)
+let quarters = | <1> <2> <3> <4> |:4
+
+; ============================================
+; Playing Different Rhythms
+; ============================================
+
+; Fast passage followed by slow notes
+fast ++ slow ++ slow
+
+; Each block maintains its own rhythm when concatenated!

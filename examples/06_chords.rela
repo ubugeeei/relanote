@@ -1,0 +1,61 @@
+; ============================================
+; Chords
+; Playing multiple notes simultaneously
+; ============================================
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Chord Syntax
+; ============================================
+; Use [ ] to play notes simultaneously
+
+; Major triad
+let major_chord = | [R, M3, P5] |
+
+; Minor triad
+let minor_chord = | [R, m3, P5] |
+
+; Seventh chord
+let seventh = | [R, M3, P5, m7] |
+
+; ============================================
+; Chord Progressions
+; ============================================
+
+; I - IV - V - I progression
+let progression = |
+  [R, M3, P5]
+  [P4, M6, R]
+  [P5, M7, M2]
+  [R, M3, P5]
+|
+
+; With rhythm (each chord = 1 beat in this 4-slot block)
+let rhythmic_chords = | [R, M3, P5] - [P4, M6, R] - |
+
+; ============================================
+; Common Chord Shapes
+; ============================================
+; Define chord shapes for reuse
+
+; Major triads on different scale degrees
+let I = [R, M3, P5]
+let IV = [P4, M6, R]
+let V = [P5, M7, M2]
+let vi = [M6, R, M3]
+
+; Pop progression: I - IV - vi - V
+let pop_progression = | [R, M3, P5] [P4, M6, R] [M6, R, M3] [P5, M7, M2] |
+
+; ============================================
+; Chords with Articulations
+; ============================================
+
+; Accented chord hits
+let hits = | [R, M3, P5]^ - - - [P4, M6, R]^ - - - |
+
+; Staccato chords
+let stabs = | [R, M3, P5]* [R, M3, P5]* - [P4, M6, R]* |
+
+hits

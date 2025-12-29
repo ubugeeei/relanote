@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { WasmDiagnostic, StaffData, RenderResult } from "../types/relanote";
+import type { WasmDiagnostic, StaffData, RenderResult, AudioPlaybackData } from "../types/relanote";
 
-const { isReady, error: wasmError, init, analyze, format, renderMidi, getStaffData } = useRelanote();
+const { isReady, error: wasmError, init, analyze, format, renderMidi, getStaffData, getAudioData } = useRelanote();
 const {
   files,
   activeFile,
@@ -19,9 +19,38 @@ const {
 
 const diagnostics = ref<WasmDiagnostic[]>([]);
 const staffData = ref<StaffData | null>(null);
+const audioData = ref<AudioPlaybackData | null>(null);
 const midiResult = ref<RenderResult | null>(null);
 const currentBeat = ref(0);
 const analysisDebounce = ref<ReturnType<typeof setTimeout> | null>(null);
+
+// Resizable panels
+const previewWidth = ref(400);
+const isResizing = ref(false);
+const containerRef = ref<HTMLElement | null>(null);
+
+const startResize = (e: MouseEvent) => {
+  isResizing.value = true;
+  document.addEventListener("mousemove", onResize);
+  document.addEventListener("mouseup", stopResize);
+  e.preventDefault();
+};
+
+const onResize = (e: MouseEvent) => {
+  if (!isResizing.value || !containerRef.value) return;
+
+  const containerRect = containerRef.value.getBoundingClientRect();
+  const newWidth = containerRect.right - e.clientX - 8; // 8px for padding
+
+  // Clamp between 250px and 600px
+  previewWidth.value = Math.min(Math.max(newWidth, 250), 600);
+};
+
+const stopResize = () => {
+  isResizing.value = false;
+  document.removeEventListener("mousemove", onResize);
+  document.removeEventListener("mouseup", stopResize);
+};
 
 const code = computed({
   get: () => activeFile.value?.content || "",
@@ -43,6 +72,11 @@ const analyzeCode = () => {
   const staff = getStaffData(code.value);
   if (staff) {
     staffData.value = staff;
+  }
+
+  const audio = getAudioData(code.value);
+  if (audio) {
+    audioData.value = audio;
   }
 
   const midi = renderMidi(code.value);
@@ -133,7 +167,7 @@ watch(isReady, (ready) => {
     </div>
 
     <!-- Main Content -->
-    <div v-else class="main-content">
+    <div v-else ref="containerRef" class="main-content" :class="{ resizing: isResizing }">
       <!-- Sidebar -->
       <aside class="sidebar">
         <FileTree
@@ -158,17 +192,22 @@ watch(isReady, (ready) => {
         />
       </main>
 
+      <!-- Resize Handle -->
+      <div class="resize-handle" @mousedown="startResize">
+        <div class="resize-grip" />
+      </div>
+
       <!-- Preview Panel -->
-      <aside class="preview-panel">
+      <aside class="preview-panel" :style="{ width: previewWidth + 'px' }">
         <div class="staff-section">
           <StaffRenderer :staff-data="staffData" :current-beat="currentBeat" />
         </div>
         <div class="player-section">
           <MidiPlayer
-            :notes="staffData?.notes || []"
+            :notes="audioData?.notes || []"
             :midi-data="midiResult?.midi_data || null"
-            :tempo="staffData?.tempo || 120"
-            :total-beats="staffData?.total_beats || 0"
+            :tempo="audioData?.tempo || 120"
+            :total-beats="audioData?.total_beats || 0"
             @update:current-beat="currentBeat = $event"
             @export-midi="handleExportMidi"
           />
@@ -307,11 +346,50 @@ body {
 
 .editor-panel {
   flex: 1;
-  min-width: 400px;
+  min-width: 300px;
+}
+
+.resize-handle {
+  width: 8px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.resize-handle:hover {
+  background: rgba(55, 148, 255, 0.2);
+}
+
+.resize-grip {
+  width: 4px;
+  height: 40px;
+  background: #3c3c3c;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.resize-handle:hover .resize-grip {
+  background: #3794ff;
+}
+
+.main-content.resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.main-content.resizing .resize-handle {
+  background: rgba(55, 148, 255, 0.3);
+}
+
+.main-content.resizing .resize-grip {
+  background: #3794ff;
 }
 
 .preview-panel {
-  width: 400px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -325,12 +403,6 @@ body {
 
 .player-section {
   flex-shrink: 0;
-}
-
-@media (max-width: 1200px) {
-  .preview-panel {
-    width: 350px;
-  }
 }
 
 @media (max-width: 1000px) {
@@ -348,8 +420,12 @@ body {
     flex: 1;
   }
 
+  .resize-handle {
+    display: none;
+  }
+
   .preview-panel {
-    width: 100%;
+    width: 100% !important;
     height: 250px;
   }
 }

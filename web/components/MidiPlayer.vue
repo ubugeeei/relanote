@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { NoteEvent } from "../types/relanote";
+import type { AudioNoteEvent } from "../types/relanote";
 import { useAudioSynth } from "../composables/useAudioSynth";
 
 const props = defineProps<{
-  notes: NoteEvent[];
+  notes: AudioNoteEvent[];
   midiData: number[] | null;
   tempo: number;
   totalBeats: number;
@@ -199,7 +199,7 @@ onUnmounted(() => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #b45309, #d97706);
   transition: width 0.05s linear;
 }
 

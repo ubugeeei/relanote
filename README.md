@@ -1,11 +1,5 @@
 <p align="center">
-  <img src="assets/logo-transparent.svg" width="200" alt="Relanote">
-</p>
-
-<h1 align="center">Relanote</h1>
-
-<p align="center">
-  <strong>A pure functional, statically-typed music notation language</strong>
+  <img src="assets/og-image.svg" alt="Relanote - Everything is relative">
 </p>
 
 <p align="center">
@@ -141,7 +135,7 @@ repeated
 
 ## Playground
 
-Try Relanote in your browser at [relanote.dev/playground](https://relanote.dev/playground)
+Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/)
 
 Features:
 - Monaco editor with syntax highlighting

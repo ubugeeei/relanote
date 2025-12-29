@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- File background -->
+  <rect x="4" y="2" width="24" height="28" rx="2" fill="#1E1E1E" stroke="#569CD6" stroke-width="1"/>
+
+  <!-- Music staff lines -->
+  <path d="M8 10 L24 10" stroke="#4EC9B0" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  <path d="M8 13 L24 13" stroke="#4EC9B0" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  <path d="M8 16 L24 16" stroke="#4EC9B0" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  <path d="M8 19 L24 19" stroke="#4EC9B0" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  <path d="M8 22 L24 22" stroke="#4EC9B0" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Musical note -->
+  <ellipse cx="12" cy="19" rx="2.5" ry="2" fill="#FFD700"/>
+  <path d="M14.5 19 L14.5 10" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M14.5 10 L19 12 L14.5 14" fill="#FFD700"/>
+
+  <!-- Lambda symbol (functional) -->
+  <text x="19" y="21" font-family="monospace" font-size="6" fill="#C586C0" font-weight="bold">λ</text>
+</svg>

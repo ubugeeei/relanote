@@ -1,0 +1,14 @@
+[package]
+name = "relanote_render"
+description = "Music rendering (MIDI, etc.) for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+relanote_core.workspace = true
+relanote_ast.workspace = true
+relanote_eval.workspace = true
+midly.workspace = true
+thiserror.workspace = true

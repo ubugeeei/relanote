@@ -14,7 +14,7 @@ hero:
       link: /guide/introduction
     - theme: alt
       text: Try Playground
-      link: https://relanote.dev/playground
+      link: https://ubugeeei.github.io/relanote/playground/
     - theme: alt
       text: GitHub
       link: https://github.com/ubugeeei/relanote
@@ -42,30 +42,30 @@ features:
 
 <style>
 :root {
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  --vp-home-hero-image-background-image: linear-gradient(135deg, #6366f1 20%, #a855f7 80%);
+  --vp-home-hero-name-color: #292524;
+  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(180, 83, 9, 0.15) 20%, rgba(217, 119, 6, 0.15) 80%);
   --vp-home-hero-image-filter: blur(44px);
+}
+
+.dark {
+  --vp-home-hero-name-color: #faf6f1;
+  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(180, 83, 9, 0.25) 20%, rgba(217, 119, 6, 0.25) 80%);
 }
 </style>
 
 ## Quick Example
 
 ```rela
-// Define a major scale using intervals
-let Major = scale [P1, M2, M3, P4, P5, M6, M7]
+; Define a major scale using relative intervals
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-// Create a melody using scale degrees
-let melody = Major |> [<1>, <3>, <5>, <3>, <1>]
+; Rhythm is relative: 4 notes = quarter notes
+let fast = | <1> <3> <5> <3> |
 
-// Add rhythm and dynamics
-let phrase = melody
-  |> withDuration 4bars
-  |> withDynamic mf
+; 2 notes in same duration = half notes
+let slow = | <1> <5> |
 
-// Compose a simple song
-render
-  section "Main"
-    part "Piano"
-      phrase
+; Compose and transform
+let melody = fast ++ slow
+melody |> transpose(P5) |> repeat(2)
 ```

@@ -1,0 +1,10 @@
+[package]
+name = "relanote_stdlib"
+description = "Standard library for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+# No dependencies - stdlib just provides source code strings

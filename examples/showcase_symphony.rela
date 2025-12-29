@@ -1,0 +1,218 @@
+; ============================================
+; "Symphony in C" - Complex Musical Example
+; Using implemented features only
+; ============================================
+
+set tempo = 120
+
+; ============================================
+; Scale Definitions
+; ============================================
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+scale Pentatonic = { R, M2, M3, P5, M6 }
+
+; ============================================
+; Chord Definitions
+; ============================================
+chord I = [ R, M3, P5 ]
+chord I7 = [ R, M3, P5, M7 ]
+chord ii = [ M2, P4, M6 ]
+chord IV = [ P4, M6, R ]
+chord V = [ P5, M7, M2 ]
+chord V7 = [ P5, M7, M2, P4 ]
+chord vi = [ M6, R, M3 ]
+
+; ============================================
+; Helper Functions (Lambdas)
+; ============================================
+; Retrograde: play melody backwards
+let retrograde = \b -> b |> reverse
+
+; Double: repeat twice
+let double = \b -> b |> repeat 2
+
+; Up a fifth
+let up_fifth = \b -> b |> transpose P5
+
+; Down a fourth (transpose by perfect fourth down = -5 semitones)
+let down_fourth = \b -> b |> transpose P4
+
+; ============================================
+; Movement I: Allegro - Theme A
+; ============================================
+
+; Bold opening fanfare with accents
+let fanfare = | <1>^ <1>^ - <3>^ <5>^ - <8>~ - |
+
+; Descending answer with staccato
+let answer = | <8>* <7>* <6>* <5>* <4>* <3>* <2>* <1>* |
+
+; Theme A with accents and held notes
+let theme_a = | <1>^ <2> <3>~ <5> <8>~ - - - |
+
+; Theme A variation with chromatic passing tone
+let theme_a_chromatic = | <1> <2> <2+> <3>~ <5> <4+> <5>~ - |
+
+; ============================================
+; Movement I: Theme B - Lyrical
+; ============================================
+
+; Flowing melodic line with portamento
+let theme_b = | <5>~ <4> <3>~ <2> <1>~ - - - |
+
+; Echo response
+let theme_b_echo = | - - <5>~ <4> <3>~ <2> <1>~ - |
+
+; ============================================
+; Movement I: Bridge - Transitional
+; ============================================
+
+; Rising tension
+let bridge_up = | <1> <2> <3> <4> <5> <6> <7> <8> |
+
+; Falling release
+let bridge_down = bridge_up |> reverse
+
+; Combined bridge
+let bridge = | <1> <2> <3> <4> <5> <6> <7> <8> <8> <7> <6> <5> <4> <3> <2> <1> |
+
+; ============================================
+; Movement I: Development - Fragmentation
+; ============================================
+
+; Motif fragments
+let fragment_1 = | <1>^ <3> <5> - |
+let fragment_2 = | <5> <4> <3> <2> |
+let fragment_3 = | <1> <3> <1> <3> |
+
+; Sequence pattern (ascending)
+let sequence = | <1> <3> <5> <3> <2> <4> <6> <4> <3> <5> <7> <5> <4> <6> <8> <6> |
+
+; Triplet ornament pattern
+let triplet_ornament = | { <1> <2> <3> }:2 { <5> <4> <3> }:2 <2>~ - <1>~ - |
+
+; ============================================
+; Movement I: Coda - Triumphant
+; ============================================
+
+; Final fanfare
+let coda_fanfare = | <8>^ - <8>^ - <8>^ <7> <8>~ - |
+
+; Chord hits
+let coda_chords = | [R, M3, P5]^ - - - [P4, M6, R]^ - [P5, M7, M2]^ - |
+
+; Grand finale chord
+let finale_chord = | [R, M3, P5, R]~ - - - - - - - |
+
+; ============================================
+; Movement II: Adagio - Slow and Expressive
+; ============================================
+
+; Main theme (long notes with ornaments)
+let adagio_theme = | <1>~ - - <2> <3>~ - - <2> <1>~ - - - - - - - |
+
+; Ornamental variation with tuplets
+let adagio_ornament = | <1>~ { <1> <2> <1> }:2 <3>~ { <3> <4> <3> }:2 <2>~ - <1>~ - |
+
+; Counter melody
+let adagio_counter = | <5>~ - <4> <3> <4>~ - <3> <2> <3>~ - - - - - - - |
+
+; ============================================
+; Movement III: Scherzo - Fast and Playful
+; ============================================
+
+; Main scherzo theme with staccato
+let scherzo_main = | <1>* <2>* <3>* <4>* <5>* <4>* <3>* <2>* |
+
+; Leaping pattern
+let scherzo_leap = | <1>* - - <5>* - - <8>* - |
+
+; Trio section (contrasting, legato)
+let trio = | <3>~ <4> <5>~ <4> <3>~ <2> <1>~ - |
+
+; ============================================
+; Movement IV: Finale - Energetic
+; ============================================
+
+; Opening burst
+let finale_opening = | <1>^ <3>^ <5>^ <8>^ <5> <3> <1> - |
+
+; Virtuosic run
+let finale_run = | <1> <2> <3> <4> <5> <6> <7> <8> <8> <7> <6> <5> <4> <3> <2> <1> |
+
+; Heroic theme with accents
+let finale_heroic = | <1>^ - <1>^ - <3>^ - <5>^ - <8>^ - - - <8>^ - - - |
+
+; Grand finale
+let finale_grand = |
+    <1>^ <3>^ <5>^ <8>^
+    <8>^ <5>^ <3>^ <1>^
+    <1>^ <3>^ <5>^ <8>^
+    [R, M3, P5]~ - - -
+|
+
+; ============================================
+; Bass Lines
+; ============================================
+let bass_simple = | R - - - P5 - - - |
+let bass_walking = | R - M3 - P5 - M3 - |
+let bass_active = | R P5 R P5 R P5 R P5 |
+let bass_pedal = | R - - - R - - - |
+
+; ============================================
+; Applying Transformations
+; ============================================
+
+; Theme variations
+let theme_a_transposed = theme_a |> transpose P5
+let theme_a_reversed = theme_a |> reverse
+let theme_a_twice = theme_a |> repeat 2
+
+; Scherzo variations
+let scherzo_up = scherzo_main |> transpose P5
+let scherzo_down = scherzo_main |> transpose P4
+
+; Finale variations
+let finale_echo = finale_opening |> repeat 2
+let finale_answer = finale_opening |> reverse
+
+; ============================================
+; Example Composition Blocks
+; ============================================
+
+; Introduction: fanfare repeated
+let intro = fanfare |> repeat 2
+
+; Development section combined
+let development = |
+    <1> <3> <5> <3>
+    <2> <4> <6> <4>
+    <3> <5> <7> <5>
+    <4> <6> <8> <6>
+    <8> <7> <6> <5>
+    <4> <3> <2> <1>
+|
+
+; Climax with triplets
+let climax = |
+    { <1> <2> <3> }:2 { <3> <4> <5> }:2
+    { <5> <6> <7> }:2 { <7> <8> <9> }:2
+    <8>^ - - -
+    <8>^ - - -
+|
+
+; ============================================
+; Full Piece Preview (Theme A with variations)
+; ============================================
+let full_preview = |
+    <1>^ <1>^ - <3>^ <5>^ - <8>~ -
+    <8>* <7>* <6>* <5>* <4>* <3>* <2>* <1>*
+    <1>^ <2> <3>~ <5> <8>~ - - -
+    <5>~ <4> <3>~ <2> <1>~ - - -
+|
+
+; ============================================
+; Output: Play the main theme
+; ============================================
+theme_a

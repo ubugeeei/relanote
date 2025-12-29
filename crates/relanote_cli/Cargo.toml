@@ -1,0 +1,25 @@
+[package]
+name = "relanote_cli"
+description = "Command-line interface for relanote"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "relanote"
+path = "src/main.rs"
+
+[dependencies]
+relanote_core.workspace = true
+relanote_lexer.workspace = true
+relanote_ast.workspace = true
+relanote_parser.workspace = true
+relanote_types.workspace = true
+relanote_eval.workspace = true
+relanote_format.workspace = true
+relanote_lsp.workspace = true
+relanote_render.workspace = true
+clap.workspace = true
+tokio.workspace = true
+ariadne.workspace = true
