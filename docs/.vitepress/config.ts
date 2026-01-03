@@ -231,7 +231,7 @@ export default defineConfig({
       { text: "Guide", link: "/guide/introduction" },
       { text: "Tutorial", link: "/tutorial/getting-started" },
       { text: "Reference", link: "/reference/syntax" },
-      { text: "Playground", link: `${base}playground/` },
+      { text: "Playground", link: "https://ubugeeei.github.io/relanote/playground/" },
     ],
 
     sidebar: {
@@ -260,7 +260,7 @@ export default defineConfig({
             { text: "Layers", link: "/guide/layers" },
             { text: "Synthesizers", link: "/guide/synth" },
             { text: "Functions", link: "/guide/functions" },
-            { text: "Pattern Matching", link: "/guide/pattern-matching" },
+            { text: "Control Flow", link: "/guide/control-flow" },
           ],
         },
       ],

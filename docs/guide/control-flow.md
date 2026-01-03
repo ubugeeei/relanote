@@ -1,6 +1,6 @@
-# Pattern Matching
+# Control Flow
 
-Pattern matching in Relanote allows you to destructure values and make decisions based on their structure. This enables expressive, declarative code for conditional logic.
+Relanote provides control flow constructs for conditional logic and decision-making in your compositions.
 
 ## If-Then-Else
 
@@ -13,12 +13,12 @@ let loud = true
 let melody = | <1> <3> <5> |
 
 if loud then
-  melody |> volume(1.0)
+  melody |> volume 1.0
 else
-  melody |> volume(0.5)
+  melody |> volume 0.5
 ```
 
-### Nested Conditionals
+### Chained Conditionals
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
@@ -27,16 +27,56 @@ let dynamic = "ff"
 let melody = | <1> <3> <5> |
 
 if dynamic == "ff" then
-  melody |> volume(1.0)
+  melody |> volume 1.0
 else if dynamic == "mf" then
-  melody |> volume(0.7)
+  melody |> volume 0.7
 else if dynamic == "p" then
-  melody |> volume(0.4)
+  melody |> volume 0.4
 else
-  melody |> volume(0.5)
+  melody |> volume 0.5
 ```
 
-## Let Pattern Bindings
+## Boolean Operators
+
+Combine conditions with `and`, `or`, and `not`:
+
+```rela
+let x = 5
+let y = 10
+
+-- Logical and
+if x > 0 and y > 0 then "both positive" else "not both positive"
+
+-- Logical or
+if x > 10 or y > 5 then "at least one condition met" else "neither"
+
+-- Logical not
+if not (x == y) then "different" else "same"
+```
+
+## Comparison Operators
+
+| Operator | Meaning |
+|----------|---------|
+| `==` | Equal |
+| `!=` | Not equal |
+| `<` | Less than |
+| `>` | Greater than |
+| `<=` | Less than or equal |
+| `>=` | Greater than or equal |
+
+```rela
+set tempo = 120
+
+if tempo >= 120 then
+  "fast tempo"
+else if tempo >= 80 then
+  "moderate tempo"
+else
+  "slow tempo"
+```
+
+## Destructuring
 
 Destructure values in `let` bindings:
 
@@ -51,9 +91,9 @@ let (a, b) = (1, 2)
 let (first, _) = (42, "unused")
 ```
 
-## Lambda Patterns
+### Lambda Parameters
 
-Lambda parameters can use patterns:
+Lambda parameters support destructuring:
 
 ```rela
 -- Simple parameter
@@ -62,25 +102,27 @@ Lambda parameters can use patterns:
 -- Tuple parameter
 \(a, b) -> a + b
 
--- Wildcard
+-- Wildcard (ignore parameter)
 \_ -> 0
 ```
 
 ## Practical Examples
 
-### Dynamic-Based Articulation
+### Dynamic Volume Control
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let add_articulation = \is_accented melody ->
-  if is_accented then
-    melody  -- accented notes would have ^ articulation
+let apply_dynamics = \dynamic melody ->
+  if dynamic == "forte" then
+    melody |> volume 1.0
+  else if dynamic == "piano" then
+    melody |> volume 0.4
   else
-    melody  -- normal notes
+    melody |> volume 0.7
 
 let theme = | <1> <3> <5> |
-let accented = add_articulation(true, theme)
+theme |> apply_dynamics "forte"
 ```
 
 ### Conditional Transformations
@@ -115,52 +157,12 @@ let get_section = \name ->
   else if name == "bridge" then bridge
   else | - - - - |  -- rest as default
 
-get_section("chorus")
-```
-
-## Boolean Operators
-
-Combine conditions with `and`, `or`, and `not`:
-
-```rela
-let x = 5
-let y = 10
-
--- Logical and
-if x > 0 and y > 0 then "both positive" else "not both positive"
-
--- Logical or
-if x > 10 or y > 5 then "at least one condition met" else "neither"
-
--- Logical not
-if not (x == y) then "different" else "same"
-```
-
-## Comparison Operators
-
-| Operator | Meaning |
-|----------|---------|
-| `==` | Equal |
-| `<` | Less than |
-| `>` | Greater than |
-| `<=` | Less than or equal |
-| `>=` | Greater than or equal |
-
-```rela
-set tempo = 120
-
-if tempo >= 120 then
-  "fast tempo"
-else if tempo >= 80 then
-  "moderate tempo"
-else
-  "slow tempo"
+get_section "chorus"
 ```
 
 ## Best Practices
 
 1. **Keep conditions simple**: Complex logic should be broken into named functions
 2. **Use meaningful variable names**: `is_loud`, `should_swing`, `has_reverb`
-3. **Provide else branches**: Always handle the alternative case
+3. **Always handle else cases**: Provide default values for robustness
 4. **Prefer composition over conditionals**: When possible, use function composition instead of if-then-else
-5. **Document edge cases**: Use comments to explain non-obvious conditional logic
