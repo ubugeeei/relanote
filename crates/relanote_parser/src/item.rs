@@ -105,6 +105,9 @@ impl Parser {
 
         let mut properties = Vec::new();
 
+        // Skip initial newlines
+        self.skip_comments_and_newlines();
+
         while !self.check(&TokenKind::RBrace) && !self.is_at_end() {
             let prop_start = self.current_span();
 
@@ -153,6 +156,8 @@ impl Parser {
 
             // Optional comma between properties
             self.match_token(&TokenKind::Comma);
+            // Skip newlines between properties
+            self.skip_comments_and_newlines();
         }
 
         self.expect(&TokenKind::RBrace, "}")?;

@@ -4,17 +4,17 @@ Relanote includes built-in synthesizer support for creating custom sounds. You c
 
 ## Using Preset Synths
 
-Apply a synth preset to a block using the `voice()` function:
+Apply a synth preset to a block using the `voice` function:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <3> |
 
--- Apply synth preset
-let lead = melody |> voice(Lead)
-let pad = melody |> voice(SoftPad)
-let bass = melody |> voice(FatBass)
+; Apply synth preset
+let lead = melody |> voice Lead
+let pad = melody |> voice SoftPad
+let bass = melody |> voice FatBass
 
 lead
 ```
@@ -61,18 +61,18 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <8> |
 
--- Filter cutoff (Hz)
-let dark = melody |> voice(Lead) |> cutoff(800)
-let bright = melody |> voice(Lead) |> cutoff(4000)
+; Filter cutoff (Hz)
+let dark = melody |> voice Lead |> cutoff 800
+let bright = melody |> voice Lead |> cutoff 4000
 
--- Resonance (0.0 - 1.0)
-let resonant = melody |> voice(Lead) |> cutoff(1500) |> resonance(0.6)
+; Resonance (0.0 - 1.0)
+let resonant = melody |> voice Lead |> cutoff 1500 |> resonance 0.6
 
--- Detune (cents)
-let detuned = melody |> voice(Lead) |> detune(15)
+; Detune (cents)
+let detuned = melody |> voice Lead |> detune 15
 
--- Custom ADSR envelope
-let custom = melody |> voice(Lead) |> adsr(0.1, 0.2, 0.6, 0.5)
+; Custom ADSR envelope
+let custom = melody |> voice Lead |> adsr 0.1 0.2 0.6 0.5
 
 custom
 ```
@@ -81,10 +81,10 @@ custom
 
 | Function | Parameters | Description |
 |----------|------------|-------------|
-| `cutoff(freq)` | freq: Hz | Filter cutoff frequency |
-| `resonance(q)` | q: 0.0-1.0 | Filter resonance/Q |
-| `detune(cents)` | cents: number | Detune in cents |
-| `adsr(a, d, s, r)` | a,d,r: seconds, s: 0.0-1.0 | ADSR envelope |
+| `cutoff freq` | freq: Hz | Filter cutoff frequency |
+| `resonance q` | q: 0.0-1.0 | Filter resonance/Q |
+| `detune cents` | cents: number | Detune in cents |
+| `adsr a d s r` | a,d,r: seconds, s: 0.0-1.0 | ADSR envelope |
 
 ## Custom Synth Definitions
 
@@ -107,7 +107,7 @@ synth ThickBass = {
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> |
-melody |> voice(MyLead)
+melody |> voice MyLead
 ```
 
 ### Synth Properties
@@ -143,11 +143,11 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <3> <5> <8> |
 
 let processed = melody
-  |> voice(Lead)
-  |> cutoff(2000)
-  |> resonance(0.3)
-  |> reverb(0.4)
-  |> volume(0.8)
+  |> voice Lead
+  |> cutoff 2000
+  |> resonance 0.3
+  |> reverb 0.4
+  |> volume 0.8
 
 processed
 ```
@@ -162,19 +162,19 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let song = section "Main" {
   part "Lead" {
     | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
-  } |> voice(Lead) |> volume(0.8)
+  } |> voice Lead |> volume 0.8
 
   part "Pad" {
     | [<1> <3> <5>] | ++ | [<1> <3> <5>] |
-  } |> voice(SoftPad) |> volume(0.5)
+  } |> voice SoftPad |> volume 0.5
 
   part "Bass" {
     | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice(FatBass) |> volume(0.7)
+  } |> voice FatBass |> volume 0.7
 
   part "Drums" {
     | R - R - | ++ | R - R R |
-  } |> voice(Kick)
+  } |> voice Kick
 }
 
 compose([song])

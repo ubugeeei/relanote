@@ -22,14 +22,14 @@
 Relanote is a programming language designed for describing music using **relative intervals** rather than absolute pitches. Built with functional programming principles and static typing, it makes musical transformations like transposition, modulation, and composition natural and type-safe.
 
 ```rela
--- Define a major scale using intervals
+; Define a major scale using intervals
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Create a melody using scale degrees
+; Create a melody using scale degrees
 let melody = | <1> <3> <5> <3> <1> |
 
--- Transform with builtins
-let transformed = melody |> repeat(2)
+; Transform with builtins
+let transformed = melody |> repeat 2
 
 transformed
 ```
@@ -80,7 +80,7 @@ cargo build --release
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Twinkle Twinkle Little Star
+; Twinkle Twinkle Little Star
 let twinkle = | <1> <1> <5> <5> <6> <6> <5> - <4> <4> <3> <3> <2> <2> <1> - |
 
 twinkle
@@ -91,10 +91,10 @@ twinkle
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Major triad chord
+; Major triad chord
 chord Tonic = [ R, M3, P5 ]
 
--- Simple progression
+; Simple progression
 let progression = | <1> <4> <5> <1> |
 
 progression
@@ -107,14 +107,14 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <2> <3> <4> |
 
--- Repeat the melody
-let repeated = melody |> repeat(2)
+; Repeat the melody
+let repeated = melody |> repeat 2
 
--- Reverse the melody
+; Reverse the melody
 let reversed = melody |> reverse
 
--- Transpose up a fifth
-let higher = melody |> transpose(P5)
+; Transpose up a fifth
+let higher = melody |> transpose P5
 
 repeated
 ```
@@ -149,17 +149,20 @@ Features:
 ```
 relanote/
 ├── crates/
-│   ├── relanote-core/      # Shared types, spans, diagnostics
-│   ├── relanote-lexer/     # Tokenizer (logos)
-│   ├── relanote-ast/       # AST definitions
-│   ├── relanote-parser/    # Parser (chumsky)
-│   ├── relanote-types/     # Type system (Hindley-Milner)
-│   ├── relanote-eval/      # Evaluator
-│   ├── relanote-format/    # Code formatter
-│   ├── relanote-lsp/       # Language Server Protocol
-│   ├── relanote-render/    # MIDI rendering
-│   ├── relanote-cli/       # CLI tool
-│   └── relanote-wasm/      # WebAssembly bindings
+│   ├── relanote_core/      # Shared types, spans, diagnostics
+│   ├── relanote_lexer/     # Tokenizer (logos)
+│   ├── relanote_ast/       # AST definitions
+│   ├── relanote_parser/    # Parser (chumsky)
+│   ├── relanote_hir/       # High-level IR
+│   ├── relanote_resolver/  # Name resolution
+│   ├── relanote_types/     # Type system (Hindley-Milner)
+│   ├── relanote_eval/      # Evaluator
+│   ├── relanote_stdlib/    # Standard library
+│   ├── relanote_format/    # Code formatter
+│   ├── relanote_lsp/       # Language Server Protocol
+│   ├── relanote_render/    # MIDI rendering
+│   ├── relanote_cli/       # CLI tool
+│   └── relanote_wasm/      # WebAssembly bindings
 ├── web/                    # Nuxt web playground
 ├── docs/                   # VitePress documentation
 └── examples/               # Example files

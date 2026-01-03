@@ -33,8 +33,8 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <8> |
 
--- Add reverb and set volume
-melody |> room_reverb |> volume(0.8)
+; Add reverb and set volume
+melody |> room_reverb |> volume 0.8
 ```
 
 ## Sections
@@ -61,10 +61,10 @@ scale Dorian = { R, M2, m3, P4, P5, M6, m7 }
 
 let melody = | <1> <3> <5> <3> |
 
--- Section with context (planned feature)
--- section "Bridge" with key:G, scale:Dorian {
---   melody
--- }
+; Section with context (planned feature)
+; section "Bridge" with key:G, scale:Dorian {
+;   melody
+; }
 ```
 
 ## Combining Parts in Sections
@@ -74,11 +74,11 @@ Create multi-voice arrangements by combining parts:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Define parts
+; Define parts
 let right_hand = | <1> <3> <5> <8> |
 let left_hand = | R - P5 - |
 
--- Combine using concatenation
+; Combine using concatenation
 let piano_part = right_hand ++ left_hand
 
 section "Intro" piano_part
@@ -89,34 +89,34 @@ section "Intro" piano_part
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Verse melody
+; Verse melody
 let verse_melody = |
   <1> <2> <3> <2>
   <1> <3> <5> <3>
 |
 
--- Chorus melody (higher energy)
+; Chorus melody (higher energy)
 let chorus_melody = |
   <5>^ <6>^ <7>^ <8>^
   <8> <7> <6> <5>
 |
 
--- Bridge (different character)
+; Bridge (different character)
 let bridge_melody = |
   <4>~ <5> <6>~ <5>
   <3>~ <4> <5>~ -
 |
 
--- Bass line
+; Bass line
 let bass = | R - P5 - R - P4 - |
 
--- Build the song
+; Build the song
 let verse = verse_melody ++ bass
-let chorus = chorus_melody ++ (bass |> transpose(P5))
+let chorus = chorus_melody ++ (bass |> transpose P5)
 let bridge = bridge_melody
 
--- Full arrangement
-verse |> repeat(2) ++ chorus ++ verse ++ chorus ++ bridge ++ chorus
+; Full arrangement
+verse |> repeat 2 ++ chorus ++ verse ++ chorus ++ bridge ++ chorus
 ```
 
 ## Best Practices

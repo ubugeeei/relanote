@@ -44,13 +44,13 @@ Combine conditions with `and`, `or`, and `not`:
 let x = 5
 let y = 10
 
--- Logical and
+; Logical and
 if x > 0 and y > 0 then "both positive" else "not both positive"
 
--- Logical or
+; Logical or
 if x > 10 or y > 5 then "at least one condition met" else "neither"
 
--- Logical not
+; Logical not
 if not (x == y) then "different" else "same"
 ```
 
@@ -81,13 +81,13 @@ else
 Destructure values in `let` bindings:
 
 ```rela
--- Simple binding
+; Simple binding
 let x = 5
 
--- Tuple destructuring
+; Tuple destructuring
 let (a, b) = (1, 2)
 
--- Wildcard pattern (ignore a value)
+; Wildcard pattern (ignore a value)
 let (first, _) = (42, "unused")
 ```
 
@@ -96,13 +96,13 @@ let (first, _) = (42, "unused")
 Lambda parameters support destructuring:
 
 ```rela
--- Simple parameter
+; Simple parameter
 \x -> x + 1
 
--- Tuple parameter
+; Tuple parameter
 \(a, b) -> a + b
 
--- Wildcard (ignore parameter)
+; Wildcard (ignore parameter)
 \_ -> 0
 ```
 
@@ -155,7 +155,7 @@ let get_section = \name ->
   if name == "verse" then verse
   else if name == "chorus" then chorus
   else if name == "bridge" then bridge
-  else | - - - - |  -- rest as default
+  else | - - - - |  ; rest as default
 
 get_section "chorus"
 ```

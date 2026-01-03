@@ -43,6 +43,8 @@ pub enum Value {
     // Functions
     Closure(Closure),
     Builtin(BuiltinFn),
+    /// Composed functions: f >> g means apply f first, then g
+    Composed(Box<Value>, Box<Value>),
 
     // Scale applicator: created by `in Scale` expression
     // When applied to a block, transforms <n> references using the scale

@@ -15,13 +15,33 @@ impl Parser {
 
     /// Parse pipe expression: expr |> expr
     fn parse_pipe_expr(&mut self) -> ParseResult<Spanned<Expr>> {
-        let mut left = self.parse_or_expr()?;
+        let mut left = self.parse_compose_expr()?;
 
         while self.match_token(&TokenKind::PipeOp) {
-            let right = self.parse_or_expr()?;
+            let right = self.parse_compose_expr()?;
             let span = left.span.merge(right.span);
             left = Spanned::new(
                 Expr::Pipe(Pipe {
+                    left: Box::new(left),
+                    right: Box::new(right),
+                }),
+                span,
+            );
+        }
+
+        Ok(left)
+    }
+
+    /// Parse compose expression: expr >> expr
+    fn parse_compose_expr(&mut self) -> ParseResult<Spanned<Expr>> {
+        let mut left = self.parse_or_expr()?;
+
+        while self.match_token(&TokenKind::Compose) {
+            let right = self.parse_or_expr()?;
+            let span = left.span.merge(right.span);
+            left = Spanned::new(
+                Expr::Binary(Binary {
+                    op: BinaryOp::Compose,
                     left: Box::new(left),
                     right: Box::new(right),
                 }),
@@ -236,7 +256,18 @@ impl Parser {
     }
 
     /// Check if the current token can start a function argument (for Haskell-style application)
-    fn can_start_argument(&self) -> bool {
+    /// Note: Newlines terminate Haskell-style application to prevent cross-line parsing
+    pub fn can_start_argument(&self) -> bool {
+        // Newlines terminate Haskell-style application
+        if matches!(self.current(), TokenKind::Newline) {
+            return false;
+        }
+        // Reserved words that should not be consumed as arguments
+        if let TokenKind::Ident(name) = self.current() {
+            if matches!(name.as_str(), "or" | "and" | "not" | "with") {
+                return false;
+            }
+        }
         matches!(
             self.current(),
             TokenKind::Integer(_)
@@ -311,6 +342,21 @@ impl Parser {
                     }),
                     span,
                 );
+            } else if self.match_ident("with") {
+                // With expression: expr with { modifications }
+                self.expect(&TokenKind::LBrace, "{")?;
+                self.skip_comments_and_newlines();
+                let modifications =
+                    self.parse_list(&TokenKind::RBrace, |p| p.parse_expression())?;
+                self.expect(&TokenKind::RBrace, "}")?;
+                let span = self.span_from(expr.span);
+                expr = Spanned::new(
+                    Expr::With(Box::new(WithExpr {
+                        base: expr,
+                        modifications,
+                    })),
+                    span,
+                );
             } else {
                 break;
             }
@@ -379,6 +425,9 @@ impl Parser {
 
             // If expression
             TokenKind::If => self.parse_if_expr(),
+
+            // Match expression
+            TokenKind::Match => self.parse_match_expr(),
 
             // Let expression
             TokenKind::Let => self.parse_let_expr(),
@@ -566,6 +615,50 @@ impl Parser {
                 then_branch,
                 else_branch,
             })),
+            span,
+        ))
+    }
+
+    /// Parse match expression: match expr { pattern -> body, pattern if guard -> body }
+    fn parse_match_expr(&mut self) -> ParseResult<Spanned<Expr>> {
+        let start = self.current_span();
+        self.expect(&TokenKind::Match, "match")?;
+
+        let scrutinee = self.parse_expression()?;
+        self.expect(&TokenKind::LBrace, "{")?;
+
+        self.skip_comments_and_newlines();
+
+        let mut arms = Vec::new();
+        while !self.check(&TokenKind::RBrace) && !self.is_at_end() {
+            let pattern = self.parse_pattern()?;
+
+            // Optional guard: if condition
+            let guard = if self.match_token(&TokenKind::If) {
+                Some(self.parse_expression()?)
+            } else {
+                None
+            };
+
+            self.expect(&TokenKind::Arrow, "->")?;
+            let body = self.parse_expression()?;
+
+            arms.push(MatchArm {
+                pattern,
+                guard,
+                body,
+            });
+
+            // Skip comma and newlines between arms
+            self.match_token(&TokenKind::Comma);
+            self.skip_comments_and_newlines();
+        }
+
+        self.expect(&TokenKind::RBrace, "}")?;
+        let span = self.span_from(start);
+
+        Ok(Spanned::new(
+            Expr::Match(Box::new(MatchExpr { scrutinee, arms })),
             span,
         ))
     }

@@ -15,8 +15,13 @@ impl Parser {
 
         let mut slots = Vec::new();
 
+        // Skip initial newlines/comments inside block
+        self.skip_comments_and_newlines();
+
         while !self.check(&TokenKind::Pipe) && !self.is_at_end() {
             slots.push(self.parse_slot()?);
+            // Skip newlines/comments between slots
+            self.skip_comments_and_newlines();
         }
 
         self.expect(&TokenKind::Pipe, "|")?;
@@ -246,11 +251,12 @@ impl Parser {
     }
 
     /// Parse section
+    /// Supports: section "name" body or section "name" { body }
     pub fn parse_section(&mut self) -> ParseResult<Spanned<Expr>> {
         let start = self.current_span();
         self.expect(&TokenKind::Section, "section")?;
 
-        let name = self.parse_expression()?;
+        let name = self.parse_primary_expr()?;
 
         let context = if self.match_token(&TokenKind::With) {
             let mut key = None;
@@ -286,9 +292,14 @@ impl Parser {
             None
         };
 
-        self.expect(&TokenKind::LBrace, "{")?;
-        let body = self.parse_expression()?;
-        self.expect(&TokenKind::RBrace, "}")?;
+        // Support both `section "name" { body }` and `section "name" body`
+        let body = if self.match_token(&TokenKind::LBrace) {
+            let body = self.parse_expression()?;
+            self.expect(&TokenKind::RBrace, "}")?;
+            body
+        } else {
+            self.parse_expression()?
+        };
 
         let span = self.span_from(start);
         Ok(Spanned::new(
@@ -315,17 +326,22 @@ impl Parser {
         Ok(Spanned::new(Expr::Layer(LayerExpr { parts }), span))
     }
 
-    /// Parse part: part "instrument" or part "instrument" { body }
+    /// Parse part: part "instrument" body or part "instrument" { body }
+    /// Also supports: part "instrument" (no body, will get body through pipe)
     pub fn parse_part(&mut self) -> ParseResult<Spanned<Expr>> {
         let start = self.current_span();
         self.expect(&TokenKind::Part, "part")?;
 
         let instrument = self.parse_primary_expr()?;
 
+        // Check for body: { body }, or expression body, or no body
         let body = if self.match_token(&TokenKind::LBrace) {
             let body_expr = self.parse_expression()?;
             self.expect(&TokenKind::RBrace, "}")?;
             Some(Box::new(body_expr))
+        } else if self.can_start_argument() {
+            // Support `part "Piano" melody` style (body without braces)
+            Some(Box::new(self.parse_primary_expr()?))
         } else {
             None
         };

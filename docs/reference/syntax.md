@@ -289,19 +289,19 @@ BandPass(cutoff_hz, resonance)
 
 ```rela
 melody |> reverse           ; Reverse the block
-melody |> transpose(P5)     ; Transpose by interval
-melody |> repeat(2)         ; Repeat n times
-melody |> map(\n -> n + P8) ; Transform each note
+melody |> transpose P5     ; Transpose by interval
+melody |> repeat 2         ; Repeat n times
+melody |> map (\n -> n + P8) ; Transform each note
 ```
 
 ### Synth Functions
 
 ```rela
-melody |> voice(Lead)       ; Apply synth preset
-melody |> cutoff(1000)      ; Set filter cutoff (Hz)
-melody |> resonance(0.5)    ; Set filter resonance (0-1)
-melody |> detune(10)        ; Set detune (cents)
-melody |> adsr(0.1, 0.2, 0.7, 0.3)  ; Set envelope
+melody |> voice Lead       ; Apply synth preset
+melody |> cutoff 1000      ; Set filter cutoff (Hz)
+melody |> resonance 0.5    ; Set filter resonance (0-1)
+melody |> detune 10        ; Set detune (cents)
+melody |> adsr 0.1 0.2 0.7 0.3  ; Set envelope
 ```
 
 ### Synth Presets

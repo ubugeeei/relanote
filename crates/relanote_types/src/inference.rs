@@ -144,6 +144,21 @@ impl TypeContext {
                         self.unify(&right_ty, &Type::Int, expr.span)?;
                         Ok(Type::Int)
                     }
+                    BinaryOp::Compose => {
+                        // Function composition: f >> g means \x -> g(f(x))
+                        // If f: A -> B and g: B -> C, then f >> g: A -> C
+                        let a = self.fresh_var();
+                        let b = self.fresh_var();
+                        let c = self.fresh_var();
+
+                        let f_ty = Type::function(a.clone(), b.clone());
+                        let g_ty = Type::function(b, c.clone());
+
+                        self.unify(&left_ty, &f_ty, expr.span)?;
+                        self.unify(&right_ty, &g_ty, expr.span)?;
+
+                        Ok(Type::function(a, c))
+                    }
                 }
             }
 

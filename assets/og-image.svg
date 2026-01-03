@@ -33,7 +33,7 @@
   </g>
 
   <!-- Logo area (left side) - Relative intervals visualization -->
-  <g transform="translate(100, 140)">
+  <g transform="translate(150, 140)">
     <!-- Connection lines showing RELATIVE relationships -->
     <g stroke="url(#inkGrad)" stroke-width="4" fill="none" opacity="0.8">
       <line x1="60" y1="220" x2="150" y2="110" />
@@ -75,7 +75,7 @@
   </g>
 
   <!-- Title and description (right side) -->
-  <g transform="translate(420, 160)">
+  <g transform="translate(470, 160)">
     <text x="0" y="80" font-family="'Georgia', serif" font-size="88" font-weight="400" fill="url(#inkGrad)" font-style="italic">Relanote</text>
 
     <!-- Catchphrase - everything is relative -->
@@ -88,31 +88,37 @@
 
     <!-- Code sample showing relative notation -->
     <g transform="translate(0, 260)">
-      <rect x="-10" y="-5" width="400" height="120" rx="4" fill="#292524" opacity="0.95" />
-      <text font-family="monospace" font-size="17" fill="#a8a29e">
+      <rect x="-10" y="-5" width="430" height="120" rx="4" fill="#292524" opacity="0.95" />
+      <text font-family="'SF Mono', 'Menlo', monospace" font-size="15" fill="#a8a29e">
         <tspan x="12" y="22" fill="#d97706">scale</tspan>
         <tspan fill="#faf6f1"> Major = { </tspan>
-        <tspan fill="#fbbf24">R, M2, M3, P4, P5</tspan>
+        <tspan fill="#fbbf24">R, M2, M3, P4, P5, M6, M7</tspan>
         <tspan fill="#faf6f1"> }</tspan>
       </text>
-      <text font-family="monospace" font-size="17" fill="#a8a29e">
-        <tspan x="12" y="47" fill="#faf6f1">| </tspan>
-        <tspan fill="#fbbf24">&lt;1&gt; &lt;3&gt; &lt;5&gt;</tspan>
-        <tspan fill="#faf6f1"> |   </tspan>
-        <tspan fill="#78716c">; 3 notes = triplet</tspan>
+      <text font-family="'SF Mono', 'Menlo', monospace" font-size="15" fill="#a8a29e">
+        <tspan x="12" y="47" fill="#d97706">let</tspan>
+        <tspan fill="#faf6f1"> theme = | </tspan>
+        <tspan fill="#fbbf24">&lt;1&gt; &lt;3&gt; &lt;5&gt; &lt;8&gt;</tspan>
+        <tspan fill="#faf6f1"> |</tspan>
       </text>
-      <text font-family="monospace" font-size="17" fill="#a8a29e">
-        <tspan x="12" y="72" fill="#faf6f1">| </tspan>
-        <tspan fill="#fbbf24">&lt;1&gt; &lt;5&gt;</tspan>
-        <tspan fill="#faf6f1"> |       </tspan>
-        <tspan fill="#78716c">; 2 notes = halves</tspan>
-      </text>
-      <text font-family="monospace" font-size="17" fill="#a8a29e">
-        <tspan x="12" y="97" fill="#faf6f1">melody </tspan>
+      <text font-family="'SF Mono', 'Menlo', monospace" font-size="15" fill="#a8a29e">
+        <tspan x="12" y="72" fill="#faf6f1">theme </tspan>
         <tspan fill="#d97706">|></tspan>
-        <tspan fill="#faf6f1"> transpose(</tspan>
+        <tspan fill="#faf6f1"> transpose </tspan>
         <tspan fill="#fbbf24">P5</tspan>
-        <tspan fill="#faf6f1">)</tspan>
+        <tspan fill="#faf6f1"> </tspan>
+        <tspan fill="#d97706">|></tspan>
+        <tspan fill="#faf6f1"> voice </tspan>
+        <tspan fill="#fbbf24">Lead</tspan>
+      </text>
+      <text font-family="'SF Mono', 'Menlo', monospace" font-size="15" fill="#a8a29e">
+        <tspan x="66" y="97" fill="#d97706">|></tspan>
+        <tspan fill="#faf6f1"> reverb </tspan>
+        <tspan fill="#fbbf24">0.3</tspan>
+        <tspan fill="#faf6f1"> </tspan>
+        <tspan fill="#d97706">|></tspan>
+        <tspan fill="#faf6f1"> volume </tspan>
+        <tspan fill="#fbbf24">0.8</tspan>
       </text>
     </g>
   </g>
@@ -120,7 +126,7 @@
   <!-- Decorative musical elements -->
   <g opacity="0.08" fill="#292524">
     <!-- Treble clef hint -->
-    <text x="1050" y="150" font-family="serif" font-size="180">&#119070;</text>
+    <text x="1000" y="150" font-family="serif" font-size="180">&#119070;</text>
   </g>
 
   <!-- Bottom accent line - sepia -->

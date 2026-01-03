@@ -7,13 +7,13 @@ Relanote is a **pure functional** language. Functions are first-class values tha
 Create anonymous functions with the `\` (lambda) syntax:
 
 ```rela
--- Single parameter
+; Single parameter
 \x -> x + P8
 
--- Multiple parameters
+; Multiple parameters
 \x y -> x ++ y
 
--- Used inline
+; Used inline
 | <1> <2> <3> | |> (\b -> b |> repeat 2)
 ```
 
@@ -24,13 +24,13 @@ Use `let` to bind values and create named functions:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Bind a value
+; Bind a value
 let melody = | <1> <3> <5> |
 
--- Bind a function
+; Bind a function
 let up_octave = \b -> b |> transpose P8
 
--- Apply
+; Apply
 melody |> up_octave
 ```
 
@@ -64,7 +64,7 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let theme = | <1> <2> <3> <4> |
 
--- Transformations
+; Transformations
 let reversed = theme |> reverse
 let doubled = theme |> repeat 2
 let higher = theme |> transpose P5
@@ -82,10 +82,10 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let straight = | <1> <2> <3> <4> <5> <6> <7> <8> |
 
--- Jazz swing feel
+; Jazz swing feel
 let swung = straight |> swing
 
--- Double tempo
+; Double tempo
 let fast = straight |> double_time
 ```
 
@@ -105,7 +105,7 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <8> |
 
--- Apply effects
+; Apply effects
 melody
   |> hall_reverb
   |> volume 0.7
@@ -118,7 +118,7 @@ melody
 | `metronome bars beats` | Generate click track | `metronome 4 4` |
 
 ```rela
--- 4 bars of 4/4 metronome
+; 4 bars of 4/4 metronome
 let click = metronome 4 4 |> volume 0.3
 ```
 
@@ -129,10 +129,10 @@ Compose functions with `>>`:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Create a reusable transformation
+; Create a reusable transformation
 let jazz_transform = transpose P5 >> swing >> room_reverb
 
--- Apply to any melody
+; Apply to any melody
 let melody1 = | <1> <3> <5> |
 let melody2 = | <5> <4> <3> <2> |
 
@@ -147,7 +147,7 @@ Functions that take or return other functions:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Function that returns a transposition function
+; Function that returns a transposition function
 let make_transposer = \interval -> (\b -> b |> transpose interval)
 
 let up_fifth = make_transposer P5
@@ -162,22 +162,22 @@ let up_octave = make_transposer P8
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Original theme
+; Original theme
 let theme = | <1> <3> <5> <3> <1>~ - - - |
 
--- Variation functions
+; Variation functions
 let retrograde = \b -> b |> reverse
 let inversion = \b -> b |> transpose P8 |> reverse
 let augmentation = \b -> b |> repeat 2
 let diminution = \b -> b |> double_time
 
--- Apply variations
+; Apply variations
 let var1 = theme |> retrograde
 let var2 = theme |> inversion
 let var3 = theme |> augmentation
 let var4 = theme |> diminution
 
--- Combine all
+; Combine all
 theme ++ var1 ++ var2 ++ var3 ++ var4
 ```
 
@@ -187,4 +187,4 @@ theme ++ var1 ++ var2 ++ var3 ++ var4
 2. **Keep functions pure**: No side effects, same input = same output
 3. **Compose small functions**: Build complex behavior from simple pieces
 4. **Use partial application**: `transpose P5` creates a reusable function
-5. **Document with comments**: Use `--` to explain complex transformations
+5. **Document with comments**: Use `;` to explain complex transformations

@@ -1,0 +1,20 @@
+{
+  "name": "relanote_wasm",
+  "type": "module",
+  "collaborators": [
+    "ubugeeei"
+  ],
+  "description": "WebAssembly bindings for relanote",
+  "version": "0.1.0",
+  "license": "MIT",
+  "files": [
+    "relanote_wasm_bg.wasm",
+    "relanote_wasm.js",
+    "relanote_wasm.d.ts"
+  ],
+  "main": "relanote_wasm.js",
+  "types": "relanote_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

@@ -66,24 +66,24 @@ The scale degree (1-13+).
 ### Addition
 
 ```rela
-M3 + m3    -- = P5 (4 + 3 = 7 semitones)
-P5 + P4    -- = P8 (7 + 5 = 12 semitones)
-M2 + M2    -- = M3 (2 + 2 = 4 semitones)
+M3 + m3    ; = P5 (4 + 3 = 7 semitones)
+P5 + P4    ; = P8 (7 + 5 = 12 semitones)
+M2 + M2    ; = M3 (2 + 2 = 4 semitones)
 ```
 
 ### Subtraction
 
 ```rela
-P8 - P5    -- = P4 (12 - 7 = 5 semitones)
-M7 - M3    -- = P5 (11 - 4 = 7 semitones)
+P8 - P5    ; = P4 (12 - 7 = 5 semitones)
+M7 - M3    ; = P5 (11 - 4 = 7 semitones)
 ```
 
 ### Inversion
 
 ```rela
-invert(M3)    -- = m6 (12 - 4 = 8 semitones)
-invert(P5)    -- = P4 (12 - 7 = 5 semitones)
-invert(m2)    -- = M7 (12 - 1 = 11 semitones)
+invert(M3)    ; = m6 (12 - 4 = 8 semitones)
+invert(P5)    ; = P4 (12 - 7 = 5 semitones)
+invert(m2)    ; = M7 (12 - 1 = 11 semitones)
 ```
 
 ## Common Patterns
@@ -91,39 +91,39 @@ invert(m2)    -- = M7 (12 - 1 = 11 semitones)
 ### Major Triad
 
 ```rela
-chord MajorTriad = [ R, M3, P5 ]    -- 0, 4, 7 semitones
+chord MajorTriad = [ R, M3, P5 ]    ; 0, 4, 7 semitones
 ```
 
 ### Minor Triad
 
 ```rela
-chord MinorTriad = [ R, m3, P5 ]    -- 0, 3, 7 semitones
+chord MinorTriad = [ R, m3, P5 ]    ; 0, 3, 7 semitones
 ```
 
 ### Dominant 7th
 
 ```rela
-chord Dom7 = [ R, M3, P5, m7 ]    -- 0, 4, 7, 10 semitones
+chord Dom7 = [ R, M3, P5, m7 ]    ; 0, 4, 7, 10 semitones
 ```
 
 ### Major 7th
 
 ```rela
-chord Maj7 = [ R, M3, P5, M7 ]    -- 0, 4, 7, 11 semitones
+chord Maj7 = [ R, M3, P5, M7 ]    ; 0, 4, 7, 11 semitones
 ```
 
 ### Major Scale
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
--- 0, 2, 4, 5, 7, 9, 11 semitones
+; 0, 2, 4, 5, 7, 9, 11 semitones
 ```
 
 ### Natural Minor Scale
 
 ```rela
 scale Minor = { R, M2, m3, P4, P5, m6, m7 }
--- 0, 2, 3, 5, 7, 8, 10 semitones
+; 0, 2, 3, 5, 7, 8, 10 semitones
 ```
 
 ## Enharmonic Equivalents
@@ -139,5 +139,5 @@ These intervals have the same number of semitones:
 In Relanote, enharmonically equivalent intervals are treated as equal:
 
 ```rela
-A4 == d5    -- true (both are 6 semitones)
+A4 == d5    ; true (both are 6 semitones)
 ```

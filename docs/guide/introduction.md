@@ -13,17 +13,40 @@ Traditional music notation and most programming approaches use absolute pitches 
 Relanote solves these by making intervals first-class:
 
 ```rela
--- Define a scale
+; Define a scale
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- This melody works in ANY key
+; This melody works in ANY key
 let melody = | <1> <3> <5> <3> <1> |
 
--- Transform with builtins
-let transformed = melody |> transpose(P5)
+; Transform with builtins
+let transformed = melody |> transpose P5
 
 transformed
 ```
+
+## Why Relative Rhythm?
+
+Traditional notation ties rhythm to absolute values (quarter notes, eighth notes...). Relanote uses **relative rhythm** within blocks:
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; 4 notes = each is 1/4 of the block duration
+let fast = | <1> <3> <5> <3> |
+
+; 2 notes = each is 1/2 of the block duration
+let slow = | <1> <5> |
+
+; Both blocks take the same total time!
+fast ++ slow
+```
+
+This approach brings the same benefits as relative pitch:
+
+- **Tempo-independent patterns** - Double tempo without rewriting
+- **Natural feel** - Think in beats and subdivisions, not milliseconds
+- **Composability** - Combine blocks of different densities seamlessly
 
 ## Functional Approach
 
@@ -37,7 +60,7 @@ Values never change. Transformations create new values:
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let original = | <1> <2> <3> |
-let reversed = original |> reverse  -- original unchanged
+let reversed = original |> reverse  ; original unchanged
 ```
 
 ### First-Class Functions
@@ -45,7 +68,7 @@ let reversed = original |> reverse  -- original unchanged
 Functions are values. Pass them around, compose them:
 
 ```rela
-let transform = transpose(M3) >> reverse >> repeat(2)
+let transform = transpose M3 >> reverse >> repeat 2
 melody |> transform
 ```
 
@@ -54,7 +77,7 @@ melody |> transform
 No side effects. Same input always produces same output:
 
 ```rela
-let doubled = melody |> map(\n -> n + P8)
+let doubled = melody |> map (\n -> n + P8)
 ```
 
 ## Static Typing
@@ -64,11 +87,11 @@ Relanote catches errors before you hear them:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Type error: can't add a Scale to an Interval
-let wrong = Major + P5  -- Compile error
+; Type error: can't add a Scale to an Interval
+let wrong = Major + P5  ; Compile error
 
--- Correct: transpose the scale
-let correct = Major |> transpose(P5)
+; Correct: transpose the scale
+let correct = Major |> transpose P5
 ```
 
 ## What Can You Build?

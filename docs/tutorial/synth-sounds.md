@@ -11,7 +11,7 @@ Synthesizers in Relanote let you control how notes sound. You can use:
 
 ## Using Preset Synths
 
-Apply a synth to your melody with the `voice()` function:
+Apply a synth to your melody with the `voice` function:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
@@ -20,7 +20,7 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <3> <5> <3> |
 
 ; Apply a lead synth sound
-let lead = melody |> voice(Lead)
+let lead = melody |> voice Lead
 
 lead
 ```
@@ -37,16 +37,16 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <3> <5> <8> |
 
 ; Bright sawtooth lead
-let bright = melody |> voice(Lead)
+let bright = melody |> voice Lead
 
 ; Warm sustained pad
-let warm = melody |> voice(SoftPad)
+let warm = melody |> voice SoftPad
 
 ; Thick bass sound
-let thick = melody |> voice(FatBass)
+let thick = melody |> voice FatBass
 
 ; Short pluck
-let plucky = melody |> voice(Pluck)
+let plucky = melody |> voice Pluck
 
 bright
 ```
@@ -61,13 +61,13 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <3> <5> <8> <5> <3> |
 
 ; Classic chiptune
-let chip = melody |> voice(Chiptune)
+let chip = melody |> voice Chiptune
 
 ; NES-style sound
-let nes = melody |> voice(NES)
+let nes = melody |> voice NES
 
 ; GameBoy style
-let gameboy = melody |> voice(GameBoy)
+let gameboy = melody |> voice GameBoy
 
 chip
 ```
@@ -78,13 +78,13 @@ Add rhythm with synthesized drums:
 
 ```rela
 ; Kick drum pattern
-let kick = | R - - - | |> repeat(4) |> voice(Kick)
+let kick = | R - - - | |> repeat 4 |> voice Kick
 
 ; Snare on beats 2 and 4
-let snare = | - - R - | |> repeat(4) |> voice(Snare)
+let snare = | - - R - | |> repeat 4 |> voice Snare
 
 ; Hi-hat pattern
-let hat = | R R R R | |> repeat(4) |> voice(HiHat) |> volume(0.4)
+let hat = | R R R R | |> repeat 4 |> voice HiHat |> volume 0.4
 
 kick
 ```
@@ -99,16 +99,16 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <3> <5> <8> |
 
 ; Darker sound with low cutoff
-let dark = melody |> voice(Lead) |> cutoff(800)
+let dark = melody |> voice Lead |> cutoff 800
 
 ; Bright and resonant
-let bright = melody |> voice(Lead) |> cutoff(3000) |> resonance(0.5)
+let bright = melody |> voice Lead |> cutoff 3000 |> resonance 0.5
 
 ; Detuned for thickness
-let fat = melody |> voice(Lead) |> detune(15)
+let fat = melody |> voice Lead |> detune 15
 
 ; Custom envelope (attack, decay, sustain, release)
-let slow = melody |> voice(Lead) |> adsr(0.3, 0.2, 0.7, 0.5)
+let slow = melody |> voice Lead |> adsr 0.3 0.2 0.7 0.5
 
 dark
 ```
@@ -124,11 +124,11 @@ let melody = | <1> <3> <5> <8> <5> <3> <1> - |
 
 ; Full processing chain
 let processed = melody
-  |> voice(Lead)
-  |> cutoff(2000)
-  |> resonance(0.3)
-  |> reverb(0.4)
-  |> volume(0.8)
+  |> voice Lead
+  |> cutoff 2000
+  |> resonance 0.3
+  |> reverb 0.4
+  |> volume 0.8
 
 processed
 ```
@@ -144,26 +144,26 @@ let main = section "Main" {
   ; Lead melody
   part "Lead" {
     | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
-  } |> voice(Lead) |> volume(0.8)
+  } |> voice Lead |> volume 0.8
 
   ; Pad chords
   part "Pad" {
     | [<1> <3> <5>] | ++ | [<1> <3> <5>] |
-  } |> voice(SoftPad) |> volume(0.5)
+  } |> voice SoftPad |> volume 0.5
 
   ; Bass line
   part "Bass" {
     | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice(FatBass) |> cutoff(300)
+  } |> voice FatBass |> cutoff 300
 
   ; Drums
   part "Kick" {
     | R - R - | ++ | R - R R |
-  } |> voice(Kick)
+  } |> voice Kick
 
   part "Hat" {
     | R R R R | ++ | R R R R |
-  } |> voice(HiHat) |> volume(0.3)
+  } |> voice HiHat |> volume 0.3
 }
 
 compose([main])
@@ -194,8 +194,8 @@ let melody = | <1> <3> <5> <8> |
 let bass = | <1> - <1> <5> |
 
 let song = section "Custom" {
-  part "Lead" { melody } |> voice(MyLead)
-  part "Bass" { bass } |> voice(PunchyBass)
+  part "Lead" { melody } |> voice MyLead
+  part "Bass" { bass } |> voice PunchyBass
 }
 
 compose([song])
@@ -213,9 +213,9 @@ Create a chiptune-style song:
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 ; Your chiptune here!
-let lead = | <1> <3> <5> <8> | |> voice(Chiptune)
-let bass = | <1> - <1> <5> | |> voice(Chiptune) |> cutoff(400)
-let drums = | R - R - | |> voice(Kick)
+let lead = | <1> <3> <5> <8> | |> voice Chiptune
+let bass = | <1> - <1> <5> | |> voice Chiptune |> cutoff 400
+let drums = | R - R - | |> voice Kick
 
 lead
 ```

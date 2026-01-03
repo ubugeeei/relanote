@@ -21,8 +21,8 @@ hero:
 
 features:
   - icon: 🎵
-    title: Relative Intervals
-    details: Describe melodies using intervals (M3, P5, m7) instead of absolute pitches. Transpose effortlessly.
+    title: Relative Intervals & Rhythm
+    details: Describe melodies using intervals (M3, P5, m7) instead of absolute pitches. Rhythm is also relative within blocks - 4 notes split time equally, 2 notes take half each.
   - icon: λ
     title: Pure Functional
     details: Immutable values, first-class functions, and composable operations. Music as data transformations.
@@ -59,13 +59,14 @@ features:
 ; Define a major scale using relative intervals
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Rhythm is relative: 4 notes = quarter notes
+; Pitch is relative: <1> <3> <5> works in any key
+; Rhythm is relative: 4 notes share time equally
 let fast = | <1> <3> <5> <3> |
 
-; 2 notes in same duration = half notes
+; 2 notes = each takes half the block duration
 let slow = | <1> <5> |
 
 ; Compose and transform
 let melody = fast ++ slow
-melody |> transpose(P5) |> repeat(2)
+melody |> transpose P5 |> repeat 2
 ```

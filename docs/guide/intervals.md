@@ -44,6 +44,64 @@ This enables microtonal music and alternative tuning systems.
 
 When using MIDI output, microtones are rendered using pitch bend messages.
 
+### Chromatic Passages
+
+Use `+` and `-` modifiers for chromatic movement:
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; Chromatic ascending
+let chromatic = | P1 P1+ M2 M2+ M3 P4 |
+
+; Descending with flats
+let descending = | P5 P5- P4 P4- M3 M3- M2 |
+```
+
+### Chromatic Scale
+
+Build a full chromatic scale using semitone modifiers:
+
+```rela
+let chromatic_scale = |
+  P1 P1+ M2 M2+ M3 P4
+  P4+ P5 P5+ M6 M6+ M7
+  P8
+|
+```
+
+### Blue Notes
+
+Blues idiom uses "bent" notes - slightly flat 3rd and 7th:
+
+```rela
+; Classic blues phrase with blue notes
+let blues_phrase = | P1 m3 P4 P4+ P5 m7 P1 - |
+```
+
+### Neighbor Tones
+
+Create tension with semitone movements around a target note:
+
+```rela
+; Upper neighbor
+let upper_neighbor = | P5 P5+ P5 - |
+
+; Lower neighbor
+let lower_neighbor = | P5 P5- P5 - |
+
+; Combined approach
+let neighbors = | P5 P5+ P5 - P5 P5- P5 - |
+```
+
+### Whole Tone Scale
+
+The whole tone scale uses only major seconds:
+
+```rela
+let wholetone = | P1 M2 M3 A4 m6+ M7 |
+```
+
 ## Interval Arithmetic
 
 Intervals can be added and subtracted:

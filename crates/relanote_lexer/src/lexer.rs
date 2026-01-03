@@ -65,8 +65,8 @@ impl<'src> Lexer<'src> {
         loop {
             match self.inner.next() {
                 Some(Ok(kind)) => {
-                    // Skip newlines and comments (treat them as whitespace)
-                    if matches!(kind, TokenKind::Newline | TokenKind::LineComment(_)) {
+                    // Skip comments (but preserve newlines for statement separation)
+                    if matches!(kind, TokenKind::LineComment(_)) {
                         continue;
                     }
                     return Some(Token::new(kind, self.current_span()));
@@ -211,5 +211,212 @@ mod tests {
         assert_eq!(tokens[4], TokenKind::In);
         assert_eq!(tokens[5], TokenKind::Ident("x".to_string()));
         assert_eq!(tokens[6], TokenKind::Eof);
+    }
+
+    // ===== Newline Tests =====
+
+    #[test]
+    fn test_lex_newline_preserved() {
+        let tokens = lex("let x = 42\nx");
+        assert_eq!(tokens[0], TokenKind::Let);
+        assert_eq!(tokens[1], TokenKind::Ident("x".to_string()));
+        assert_eq!(tokens[2], TokenKind::Eq);
+        assert_eq!(tokens[3], TokenKind::Integer(42));
+        assert_eq!(tokens[4], TokenKind::Newline);
+        assert_eq!(tokens[5], TokenKind::Ident("x".to_string()));
+    }
+
+    #[test]
+    fn test_lex_multiple_newlines() {
+        let tokens = lex("a\n\nb");
+        assert_eq!(tokens[0], TokenKind::Ident("a".to_string()));
+        assert_eq!(tokens[1], TokenKind::Newline);
+        assert_eq!(tokens[2], TokenKind::Newline);
+        assert_eq!(tokens[3], TokenKind::Ident("b".to_string()));
+    }
+
+    #[test]
+    fn test_lex_comment_skipped() {
+        let tokens = lex("a ; this is a comment\nb");
+        assert_eq!(tokens[0], TokenKind::Ident("a".to_string()));
+        // Comment is skipped
+        assert_eq!(tokens[1], TokenKind::Newline);
+        assert_eq!(tokens[2], TokenKind::Ident("b".to_string()));
+    }
+
+    // ===== Interval Tests =====
+
+    #[test]
+    fn test_lex_intervals() {
+        let tokens = lex("R M2 m3 P4 A5 d7");
+        assert_eq!(tokens[0], TokenKind::Root);
+        assert!(matches!(tokens[1], TokenKind::Interval(_)));
+        assert!(matches!(tokens[2], TokenKind::Interval(_)));
+        assert!(matches!(tokens[3], TokenKind::Interval(_)));
+        assert!(matches!(tokens[4], TokenKind::Interval(_)));
+        assert!(matches!(tokens[5], TokenKind::Interval(_)));
+    }
+
+    #[test]
+    fn test_lex_interval_with_modifiers() {
+        let tokens = lex("P5+ M3- P8++");
+        assert!(matches!(tokens[0], TokenKind::Interval(_)));
+        assert!(matches!(tokens[1], TokenKind::Interval(_)));
+        assert!(matches!(tokens[2], TokenKind::Interval(_)));
+    }
+
+    // ===== Absolute Pitch Tests =====
+
+    #[test]
+    fn test_lex_absolute_pitches() {
+        let tokens = lex("C4 D4 Bb3 F#5");
+        assert!(matches!(tokens[0], TokenKind::AbsolutePitch(_)));
+        assert!(matches!(tokens[1], TokenKind::AbsolutePitch(_)));
+        assert!(matches!(tokens[2], TokenKind::AbsolutePitch(_)));
+        assert!(matches!(tokens[3], TokenKind::AbsolutePitch(_)));
+    }
+
+    // ===== Operator Tests =====
+
+    #[test]
+    fn test_lex_concat_operator() {
+        let tokens = lex("a ++ b");
+        assert_eq!(tokens[0], TokenKind::Ident("a".to_string()));
+        assert_eq!(tokens[1], TokenKind::PlusPlus);
+        assert_eq!(tokens[2], TokenKind::Ident("b".to_string()));
+    }
+
+    #[test]
+    fn test_lex_comparison_operators() {
+        // Basic comparison operators are lexed as angle brackets
+        let tokens = lex("a < b > c");
+        assert_eq!(tokens[1], TokenKind::LAngle);
+        assert_eq!(tokens[3], TokenKind::RAngle);
+    }
+
+    #[test]
+    fn test_lex_logical_keywords() {
+        // and, or, not are lexed as identifiers (handled at parser level)
+        // "a and b or not c" -> [a, and, b, or, not, c]
+        let tokens = lex("a and b or not c");
+        assert_eq!(tokens[0], TokenKind::Ident("a".to_string()));
+        assert_eq!(tokens[1], TokenKind::Ident("and".to_string()));
+        assert_eq!(tokens[2], TokenKind::Ident("b".to_string()));
+        assert_eq!(tokens[3], TokenKind::Ident("or".to_string()));
+        assert_eq!(tokens[4], TokenKind::Ident("not".to_string()));
+        assert_eq!(tokens[5], TokenKind::Ident("c".to_string()));
+    }
+
+    // ===== Block Syntax Tests =====
+
+    #[test]
+    fn test_lex_scale_degree() {
+        let tokens = lex("| <1> <3> <5> |");
+        assert_eq!(tokens[0], TokenKind::Pipe);
+        assert_eq!(tokens[1], TokenKind::LAngle);
+        assert_eq!(tokens[2], TokenKind::Integer(1));
+        assert_eq!(tokens[3], TokenKind::RAngle);
+    }
+
+    #[test]
+    fn test_lex_rest() {
+        let tokens = lex("| R - M3 |");
+        assert_eq!(tokens[0], TokenKind::Pipe);
+        assert_eq!(tokens[1], TokenKind::Root);
+        assert_eq!(tokens[2], TokenKind::Minus);
+    }
+
+    #[test]
+    fn test_lex_duration() {
+        let tokens = lex("| R:2 M3:4 |");
+        assert_eq!(tokens[0], TokenKind::Pipe);
+        assert_eq!(tokens[1], TokenKind::Root);
+        assert_eq!(tokens[2], TokenKind::Colon);
+        assert_eq!(tokens[3], TokenKind::Integer(2));
+    }
+
+    // ===== Keyword Tests =====
+
+    #[test]
+    fn test_lex_control_flow_keywords() {
+        let tokens = lex("if true then a else b");
+        assert_eq!(tokens[0], TokenKind::If);
+        assert_eq!(tokens[1], TokenKind::True);
+        assert_eq!(tokens[2], TokenKind::Then);
+        assert_eq!(tokens[4], TokenKind::Else);
+    }
+
+    #[test]
+    fn test_lex_match_expression() {
+        let tokens = lex("match x with | a -> b");
+        assert_eq!(tokens[0], TokenKind::Match);
+        assert_eq!(tokens[2], TokenKind::With);
+        assert_eq!(tokens[3], TokenKind::Pipe);
+        assert_eq!(tokens[5], TokenKind::Arrow);
+    }
+
+    #[test]
+    fn test_lex_synth_definition() {
+        let tokens = lex("synth Lead = { osc: Saw }");
+        assert_eq!(tokens[0], TokenKind::Synth);
+        assert_eq!(tokens[1], TokenKind::Ident("Lead".to_string()));
+    }
+
+    // ===== Number Tests =====
+
+    #[test]
+    fn test_lex_integers() {
+        let tokens = lex("0 42 123");
+        assert_eq!(tokens[0], TokenKind::Integer(0));
+        assert_eq!(tokens[1], TokenKind::Integer(42));
+        assert_eq!(tokens[2], TokenKind::Integer(123));
+    }
+
+    #[test]
+    fn test_lex_floats() {
+        let tokens = lex("0.0 3.14 0.5");
+        assert_eq!(tokens[0], TokenKind::Float(0.0));
+        assert_eq!(tokens[1], TokenKind::Float(3.14));
+        assert_eq!(tokens[2], TokenKind::Float(0.5));
+    }
+
+    // ===== String Tests =====
+
+    #[test]
+    fn test_lex_strings() {
+        let tokens = lex(r#""hello" "world""#);
+        assert_eq!(tokens[0], TokenKind::String("hello".to_string()));
+        assert_eq!(tokens[1], TokenKind::String("world".to_string()));
+    }
+
+    // ===== Bracket Tests =====
+
+    #[test]
+    fn test_lex_brackets() {
+        let tokens = lex("( ) [ ] { }");
+        assert_eq!(tokens[0], TokenKind::LParen);
+        assert_eq!(tokens[1], TokenKind::RParen);
+        assert_eq!(tokens[2], TokenKind::LBracket);
+        assert_eq!(tokens[3], TokenKind::RBracket);
+        assert_eq!(tokens[4], TokenKind::LBrace);
+        assert_eq!(tokens[5], TokenKind::RBrace);
+    }
+
+    // ===== Set Binding Tests =====
+
+    #[test]
+    fn test_lex_set_binding() {
+        // Note: Key token requires capital K
+        let tokens = lex("set Key = C4");
+        assert_eq!(tokens[0], TokenKind::Set);
+        assert_eq!(tokens[1], TokenKind::Key);
+        assert_eq!(tokens[2], TokenKind::Eq);
+    }
+
+    #[test]
+    fn test_lex_set_tempo() {
+        let tokens = lex("set tempo = 120");
+        assert_eq!(tokens[0], TokenKind::Set);
+        assert_eq!(tokens[1], TokenKind::Ident("tempo".to_string()));
     }
 }

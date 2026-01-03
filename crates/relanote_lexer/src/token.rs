@@ -293,6 +293,9 @@ pub enum TokenKind {
     #[token("|>", priority = 3)]
     PipeOp,
 
+    #[token(">>", priority = 3)]
+    Compose,
+
     #[token("->")]
     Arrow,
 

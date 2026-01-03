@@ -2,6 +2,8 @@
 
 Blocks are sequences of musical events - notes, rests, and chords - that form the basic unit of composition.
 
+> **Core Concept:** In Relanote, **rhythm is relative**. Just as pitches are described by intervals rather than absolute notes, rhythm is determined by how notes divide up a block's duration. This is a fundamental design choice that makes musical patterns portable and composable.
+
 ## Basic Block Syntax
 
 A block is enclosed in pipe delimiters `| |`:
@@ -155,7 +157,7 @@ ornament
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let pattern = | <1> <3> <5> |
-let repeated = pattern |> repeat(4)    ; Play 4 times
+let repeated = pattern |> repeat 4    ; Play 4 times
 
 repeated
 ```
@@ -171,7 +173,7 @@ let melody = | <1> <3> <5> <3> |
 let backwards = melody |> reverse
 
 ; Transpose
-let higher = melody |> transpose(P5)
+let higher = melody |> transpose P5
 
 backwards
 ```
@@ -184,7 +186,7 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 let melody = | <1> <2> <3> |
 
 ; Add octave to each note
-let octaveUp = melody |> map(\n -> n + P8)
+let octaveUp = melody |> map (\n -> n + P8)
 
 octaveUp
 ```

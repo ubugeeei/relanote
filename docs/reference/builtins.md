@@ -107,6 +107,147 @@ melody |> voice Lead |> adsr 0.5 0.2 0.8 1.0    ; Slow pad
 - Sustain: Volume level during sustain (0.0 - 1.0)
 - Release: Time in seconds to fade after note off
 
+### env
+
+Creates an ADSR envelope value for use in synth definitions.
+
+```rela
+env : Float -> Float -> Float -> Float -> ADSR
+
+let myEnv = env 0.1 0.2 0.7 0.4
+```
+
+## Oscillator Constructors
+
+Oscillators generate the raw waveform for a synth. Use these when defining custom synths.
+
+### Sine
+
+Pure sine wave - smooth, fundamental tone.
+
+```rela
+Sine : Oscillator
+
+synth Pad = {
+  osc: Sine,
+  env: { A: 0.3, D: 0.1, S: 0.8, R: 0.5 }
+}
+```
+
+### Saw
+
+Sawtooth wave - bright, rich harmonics. Classic lead sound.
+
+```rela
+Saw : Oscillator
+
+synth BrightLead = {
+  osc: Saw,
+  env: { A: 0.02, D: 0.1, S: 0.6, R: 0.2 }
+}
+```
+
+### Square
+
+Square wave - hollow, woody tone. Classic chiptune sound.
+
+```rela
+Square : Oscillator
+
+synth Retro = {
+  osc: Square,
+  env: { A: 0.01, D: 0.1, S: 0.5, R: 0.1 }
+}
+```
+
+### Triangle
+
+Triangle wave - softer than square, flute-like.
+
+```rela
+Triangle : Oscillator
+
+synth Soft = {
+  osc: Triangle,
+  env: { A: 0.1, D: 0.2, S: 0.7, R: 0.3 }
+}
+```
+
+### Pulse
+
+Pulse wave with variable duty cycle (0.0 - 1.0). Creates different timbres.
+
+```rela
+Pulse : Float -> Oscillator
+
+synth NES = {
+  osc: Pulse 0.25,    ; 25% duty cycle
+  env: { A: 0.01, D: 0.05, S: 0.4, R: 0.1 }
+}
+```
+
+### Noise
+
+White noise - used for drums, percussion, and effects.
+
+```rela
+Noise : Oscillator
+
+synth Snare = {
+  osc: Noise,
+  env: { A: 0.001, D: 0.1, S: 0.0, R: 0.1 }
+}
+```
+
+## Filter Constructors
+
+Filters shape the harmonic content of a sound. Use these when defining custom synths.
+
+### LowPass
+
+Low-pass filter - removes high frequencies. Makes sound darker/warmer.
+
+```rela
+LowPass : Float -> Float -> Filter
+; LowPass cutoff_hz resonance
+
+synth Warm = {
+  osc: Saw,
+  filter: LowPass 800 0.3,
+  env: { A: 0.1, D: 0.2, S: 0.6, R: 0.3 }
+}
+```
+
+### HighPass
+
+High-pass filter - removes low frequencies. Makes sound thinner/brighter.
+
+```rela
+HighPass : Float -> Float -> Filter
+; HighPass cutoff_hz resonance
+
+synth Thin = {
+  osc: Saw,
+  filter: HighPass 500 0.2,
+  env: { A: 0.05, D: 0.1, S: 0.7, R: 0.2 }
+}
+```
+
+### BandPass
+
+Band-pass filter - keeps only frequencies around the cutoff. Creates nasal, focused sound.
+
+```rela
+BandPass : Float -> Float -> Filter
+; BandPass center_hz resonance
+
+synth Telephone = {
+  osc: Saw,
+  filter: BandPass 1000 0.8,
+  env: { A: 0.02, D: 0.1, S: 0.5, R: 0.2 }
+}
+```
+
 ## Effect Functions
 
 ### reverb
@@ -336,6 +477,56 @@ filter (\x -> x > 2) [1, 2, 3, 4]
 ; Result: [3, 4]
 ```
 
+### flatMap
+
+Maps a function over an array and flattens the result.
+
+```rela
+flatMap : (a -> [b]) -> [a] -> [b]
+
+flatMap (\x -> [x, x * 2]) [1, 2, 3]
+; Result: [1, 2, 2, 4, 3, 6]
+```
+
+### find
+
+Returns the first element matching a predicate, or Unit if not found.
+
+```rela
+find : (a -> Bool) -> [a] -> a | Unit
+
+find (\x -> x > 2) [1, 2, 3, 4]
+; Result: 3
+```
+
+### any
+
+Checks if any element satisfies a predicate.
+
+```rela
+any : (a -> Bool) -> [a] -> Bool
+
+any (\x -> x > 3) [1, 2, 3, 4]
+; Result: true
+
+any (\x -> x > 5) [1, 2, 3, 4]
+; Result: false
+```
+
+### all
+
+Checks if all elements satisfy a predicate.
+
+```rela
+all : (a -> Bool) -> [a] -> Bool
+
+all (\x -> x > 0) [1, 2, 3, 4]
+; Result: true
+
+all (\x -> x > 2) [1, 2, 3, 4]
+; Result: false
+```
+
 ## Synth Presets Reference
 
 ### Classic Synths
@@ -368,3 +559,112 @@ filter (\x -> x > 2) [1, 2, 3, 4]
 | `OpenHat` | Longer decay | Accents |
 | `Tom` | Pitched drum | Fills |
 | `Clap` | Hand clap | Accents |
+
+## Practical Examples
+
+### Creating a Complete Track
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; Melody with synth and effects
+let melody = | <1> <3> <5> <8> |
+  |> transpose P5
+  |> voice Lead
+  |> cutoff 2000
+  |> reverb 0.3
+
+; Bass line with custom envelope
+let bass = | <1>:2 <5>:2 |
+  |> repeat 4
+  |> voice FatBass
+  |> adsr 0.02 0.1 0.8 0.2
+  |> volume 0.9
+
+; Chiptune arpeggio
+let arp = | <1> <3> <5> <3> |
+  |> double_time
+  |> voice Chiptune
+  |> volume 0.6
+
+layer [melody, bass, arp]
+```
+
+### Using Map for Algorithmic Composition
+
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+; Generate a sequence of intervals
+let intervals = [P1, M3, P5, M7, P8]
+
+; Map to create variations
+let melody = intervals
+  |> map (\i -> i + M2)    ; Transpose each up a step
+
+; Transform a block note by note
+let pattern = | <1> <2> <3> <4> |
+let octave_up = pattern |> map (\n -> n + P8)
+```
+
+### Building Reusable Transformations
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; Compose transformations
+let jazz_up = transpose P5 >> swing >> reverb 0.4
+let thicken = voice FatBass >> detune 15 >> volume 0.8
+
+; Apply to different parts
+let melody = | <1> <3> <5> <3> | |> jazz_up
+let bass = | <1> <5> | |> thicken
+```
+
+### Swing and Rhythm
+
+```rela
+scale Blues = { R, m3, P4, A4, P5, m7 }
+
+; Straight rhythm
+let straight = | <1> <3> <4> <5> <3> <1> - - |
+
+; Apply swing for jazz feel
+let swung = straight |> swing
+
+; Double time for energy
+let fast = straight |> double_time
+
+swung |> voice Lead |> reverb 0.3
+```
+
+### Custom Synth Definition
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; Define a warm pad synth
+synth WarmPad = {
+  osc: Saw,
+  filter: LowPass 1200 0.4,
+  env: { A: 0.4, D: 0.2, S: 0.7, R: 0.8 },
+  detune: 8
+}
+
+; Define a plucky bass
+synth PluckBass = {
+  osc: Square,
+  filter: LowPass 600 0.6,
+  env: { A: 0.01, D: 0.3, S: 0.0, R: 0.2 }
+}
+
+let chords = | [R, M3, P5] [P4, M6, R] |
+  |> voice WarmPad
+  |> volume 0.7
+
+let bass = | <1>:2 <5>:2 |
+  |> voice PluckBass
+  |> volume 0.9
+
+layer [chords, bass]
+```

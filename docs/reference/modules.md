@@ -79,7 +79,7 @@ let harmony = | Maj7 Min7 |
 
 render(
   layer [
-    melody |> voice(Lead),
+    melody |> voice Lead,
     harmony
   ]
 )

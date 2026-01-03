@@ -76,7 +76,10 @@ impl Evaluator {
             // Block transformations
             e.bind(intern("reverse"), Value::Builtin(builtin_reverse));
             e.bind(intern("repeat"), Value::Builtin(builtin_repeat));
+            e.bind(intern("rotate"), Value::Builtin(builtin_rotate));
             e.bind(intern("transpose"), Value::Builtin(builtin_transpose));
+            e.bind(intern("octaveUp"), Value::Builtin(builtin_octave_up));
+            e.bind(intern("octaveDown"), Value::Builtin(builtin_octave_down));
             e.bind(intern("metronome"), Value::Builtin(builtin_metronome));
             e.bind(intern("swing"), Value::Builtin(builtin_swing));
             e.bind(intern("double_time"), Value::Builtin(builtin_double_time));
@@ -602,6 +605,43 @@ impl Evaluator {
                 }
             }
 
+            Expr::Match(match_expr) => {
+                let scrutinee = self.eval_expr(&match_expr.scrutinee)?;
+
+                for arm in &match_expr.arms {
+                    if let Some(bindings) = self.pattern_match(&arm.pattern, &scrutinee) {
+                        // Check guard if present
+                        if let Some(guard) = &arm.guard {
+                            let old_env = self.env.clone();
+                            self.env = Rc::new(RefCell::new(Env::with_parent(old_env.clone())));
+                            for (name, value) in &bindings {
+                                self.env.borrow_mut().bind(*name, value.clone());
+                            }
+                            let guard_result = self.eval_expr(guard)?;
+                            self.env = old_env;
+                            if !matches!(guard_result, Value::Bool(true)) {
+                                continue;
+                            }
+                        }
+
+                        // Bind pattern variables and evaluate body
+                        let old_env = self.env.clone();
+                        self.env = Rc::new(RefCell::new(Env::with_parent(old_env.clone())));
+                        for (name, value) in bindings {
+                            self.env.borrow_mut().bind(name, value);
+                        }
+                        let result = self.eval_expr(&arm.body);
+                        self.env = old_env;
+                        return result;
+                    }
+                }
+
+                Err(EvalError::Custom {
+                    message: "No matching pattern in match expression".to_string(),
+                    span: expr.span,
+                })
+            }
+
             Expr::Let(let_expr) => {
                 let value = self.eval_expr(&let_expr.value)?;
 
@@ -664,6 +704,19 @@ impl Evaluator {
                         span: in_scale.scale.span,
                     }),
                 }
+            }
+
+            Expr::With(with_expr) => {
+                // Evaluate base and modifications
+                let base = self.eval_expr(&with_expr.base)?;
+                let _modifications: Result<Vec<_>, _> = with_expr
+                    .modifications
+                    .iter()
+                    .map(|m| self.eval_expr(m))
+                    .collect();
+                // For now, just return the base value
+                // Full modification semantics can be added later
+                Ok(base)
             }
 
             // Placeholder for complex expressions
@@ -787,6 +840,12 @@ impl Evaluator {
                 Ok(result)
             }
             Value::Builtin(f) => f(args),
+            Value::Composed(f, g) => {
+                // f >> g means apply f first, then g
+                // composed(x) = g(f(x))
+                let intermediate = self.apply(*f, args, span)?;
+                self.apply(*g, vec![intermediate], span)
+            }
             Value::InScaleApplicator(scale) => {
                 // Apply scale to a block, transforming <n> references
                 if args.len() != 1 {
@@ -1006,6 +1065,12 @@ impl Evaluator {
             // String concatenation
             (BinaryOp::Concat, Value::String(a), Value::String(b)) => Ok(Value::String(a + &b)),
 
+            // Function composition: f >> g means apply f first, then g
+            (BinaryOp::Compose, f, g) => {
+                // Both operands should be callable (Closure, Builtin, or Composed)
+                Ok(Value::Composed(Box::new(f), Box::new(g)))
+            }
+
             _ => Err(EvalError::TypeError {
                 expected: "compatible types".to_string(),
                 found: "incompatible types".to_string(),
@@ -1030,6 +1095,87 @@ impl Evaluator {
                 found: "other".to_string(),
                 span,
             }),
+        }
+    }
+}
+
+impl Evaluator {
+    /// Try to match a value against a pattern, returning bindings if successful
+    #[allow(clippy::only_used_in_recursion)]
+    fn pattern_match(
+        &self,
+        pattern: &Spanned<Pattern>,
+        value: &Value,
+    ) -> Option<Vec<(relanote_core::InternedStr, Value)>> {
+        match &pattern.node {
+            Pattern::Wildcard => Some(vec![]),
+
+            Pattern::Ident(ident) => Some(vec![(ident.name, value.clone())]),
+
+            Pattern::Literal(lit) => {
+                let matches = match (lit, value) {
+                    (LiteralPattern::Integer(n), Value::Int(v)) => *n == *v,
+                    (LiteralPattern::Float(f), Value::Float(v)) => (*f - *v).abs() < f64::EPSILON,
+                    (LiteralPattern::String(s), Value::String(v)) => s == v,
+                    (LiteralPattern::Bool(b), Value::Bool(v)) => *b == *v,
+                    (LiteralPattern::Unit, Value::Unit) => true,
+                    _ => false,
+                };
+                if matches {
+                    Some(vec![])
+                } else {
+                    None
+                }
+            }
+
+            Pattern::Tuple(patterns) => {
+                if let Value::Tuple(values) = value {
+                    if patterns.len() != values.len() {
+                        return None;
+                    }
+                    let mut bindings = Vec::new();
+                    for (p, v) in patterns.iter().zip(values.iter()) {
+                        if let Some(mut b) = self.pattern_match(p, v) {
+                            bindings.append(&mut b);
+                        } else {
+                            return None;
+                        }
+                    }
+                    Some(bindings)
+                } else {
+                    None
+                }
+            }
+
+            Pattern::Array(arr) => {
+                if let Value::Array(values) = value {
+                    if arr.elements.len() != values.len() {
+                        return None;
+                    }
+                    let mut bindings = Vec::new();
+                    for (p, v) in arr.elements.iter().zip(values.iter()) {
+                        if let Some(mut b) = self.pattern_match(p, v) {
+                            bindings.append(&mut b);
+                        } else {
+                            return None;
+                        }
+                    }
+                    Some(bindings)
+                } else {
+                    None
+                }
+            }
+
+            Pattern::Constructor { .. } => {
+                // Constructor patterns not fully implemented yet
+                None
+            }
+
+            Pattern::Or(p1, p2) => self
+                .pattern_match(p1, value)
+                .or_else(|| self.pattern_match(p2, value)),
+
+            Pattern::Annotated(p, _) => self.pattern_match(p, value),
         }
     }
 }

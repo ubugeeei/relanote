@@ -57,7 +57,7 @@ impl Parser {
     }
 
     /// Skip comments and newlines, collecting comments
-    fn skip_comments_and_newlines(&mut self) {
+    pub fn skip_comments_and_newlines(&mut self) {
         while !self.is_at_end() {
             match &self.tokens[self.pos].kind {
                 TokenKind::LineComment(text) => {

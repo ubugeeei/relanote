@@ -7,17 +7,17 @@ Get up and running with Relanote in 5 minutes.
 Create a file called `hello.rela`:
 
 ```rela
--- Set the key and tempo
+; Set the key and tempo
 set key = C4
 set tempo = 120
 
--- Define a major scale
+; Define a major scale
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Create a simple melody using scale degrees
+; Create a simple melody using scale degrees
 let melody = | <1> <3> <5> <3> <1> |
 
--- Play it!
+; Play it!
 melody
 ```
 
@@ -66,15 +66,15 @@ The number of slots in a block determines the rhythm:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-| <1> <2> <3> <4> |    -- 4 notes in 1 beat = each is 0.25 beats
-| <1> <5> |            -- 2 notes in 1 beat = each is 0.5 beats
-| <1> |                -- 1 note fills the whole beat
+| <1> <2> <3> <4> |    ; 4 notes in 1 beat = each is 0.25 beats
+| <1> <5> |            ; 2 notes in 1 beat = each is 0.5 beats
+| <1> |                ; 1 note fills the whole beat
 ```
 
 Use `:n` to set the block's total duration:
 
 ```rela
-| <1> <2> <3> <4> |:4  -- 4 notes in 4 beats = quarter notes
+| <1> <2> <3> <4> |:4  ; 4 notes in 4 beats = quarter notes
 ```
 
 ### Block Concatenation
@@ -84,9 +84,9 @@ Combine blocks with `++`. Each block keeps its own rhythm:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let fast = | <1> <2> <3> <4> |      -- 4 notes = fast
-let slow = | <1> <5> |              -- 2 notes = slower
-let melody = fast ++ slow           -- Both rhythms preserved!
+let fast = | <1> <2> <3> <4> |      ; 4 notes = fast
+let slow = | <1> <5> |              ; 2 notes = slower
+let melody = fast ++ slow           ; Both rhythms preserved!
 
 melody
 ```
@@ -94,8 +94,8 @@ melody
 ### Pipes
 
 ```rela
-melody |> repeat(2)
-melody |> transpose(P5)
+melody |> repeat 2
+melody |> transpose P5
 melody |> reverse
 ```
 
@@ -114,8 +114,8 @@ Open `hello.mid` in any music software to hear your composition!
 By default, the root note is C4 (middle C). You can specify a different key:
 
 ```rela
-set key = Bb3   -- B-flat below middle C
-set tempo = 140 -- 140 BPM
+set key = Bb3   ; B-flat below middle C
+set tempo = 140 ; 140 BPM
 
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 | <1> <3> <5> |

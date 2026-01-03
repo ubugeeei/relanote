@@ -193,7 +193,8 @@ pub enum BinaryOp {
     Or,
 
     // Music-specific
-    Concat, // ++
+    Concat,  // ++
+    Compose, // >>
 }
 
 /// Unary operation

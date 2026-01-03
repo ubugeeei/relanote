@@ -200,7 +200,7 @@ export default defineConfig({
         content: "Everything is relative. A pure functional music notation language.",
       },
     ],
-    ["meta", { property: "og:image", content: `https://ubugeeei.github.io${base}og-image.svg` }],
+    ["meta", { property: "og:image", content: `https://ubugeeei.github.io${base}og-image.png` }],
     ["meta", { property: "og:url", content: "https://ubugeeei.github.io/relanote/" }],
     ["meta", { property: "og:site_name", content: "Relanote" }],
     // Twitter Card
@@ -213,7 +213,7 @@ export default defineConfig({
         content: "Everything is relative. A pure functional music notation language.",
       },
     ],
-    ["meta", { name: "twitter:image", content: `https://ubugeeei.github.io${base}og-image.svg` }],
+    ["meta", { name: "twitter:image", content: `https://ubugeeei.github.io${base}og-image.png` }],
   ],
 
   markdown: {
@@ -263,6 +263,17 @@ export default defineConfig({
             { text: "Control Flow", link: "/guide/control-flow" },
           ],
         },
+        {
+          text: "Reference",
+          items: [
+            { text: "Syntax", link: "/reference/syntax" },
+            { text: "Types", link: "/reference/types" },
+            { text: "Intervals", link: "/reference/intervals" },
+            { text: "Modules", link: "/reference/modules" },
+            { text: "Built-in Functions", link: "/reference/builtins" },
+            { text: "CLI", link: "/reference/cli" },
+          ],
+        },
       ],
       "/tutorial/": [
         {
@@ -277,6 +288,33 @@ export default defineConfig({
         },
       ],
       "/reference/": [
+        {
+          text: "Introduction",
+          items: [
+            { text: "What is Relanote?", link: "/guide/introduction" },
+            { text: "Installation", link: "/guide/installation" },
+            { text: "Quick Start", link: "/guide/quick-start" },
+          ],
+        },
+        {
+          text: "Core Concepts",
+          items: [
+            { text: "Intervals", link: "/guide/intervals" },
+            { text: "Scales & Chords", link: "/guide/scales-and-chords" },
+            { text: "Blocks", link: "/guide/blocks" },
+            { text: "Pipes & Composition", link: "/guide/pipes" },
+          ],
+        },
+        {
+          text: "Advanced",
+          items: [
+            { text: "Parts & Sections", link: "/guide/parts-and-sections" },
+            { text: "Layers", link: "/guide/layers" },
+            { text: "Synthesizers", link: "/guide/synth" },
+            { text: "Functions", link: "/guide/functions" },
+            { text: "Control Flow", link: "/guide/control-flow" },
+          ],
+        },
         {
           text: "Reference",
           items: [

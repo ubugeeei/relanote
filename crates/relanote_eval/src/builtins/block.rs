@@ -29,6 +29,48 @@ pub fn builtin_reverse(args: Vec<Value>) -> Result<Value, EvalError> {
     }
 }
 
+/// Rotate a block by n positions
+/// Usage: block |> rotate(n) or rotate(n, block)
+/// Positive n rotates left (first elements move to end)
+/// Negative n rotates right (last elements move to start)
+pub fn builtin_rotate(args: Vec<Value>) -> Result<Value, EvalError> {
+    if args.len() != 2 {
+        return Err(EvalError::Custom {
+            message: "rotate expects 2 arguments".to_string(),
+            span: relanote_core::Span::dummy(),
+        });
+    }
+
+    // Support both argument orders: (block, n) or (n, block)
+    let (block, n) = match (&args[0], &args[1]) {
+        (Value::Block(block), Value::Int(n)) => (block, *n),
+        (Value::Int(n), Value::Block(block)) => (block, *n),
+        _ => {
+            return Err(EvalError::TypeError {
+                expected: "Block and Int".to_string(),
+                found: format!("{:?}, {:?}", args[0], args[1]),
+                span: relanote_core::Span::dummy(),
+            })
+        }
+    };
+
+    if block.slots.is_empty() {
+        return Ok(Value::Block(block.clone()));
+    }
+
+    let len = block.slots.len() as i64;
+    // Normalize n to be within [0, len)
+    let n = ((n % len) + len) % len;
+
+    let mut slots = block.slots.clone();
+    slots.rotate_left(n as usize);
+
+    Ok(Value::Block(BlockValue {
+        slots,
+        beats: block.beats,
+    }))
+}
+
 /// Repeat a block n times
 /// Usage: block |> repeat(n) or repeat(n, block)
 pub fn builtin_repeat(args: Vec<Value>) -> Result<Value, EvalError> {
@@ -61,6 +103,68 @@ pub fn builtin_repeat(args: Vec<Value>) -> Result<Value, EvalError> {
         slots,
         beats: block.beats * n as f64,
     }))
+}
+
+/// Transpose a block up by one octave (12 semitones / 1200 cents)
+/// Usage: block |> octaveUp or octaveUp(block)
+pub fn builtin_octave_up(args: Vec<Value>) -> Result<Value, EvalError> {
+    if args.len() != 1 {
+        return Err(EvalError::Custom {
+            message: "octaveUp expects 1 argument".to_string(),
+            span: relanote_core::Span::dummy(),
+        });
+    }
+
+    match &args[0] {
+        Value::Block(block) => {
+            let cents = 1200.0; // One octave = 12 semitones = 1200 cents
+            let slots: Vec<SlotValue> = block
+                .slots
+                .iter()
+                .map(|slot| transpose_slot(slot, cents))
+                .collect();
+            Ok(Value::Block(BlockValue {
+                slots,
+                beats: block.beats,
+            }))
+        }
+        _ => Err(EvalError::TypeError {
+            expected: "Block".to_string(),
+            found: format!("{:?}", args[0]),
+            span: relanote_core::Span::dummy(),
+        }),
+    }
+}
+
+/// Transpose a block down by one octave (12 semitones / 1200 cents)
+/// Usage: block |> octaveDown or octaveDown(block)
+pub fn builtin_octave_down(args: Vec<Value>) -> Result<Value, EvalError> {
+    if args.len() != 1 {
+        return Err(EvalError::Custom {
+            message: "octaveDown expects 1 argument".to_string(),
+            span: relanote_core::Span::dummy(),
+        });
+    }
+
+    match &args[0] {
+        Value::Block(block) => {
+            let cents = -1200.0; // One octave down
+            let slots: Vec<SlotValue> = block
+                .slots
+                .iter()
+                .map(|slot| transpose_slot(slot, cents))
+                .collect();
+            Ok(Value::Block(BlockValue {
+                slots,
+                beats: block.beats,
+            }))
+        }
+        _ => Err(EvalError::TypeError {
+            expected: "Block".to_string(),
+            found: format!("{:?}", args[0]),
+            span: relanote_core::Span::dummy(),
+        }),
+    }
 }
 
 /// Transpose a block by an interval

@@ -20,7 +20,7 @@ Or use the [Web Playground](https://ubugeeei.github.io/relanote/playground/) to 
 Create a new file called `tutorial.rela` and add:
 
 ```rela
--- My first Relanote program!
+; My first Relanote program!
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 | <1> <3> <5> |
@@ -53,10 +53,10 @@ Relanote shows you the internal representation. Notice how intervals are measure
 Let's use scale degrees instead of raw intervals:
 
 ```rela
--- Define a major scale
+; Define a major scale
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- Use scale degrees
+; Use scale degrees
 let melody = | <1> <3> <5> |
 
 melody
@@ -71,7 +71,7 @@ Let's make something more interesting:
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
--- A simple melody
+; A simple melody
 let melody = | <1> <2> <3> <4> <5> <5> <3> <4> <5> <5> <1> |
 
 melody

@@ -88,49 +88,83 @@
   --vp-local-search-highlight-text: #b45309;
 }
 
-/* Dark mode */
-.dark {
+/* Dark mode - using html.dark for higher specificity */
+html.dark {
   --vp-c-brand-1: #d97706;
   --vp-c-brand-2: #f59e0b;
   --vp-c-brand-3: #fbbf24;
   --vp-c-brand-soft: rgba(217, 119, 6, 0.16);
 
-  --vp-c-text-1: #faf6f1;
-  --vp-c-text-2: #d6d3d1;
-  --vp-c-text-3: #a8a29e;
+  /* Neutral colors */
+  --vp-c-neutral: var(--vp-c-white);
+  --vp-c-neutral-inverse: var(--vp-c-black);
 
-  --vp-c-bg: #1c1917;
-  --vp-c-bg-alt: #292524;
-  --vp-c-bg-elv: #292524;
-  --vp-c-bg-soft: #292524;
+  /* Gray scale for dark mode */
+  --vp-c-gray-1: #a8a29e;
+  --vp-c-gray-2: #78716c;
+  --vp-c-gray-3: #57534e;
+  --vp-c-gray-soft: rgba(120, 113, 108, 0.16);
 
-  --vp-c-border: #44403c;
-  --vp-c-divider: #44403c;
-  --vp-c-gutter: #292524;
+  /* Default colors (used by many VitePress components) */
+  --vp-c-default-1: var(--vp-c-gray-1);
+  --vp-c-default-2: var(--vp-c-gray-2);
+  --vp-c-default-3: var(--vp-c-gray-3);
+  --vp-c-default-soft: var(--vp-c-gray-soft);
 
-  --vp-code-block-bg: #0c0a09;
-  --vp-code-tab-bg: #1c1917;
+  /* Text colors - warm cream tones */
+  --vp-c-text-1: rgba(255, 255, 245, 0.86);
+  --vp-c-text-2: rgba(235, 235, 225, 0.6);
+  --vp-c-text-3: rgba(235, 235, 225, 0.38);
 
+  /* Background - warm stone */
+  --vp-c-bg: #44403c;
+  --vp-c-bg-alt: #3a3633;
+  --vp-c-bg-elv: #4a4541;
+  --vp-c-bg-soft: #4a4541;
+
+  /* Borders */
+  --vp-c-border: #57534e;
+  --vp-c-divider: #57534e;
+  --vp-c-gutter: #3a3633;
+
+  /* Code blocks */
+  --vp-code-block-bg: #292524;
+  --vp-code-tab-bg: #3a3633;
+  --vp-code-tab-text-color: rgba(235, 235, 225, 0.5);
+  --vp-code-tab-active-text-color: rgba(255, 255, 245, 0.86);
+  --vp-code-tab-active-bar-color: #d97706;
+  --vp-code-copy-code-bg: #57534e;
+  --vp-code-copy-code-hover-bg: #78716c;
+  --vp-code-line-highlight-color: rgba(217, 119, 6, 0.12);
+
+  /* Hero */
   --vp-home-hero-name-background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
   --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(180, 83, 9, 0.4) 0%, rgba(217, 119, 6, 0.4) 100%);
 
+  /* Buttons */
   --vp-button-brand-bg: #d97706;
   --vp-button-brand-hover-bg: #f59e0b;
   --vp-button-brand-active-bg: #b45309;
 
-  --vp-button-alt-border: #44403c;
-  --vp-button-alt-text: #d6d3d1;
-  --vp-button-alt-bg: #292524;
-  --vp-button-alt-hover-border: #57534e;
-  --vp-button-alt-hover-text: #faf6f1;
-  --vp-button-alt-hover-bg: #44403c;
+  --vp-button-alt-border: #57534e;
+  --vp-button-alt-text: rgba(235, 235, 225, 0.7);
+  --vp-button-alt-bg: #44403c;
+  --vp-button-alt-hover-border: #78716c;
+  --vp-button-alt-hover-text: rgba(255, 255, 245, 0.86);
+  --vp-button-alt-hover-bg: #57534e;
 
+  /* Custom blocks */
   --vp-custom-block-tip-border: #d97706;
-  --vp-custom-block-tip-text: #d6d3d1;
+  --vp-custom-block-tip-text: rgba(235, 235, 225, 0.7);
   --vp-custom-block-tip-bg: rgba(217, 119, 6, 0.12);
 
-  --vp-sidebar-bg-color: #1c1917;
-  --vp-nav-bg-color: #1c1917;
+  /* Sidebar & Nav */
+  --vp-sidebar-bg-color: #44403c;
+  --vp-nav-bg-color: #44403c;
+
+  /* Local search */
+  --vp-local-search-highlight-bg: rgba(217, 119, 6, 0.25);
+  --vp-local-search-highlight-text: #f59e0b;
 }
 
 /* Hero title styling */
@@ -144,7 +178,7 @@
   color: #78716c;
 }
 
-.dark .VPHero .tagline {
+html.dark .VPHero .tagline {
   color: #a8a29e;
 }
 
@@ -158,12 +192,12 @@
   color: #d97706;
 }
 
-.dark .vp-doc a {
+html.dark .vp-doc a {
   color: #d97706;
   text-decoration-color: rgba(217, 119, 6, 0.4);
 }
 
-.dark .vp-doc a:hover {
+html.dark .vp-doc a:hover {
   color: #f59e0b;
 }
 
@@ -172,7 +206,7 @@
   color: #b45309;
 }
 
-.dark .VPSidebar .is-active > .link > .text {
+html.dark .VPSidebar .is-active > .link > .text {
   color: #d97706;
 }
 
@@ -181,8 +215,8 @@
   color: #292524;
 }
 
-.dark .vp-doc [class*="language-"] code {
-  color: #faf6f1;
+html.dark .vp-doc [class*="language-"] code {
+  color: rgba(255, 255, 245, 0.86);
 }
 
 /* Inline code */
@@ -192,8 +226,8 @@
   font-family: var(--vp-font-family-mono);
 }
 
-.dark .vp-doc :not(pre) > code {
-  background-color: rgba(217, 119, 6, 0.15);
+html.dark .vp-doc :not(pre) > code {
+  background-color: rgba(217, 119, 6, 0.2);
   color: #f59e0b;
 }
 
@@ -203,8 +237,8 @@
   border-radius: 8px;
 }
 
-.dark .vp-doc div[class*="language-"] {
-  border-color: #44403c;
+html.dark .vp-doc div[class*="language-"] {
+  border-color: #57534e;
 }
 
 /* Title and heading typography */

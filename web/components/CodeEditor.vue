@@ -43,7 +43,7 @@ const initMonaco = async () => {
     padding: { top: 12, bottom: 12 },
     tabSize: 2,
     insertSpaces: true,
-    wordWrap: "on",
+    wordWrap: "off",
     bracketPairColorization: { enabled: true },
     cursorBlinking: "smooth",
     cursorSmoothCaretAnimation: "on",
