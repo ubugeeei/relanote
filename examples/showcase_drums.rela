@@ -1,0 +1,128 @@
+; ============================================
+; "Rhythm Factory" - Drum Synth Showcase
+; Various drum patterns using Kick, Snare, HiHat, OpenHat, Tom, Clap
+; ============================================
+
+set tempo = 120
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ============================================
+; Basic Patterns - Building Blocks (16 beats each)
+; ============================================
+
+; Standard rock beat
+let rock_kick = | R - - - R - - - R - - - R - - - |
+let rock_snare = | - - - - R - - - - - - - R - - - |
+let rock_hihat = | R - R - R - R - R - R - R - R - |
+
+; Four on the floor (dance)
+let four_kick = | R - - - R - - - R - - - R - - - |
+let four_snare = | - - - - R - - - - - - - R - - - |
+let four_hihat = | R R R R R R R R R R R R R R R R |
+let four_openhat = | - - - - - - R - - - - - - - R - |
+
+; Breakbeat pattern
+let break_kick = | R - - - - - R - - - R - - - - - |
+let break_snare = | - - - - R - - - - - - - R - R - |
+let break_hihat = | R R R R R R R R R R R R R R R R |
+
+; Hip-hop groove
+let hiphop_kick = | R - - - - - R - R - - - - - - - |
+let hiphop_snare = | - - - - R - - - - - - - R - - - |
+let hiphop_hihat = | R - R - R - R - R - R - R - R R |
+
+; Funk pattern
+let funk_kick = | R - - R - - R - - - R - - - - - |
+let funk_snare = | - - - - R - - - - - - - R - - R |
+let funk_hihat = | R R R R R R R R R R R R R R R R |
+let funk_openhat = | - - - - - - - R - - - - - - - R |
+
+; Drum & Bass style
+let dnb_kick = | R - - - - - - - - - R - - - - - |
+let dnb_snare = | - - - - R - - R - - - - R - - - |
+let dnb_hihat = | R R R R R R R R R R R R R R R R |
+
+; ============================================
+; Tom Fills (16 beats)
+; ============================================
+
+let tom_fill_1 = | - - - - - - - - - - - - R R R R |
+let tom_fill_cascade = | R - - - R - - R - - R - R R R R |
+
+; ============================================
+; Clap Patterns (16 beats)
+; ============================================
+
+let clap_backbeat = | - - - - R - - - - - - - R - - - |
+let clap_offbeat = | - - R - - - R - - - R - - - R - |
+let clap_buildup = | R - - - R - - - R - R - R R R R |
+
+; ============================================
+; Full Arrangement - 6 Sections (96 beats total)
+; ============================================
+
+; Section A: Rock (16 beats)
+let section_a_kick = rock_kick
+let section_a_snare = rock_snare
+let section_a_hihat = rock_hihat
+
+; Section B: Dance (16 beats)
+let section_b_kick = four_kick
+let section_b_snare = four_snare
+let section_b_hihat = four_hihat
+let section_b_openhat = four_openhat
+
+; Section C: Breakbeat (16 beats)
+let section_c_kick = break_kick
+let section_c_snare = break_snare
+let section_c_hihat = break_hihat
+
+; Section D: Hip-hop (16 beats)
+let section_d_kick = hiphop_kick
+let section_d_snare = hiphop_snare
+let section_d_hihat = hiphop_hihat
+
+; Section E: Funk (16 beats)
+let section_e_kick = funk_kick
+let section_e_snare = funk_snare
+let section_e_hihat = funk_hihat
+let section_e_openhat = funk_openhat
+
+; Section F: DnB (16 beats)
+let section_f_kick = dnb_kick
+let section_f_snare = dnb_snare
+let section_f_hihat = dnb_hihat
+
+; ============================================
+; Combine sections (using ++ for concatenation)
+; ============================================
+
+let full_kick = section_a_kick ++ section_b_kick ++ section_c_kick ++ section_d_kick ++ section_e_kick ++ section_f_kick
+
+let full_snare = section_a_snare ++ section_b_snare ++ section_c_snare ++ section_d_snare ++ section_e_snare ++ section_f_snare
+
+let full_hihat = section_a_hihat ++ section_b_hihat ++ section_c_hihat ++ section_d_hihat ++ section_e_hihat ++ section_f_hihat
+
+; Sparse openhat (only in sections B and E)
+let silence_16 = | - - - - - - - - - - - - - - - - |
+let full_openhat = silence_16 ++ section_b_openhat ++ silence_16 ++ silence_16 ++ section_e_openhat ++ silence_16
+
+; Tom fills at end of each section
+let full_tom = tom_fill_1 ++ tom_fill_1 ++ tom_fill_1 ++ tom_fill_1 ++ tom_fill_1 ++ tom_fill_cascade
+
+; Claps on sections B, D, F
+let full_clap = silence_16 ++ clap_backbeat ++ silence_16 ++ clap_offbeat ++ silence_16 ++ clap_buildup
+
+; ============================================
+; Output: Full drum showcase
+; ============================================
+
+layer [
+  full_kick |> voice Kick |> volume 0.9,
+  full_snare |> voice Snare |> volume 0.8,
+  full_hihat |> voice HiHat |> volume 0.5,
+  full_openhat |> voice OpenHat |> volume 0.4,
+  full_tom |> voice Tom |> volume 0.7,
+  full_clap |> voice Clap |> volume 0.6
+]

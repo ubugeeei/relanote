@@ -1,0 +1,84 @@
+; ============================================
+; "Floating Dreams" - Ambient/Pad Showcase
+; Atmospheric soundscape using SoftPad and Strings
+; ============================================
+
+set tempo = 60
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Lydian = { R, M2, M3, A4, P5, M6, M7 }
+
+; ============================================
+; Pad Chords - Slow evolving harmonies
+; ============================================
+
+let pad_main = |
+  [R, M3, P5, M7]~ - - - - - - -
+  [P5, M7, M2, P4]~ - - - - - - -
+  [P4, M6, R, M3]~ - - - - - - -
+  [M2, P4, M6, R]~ - - - - - - -
+|:32
+
+; ============================================
+; String Layer - Gentle swells
+; ============================================
+
+let strings_melody = |
+  P5~ - - - M6~ - - -
+  P8~ - - - - - - -
+  M7~ - - - P5~ - - -
+  M3~ - - - - - - -
+|:32
+
+let strings_counter = |
+  M3~ - - - - - - -
+  P5~ - - - - - - -
+  P4~ - - - M3~ - - -
+  R~ - - - - - - -
+|:32
+
+; ============================================
+; Ethereal Lead - Sparse melody
+; ============================================
+
+let lead_melody = |
+  - - - - P8~ - - -
+  M7~ - P5~ - - - - -
+  - - - - M6~ - - -
+  P5~ - M3~ - - - - -
+|:32
+
+; ============================================
+; Deep Bass Drone
+; ============================================
+
+let bass_movement = |
+  R~ - - - - - - -
+  R~ - - - - - - -
+  P5~ - - - - - - -
+  P4~ - - - - - - -
+|:32
+
+; ============================================
+; Pluck Texture - Subtle sparkles
+; ============================================
+
+let pluck_sparkle = |
+  P8 - - - - - - -
+  - - - - M10 - - -
+  - - - - - - - -
+  P12 - - - - - - -
+|:32
+
+; ============================================
+; Output: Dreamy ambient atmosphere
+; ============================================
+
+layer [
+  pad_main |> voice SoftPad |> volume 0.6,
+  strings_melody |> voice Strings |> volume 0.5,
+  strings_counter |> voice Strings |> volume 0.4 |> transpose (R - P8),
+  lead_melody |> voice Lead |> cutoff 1500.0 |> volume 0.4,
+  bass_movement |> voice SoftPad |> cutoff 400.0 |> volume 0.5 |> transpose (R - P8 - P8),
+  pluck_sparkle |> voice Pluck |> volume 0.3 |> transpose P8
+]

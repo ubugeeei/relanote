@@ -249,6 +249,14 @@ export default defineConfig({
           ],
         },
         {
+          text: "Fundamentals",
+          items: [
+            { text: "Music Theory", link: "/deep-dive/music-theory" },
+            { text: "Advanced Harmony", link: "/deep-dive/advanced-harmony" },
+            { text: "Synthesizer Basics", link: "/deep-dive/synthesizer-basics" },
+          ],
+        },
+        {
           text: "Core Concepts",
           items: [
             { text: "Intervals", link: "/guide/intervals" },
@@ -301,6 +309,14 @@ export default defineConfig({
           ],
         },
         {
+          text: "Fundamentals",
+          items: [
+            { text: "Music Theory", link: "/deep-dive/music-theory" },
+            { text: "Advanced Harmony", link: "/deep-dive/advanced-harmony" },
+            { text: "Synthesizer Basics", link: "/deep-dive/synthesizer-basics" },
+          ],
+        },
+        {
           text: "Core Concepts",
           items: [
             { text: "Intervals", link: "/guide/intervals" },
@@ -336,6 +352,7 @@ export default defineConfig({
           text: "Fundamentals",
           items: [
             { text: "Music Theory", link: "/deep-dive/music-theory" },
+            { text: "Advanced Harmony", link: "/deep-dive/advanced-harmony" },
             { text: "Synthesizer Basics", link: "/deep-dive/synthesizer-basics" },
           ],
         },
