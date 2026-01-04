@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350">
+  <defs>
+    <marker id="arrow-flow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <linearGradient id="oscGradFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#2563eb"/>
+    </linearGradient>
+    <linearGradient id="filterGradFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="ampGradFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+    <linearGradient id="outGradFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="envGradFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ec4899"/>
+      <stop offset="100%" style="stop-color:#db2777"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .bg { fill: #ffffff; }
+    .main-title { font: bold 16px sans-serif; fill: #1f2937; }
+    .box-title { font: bold 13px sans-serif; fill: white; }
+    .box-sub { font: 10px sans-serif; fill: rgba(255,255,255,0.85); }
+    .label { font: 10px sans-serif; fill: #6b7280; }
+    .arrow { stroke: #9ca3af; stroke-width: 2; fill: none; marker-end: url(#arrow-flow); }
+    .mod-arrow { stroke: #ec4899; stroke-width: 1.5; fill: none; marker-end: url(#arrow-flow); stroke-dasharray: 4; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
+      .main-title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+    }
+  </style>
+
+  <rect width="800" height="350" class="bg"/>
+
+  <text x="400" y="30" text-anchor="middle" class="main-title">Synthesizer Signal Flow</text>
+
+  <!-- Main signal path -->
+  <!-- Oscillator -->
+  <g transform="translate(50, 80)">
+    <rect width="130" height="80" rx="8" fill="url(#oscGradFlow)"/>
+    <text x="65" y="35" text-anchor="middle" class="box-title">Oscillator</text>
+    <text x="65" y="52" text-anchor="middle" class="box-sub">Sine / Saw / Square</text>
+    <text x="65" y="66" text-anchor="middle" class="box-sub">Triangle / Noise</text>
+  </g>
+
+  <!-- Arrow -->
+  <line x1="180" y1="120" x2="220" y2="120" class="arrow"/>
+
+  <!-- Filter -->
+  <g transform="translate(230, 80)">
+    <rect width="130" height="80" rx="8" fill="url(#filterGradFlow)"/>
+    <text x="65" y="35" text-anchor="middle" class="box-title">Filter</text>
+    <text x="65" y="52" text-anchor="middle" class="box-sub">LowPass / HighPass</text>
+    <text x="65" y="66" text-anchor="middle" class="box-sub">Cutoff + Resonance</text>
+  </g>
+
+  <!-- Arrow -->
+  <line x1="360" y1="120" x2="400" y2="120" class="arrow"/>
+
+  <!-- Amplifier -->
+  <g transform="translate(410, 80)">
+    <rect width="130" height="80" rx="8" fill="url(#ampGradFlow)"/>
+    <text x="65" y="35" text-anchor="middle" class="box-title">Amplifier</text>
+    <text x="65" y="52" text-anchor="middle" class="box-sub">Volume Control</text>
+    <text x="65" y="66" text-anchor="middle" class="box-sub">ADSR Envelope</text>
+  </g>
+
+  <!-- Arrow -->
+  <line x1="540" y1="120" x2="580" y2="120" class="arrow"/>
+
+  <!-- Output -->
+  <g transform="translate(590, 80)">
+    <rect width="130" height="80" rx="8" fill="url(#outGradFlow)"/>
+    <text x="65" y="35" text-anchor="middle" class="box-title">Output</text>
+    <text x="65" y="52" text-anchor="middle" class="box-sub">Pan / Effects</text>
+    <text x="65" y="66" text-anchor="middle" class="box-sub">→ Speakers</text>
+  </g>
+
+  <!-- Modulation sources -->
+  <!-- Pitch Envelope -->
+  <g transform="translate(50, 220)">
+    <rect width="110" height="60" rx="6" fill="url(#envGradFlow)"/>
+    <text x="55" y="28" text-anchor="middle" class="box-title">Pitch Env</text>
+    <text x="55" y="45" text-anchor="middle" class="box-sub">Frequency sweep</text>
+  </g>
+  <path d="M 105,220 L 105,180 L 115,165" class="mod-arrow"/>
+  <text x="90" y="195" class="label">pitch</text>
+
+  <!-- Filter Envelope -->
+  <g transform="translate(230, 220)">
+    <rect width="110" height="60" rx="6" fill="url(#envGradFlow)"/>
+    <text x="55" y="28" text-anchor="middle" class="box-title">Filter Env</text>
+    <text x="55" y="45" text-anchor="middle" class="box-sub">Cutoff sweep</text>
+  </g>
+  <path d="M 285,220 L 285,180 L 295,165" class="mod-arrow"/>
+  <text x="270" y="195" class="label">cutoff</text>
+
+  <!-- Amp Envelope -->
+  <g transform="translate(410, 220)">
+    <rect width="110" height="60" rx="6" fill="url(#envGradFlow)"/>
+    <text x="55" y="28" text-anchor="middle" class="box-title">Amp Env</text>
+    <text x="55" y="45" text-anchor="middle" class="box-sub">ADSR shape</text>
+  </g>
+  <path d="M 465,220 L 465,180 L 475,165" class="mod-arrow"/>
+  <text x="455" y="195" class="label">volume</text>
+
+  <!-- LFO -->
+  <g transform="translate(590, 220)">
+    <rect width="110" height="60" rx="6" fill="url(#envGradFlow)"/>
+    <text x="55" y="28" text-anchor="middle" class="box-title">LFO</text>
+    <text x="55" y="45" text-anchor="middle" class="box-sub">Vibrato / Tremolo</text>
+  </g>
+
+  <!-- LFO modulation paths -->
+  <path d="M 620,220 L 620,190 L 115,190 L 115,165" class="mod-arrow" stroke-dasharray="3"/>
+  <path d="M 640,220 L 640,200 L 295,200 L 295,165" class="mod-arrow" stroke-dasharray="3"/>
+  <path d="M 660,220 L 660,210 L 475,210 L 475,165" class="mod-arrow" stroke-dasharray="3"/>
+
+  <!-- Legend -->
+  <g transform="translate(50, 310)">
+    <line x1="0" y1="5" x2="30" y2="5" class="arrow"/>
+    <text x="40" y="9" class="label">Audio signal</text>
+
+    <line x1="150" y1="5" x2="180" y2="5" class="mod-arrow"/>
+    <text x="190" y="9" class="label">Modulation (control signal)</text>
+  </g>
+</svg>

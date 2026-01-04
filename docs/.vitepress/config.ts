@@ -333,11 +333,23 @@ export default defineConfig({
       ],
       "/deep-dive/": [
         {
-          text: "Deep Dive",
+          text: "Fundamentals",
+          items: [
+            { text: "Music Theory", link: "/deep-dive/music-theory" },
+            { text: "Synthesizer Basics", link: "/deep-dive/synthesizer-basics" },
+          ],
+        },
+        {
+          text: "Implementation",
           items: [
             { text: "Architecture Overview", link: "/deep-dive/architecture" },
-            { text: "Sound Synthesis", link: "/deep-dive/sound-synthesis" },
             { text: "Language Design", link: "/deep-dive/language-design" },
+            { text: "Sound Synthesis", link: "/deep-dive/sound-synthesis" },
+          ],
+        },
+        {
+          text: "Reference",
+          items: [
             { text: "Preset Reference", link: "/deep-dive/preset-reference" },
           ],
         },

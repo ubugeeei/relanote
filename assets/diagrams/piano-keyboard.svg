@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 200">
+  <style>
+    .bg { fill: #ffffff; }
+    .white-key { fill: #fafafa; stroke: #d1d5db; stroke-width: 1; }
+    .black-key { fill: #1f2937; stroke: #111827; stroke-width: 1; }
+    .label { font: 11px sans-serif; fill: #374151; }
+    .label-black { font: 9px sans-serif; fill: #9ca3af; }
+    .main-title { font: bold 16px sans-serif; fill: #1f2937; }
+    .interval-label { font: 10px sans-serif; fill: #f59e0b; }
+    .semitone { fill: #fef3c7; stroke: #f59e0b; stroke-width: 2; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
+      .white-key { fill: #f3f4f6; stroke: #9ca3af; }
+      .black-key { fill: #111827; stroke: #000; }
+      .label { fill: #1f2937; }
+      .label-black { fill: #d1d5db; }
+      .main-title { fill: #f3f4f6; }
+    }
+  </style>
+
+  <rect width="700" height="200" class="bg"/>
+
+  <text x="350" y="25" text-anchor="middle" class="main-title">Piano Keyboard - One Octave</text>
+
+  <!-- White keys -->
+  <g transform="translate(50, 40)">
+    <rect x="0" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="85" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="170" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="255" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="340" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="425" y="0" width="80" height="120" class="white-key" rx="2"/>
+    <rect x="510" y="0" width="80" height="120" class="white-key" rx="2"/>
+
+    <!-- White key labels -->
+    <text x="40" y="110" text-anchor="middle" class="label">C</text>
+    <text x="125" y="110" text-anchor="middle" class="label">D</text>
+    <text x="210" y="110" text-anchor="middle" class="label">E</text>
+    <text x="295" y="110" text-anchor="middle" class="label">F</text>
+    <text x="380" y="110" text-anchor="middle" class="label">G</text>
+    <text x="465" y="110" text-anchor="middle" class="label">A</text>
+    <text x="550" y="110" text-anchor="middle" class="label">B</text>
+
+    <!-- Black keys -->
+    <rect x="55" y="0" width="50" height="75" class="black-key" rx="2"/>
+    <rect x="140" y="0" width="50" height="75" class="black-key" rx="2"/>
+    <rect x="310" y="0" width="50" height="75" class="black-key" rx="2"/>
+    <rect x="395" y="0" width="50" height="75" class="black-key" rx="2"/>
+    <rect x="480" y="0" width="50" height="75" class="black-key" rx="2"/>
+
+    <!-- Black key labels -->
+    <text x="80" y="90" text-anchor="middle" class="label-black">C#/Db</text>
+    <text x="165" y="90" text-anchor="middle" class="label-black">D#/Eb</text>
+    <text x="335" y="90" text-anchor="middle" class="label-black">F#/Gb</text>
+    <text x="420" y="90" text-anchor="middle" class="label-black">G#/Ab</text>
+    <text x="505" y="90" text-anchor="middle" class="label-black">A#/Bb</text>
+  </g>
+
+  <!-- Semitone markers -->
+  <g transform="translate(50, 165)">
+    <line x1="40" y1="0" x2="80" y2="0" stroke="#f59e0b" stroke-width="2"/>
+    <text x="60" y="15" text-anchor="middle" class="interval-label">1 semitone</text>
+
+    <line x1="40" y1="25" x2="125" y2="25" stroke="#3b82f6" stroke-width="2"/>
+    <text x="82" y="35" text-anchor="middle" class="interval-label" fill="#3b82f6">2 semitones (whole tone)</text>
+  </g>
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200">
+  <style>
+    .bg { fill: #ffffff; }
+    .main-title { font: bold 14px sans-serif; fill: #1f2937; }
+    .label { font: 11px sans-serif; fill: #6b7280; }
+    .axis { stroke: #d1d5db; stroke-width: 1; }
+    .axis-label { font: 10px sans-serif; fill: #9ca3af; }
+    .lfo-wave { stroke: #ec4899; stroke-width: 2.5; fill: none; }
+    .center-line { stroke: #e5e7eb; stroke-width: 1; stroke-dasharray: 4; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
+      .main-title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+      .axis { stroke: #4b5563; }
+      .axis-label { fill: #6b7280; }
+      .center-line { stroke: #4b5563; }
+    }
+  </style>
+
+  <rect width="500" height="200" class="bg"/>
+
+  <text x="250" y="25" text-anchor="middle" class="main-title">LFO Modulating Pitch (Vibrato at 5 Hz)</text>
+
+  <!-- Axes -->
+  <line x1="60" y1="100" x2="460" y2="100" class="center-line"/>
+  <line x1="60" y1="50" x2="60" y2="150" class="axis"/>
+  <line x1="60" y1="150" x2="460" y2="150" class="axis"/>
+
+  <!-- Y-axis labels -->
+  <text x="55" y="55" text-anchor="end" class="axis-label">+</text>
+  <text x="55" y="105" text-anchor="end" class="axis-label">0</text>
+  <text x="55" y="145" text-anchor="end" class="axis-label">-</text>
+  <text x="30" y="100" text-anchor="middle" class="label" transform="rotate(-90, 30, 100)">Pitch</text>
+
+  <!-- X-axis label -->
+  <text x="460" y="170" text-anchor="end" class="label">Time</text>
+
+  <!-- LFO sine wave (5 periods to show vibrato) -->
+  <path d="M 60,100
+           C 80,100 90,55 100,55 C 110,55 120,100 140,100
+           C 160,100 170,145 180,145 C 190,145 200,100 220,100
+           C 240,100 250,55 260,55 C 270,55 280,100 300,100
+           C 320,100 330,145 340,145 C 350,145 360,100 380,100
+           C 400,100 410,55 420,55 C 430,55 440,100 460,100" class="lfo-wave"/>
+
+  <!-- Description -->
+  <text x="250" y="185" text-anchor="middle" class="label">Slow oscillation (0.1 - 20 Hz) creates movement in the sound</text>
+</svg>

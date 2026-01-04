@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200">
+  <style>
+    .bg { fill: #ffffff; }
+    .title { font: bold 14px sans-serif; fill: #1f2937; }
+    .label { font: 11px sans-serif; fill: #6b7280; }
+    .axis { stroke: #d1d5db; stroke-width: 1; }
+    .wave { stroke: #3b82f6; stroke-width: 2.5; fill: none; }
+    .marker { stroke: #ef4444; stroke-width: 1; stroke-dasharray: 4; }
+    .marker-text { font: 10px sans-serif; fill: #ef4444; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
+      .title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+      .axis { stroke: #4b5563; }
+    }
+  </style>
+
+  <rect width="500" height="200" class="bg"/>
+
+  <text x="250" y="25" text-anchor="middle" class="title">Simple Sine Wave</text>
+
+  <!-- Axes -->
+  <line x1="40" y1="100" x2="460" y2="100" class="axis"/>
+  <line x1="40" y1="40" x2="40" y2="160" class="axis"/>
+
+  <!-- Sine wave (2 periods) -->
+  <path d="M 40,100
+           C 60,100 70,50 100,50
+           C 130,50 140,100 160,100
+           C 180,100 190,150 220,150
+           C 250,150 260,100 280,100
+           C 300,100 310,50 340,50
+           C 370,50 380,100 400,100
+           C 420,100 430,150 460,150" class="wave"/>
+
+  <!-- Period markers -->
+  <line x1="40" y1="165" x2="280" y2="165" class="marker"/>
+  <line x1="40" y1="160" x2="40" y2="170" class="marker"/>
+  <line x1="280" y1="160" x2="280" y2="170" class="marker"/>
+  <text x="160" y="185" text-anchor="middle" class="marker-text">period (T)</text>
+
+  <!-- Amplitude markers -->
+  <line x1="30" y1="50" x2="35" y2="50" class="axis"/>
+  <line x1="30" y1="150" x2="35" y2="150" class="axis"/>
+  <text x="25" y="54" text-anchor="end" class="label">+A</text>
+  <text x="25" y="154" text-anchor="end" class="label">-A</text>
+
+  <!-- Labels -->
+  <text x="460" y="95" text-anchor="end" class="label">Time</text>
+  <text x="50" y="45" class="label">Amplitude</text>
+
+  <!-- Formula -->
+  <text x="250" y="195" text-anchor="middle" class="label">frequency = 1 / period</text>
+</svg>

@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420">
+  <style>
+    .bg { fill: #ffffff; }
+    .main-title { font: bold 16px sans-serif; fill: #1f2937; }
+    .header { font: bold 12px sans-serif; fill: #374151; }
+    .cell { font: 11px sans-serif; fill: #374151; }
+    .cell-light { font: 11px sans-serif; fill: #6b7280; }
+    .row-bg { fill: #f9fafb; }
+    .row-bg-alt { fill: #ffffff; }
+    .border { stroke: #e5e7eb; stroke-width: 1; fill: none; }
+    .consonant { fill: #dcfce7; }
+    .dissonant { fill: #fee2e2; }
+    .perfect { fill: #dbeafe; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
+      .main-title { fill: #f3f4f6; }
+      .header { fill: #e5e7eb; }
+      .cell { fill: #e5e7eb; }
+      .cell-light { fill: #9ca3af; }
+      .row-bg { fill: #374151; }
+      .row-bg-alt { fill: #1f2937; }
+      .border { stroke: #4b5563; }
+      .consonant { fill: #166534; }
+      .dissonant { fill: #991b1b; }
+      .perfect { fill: #1e40af; }
+    }
+  </style>
+
+  <rect width="800" height="420" class="bg"/>
+
+  <text x="400" y="30" text-anchor="middle" class="main-title">Musical Intervals Reference</text>
+
+  <!-- Table -->
+  <g transform="translate(40, 50)">
+    <!-- Header -->
+    <rect x="0" y="0" width="720" height="30" fill="#f3f4f6" class="border"/>
+    <text x="45" y="20" text-anchor="middle" class="header">Semitones</text>
+    <text x="140" y="20" text-anchor="middle" class="header">Symbol</text>
+    <text x="280" y="20" text-anchor="middle" class="header">Name</text>
+    <text x="450" y="20" text-anchor="middle" class="header">Character</text>
+    <text x="620" y="20" text-anchor="middle" class="header">Example (from C)</text>
+
+    <!-- Rows -->
+    <!-- Row 0 - Unison -->
+    <rect x="0" y="30" width="720" height="25" class="row-bg perfect"/>
+    <text x="45" y="47" text-anchor="middle" class="cell">0</text>
+    <text x="140" y="47" text-anchor="middle" class="cell">R</text>
+    <text x="280" y="47" text-anchor="middle" class="cell">Unison (Root)</text>
+    <text x="450" y="47" text-anchor="middle" class="cell-light">Same note</text>
+    <text x="620" y="47" text-anchor="middle" class="cell">C → C</text>
+
+    <!-- Row 1 - Minor 2nd -->
+    <rect x="0" y="55" width="720" height="25" class="row-bg-alt dissonant"/>
+    <text x="45" y="72" text-anchor="middle" class="cell">1</text>
+    <text x="140" y="72" text-anchor="middle" class="cell">m2</text>
+    <text x="280" y="72" text-anchor="middle" class="cell">Minor 2nd</text>
+    <text x="450" y="72" text-anchor="middle" class="cell-light">Tense, dissonant</text>
+    <text x="620" y="72" text-anchor="middle" class="cell">C → Db</text>
+
+    <!-- Row 2 - Major 2nd -->
+    <rect x="0" y="80" width="720" height="25" class="row-bg"/>
+    <text x="45" y="97" text-anchor="middle" class="cell">2</text>
+    <text x="140" y="97" text-anchor="middle" class="cell">M2</text>
+    <text x="280" y="97" text-anchor="middle" class="cell">Major 2nd</text>
+    <text x="450" y="97" text-anchor="middle" class="cell-light">Whole step</text>
+    <text x="620" y="97" text-anchor="middle" class="cell">C → D</text>
+
+    <!-- Row 3 - Minor 3rd -->
+    <rect x="0" y="105" width="720" height="25" class="row-bg-alt consonant"/>
+    <text x="45" y="122" text-anchor="middle" class="cell">3</text>
+    <text x="140" y="122" text-anchor="middle" class="cell">m3</text>
+    <text x="280" y="122" text-anchor="middle" class="cell">Minor 3rd</text>
+    <text x="450" y="122" text-anchor="middle" class="cell-light">Sad, dark</text>
+    <text x="620" y="122" text-anchor="middle" class="cell">C → Eb</text>
+
+    <!-- Row 4 - Major 3rd -->
+    <rect x="0" y="130" width="720" height="25" class="row-bg consonant"/>
+    <text x="45" y="147" text-anchor="middle" class="cell">4</text>
+    <text x="140" y="147" text-anchor="middle" class="cell">M3</text>
+    <text x="280" y="147" text-anchor="middle" class="cell">Major 3rd</text>
+    <text x="450" y="147" text-anchor="middle" class="cell-light">Happy, bright</text>
+    <text x="620" y="147" text-anchor="middle" class="cell">C → E</text>
+
+    <!-- Row 5 - Perfect 4th -->
+    <rect x="0" y="155" width="720" height="25" class="row-bg-alt perfect"/>
+    <text x="45" y="172" text-anchor="middle" class="cell">5</text>
+    <text x="140" y="172" text-anchor="middle" class="cell">P4</text>
+    <text x="280" y="172" text-anchor="middle" class="cell">Perfect 4th</text>
+    <text x="450" y="172" text-anchor="middle" class="cell-light">Open, suspended</text>
+    <text x="620" y="172" text-anchor="middle" class="cell">C → F</text>
+
+    <!-- Row 6 - Tritone -->
+    <rect x="0" y="180" width="720" height="25" class="row-bg dissonant"/>
+    <text x="45" y="197" text-anchor="middle" class="cell">6</text>
+    <text x="140" y="197" text-anchor="middle" class="cell">A4/d5</text>
+    <text x="280" y="197" text-anchor="middle" class="cell">Tritone</text>
+    <text x="450" y="197" text-anchor="middle" class="cell-light">Unstable, tense</text>
+    <text x="620" y="197" text-anchor="middle" class="cell">C → F#/Gb</text>
+
+    <!-- Row 7 - Perfect 5th -->
+    <rect x="0" y="205" width="720" height="25" class="row-bg-alt perfect"/>
+    <text x="45" y="222" text-anchor="middle" class="cell">7</text>
+    <text x="140" y="222" text-anchor="middle" class="cell">P5</text>
+    <text x="280" y="222" text-anchor="middle" class="cell">Perfect 5th</text>
+    <text x="450" y="222" text-anchor="middle" class="cell-light">Strong, stable</text>
+    <text x="620" y="222" text-anchor="middle" class="cell">C → G</text>
+
+    <!-- Row 8 - Minor 6th -->
+    <rect x="0" y="230" width="720" height="25" class="row-bg consonant"/>
+    <text x="45" y="247" text-anchor="middle" class="cell">8</text>
+    <text x="140" y="247" text-anchor="middle" class="cell">m6</text>
+    <text x="280" y="247" text-anchor="middle" class="cell">Minor 6th</text>
+    <text x="450" y="247" text-anchor="middle" class="cell-light">Bittersweet</text>
+    <text x="620" y="247" text-anchor="middle" class="cell">C → Ab</text>
+
+    <!-- Row 9 - Major 6th -->
+    <rect x="0" y="255" width="720" height="25" class="row-bg-alt consonant"/>
+    <text x="45" y="272" text-anchor="middle" class="cell">9</text>
+    <text x="140" y="272" text-anchor="middle" class="cell">M6</text>
+    <text x="280" y="272" text-anchor="middle" class="cell">Major 6th</text>
+    <text x="450" y="272" text-anchor="middle" class="cell-light">Warm</text>
+    <text x="620" y="272" text-anchor="middle" class="cell">C → A</text>
+
+    <!-- Row 10 - Minor 7th -->
+    <rect x="0" y="280" width="720" height="25" class="row-bg"/>
+    <text x="45" y="297" text-anchor="middle" class="cell">10</text>
+    <text x="140" y="297" text-anchor="middle" class="cell">m7</text>
+    <text x="280" y="297" text-anchor="middle" class="cell">Minor 7th</text>
+    <text x="450" y="297" text-anchor="middle" class="cell-light">Bluesy</text>
+    <text x="620" y="297" text-anchor="middle" class="cell">C → Bb</text>
+
+    <!-- Row 11 - Major 7th -->
+    <rect x="0" y="305" width="720" height="25" class="row-bg-alt"/>
+    <text x="45" y="322" text-anchor="middle" class="cell">11</text>
+    <text x="140" y="322" text-anchor="middle" class="cell">M7</text>
+    <text x="280" y="322" text-anchor="middle" class="cell">Major 7th</text>
+    <text x="450" y="322" text-anchor="middle" class="cell-light">Jazzy, dreamy</text>
+    <text x="620" y="322" text-anchor="middle" class="cell">C → B</text>
+
+    <!-- Row 12 - Octave -->
+    <rect x="0" y="330" width="720" height="25" class="row-bg perfect"/>
+    <text x="45" y="347" text-anchor="middle" class="cell">12</text>
+    <text x="140" y="347" text-anchor="middle" class="cell">P8</text>
+    <text x="280" y="347" text-anchor="middle" class="cell">Octave</text>
+    <text x="450" y="347" text-anchor="middle" class="cell-light">Same note, higher</text>
+    <text x="620" y="347" text-anchor="middle" class="cell">C → C'</text>
+
+    <!-- Border -->
+    <rect x="0" y="0" width="720" height="355" class="border"/>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(40, 385)">
+    <rect x="0" y="0" width="15" height="15" class="perfect"/>
+    <text x="20" y="12" class="cell-light">Perfect</text>
+    <rect x="100" y="0" width="15" height="15" class="consonant"/>
+    <text x="120" y="12" class="cell-light">Consonant</text>
+    <rect x="220" y="0" width="15" height="15" class="dissonant"/>
+    <text x="240" y="12" class="cell-light">Dissonant</text>
+  </g>
+</svg>
