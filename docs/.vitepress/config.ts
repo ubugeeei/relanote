@@ -225,7 +225,10 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: `${base}logo-icon-transparent.svg`,
+    logo: {
+      light: `${base}logo-icon-transparent.svg`,
+      dark: `${base}logo-icon-transparent-dark.svg`,
+    },
 
     nav: [
       { text: "Guide", link: "/guide/introduction" },

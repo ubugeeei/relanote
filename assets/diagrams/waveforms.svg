@@ -11,6 +11,7 @@
   </defs>
 
   <style>
+    .bg { fill: #ffffff; }
     .title { font: bold 14px sans-serif; fill: #1f2937; }
     .main-title { font-size: 18px; font-weight: bold; fill: #1f2937; }
     .label { font: 12px sans-serif; fill: #6b7280; }
@@ -19,6 +20,7 @@
     .center-line { stroke: #e5e7eb; }
 
     @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
       .title { fill: #f3f4f6; }
       .main-title { fill: #f3f4f6; }
       .label { fill: #9ca3af; }
@@ -26,6 +28,9 @@
       .center-line { stroke: #4b5563; }
     }
   </style>
+
+  <!-- Background -->
+  <rect width="800" height="400" class="bg"/>
 
   <!-- Title -->
   <text x="400" y="25" text-anchor="middle" class="main-title">Oscillator Waveforms</text>

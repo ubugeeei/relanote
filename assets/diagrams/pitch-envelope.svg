@@ -7,6 +7,7 @@
   </defs>
 
   <style>
+    .bg { fill: #ffffff; }
     .title { font: bold 14px sans-serif; fill: #1f2937; }
     .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
     .label { font: 11px sans-serif; fill: #6b7280; }
@@ -19,17 +20,21 @@
     .desc { font-size: 11px; fill: #6b7280; }
 
     @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
       .title { fill: #f3f4f6; }
       .main-title { fill: #f3f4f6; }
       .label { fill: #9ca3af; }
       .code { fill: #e5e7eb; }
       .axis { stroke: #4b5563; }
-      .graph-bg { fill: #1f2937; stroke: #4b5563; }
+      .graph-bg { fill: #111827; stroke: #4b5563; }
       .code-bg { fill: #374151; stroke: #4b5563; }
       .grid { stroke: #374151; }
       .desc { fill: #9ca3af; }
     }
   </style>
+
+  <!-- Background -->
+  <rect width="600" height="320" class="bg"/>
 
   <!-- Title -->
   <text x="300" y="25" text-anchor="middle" class="main-title">Pitch Envelope for Drum Synthesis</text>

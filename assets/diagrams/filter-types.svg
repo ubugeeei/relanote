@@ -19,6 +19,7 @@
   </defs>
 
   <style>
+    .bg { fill: #ffffff; }
     .title { font: bold 14px sans-serif; fill: #1f2937; }
     .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
     .label { font: 11px sans-serif; fill: #6b7280; }
@@ -26,13 +27,17 @@
     .card { fill: #fafafa; stroke: #e5e7eb; }
 
     @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
       .title { fill: #f3f4f6; }
       .main-title { fill: #f3f4f6; }
       .label { fill: #9ca3af; }
       .axis { stroke: #4b5563; }
-      .card { fill: #1f2937; stroke: #4b5563; }
+      .card { fill: #111827; stroke: #4b5563; }
     }
   </style>
+
+  <!-- Background -->
+  <rect width="800" height="280" class="bg"/>
 
   <!-- Title -->
   <text x="400" y="25" text-anchor="middle" class="main-title">Filter Types</text>

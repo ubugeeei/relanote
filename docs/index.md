@@ -6,7 +6,8 @@ hero:
   text: Functional Music Notation
   tagline: A pure functional, statically-typed language for describing music through relative intervals
   image:
-    src: /logo.svg
+    light: /logo.svg
+    dark: /logo-dark.svg
     alt: Relanote
   actions:
     - theme: brand

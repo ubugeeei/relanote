@@ -18,6 +18,7 @@
   </defs>
 
   <style>
+    .bg { fill: #ffffff; }
     .title { font: bold 16px sans-serif; fill: #1f2937; }
     .subtitle { font: 12px sans-serif; fill: #6b7280; }
     .label { font: 11px sans-serif; fill: #374151; }
@@ -27,6 +28,7 @@
     .white-box { fill: #fff; }
 
     @media (prefers-color-scheme: dark) {
+      .bg { fill: #1f2937; }
       .title { fill: #f3f4f6; }
       .subtitle { fill: #9ca3af; }
       .label { fill: #e5e7eb; }
@@ -37,12 +39,15 @@
     }
   </style>
 
+  <!-- Background -->
+  <rect width="800" height="600" class="bg"/>
+
   <!-- Title -->
   <text x="400" y="30" text-anchor="middle" class="title">Relanote System Architecture</text>
 
   <!-- User File -->
   <rect x="280" y="50" width="240" height="40" fill="#fef3c7" class="box"/>
-  <text x="400" y="75" text-anchor="middle" class="label">User's .rela File</text>
+  <text x="400" y="75" text-anchor="middle" style="font: 11px sans-serif; fill: #92400e;">User's .rela File</text>
 
   <!-- Arrow -->
   <line x1="400" y1="90" x2="400" y2="120" class="arrow"/>
