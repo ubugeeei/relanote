@@ -59,12 +59,19 @@ export interface FilterData {
   resonance: number;
 }
 
+export interface PitchEnvelopeData {
+  start_hz: number;
+  end_hz: number;
+  time_seconds: number;
+}
+
 export interface SynthData {
   name: string;
   oscillators: OscillatorData[];
   envelope: ADSRData;
   filter?: FilterData;
   detune_cents: number;
+  pitch_envelope?: PitchEnvelopeData;
 }
 
 export interface AudioNoteEvent extends NoteEvent {
@@ -76,3 +83,41 @@ export interface AudioPlaybackData {
   tempo: number;
   total_beats: number;
 }
+
+// DAW Types
+export interface PianoRollNote {
+  id: string;
+  pitch: number; // MIDI note (0-127)
+  start: number; // beats
+  duration: number; // beats
+  velocity: number; // 0-127
+  selected: boolean;
+}
+
+export interface TrackInfo {
+  id: string;
+  name: string;
+  synth: string;
+  notes: PianoRollNote[];
+  muted: boolean;
+  solo: boolean;
+  volume: number; // 0-1
+  pan: number; // -1 to 1
+  color: string;
+}
+
+export interface DawState {
+  tracks: TrackInfo[];
+  selectedTrackId: string | null;
+  tempo: number;
+  timeSignatureNum: number;
+  timeSignatureDen: number;
+  gridSnap: number; // 1, 0.5, 0.25, 0.125, 0.0625
+  zoom: { x: number; y: number };
+  scroll: { x: number; y: number };
+  tool: "select" | "draw" | "erase";
+  loop: { enabled: boolean; start: number; end: number };
+  playheadPosition: number;
+}
+
+export type ViewMode = "pianoroll" | "code";

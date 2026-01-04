@@ -22,13 +22,16 @@ impl Parser {
         let lexer = Lexer::new(source);
         let tokens = lexer.tokenize();
 
-        Self {
+        let mut parser = Self {
             source_id: source.id,
             tokens,
             pos: 0,
             diagnostics: Diagnostics::new(),
             comments: Vec::new(),
-        }
+        };
+        // Skip any leading comments
+        parser.skip_comments();
+        parser
     }
 
     /// Parse a complete program
@@ -54,6 +57,22 @@ impl Parser {
             Program::with_comments(items, self.comments),
             self.diagnostics,
         )
+    }
+
+    /// Skip only comments (not newlines), collecting them
+    pub fn skip_comments(&mut self) {
+        while self.pos < self.tokens.len() {
+            match &self.tokens[self.pos].kind {
+                TokenKind::LineComment(text) => {
+                    self.comments.push(Comment {
+                        text: text.clone(),
+                        span: self.tokens[self.pos].span,
+                    });
+                    self.pos += 1;
+                }
+                _ => break,
+            }
+        }
     }
 
     /// Skip comments and newlines, collecting comments
@@ -106,12 +125,17 @@ impl Parser {
         self.peek().span
     }
 
-    /// Advance to the next token
+    /// Advance to the next token, skipping comments. Returns the consumed token.
     pub fn advance(&mut self) -> &Token {
+        // Save the position of the token we're about to consume
+        let consumed_pos = self.pos;
         if !self.is_at_end() {
             self.pos += 1;
         }
-        self.previous()
+        // Skip any comments after advancing
+        self.skip_comments();
+        // Return the token we consumed
+        &self.tokens[consumed_pos]
     }
 
     /// Get the previous token

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 150">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <linearGradient id="oscGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="envGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="filterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="outGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 14px sans-serif; fill: white; }
+    .subtitle { font: 10px sans-serif; fill: rgba(255,255,255,0.8); }
+    .box { stroke: none; rx: 8; }
+    .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
+
+    @media (prefers-color-scheme: dark) {
+      .main-title { fill: #f3f4f6; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="350" y="25" text-anchor="middle" class="main-title">Subtractive Synthesis Signal Chain</text>
+
+  <!-- Oscillator -->
+  <rect x="30" y="50" width="130" height="80" fill="url(#oscGrad)" class="box"/>
+  <text x="95" y="85" text-anchor="middle" class="title">Oscillator</text>
+  <text x="95" y="105" text-anchor="middle" class="subtitle">(waveform)</text>
+
+  <!-- Arrow -->
+  <line x1="160" y1="90" x2="195" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Envelope -->
+  <rect x="200" y="50" width="130" height="80" fill="url(#envGrad)" class="box"/>
+  <text x="265" y="85" text-anchor="middle" class="title">Envelope</text>
+  <text x="265" y="105" text-anchor="middle" class="subtitle">(ADSR)</text>
+
+  <!-- Arrow -->
+  <line x1="330" y1="90" x2="365" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Filter -->
+  <rect x="370" y="50" width="130" height="80" fill="url(#filterGrad)" class="box"/>
+  <text x="435" y="85" text-anchor="middle" class="title">Filter</text>
+  <text x="435" y="105" text-anchor="middle" class="subtitle">(LPF/HPF/BPF)</text>
+
+  <!-- Arrow -->
+  <line x1="500" y1="90" x2="535" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Output -->
+  <rect x="540" y="50" width="130" height="80" fill="url(#outGrad)" class="box"/>
+  <text x="605" y="85" text-anchor="middle" class="title">Output</text>
+  <text x="605" y="105" text-anchor="middle" class="subtitle">(speaker)</text>
+</svg>

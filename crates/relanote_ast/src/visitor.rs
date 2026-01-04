@@ -206,7 +206,8 @@ pub fn walk_item<V: Visitor>(visitor: &mut V, item: &Spanned<Item>) {
                     crate::music::SynthProperty::Oscillator(expr)
                     | crate::music::SynthProperty::Envelope(expr)
                     | crate::music::SynthProperty::Filter(expr)
-                    | crate::music::SynthProperty::Detune(expr) => {
+                    | crate::music::SynthProperty::Detune(expr)
+                    | crate::music::SynthProperty::PitchEnvelope(expr) => {
                         visitor.visit_expr(expr);
                     }
                 }

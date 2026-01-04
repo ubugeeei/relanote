@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280">
+  <defs>
+    <linearGradient id="lpfFill" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2"/>
+      <stop offset="60%" style="stop-color:#3b82f6;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="hpfFill" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0"/>
+      <stop offset="40%" style="stop-color:#ef4444;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.2"/>
+    </linearGradient>
+    <linearGradient id="bpfFill" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0"/>
+      <stop offset="35%" style="stop-color:#10b981;stop-opacity:0.2"/>
+      <stop offset="65%" style="stop-color:#10b981;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 14px sans-serif; fill: #1f2937; }
+    .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
+    .label { font: 11px sans-serif; fill: #6b7280; }
+    .axis { stroke: #d1d5db; stroke-width: 1; }
+    .card { fill: #fafafa; stroke: #e5e7eb; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #f3f4f6; }
+      .main-title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+      .axis { stroke: #4b5563; }
+      .card { fill: #1f2937; stroke: #4b5563; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="400" y="25" text-anchor="middle" class="main-title">Filter Types</text>
+
+  <!-- Low-Pass Filter -->
+  <g transform="translate(30, 50)">
+    <rect width="220" height="180" class="card" rx="8"/>
+    <text x="110" y="25" text-anchor="middle" class="title">Low-Pass Filter (LPF)</text>
+
+    <!-- Graph area -->
+    <rect x="20" y="40" width="180" height="100" fill="none"/>
+
+    <!-- Axes -->
+    <line x1="20" y1="140" x2="200" y2="140" class="axis"/>
+    <line x1="20" y1="40" x2="20" y2="140" class="axis"/>
+
+    <!-- Fill area -->
+    <path d="M 20,55 L 100,55 Q 130,55 150,100 L 180,140 L 20,140 Z" fill="url(#lpfFill)"/>
+
+    <!-- Curve -->
+    <path d="M 20,55 L 100,55 Q 130,55 150,100 L 180,140"
+          stroke="#3b82f6" stroke-width="2.5" fill="none"/>
+
+    <!-- Cutoff marker -->
+    <line x1="110" y1="40" x2="110" y2="145" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4"/>
+    <text x="110" y="158" text-anchor="middle" class="label" fill="#3b82f6">Cutoff</text>
+
+    <!-- Labels -->
+    <text x="20" y="168" text-anchor="start" class="label">20Hz</text>
+    <text x="200" y="168" text-anchor="end" class="label">20kHz</text>
+    <text x="60" y="75" text-anchor="middle" class="label">Pass</text>
+  </g>
+
+  <!-- High-Pass Filter -->
+  <g transform="translate(280, 50)">
+    <rect width="220" height="180" class="card" rx="8"/>
+    <text x="110" y="25" text-anchor="middle" class="title">High-Pass Filter (HPF)</text>
+
+    <!-- Graph area -->
+    <rect x="20" y="40" width="180" height="100" fill="none"/>
+
+    <!-- Axes -->
+    <line x1="20" y1="140" x2="200" y2="140" class="axis"/>
+    <line x1="20" y1="40" x2="20" y2="140" class="axis"/>
+
+    <!-- Fill area -->
+    <path d="M 20,140 L 50,140 Q 70,100 90,55 L 200,55 L 200,140 Z" fill="url(#hpfFill)"/>
+
+    <!-- Curve -->
+    <path d="M 20,140 L 50,140 Q 70,100 90,55 L 200,55"
+          stroke="#ef4444" stroke-width="2.5" fill="none"/>
+
+    <!-- Cutoff marker -->
+    <line x1="90" y1="40" x2="90" y2="145" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+    <text x="90" y="158" text-anchor="middle" class="label" fill="#ef4444">Cutoff</text>
+
+    <!-- Labels -->
+    <text x="20" y="168" text-anchor="start" class="label">20Hz</text>
+    <text x="200" y="168" text-anchor="end" class="label">20kHz</text>
+    <text x="150" y="75" text-anchor="middle" class="label">Pass</text>
+  </g>
+
+  <!-- Band-Pass Filter -->
+  <g transform="translate(530, 50)">
+    <rect width="220" height="180" class="card" rx="8"/>
+    <text x="110" y="25" text-anchor="middle" class="title">Band-Pass Filter (BPF)</text>
+
+    <!-- Graph area -->
+    <rect x="20" y="40" width="180" height="100" fill="none"/>
+
+    <!-- Axes -->
+    <line x1="20" y1="140" x2="200" y2="140" class="axis"/>
+    <line x1="20" y1="40" x2="20" y2="140" class="axis"/>
+
+    <!-- Fill area -->
+    <path d="M 20,140 L 50,140 Q 75,55 110,55 Q 145,55 170,140 L 200,140 Z" fill="url(#bpfFill)"/>
+
+    <!-- Curve -->
+    <path d="M 20,140 L 50,140 Q 75,55 110,55 Q 145,55 170,140 L 200,140"
+          stroke="#10b981" stroke-width="2.5" fill="none"/>
+
+    <!-- Center marker -->
+    <line x1="110" y1="40" x2="110" y2="145" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+    <text x="110" y="158" text-anchor="middle" class="label" fill="#10b981">Center</text>
+
+    <!-- Labels -->
+    <text x="20" y="168" text-anchor="start" class="label">20Hz</text>
+    <text x="200" y="168" text-anchor="end" class="label">20kHz</text>
+    <text x="110" y="75" text-anchor="middle" class="label">Pass</text>
+  </g>
+
+  <!-- Legend for Y axis -->
+  <text x="20" y="260" class="label">Y-axis: Amplitude (dB) | X-axis: Frequency (Hz)</text>
+</svg>

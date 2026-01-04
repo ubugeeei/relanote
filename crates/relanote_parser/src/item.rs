@@ -129,9 +129,13 @@ impl Parser {
                     self.advance();
                     "detune"
                 }
+                TokenKind::Ident(ref s) if s == "pitch_env" => {
+                    self.advance();
+                    "pitch_env"
+                }
                 _ => {
                     return Err(ParseError::unexpected_token(
-                        "synth property (osc, env, filter, detune)",
+                        "synth property (osc, env, filter, detune, pitch_env)",
                         self.current().clone(),
                         self.current_span(),
                     ))
@@ -149,6 +153,7 @@ impl Parser {
                 "env" => SynthProperty::Envelope(value),
                 "filter" => SynthProperty::Filter(value),
                 "detune" => SynthProperty::Detune(value),
+                "pitch_env" => SynthProperty::PitchEnvelope(value),
                 _ => unreachable!(),
             };
 

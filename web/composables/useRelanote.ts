@@ -4,6 +4,7 @@ import type {
   RenderResult,
   StaffData,
   AudioPlaybackData,
+  PianoRollNote,
 } from "../types/relanote";
 
 let wasmModule: typeof import("../wasm/pkg/relanote_wasm") | null = null;
@@ -75,6 +76,23 @@ export function useRelanote() {
     }>;
   };
 
+  const notesToCode = (
+    notes: PianoRollNote[],
+    synthName?: string,
+    keyPitch?: number
+  ): string | null => {
+    if (!wasmModule) return null;
+    // Convert notes to JSON for WASM
+    const notesForWasm = notes.map((n) => ({
+      pitch: n.pitch,
+      start: n.start,
+      duration: n.duration,
+      velocity: n.velocity,
+    }));
+    const notesJson = JSON.stringify(notesForWasm);
+    return wasmModule.notes_to_code(notesJson, synthName, keyPitch);
+  };
+
   return {
     isReady,
     error,
@@ -85,5 +103,6 @@ export function useRelanote() {
     getStaffData,
     getAudioData,
     getTokens,
+    notesToCode,
   };
 }

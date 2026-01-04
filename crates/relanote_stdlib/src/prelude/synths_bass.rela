@@ -1,0 +1,40 @@
+; ===========================================
+; Bass Instrument Presets
+; ===========================================
+
+synth WoodBass = {
+  osc: (Sine |> mix 0.5) + (Triangle |> mix 0.3) + (Saw |> mix 0.2 |> octave -1),
+  env: envelope 0.02 0.3 0.6 0.4,
+  filter: LowPass 800 0.3
+}
+
+synth ElectricBass = {
+  osc: (Saw |> mix 0.4) + (Sine |> mix 0.4) + (Triangle |> mix 0.2),
+  env: envelope 0.01 0.25 0.5 0.35,
+  filter: LowPass 1200 0.35
+}
+
+synth SynthBass = {
+  osc: (Saw |> mix 0.5) + (Square |> mix 0.3) + (Sine |> mix 0.2 |> octave -1),
+  env: envelope 0.01 0.2 0.7 0.3,
+  filter: LowPass 400 0.5,
+  detune: 8
+}
+
+synth SubBass = {
+  osc: (Sine |> mix 0.7) + (Sine |> mix 0.3 |> octave -1),
+  env: envelope 0.02 0.1 0.9 0.2,
+  filter: LowPass 200 0.2
+}
+
+synth AcidBass = {
+  osc: (Saw |> mix 0.6) + (Square |> mix 0.4),
+  env: envelope 0.005 0.15 0.4 0.2,
+  filter: LowPass 600 0.8
+}
+
+synth ReeseBass = {
+  osc: (Saw |> mix 0.33 |> osc_detune -15) + (Saw |> mix 0.34) + (Saw |> mix 0.33 |> osc_detune 15),
+  env: envelope 0.01 0.1 0.8 0.3,
+  filter: LowPass 500 0.4
+}

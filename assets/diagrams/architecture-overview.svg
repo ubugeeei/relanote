@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <linearGradient id="rustGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:0.3"/>
+    </linearGradient>
+    <linearGradient id="wasmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.3"/>
+    </linearGradient>
+    <linearGradient id="webGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:0.3"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 16px sans-serif; fill: #1f2937; }
+    .subtitle { font: 12px sans-serif; fill: #6b7280; }
+    .label { font: 11px sans-serif; fill: #374151; }
+    .small { font: 10px sans-serif; fill: #6b7280; }
+    .box { stroke: #d1d5db; stroke-width: 1.5; rx: 6; }
+    .arrow { stroke: #9ca3af; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    .white-box { fill: #fff; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #f3f4f6; }
+      .subtitle { fill: #9ca3af; }
+      .label { fill: #e5e7eb; }
+      .small { fill: #9ca3af; }
+      .box { stroke: #4b5563; }
+      .arrow { stroke: #6b7280; }
+      .white-box { fill: #374151; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" class="title">Relanote System Architecture</text>
+
+  <!-- User File -->
+  <rect x="280" y="50" width="240" height="40" fill="#fef3c7" class="box"/>
+  <text x="400" y="75" text-anchor="middle" class="label">User's .rela File</text>
+
+  <!-- Arrow -->
+  <line x1="400" y1="90" x2="400" y2="120" class="arrow"/>
+
+  <!-- Rust Backend Section -->
+  <rect x="50" y="130" width="700" height="180" fill="url(#rustGrad)" class="box"/>
+  <text x="400" y="155" text-anchor="middle" class="title">Rust Backend</text>
+
+  <!-- Lexer -->
+  <rect x="80" y="175" width="130" height="60" class="box white-box"/>
+  <text x="145" y="200" text-anchor="middle" class="label">Lexer</text>
+  <text x="145" y="218" text-anchor="middle" class="small">(relanote_lexer)</text>
+
+  <!-- Parser -->
+  <rect x="240" y="175" width="130" height="60" class="box white-box"/>
+  <text x="305" y="200" text-anchor="middle" class="label">Parser</text>
+  <text x="305" y="218" text-anchor="middle" class="small">(relanote_parser)</text>
+
+  <!-- Evaluator -->
+  <rect x="400" y="175" width="130" height="60" class="box white-box"/>
+  <text x="465" y="200" text-anchor="middle" class="label">Evaluator</text>
+  <text x="465" y="218" text-anchor="middle" class="small">(relanote_eval)</text>
+
+  <!-- Renderer -->
+  <rect x="560" y="175" width="130" height="60" class="box white-box"/>
+  <text x="625" y="200" text-anchor="middle" class="label">Renderer</text>
+  <text x="625" y="218" text-anchor="middle" class="small">(relanote_render)</text>
+
+  <!-- Arrows between components -->
+  <line x1="210" y1="205" x2="240" y2="205" class="arrow"/>
+  <line x1="370" y1="205" x2="400" y2="205" class="arrow"/>
+  <line x1="530" y1="205" x2="560" y2="205" class="arrow"/>
+
+  <!-- Output labels -->
+  <text x="145" y="260" text-anchor="middle" class="small">Tokens</text>
+  <text x="305" y="260" text-anchor="middle" class="small">AST</text>
+  <text x="465" y="260" text-anchor="middle" class="small">Values</text>
+  <text x="625" y="260" text-anchor="middle" class="small">MIDI/JSON</text>
+
+  <!-- Arrow to WASM -->
+  <line x1="400" y1="310" x2="400" y2="340" class="arrow"/>
+
+  <!-- WASM Bridge -->
+  <rect x="150" y="350" width="500" height="70" fill="url(#wasmGrad)" class="box"/>
+  <text x="400" y="375" text-anchor="middle" class="title">WASM Bridge (relanote_wasm)</text>
+  <text x="400" y="395" text-anchor="middle" class="small">Rust &lt;--&gt; JavaScript Data Conversion (wasm-bindgen + serde)</text>
+
+  <!-- Arrow to Web -->
+  <line x1="400" y1="420" x2="400" y2="450" class="arrow"/>
+
+  <!-- Web Frontend -->
+  <rect x="50" y="460" width="700" height="120" fill="url(#webGrad)" class="box"/>
+  <text x="400" y="485" text-anchor="middle" class="title">Web Frontend (Nuxt.js)</text>
+
+  <!-- Monaco Editor -->
+  <rect x="80" y="500" width="180" height="50" class="box white-box"/>
+  <text x="170" y="525" text-anchor="middle" class="label">Monaco Editor</text>
+  <text x="170" y="540" text-anchor="middle" class="small">Code Editing</text>
+
+  <!-- WebAudio -->
+  <rect x="310" y="500" width="180" height="50" class="box white-box"/>
+  <text x="400" y="525" text-anchor="middle" class="label">WebAudio API</text>
+  <text x="400" y="540" text-anchor="middle" class="small">Sound Playback</text>
+
+  <!-- Vue UI -->
+  <rect x="540" y="500" width="180" height="50" class="box white-box"/>
+  <text x="630" y="525" text-anchor="middle" class="label">Vue.js UI</text>
+  <text x="630" y="540" text-anchor="middle" class="small">User Interface</text>
+</svg>

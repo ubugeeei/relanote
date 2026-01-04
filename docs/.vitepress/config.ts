@@ -188,7 +188,7 @@ export default defineConfig({
   },
 
   head: [
-    ["link", { rel: "icon", href: `${base}logo-icon.svg` }],
+    ["link", { rel: "icon", href: `${base}logo-icon-transparent.svg` }],
     ["meta", { name: "theme-color", content: "#b45309" }],
     // Open Graph
     ["meta", { property: "og:type", content: "website" }],
@@ -225,12 +225,13 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: `${base}logo-icon.svg`,
+    logo: `${base}logo-icon-transparent.svg`,
 
     nav: [
       { text: "Guide", link: "/guide/introduction" },
       { text: "Tutorial", link: "/tutorial/getting-started" },
       { text: "Reference", link: "/reference/syntax" },
+      { text: "Deep Dive", link: "/deep-dive/architecture" },
       { text: "Playground", link: "https://ubugeeei.github.io/relanote/playground/" },
     ],
 
@@ -324,6 +325,17 @@ export default defineConfig({
             { text: "Modules", link: "/reference/modules" },
             { text: "Built-in Functions", link: "/reference/builtins" },
             { text: "CLI", link: "/reference/cli" },
+          ],
+        },
+      ],
+      "/deep-dive/": [
+        {
+          text: "Deep Dive",
+          items: [
+            { text: "Architecture Overview", link: "/deep-dive/architecture" },
+            { text: "Sound Synthesis", link: "/deep-dive/sound-synthesis" },
+            { text: "Language Design", link: "/deep-dive/language-design" },
+            { text: "Preset Reference", link: "/deep-dive/preset-reference" },
           ],
         },
       ],

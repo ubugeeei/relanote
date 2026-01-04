@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320">
+  <defs>
+    <linearGradient id="pitchFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 14px sans-serif; fill: #1f2937; }
+    .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
+    .label { font: 11px sans-serif; fill: #6b7280; }
+    .value { font: 11px sans-serif; fill: #8b5cf6; }
+    .code { font: 11px monospace; fill: #374151; }
+    .axis { stroke: #d1d5db; stroke-width: 1; }
+    .graph-bg { fill: #fafafa; stroke: #e5e7eb; }
+    .code-bg { fill: #f3f4f6; stroke: #e5e7eb; }
+    .grid { stroke: #f3f4f6; }
+    .desc { font-size: 11px; fill: #6b7280; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #f3f4f6; }
+      .main-title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+      .code { fill: #e5e7eb; }
+      .axis { stroke: #4b5563; }
+      .graph-bg { fill: #1f2937; stroke: #4b5563; }
+      .code-bg { fill: #374151; stroke: #4b5563; }
+      .grid { stroke: #374151; }
+      .desc { fill: #9ca3af; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="300" y="25" text-anchor="middle" class="main-title">Pitch Envelope for Drum Synthesis</text>
+
+  <!-- Graph background -->
+  <rect x="80" y="50" width="440" height="180" class="graph-bg" rx="4"/>
+
+  <!-- Grid lines -->
+  <line x1="80" y1="95" x2="520" y2="95" class="grid" stroke-dasharray="4"/>
+  <line x1="80" y1="140" x2="520" y2="140" class="grid" stroke-dasharray="4"/>
+  <line x1="80" y1="185" x2="520" y2="185" class="grid" stroke-dasharray="4"/>
+
+  <!-- Axes -->
+  <line x1="80" y1="230" x2="520" y2="230" class="axis" stroke="#9ca3af"/>
+  <line x1="80" y1="50" x2="80" y2="230" class="axis" stroke="#9ca3af"/>
+
+  <!-- Y-axis labels -->
+  <text x="70" y="75" text-anchor="end" class="label">200 Hz</text>
+  <text x="70" y="115" text-anchor="end" class="label">150 Hz</text>
+  <text x="70" y="155" text-anchor="end" class="label">100 Hz</text>
+  <text x="70" y="195" text-anchor="end" class="label">50 Hz</text>
+  <text x="70" y="235" text-anchor="end" class="label">0 Hz</text>
+
+  <!-- X-axis labels -->
+  <text x="80" y="248" text-anchor="start" class="label">0ms</text>
+  <text x="160" y="248" text-anchor="middle" class="label">20ms</text>
+  <text x="240" y="248" text-anchor="middle" class="label">40ms</text>
+  <text x="320" y="248" text-anchor="middle" class="label">60ms</text>
+  <text x="400" y="248" text-anchor="middle" class="label">80ms</text>
+  <text x="480" y="248" text-anchor="middle" class="label">100ms</text>
+
+  <!-- Axis titles -->
+  <text x="50" y="140" text-anchor="middle" class="label" transform="rotate(-90, 50, 140)">Frequency</text>
+  <text x="300" y="268" text-anchor="middle" class="label">Time</text>
+
+  <!-- Pitch envelope curve fill -->
+  <path d="M 80,70
+           Q 120,90 160,140
+           Q 200,180 240,195
+           Q 350,210 520,210
+           L 520,230 L 80,230 Z"
+        fill="url(#pitchFill)"/>
+
+  <!-- Pitch envelope curve -->
+  <path d="M 80,70
+           Q 120,90 160,140
+           Q 200,180 240,195
+           Q 350,210 520,210"
+        stroke="#8b5cf6" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Start point -->
+  <circle cx="80" cy="70" r="6" fill="#8b5cf6"/>
+  <text x="95" y="65" class="value">Start: 150 Hz</text>
+
+  <!-- End point -->
+  <circle cx="480" cy="210" r="6" fill="#8b5cf6"/>
+  <text x="420" y="200" class="value">End: 40 Hz</text>
+
+  <!-- Time marker -->
+  <line x1="400" y1="50" x2="400" y2="235" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4"/>
+  <text x="400" y="280" text-anchor="middle" class="value">time: 80ms</text>
+
+  <!-- Code example -->
+  <rect x="80" y="290" width="440" height="25" class="code-bg" rx="4"/>
+  <text x="300" y="308" text-anchor="middle" class="code">pitch_env: (150, 40, 0.08)</text>
+
+  <!-- Explanation -->
+  <text x="550" y="100" text-anchor="start" class="desc">Kick drums use</text>
+  <text x="550" y="115" text-anchor="start" class="desc">rapid pitch drop</text>
+  <text x="550" y="130" text-anchor="start" class="desc">for punch!</text>
+</svg>

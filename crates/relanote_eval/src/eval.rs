@@ -113,6 +113,11 @@ impl Evaluator {
             e.bind(intern("Sine"), Value::Builtin(builtin_sine));
             e.bind(intern("Noise"), Value::Builtin(builtin_noise));
 
+            // Oscillator modifiers (for multi-oscillator synths)
+            e.bind(intern("mix"), Value::Builtin(builtin_osc_mix));
+            e.bind(intern("octave"), Value::Builtin(builtin_osc_octave));
+            e.bind(intern("osc_detune"), Value::Builtin(builtin_osc_detune));
+
             // Functional programming utilities
             e.bind(intern("take"), Value::Builtin(builtin_take));
             e.bind(intern("drop"), Value::Builtin(builtin_drop));
@@ -340,10 +345,23 @@ impl Evaluator {
                     match &prop.node {
                         relanote_ast::music::SynthProperty::Oscillator(expr) => {
                             let value = self.eval_expr(expr)?;
-                            // Handle both direct Oscillator values and Builtin functions (like Noise, Square)
+                            // Handle direct Oscillator, Array of Oscillators, or Builtin functions
                             match value {
                                 Value::Oscillator(osc) => {
                                     synth.oscillators = vec![osc];
+                                }
+                                Value::Array(arr) => {
+                                    // Handle multiple oscillators: osc: Saw + Square
+                                    let oscs: Vec<OscillatorValue> = arr
+                                        .into_iter()
+                                        .filter_map(|v| match v {
+                                            Value::Oscillator(o) => Some(o),
+                                            _ => None,
+                                        })
+                                        .collect();
+                                    if !oscs.is_empty() {
+                                        synth.oscillators = oscs;
+                                    }
                                 }
                                 Value::Builtin(f) => {
                                     // Call the builtin with empty args (for parameterless oscillators)
@@ -380,6 +398,23 @@ impl Evaluator {
                                 synth.detune_cents = cents;
                             } else if let Ok(Value::Int(cents)) = self.eval_expr(expr) {
                                 synth.detune_cents = cents as f64;
+                            }
+                        }
+                        relanote_ast::music::SynthProperty::PitchEnvelope(expr) => {
+                            // pitch_env: (start_hz, end_hz, time_seconds)
+                            if let Ok(Value::Tuple(values)) = self.eval_expr(expr) {
+                                if values.len() >= 3 {
+                                    let extract = |v: &Value| match v {
+                                        Value::Float(f) => Some(*f),
+                                        Value::Int(i) => Some(*i as f64),
+                                        _ => None,
+                                    };
+                                    if let (Some(start), Some(end), Some(time)) =
+                                        (extract(&values[0]), extract(&values[1]), extract(&values[2]))
+                                    {
+                                        synth.pitch_envelope = Some((start, end, time));
+                                    }
+                                }
                             }
                         }
                     }
@@ -1069,6 +1104,21 @@ impl Evaluator {
             (BinaryOp::Compose, f, g) => {
                 // Both operands should be callable (Closure, Builtin, or Composed)
                 Ok(Value::Composed(Box::new(f), Box::new(g)))
+            }
+
+            // Oscillator addition: Saw + Square => Array of oscillators for multi-osc synths
+            (BinaryOp::Add, Value::Oscillator(a), Value::Oscillator(b)) => {
+                Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+            }
+            (BinaryOp::Add, Value::Array(arr), Value::Oscillator(osc)) => {
+                let mut new_arr = arr;
+                new_arr.push(Value::Oscillator(osc));
+                Ok(Value::Array(new_arr))
+            }
+            (BinaryOp::Add, Value::Oscillator(osc), Value::Array(arr)) => {
+                let mut new_arr = vec![Value::Oscillator(osc)];
+                new_arr.extend(arr);
+                Ok(Value::Array(new_arr))
             }
 
             _ => Err(EvalError::TypeError {

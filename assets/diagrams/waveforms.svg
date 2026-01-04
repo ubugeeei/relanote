@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" class="bg-light-start" style="stop-color:#f8fafc"/>
+      <stop offset="100%" class="bg-light-end" style="stop-color:#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="bgGradDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#374151"/>
+      <stop offset="100%" style="stop-color:#1f2937"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 14px sans-serif; fill: #1f2937; }
+    .main-title { font-size: 18px; font-weight: bold; fill: #1f2937; }
+    .label { font: 12px sans-serif; fill: #6b7280; }
+    .wave { stroke-width: 2.5; fill: none; }
+    .card { fill: url(#bgGrad); stroke: #e5e7eb; }
+    .center-line { stroke: #e5e7eb; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #f3f4f6; }
+      .main-title { fill: #f3f4f6; }
+      .label { fill: #9ca3af; }
+      .card { fill: url(#bgGradDark); stroke: #4b5563; }
+      .center-line { stroke: #4b5563; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="400" y="25" text-anchor="middle" class="main-title">Oscillator Waveforms</text>
+
+  <!-- Sine Wave -->
+  <g transform="translate(20, 50)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Sine</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Pure, flute-like</text>
+    <path d="M 20,80
+             Q 42.5,40 65,80
+             Q 87.5,120 110,80
+             Q 132.5,40 150,80"
+          stroke="#3b82f6" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+
+  <!-- Square Wave -->
+  <g transform="translate(210, 50)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Square</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Hollow, clarinet-like</text>
+    <path d="M 20,50 L 20,50 L 52,50 L 52,110 L 85,110 L 85,50 L 117,50 L 117,110 L 150,110"
+          stroke="#ef4444" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+
+  <!-- Sawtooth Wave -->
+  <g transform="translate(400, 50)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Sawtooth</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Bright, string-like</text>
+    <path d="M 20,110 L 52,50 L 52,110 L 85,50 L 85,110 L 117,50 L 117,110 L 150,50"
+          stroke="#f59e0b" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+
+  <!-- Triangle Wave -->
+  <g transform="translate(590, 50)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Triangle</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Soft, mellow</text>
+    <path d="M 20,80 L 52,50 L 85,110 L 117,50 L 150,80"
+          stroke="#10b981" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+
+  <!-- Pulse Wave (narrow) -->
+  <g transform="translate(115, 220)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Pulse (narrow)</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Nasal, Game Boy</text>
+    <path d="M 20,110 L 20,50 L 35,50 L 35,110 L 85,110 L 85,50 L 100,50 L 100,110 L 150,110"
+          stroke="#8b5cf6" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+
+  <!-- Noise -->
+  <g transform="translate(495, 220)">
+    <rect width="170" height="150" class="card" rx="8"/>
+    <text x="85" y="25" text-anchor="middle" class="title">Noise</text>
+    <text x="85" y="140" text-anchor="middle" class="label">Hiss, percussion</text>
+    <path d="M 20,80 L 25,65 L 30,95 L 35,70 L 40,88 L 45,60 L 50,100 L 55,75 L 60,85 L 65,55 L 70,105 L 75,72 L 80,90 L 85,58 L 90,98 L 95,68 L 100,82 L 105,110 L 110,50 L 115,88 L 120,65 L 125,95 L 130,72 L 135,85 L 140,60 L 145,95 L 150,75"
+          stroke="#6b7280" class="wave"/>
+    <line x1="20" y1="80" x2="150" y2="80" class="center-line" stroke-dasharray="4"/>
+  </g>
+</svg>

@@ -65,10 +65,7 @@ impl<'src> Lexer<'src> {
         loop {
             match self.inner.next() {
                 Some(Ok(kind)) => {
-                    // Skip comments (but preserve newlines for statement separation)
-                    if matches!(kind, TokenKind::LineComment(_)) {
-                        continue;
-                    }
+                    // Keep all tokens including comments - formatter needs them
                     return Some(Token::new(kind, self.current_span()));
                 }
                 Some(Err(())) => {
@@ -236,12 +233,13 @@ mod tests {
     }
 
     #[test]
-    fn test_lex_comment_skipped() {
+    fn test_lex_comment_preserved() {
         let tokens = lex("a ; this is a comment\nb");
         assert_eq!(tokens[0], TokenKind::Ident("a".to_string()));
-        // Comment is skipped
-        assert_eq!(tokens[1], TokenKind::Newline);
-        assert_eq!(tokens[2], TokenKind::Ident("b".to_string()));
+        // Comment is preserved for formatter
+        assert!(matches!(tokens[1], TokenKind::LineComment(_)));
+        assert_eq!(tokens[2], TokenKind::Newline);
+        assert_eq!(tokens[3], TokenKind::Ident("b".to_string()));
     }
 
     // ===== Interval Tests =====

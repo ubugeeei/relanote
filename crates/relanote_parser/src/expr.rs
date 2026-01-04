@@ -258,8 +258,8 @@ impl Parser {
     /// Check if the current token can start a function argument (for Haskell-style application)
     /// Note: Newlines terminate Haskell-style application to prevent cross-line parsing
     pub fn can_start_argument(&self) -> bool {
-        // Newlines terminate Haskell-style application
-        if matches!(self.current(), TokenKind::Newline) {
+        // Newlines and comments terminate Haskell-style application
+        if matches!(self.current(), TokenKind::Newline | TokenKind::LineComment(_)) {
             return false;
         }
         // Reserved words that should not be consumed as arguments

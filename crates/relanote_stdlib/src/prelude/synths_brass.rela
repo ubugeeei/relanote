@@ -1,0 +1,45 @@
+; ===========================================
+; Brass Instrument Presets
+; ===========================================
+
+synth Trumpet = {
+  osc: (Saw |> mix 0.4) + (Square |> mix 0.3) + (Sine |> mix 0.3),
+  env: envelope 0.08 0.15 0.8 0.2,
+  filter: LowPass 4000 0.4,
+  detune: 3
+}
+
+synth MutedTrumpet = {
+  osc: (Saw |> mix 0.4) + (Triangle |> mix 0.4) + (Sine |> mix 0.2),
+  env: envelope 0.1 0.2 0.7 0.25,
+  filter: BandPass 1500 0.5,
+  detune: 2
+}
+
+synth Trombone = {
+  osc: (Saw |> mix 0.4) + (Triangle |> mix 0.4) + (Sine |> mix 0.2 |> octave -1),
+  env: envelope 0.06 0.2 0.7 0.3,
+  filter: LowPass 2000 0.4,
+  detune: 4
+}
+
+synth FrenchHorn = {
+  osc: (Sine |> mix 0.4) + (Triangle |> mix 0.35) + (Saw |> mix 0.25),
+  env: envelope 0.1 0.25 0.75 0.35,
+  filter: LowPass 2500 0.3,
+  detune: 3
+}
+
+synth Brass = {
+  osc: (Saw |> mix 0.5) + (Square |> mix 0.3) + (Triangle |> mix 0.2),
+  env: envelope 0.05 0.2 0.75 0.25,
+  filter: LowPass 3500 0.5,
+  detune: 5
+}
+
+synth BrassSection = {
+  osc: (Saw |> mix 0.35 |> osc_detune -8) + (Saw |> mix 0.35 |> osc_detune 8) + (Square |> mix 0.3),
+  env: envelope 0.06 0.2 0.8 0.3,
+  filter: LowPass 3000 0.4,
+  detune: 6
+}

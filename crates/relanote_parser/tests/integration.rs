@@ -529,3 +529,41 @@ fn test_parse_layer() {
         _ => panic!("Expected ExprStmt"),
     }
 }
+
+#[test]
+fn test_parse_layer_with_newlines() {
+    let program = parse(
+        "layer [
+  | R M3 P5 |,
+  | R M3 P5 |
+]",
+    );
+    match &program.items[0].node {
+        Item::ExprStmt(expr) => match &expr.node {
+            Expr::Layer(layer) => {
+                assert_eq!(layer.parts.len(), 2);
+            }
+            _ => panic!("Expected Layer"),
+        },
+        _ => panic!("Expected ExprStmt"),
+    }
+}
+
+#[test]
+fn test_parse_layer_trailing_comma() {
+    let program = parse(
+        "layer [
+  | R M3 P5 |,
+  | R M3 P5 |,
+]",
+    );
+    match &program.items[0].node {
+        Item::ExprStmt(expr) => match &expr.node {
+            Expr::Layer(layer) => {
+                assert_eq!(layer.parts.len(), 2);
+            }
+            _ => panic!("Expected Layer"),
+        },
+        _ => panic!("Expected ExprStmt"),
+    }
+}

@@ -1,0 +1,48 @@
+; ===========================================
+; Piano & Electric Piano Presets
+; ===========================================
+
+; Acoustic Piano
+synth AcousticPiano = {
+  osc: (Sine |> mix 0.6) + (Triangle |> mix 0.25 |> octave 1) + (Sine |> mix 0.15 |> octave 2),
+  env: envelope 0.005 0.4 0.3 0.8,
+  filter: LowPass 5000 0.2
+}
+
+synth BrightPiano = {
+  osc: (Sine |> mix 0.5) + (Triangle |> mix 0.3 |> octave 1) + (Saw |> mix 0.2 |> octave 2),
+  env: envelope 0.003 0.35 0.35 0.7,
+  filter: LowPass 6000 0.25
+}
+
+synth MellowPiano = {
+  osc: (Sine |> mix 0.7) + (Triangle |> mix 0.2) + (Sine |> mix 0.1 |> octave 1),
+  env: envelope 0.008 0.5 0.25 0.9,
+  filter: LowPass 3000 0.15
+}
+
+; Electric Piano
+synth Rhodes = {
+  osc: (Sine |> mix 0.5) + (Triangle |> mix 0.3 |> octave 1) + (Sine |> mix 0.2 |> octave 2 |> osc_detune 3),
+  env: envelope 0.002 0.8 0.4 0.5,
+  filter: LowPass 3000 0.3
+}
+
+synth Wurlitzer = {
+  osc: (Square |> mix 0.4) + (Sine |> mix 0.4) + (Triangle |> mix 0.2 |> octave 1),
+  env: envelope 0.003 0.5 0.35 0.4,
+  filter: LowPass 2500 0.4,
+  detune: 2
+}
+
+synth DXPiano = {
+  osc: (Sine |> mix 0.4) + (Sine |> mix 0.35 |> octave 1 |> osc_detune 5) + (Sine |> mix 0.25 |> octave 2),
+  env: envelope 0.001 0.6 0.3 0.45,
+  filter: LowPass 4500 0.2
+}
+
+synth Clavinet = {
+  osc: (Saw |> mix 0.5) + (Square |> mix 0.3) + (Pulse 0.25 |> mix 0.2),
+  env: envelope 0.001 0.2 0.0 0.1,
+  filter: BandPass 2000 0.6
+}

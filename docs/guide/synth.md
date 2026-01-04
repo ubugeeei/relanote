@@ -21,36 +21,88 @@ lead
 
 ## Available Presets
 
-### Classic Synths
+Relanote includes 80+ professionally designed synth presets. See the [Preset Reference](/deep-dive/preset-reference) for a complete list.
+
+### Piano & Electric Piano
 
 | Preset | Description |
 |--------|-------------|
-| `Lead` | Bright sawtooth lead sound |
-| `SoftPad` | Warm sustained pad |
-| `FatBass` | Thick detuned bass |
-| `Pluck` | Short attack pluck sound |
-| `Strings` | Slow attack orchestral strings |
-| `Organ` | Harmonic sine wave organ |
+| `AcousticPiano` | Warm, natural acoustic piano |
+| `BrightPiano` | Clear, present piano |
+| `Rhodes` | Warm, bell-like electric piano |
+| `Wurlitzer` | Gritty, funky electric piano |
+| `Clavinet` | Funky, percussive |
 
-### 8-bit / Chiptune
+### Bass Instruments
+
+| Preset | Description |
+|--------|-------------|
+| `WoodBass` | Warm upright bass |
+| `ElectricBass` | Punchy electric bass |
+| `SynthBass` | Fat electronic bass |
+| `SubBass` | Deep sub-heavy bass |
+| `AcidBass` | Squelchy resonant bass |
+
+### Brass Instruments
+
+| Preset | Description |
+|--------|-------------|
+| `Trumpet` | Bright, cutting brass |
+| `MutedTrumpet` | Soft, nasal trumpet |
+| `Trombone` | Rich, warm brass |
+| `Brass` | Generic brass section |
+| `BrassSection` | Wide, powerful section |
+
+### Synth Leads
+
+| Preset | Description |
+|--------|-------------|
+| `Lead` | Classic versatile lead |
+| `SuperSaw` | Huge detuned trance lead |
+| `SquareLead` | Hollow, punchy lead |
+| `ResoLead` | Squelchy filtered lead |
+
+### Pads
+
+| Preset | Description |
+|--------|-------------|
+| `SoftPad` | Warm sustained pad |
+| `WarmPad` | Rich, enveloping pad |
+| `StringPad` | Orchestral string pad |
+| `ChoirPad` | Vocal, ethereal pad |
+
+### Classic & 8-bit
 
 | Preset | Description |
 |--------|-------------|
 | `Chiptune` | Classic square wave |
-| `Chip8bit` | Pure square, very short decay |
-| `NES` | Nintendo-style dual square + triangle |
+| `NES` | Nintendo-style sound |
 | `GameBoy` | Narrow pulse wave |
+| `Pluck` | Short attack pluck |
+| `Strings` | Slow attack strings |
+| `Organ` | Harmonic sine organ |
 
-### Drums / Percussion
+### Drums (with Pitch Envelope)
 
 | Preset | Description |
 |--------|-------------|
-| `Kick` | Synthesized kick drum |
-| `Snare` | Noise-based snare |
-| `HiHat` | Short hi-hat |
-| `OpenHat` | Open hi-hat with longer decay |
-| `Tom` | Synthesized tom |
-| `Clap` | Hand clap sound |
+| `DeepKick` | Sub-heavy kick drum |
+| `PunchyKick` | Attack-focused kick |
+| `TightSnare` | Short, punchy snare |
+| `FatSnare` | Big, roomy snare |
+| `ClosedHat` | Tight hi-hat |
+| `OpenHiHat` | Sizzling open hat |
+| `HighTom` / `MidTom` / `FloorTom` | Pitched toms |
+| `CrashCymbal` / `RideCymbal` | Cymbals |
+
+### Percussion
+
+| Preset | Description |
+|--------|-------------|
+| `HandClap` | Snappy clap |
+| `Cowbell` | Pitched metallic |
+| `Conga` / `Bongo` | Latin drums |
+| `Tambourine` / `Shaker` | Rhythm instruments |
 
 ## Modifying Synth Parameters
 

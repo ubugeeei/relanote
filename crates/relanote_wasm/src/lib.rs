@@ -102,6 +102,14 @@ pub struct FilterData {
     pub resonance: f64,      // Q/resonance (0.0-1.0)
 }
 
+/// Pitch envelope data for WebAudio (used for drum sounds like kicks)
+#[derive(Serialize, Deserialize, Clone)]
+pub struct PitchEnvelopeData {
+    pub start_hz: f64,      // Starting frequency in Hz
+    pub end_hz: f64,        // Ending frequency in Hz
+    pub time_seconds: f64,  // Duration of the pitch sweep
+}
+
 /// Complete synth data for WebAudio playback
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SynthData {
@@ -110,6 +118,7 @@ pub struct SynthData {
     pub envelope: ADSRData,
     pub filter: Option<FilterData>,
     pub detune_cents: f64,
+    pub pitch_envelope: Option<PitchEnvelopeData>,
 }
 
 /// Audio note event with synth information
@@ -643,12 +652,19 @@ fn synth_value_to_data(synth: &relanote_eval::value::SynthValue) -> SynthData {
         }
     });
 
+    let pitch_envelope = synth.pitch_envelope.map(|(start, end, time)| PitchEnvelopeData {
+        start_hz: start,
+        end_hz: end,
+        time_seconds: time,
+    });
+
     SynthData {
         name: synth.name.clone(),
         oscillators,
         envelope,
         filter,
         detune_cents: synth.detune_cents,
+        pitch_envelope,
     }
 }
 
@@ -749,6 +765,169 @@ fn extract_audio_notes_from_part(
     }
 
     (notes, current_beat)
+}
+
+/// Note data from piano roll for code generation
+#[derive(Serialize, Deserialize, Clone)]
+pub struct PianoRollNote {
+    pub pitch: i32,      // MIDI note (0-127)
+    pub start: f64,      // Start time in beats
+    pub duration: f64,   // Duration in beats
+    pub velocity: u8,    // 0-127
+}
+
+/// Generate Relanote code from piano roll notes
+#[wasm_bindgen]
+pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Option<i32>) -> String {
+    let notes: Vec<PianoRollNote> = match serde_json::from_str(notes_json) {
+        Ok(n) => n,
+        Err(_) => return "".to_string(),
+    };
+
+    if notes.is_empty() {
+        return "| - |".to_string();
+    }
+
+    // Default key is C4 (MIDI 60)
+    let base_pitch = key_pitch.unwrap_or(60);
+
+    // Group notes by start time
+    let mut time_groups: std::collections::BTreeMap<i64, Vec<&PianoRollNote>> = std::collections::BTreeMap::new();
+    for note in &notes {
+        // Round to 1/16 beat precision
+        let start_key = (note.start * 16.0).round() as i64;
+        time_groups.entry(start_key).or_default().push(note);
+    }
+
+    // Find the total duration
+    let total_beats = notes.iter()
+        .map(|n| n.start + n.duration)
+        .fold(0.0_f64, f64::max);
+
+    // Calculate number of bars (4 beats per bar)
+    let num_bars = ((total_beats / 4.0).ceil() as i32).max(1);
+
+    let mut result = String::new();
+
+    // Generate bars
+    for bar in 0..num_bars {
+        let bar_start = bar as f64 * 4.0;
+        let bar_end = bar_start + 4.0;
+
+        result.push_str("| ");
+
+        // Collect notes in this bar
+        let mut bar_slots: Vec<String> = Vec::new();
+        let mut current_time = bar_start;
+
+        // Find all unique time points in this bar
+        let mut time_points: Vec<f64> = time_groups.keys()
+            .map(|k| *k as f64 / 16.0)
+            .filter(|t| *t >= bar_start && *t < bar_end)
+            .collect();
+        time_points.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        time_points.dedup_by(|a, b| (*a - *b).abs() < 0.001);
+
+        if time_points.is_empty() {
+            // Empty bar - add rests
+            bar_slots.push("-".to_string());
+        } else {
+            for &time in &time_points {
+                // Add rest if there's a gap
+                if time > current_time + 0.001 {
+                    let gap = time - current_time;
+                    if gap >= 1.0 {
+                        bar_slots.push(format!("-:{}", gap));
+                    } else {
+                        bar_slots.push("-".to_string());
+                    }
+                }
+
+                let key = (time * 16.0).round() as i64;
+                if let Some(notes_at_time) = time_groups.get(&key) {
+                    if notes_at_time.len() == 1 {
+                        // Single note
+                        let note = notes_at_time[0];
+                        let interval = pitch_to_interval(note.pitch, base_pitch);
+                        if note.duration >= 1.0 && (note.duration - note.duration.round()).abs() < 0.001 {
+                            bar_slots.push(format!("{}:{}", interval, note.duration.round() as i32));
+                        } else {
+                            bar_slots.push(interval);
+                        }
+                        current_time = time + note.duration;
+                    } else {
+                        // Chord
+                        let intervals: Vec<String> = notes_at_time.iter()
+                            .map(|n| pitch_to_interval(n.pitch, base_pitch))
+                            .collect();
+                        let duration = notes_at_time[0].duration;
+                        let chord_str = format!("[{}]", intervals.join(" "));
+                        if duration >= 1.0 && (duration - duration.round()).abs() < 0.001 {
+                            bar_slots.push(format!("{}:{}", chord_str, duration.round() as i32));
+                        } else {
+                            bar_slots.push(chord_str);
+                        }
+                        current_time = time + duration;
+                    }
+                }
+            }
+        }
+
+        result.push_str(&bar_slots.join(" "));
+        result.push_str(" |");
+
+        if bar < num_bars - 1 {
+            result.push_str(" ++ ");
+        }
+    }
+
+    // Add synth voice if specified
+    if let Some(synth) = synth_name {
+        if !synth.is_empty() && synth != "Default" {
+            result = format!("{} |> voice {}", result, synth);
+        }
+    }
+
+    result
+}
+
+/// Convert MIDI pitch to interval notation
+fn pitch_to_interval(midi_pitch: i32, base_pitch: i32) -> String {
+    let semitones = midi_pitch - base_pitch;
+
+    // Common intervals
+    match semitones {
+        0 => "R".to_string(),
+        1 => "m2".to_string(),
+        2 => "M2".to_string(),
+        3 => "m3".to_string(),
+        4 => "M3".to_string(),
+        5 => "P4".to_string(),
+        6 => "d5".to_string(),
+        7 => "P5".to_string(),
+        8 => "m6".to_string(),
+        9 => "M6".to_string(),
+        10 => "m7".to_string(),
+        11 => "M7".to_string(),
+        12 => "P8".to_string(),
+        _ if semitones > 12 => {
+            let octaves = semitones / 12;
+            let remainder = semitones % 12;
+            let base_interval = pitch_to_interval(base_pitch + remainder, base_pitch);
+            format!("{}+{}", base_interval, octaves)
+        }
+        _ if semitones < 0 => {
+            let octaves = (-semitones) / 12;
+            let remainder = 12 - ((-semitones) % 12);
+            if remainder == 12 {
+                format!("R-{}", octaves)
+            } else {
+                let base_interval = pitch_to_interval(base_pitch + remainder, base_pitch);
+                format!("{}-{}", base_interval, octaves + 1)
+            }
+        }
+        _ => format!("{}st", semitones),
+    }
 }
 
 /// Get audio playback data including synth information

@@ -309,6 +309,9 @@ pub enum SynthProperty {
     Filter(Spanned<Expr>),
     /// detune: 5
     Detune(Spanned<Expr>),
+    /// pitch_env: (start_hz, end_hz, time_seconds)
+    /// Used for drum sounds like kicks where pitch sweeps down
+    PitchEnvelope(Spanned<Expr>),
 }
 
 /// Part expression: part "instrument" { body }

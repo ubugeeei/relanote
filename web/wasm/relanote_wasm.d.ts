@@ -31,6 +31,11 @@ export function get_staff_data(source: string): any;
  */
 export function get_tokens(source: string): any;
 
+/**
+ * Generate Relanote code from piano roll notes
+ */
+export function notes_to_code(notes_json: string, synth_name?: string, key_pitch?: number): string;
+
 export function init(): void;
 
 /**

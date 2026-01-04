@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 400">
+  <defs>
+    <marker id="arrowM" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <linearGradient id="osc1Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#2563eb"/>
+    </linearGradient>
+    <linearGradient id="osc2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#dc2626"/>
+    </linearGradient>
+    <linearGradient id="osc3Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="mixerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font: bold 14px sans-serif; fill: white; }
+    .label { font: 11px sans-serif; fill: rgba(255,255,255,0.9); }
+    .code { font: 11px monospace; fill: #374151; }
+    .desc { font: 11px sans-serif; fill: #6b7280; }
+    .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
+    .code-bg { fill: #f3f4f6; stroke: #e5e7eb; }
+
+    @media (prefers-color-scheme: dark) {
+      .main-title { fill: #f3f4f6; }
+      .code { fill: #e5e7eb; }
+      .desc { fill: #9ca3af; }
+      .code-bg { fill: #374151; stroke: #4b5563; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="325" y="30" text-anchor="middle" class="main-title">Multiple Oscillator Mixing</text>
+
+  <!-- Oscillator 1 -->
+  <g transform="translate(30, 60)">
+    <rect width="140" height="80" fill="url(#osc1Grad)" rx="8"/>
+    <text x="70" y="30" text-anchor="middle" class="title">Oscillator 1</text>
+    <text x="70" y="50" text-anchor="middle" class="label">Saw</text>
+    <text x="70" y="68" text-anchor="middle" class="label">mix: 0.5</text>
+  </g>
+
+  <!-- Oscillator 2 -->
+  <g transform="translate(30, 160)">
+    <rect width="140" height="80" fill="url(#osc2Grad)" rx="8"/>
+    <text x="70" y="30" text-anchor="middle" class="title">Oscillator 2</text>
+    <text x="70" y="50" text-anchor="middle" class="label">Square</text>
+    <text x="70" y="68" text-anchor="middle" class="label">mix: 0.3</text>
+  </g>
+
+  <!-- Oscillator 3 -->
+  <g transform="translate(30, 260)">
+    <rect width="140" height="80" fill="url(#osc3Grad)" rx="8"/>
+    <text x="70" y="30" text-anchor="middle" class="title">Oscillator 3</text>
+    <text x="70" y="50" text-anchor="middle" class="label">Sine</text>
+    <text x="70" y="68" text-anchor="middle" class="label">mix: 0.2, octave: +1</text>
+  </g>
+
+  <!-- Connection lines to mixer -->
+  <line x1="170" y1="100" x2="280" y2="195" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowM)"/>
+  <line x1="170" y1="200" x2="280" y2="200" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowM)"/>
+  <line x1="170" y1="300" x2="280" y2="205" stroke="#10b981" stroke-width="2" marker-end="url(#arrowM)"/>
+
+  <!-- Mixer -->
+  <g transform="translate(290, 150)">
+    <rect width="100" height="100" fill="url(#mixerGrad)" rx="8"/>
+    <text x="50" y="40" text-anchor="middle" class="title">Mixer</text>
+    <text x="50" y="60" text-anchor="middle" class="label">Sum all</text>
+    <text x="50" y="78" text-anchor="middle" class="label">oscillators</text>
+  </g>
+
+  <!-- Arrow to output -->
+  <line x1="390" y1="200" x2="440" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowM)"/>
+
+  <!-- Envelope -->
+  <g transform="translate(450, 150)">
+    <rect width="100" height="100" fill="#f59e0b" rx="8"/>
+    <text x="50" y="40" text-anchor="middle" class="title">Envelope</text>
+    <text x="50" y="60" text-anchor="middle" class="label">ADSR</text>
+    <text x="50" y="78" text-anchor="middle" class="label">shaping</text>
+  </g>
+
+  <!-- Arrow to output -->
+  <line x1="550" y1="200" x2="600" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowM)"/>
+
+  <!-- Output speaker icon -->
+  <g transform="translate(605, 175)">
+    <rect width="40" height="50" fill="#374151" rx="4"/>
+    <polygon points="20,10 35,0 35,50 20,40" fill="#374151"/>
+    <text x="20" y="70" text-anchor="middle" class="desc">Output</text>
+  </g>
+
+  <!-- Code example -->
+  <rect x="30" y="360" width="590" height="30" class="code-bg" rx="4"/>
+  <text x="40" y="380" class="code">osc: (Saw |> mix 0.5) + (Square |> mix 0.3) + (Sine |> mix 0.2 |> octave 1)</text>
+</svg>

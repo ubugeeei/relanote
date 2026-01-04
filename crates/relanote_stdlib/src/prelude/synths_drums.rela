@@ -1,0 +1,157 @@
+; ===========================================
+; Drum Kit Presets (with pitch envelope)
+; ===========================================
+
+; -------------------------------------------
+; Kick Drums
+; -------------------------------------------
+synth DeepKick = {
+  osc: Sine,
+  env: envelope 0.001 0.15 0.0 0.1,
+  pitch_env: (150, 40, 0.08)
+}
+
+synth PunchyKick = {
+  osc: (Sine |> mix 0.7) + (Triangle |> mix 0.3),
+  env: envelope 0.001 0.12 0.0 0.08,
+  pitch_env: (200, 50, 0.05)
+}
+
+synth SubKick = {
+  osc: Sine,
+  env: envelope 0.002 0.2 0.0 0.15,
+  pitch_env: (100, 30, 0.1)
+}
+
+synth HardKick = {
+  osc: (Sine |> mix 0.6) + (Triangle |> mix 0.4),
+  env: envelope 0.001 0.1 0.0 0.06,
+  pitch_env: (250, 60, 0.04)
+}
+
+synth SoftKick = {
+  osc: (Sine |> mix 0.8) + (Triangle |> mix 0.2),
+  env: envelope 0.003 0.18 0.0 0.12,
+  pitch_env: (120, 35, 0.1)
+}
+
+; -------------------------------------------
+; Snare Drums
+; -------------------------------------------
+synth TightSnare = {
+  osc: (Noise |> mix 0.6) + (Triangle |> mix 0.4),
+  env: envelope 0.001 0.1 0.0 0.12,
+  filter: BandPass 2000 0.5
+}
+
+synth FatSnare = {
+  osc: (Noise |> mix 0.5) + (Triangle |> mix 0.3) + (Sine |> mix 0.2),
+  env: envelope 0.001 0.15 0.0 0.18,
+  filter: BandPass 1800 0.6,
+  pitch_env: (300, 150, 0.02)
+}
+
+synth CrispSnare = {
+  osc: (Noise |> mix 0.7) + (Triangle |> mix 0.3),
+  env: envelope 0.001 0.08 0.0 0.1,
+  filter: BandPass 2500 0.55
+}
+
+synth RimShot = {
+  osc: (Noise |> mix 0.4) + (Square |> mix 0.6),
+  env: envelope 0.001 0.05 0.0 0.08,
+  filter: HighPass 3000 0.5
+}
+
+synth SideStick = {
+  osc: (Noise |> mix 0.3) + (Triangle |> mix 0.7),
+  env: envelope 0.001 0.04 0.0 0.06,
+  filter: BandPass 3000 0.6
+}
+
+; -------------------------------------------
+; Hi-Hats
+; -------------------------------------------
+synth ClosedHat = {
+  osc: Noise,
+  env: envelope 0.001 0.04 0.0 0.03,
+  filter: HighPass 8000 0.6
+}
+
+synth OpenHiHat = {
+  osc: Noise,
+  env: envelope 0.001 0.2 0.1 0.25,
+  filter: HighPass 6000 0.5
+}
+
+synth PedalHat = {
+  osc: Noise,
+  env: envelope 0.001 0.08 0.0 0.1,
+  filter: HighPass 7000 0.4
+}
+
+synth TightHat = {
+  osc: Noise,
+  env: envelope 0.001 0.025 0.0 0.02,
+  filter: HighPass 9000 0.65
+}
+
+; -------------------------------------------
+; Toms
+; -------------------------------------------
+synth HighTom = {
+  osc: (Sine |> mix 0.6) + (Triangle |> mix 0.4),
+  env: envelope 0.001 0.2 0.0 0.15,
+  pitch_env: (400, 200, 0.06)
+}
+
+synth MidTom = {
+  osc: (Sine |> mix 0.6) + (Triangle |> mix 0.4),
+  env: envelope 0.001 0.25 0.0 0.18,
+  pitch_env: (300, 120, 0.08)
+}
+
+synth FloorTom = {
+  osc: (Sine |> mix 0.7) + (Triangle |> mix 0.3),
+  env: envelope 0.001 0.3 0.0 0.2,
+  pitch_env: (200, 80, 0.1)
+}
+
+synth LowTom = {
+  osc: (Sine |> mix 0.75) + (Triangle |> mix 0.25),
+  env: envelope 0.001 0.35 0.0 0.22,
+  pitch_env: (150, 60, 0.12)
+}
+
+; -------------------------------------------
+; Cymbals
+; -------------------------------------------
+synth CrashCymbal = {
+  osc: Noise,
+  env: envelope 0.001 0.4 0.2 1.5,
+  filter: HighPass 4000 0.3
+}
+
+synth RideCymbal = {
+  osc: Noise,
+  env: envelope 0.001 0.3 0.15 0.8,
+  filter: HighPass 5000 0.4
+}
+
+synth RideBell = {
+  osc: (Noise |> mix 0.3) + (Sine |> mix 0.7),
+  env: envelope 0.001 0.2 0.1 0.6,
+  filter: BandPass 4000 0.5
+}
+
+synth SplashCymbal = {
+  osc: Noise,
+  env: envelope 0.001 0.25 0.1 0.5,
+  filter: HighPass 6000 0.35
+}
+
+synth ChinaCymbal = {
+  osc: Noise,
+  env: envelope 0.001 0.35 0.15 1.0,
+  filter: BandPass 5000 0.4
+}

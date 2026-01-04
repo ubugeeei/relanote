@@ -201,6 +201,19 @@ export function useAudioSynth() {
       now + adsr.attack + adsr.decay
     );
 
+    // Pitch envelope (for drums like kicks - frequency sweeps from high to low)
+    if (synth?.pitch_envelope) {
+      const { start_hz, end_hz, time_seconds } = synth.pitch_envelope;
+      for (const osc of oscillators) {
+        // Override the frequency with pitch envelope
+        osc.frequency.setValueAtTime(start_hz, now);
+        osc.frequency.exponentialRampToValueAtTime(
+          Math.max(end_hz, 0.01), // Prevent 0 or negative values for exponential ramp
+          now + time_seconds
+        );
+      }
+    }
+
     gainNode.connect(masterGain);
 
     activeVoices.set(voiceKey, { oscillators, noiseSource, gainNode, filterNode });

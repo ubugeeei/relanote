@@ -19,7 +19,7 @@ export default defineNuxtConfig({
           content: "Functional music notation language",
         },
       ],
-      link: [{ rel: "icon", href: "/logo-icon.svg" }],
+      link: [{ rel: "icon", href: "/logo-icon-transparent.svg" }],
     },
   },
 

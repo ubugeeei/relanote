@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { WasmDiagnostic, StaffData, RenderResult, AudioPlaybackData } from "../types/relanote";
+import type { WasmDiagnostic, StaffData, RenderResult, AudioPlaybackData, ViewMode } from "../types/relanote";
+import { DawView } from "../features/daw";
 
 const { isReady, error: wasmError, init, analyze, format, renderMidi, getStaffData, getAudioData } = useRelanote();
 const {
@@ -24,8 +25,11 @@ const midiResult = ref<RenderResult | null>(null);
 const currentBeat = ref(0);
 const analysisDebounce = ref<ReturnType<typeof setTimeout> | null>(null);
 
-// Resizable panels
-const previewWidth = ref(400);
+// View mode state
+const viewMode = ref<ViewMode>("pianoroll");
+
+// Resizable panels (for split view)
+const splitRatio = ref(0.6); // 60% top, 40% bottom
 const isResizing = ref(false);
 const containerRef = ref<HTMLElement | null>(null);
 
@@ -40,10 +44,10 @@ const onResize = (e: MouseEvent) => {
   if (!isResizing.value || !containerRef.value) return;
 
   const containerRect = containerRef.value.getBoundingClientRect();
-  const newWidth = containerRect.right - e.clientX - 8; // 8px for padding
+  const newRatio = (e.clientY - containerRect.top) / containerRect.height;
 
-  // Clamp between 250px and 600px
-  previewWidth.value = Math.min(Math.max(newWidth, 250), 600);
+  // Clamp between 30% and 80%
+  splitRatio.value = Math.min(Math.max(newRatio, 0.3), 0.8);
 };
 
 const stopResize = () => {
@@ -116,6 +120,10 @@ const handleExportMidi = () => {
   URL.revokeObjectURL(url);
 };
 
+const handleCodeUpdate = (newCode: string) => {
+  code.value = newCode;
+};
+
 onMounted(async () => {
   loadFromStorage();
   await init();
@@ -136,11 +144,14 @@ watch(isReady, (ready) => {
     <!-- Header -->
     <header class="app-header">
       <div class="header-left">
-        <img src="/logo.svg" alt="Relanote" class="app-logo" />
+        <img src="/logo-transparent.svg" alt="Relanote" class="app-logo" />
         <h1 class="app-title">Relanote</h1>
         <span class="app-subtitle">Functional Music Notation</span>
       </div>
       <div class="header-right">
+        <button class="header-btn" @click="handleExportMidi" :disabled="!midiResult?.midi_data">
+          Export MIDI
+        </button>
         <button class="header-btn" @click="exportAllFiles" title="Export All Files">
           Export Project
         </button>
@@ -168,51 +179,63 @@ watch(isReady, (ready) => {
 
     <!-- Main Content -->
     <div v-else ref="containerRef" class="main-content" :class="{ resizing: isResizing }">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <FileTree
-          :files="files"
-          :active-file-id="activeFileId"
-          @select-file="setActiveFile"
-          @create-file="createFile()"
-          @delete-file="deleteFile"
-          @rename-file="renameFile"
-          @export-file="exportFile"
-          @import-file="importFiles"
+      <!-- DAW View (Top Panel) -->
+      <div class="daw-panel" :style="{ height: `${splitRatio * 100}%` }">
+        <DawView
+          :code="code"
+          :audio-data="audioData"
+          @update:code="handleCodeUpdate"
         />
-      </aside>
-
-      <!-- Editor Panel -->
-      <main class="editor-panel">
-        <CodeEditor
-          v-model="code"
-          :diagnostics="diagnostics"
-          :file-name="activeFile?.name"
-          @format="handleFormat"
-        />
-      </main>
-
-      <!-- Resize Handle -->
-      <div class="resize-handle" @mousedown="startResize">
-        <div class="resize-grip" />
       </div>
 
-      <!-- Preview Panel -->
-      <aside class="preview-panel" :style="{ width: previewWidth + 'px' }">
-        <div class="staff-section">
-          <StaffRenderer :staff-data="staffData" :current-beat="currentBeat" />
+      <!-- Resize Handle -->
+      <div class="resize-handle-h" @mousedown="startResize">
+        <div class="resize-grip-h" />
+      </div>
+
+      <!-- Code Editor Panel (Bottom Panel - like VS Code terminal) -->
+      <div class="editor-panel" :style="{ height: `${(1 - splitRatio) * 100}%` }">
+        <div class="editor-header">
+          <div class="editor-tabs">
+            <div class="editor-tab active">
+              <span class="tab-icon">{ }</span>
+              <span class="tab-name">{{ activeFile?.name || 'untitled.rela' }}</span>
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button class="editor-action-btn" @click="handleFormat" title="Format Code">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="player-section">
-          <MidiPlayer
-            :notes="audioData?.notes || []"
-            :midi-data="midiResult?.midi_data || null"
-            :tempo="audioData?.tempo || 120"
-            :total-beats="audioData?.total_beats || 0"
-            @update:current-beat="currentBeat = $event"
-            @export-midi="handleExportMidi"
-          />
+        <div class="editor-content">
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            <FileTree
+              :files="files"
+              :active-file-id="activeFileId"
+              @select-file="setActiveFile"
+              @create-file="createFile()"
+              @delete-file="deleteFile"
+              @rename-file="renameFile"
+              @export-file="exportFile"
+              @import-file="importFiles"
+            />
+          </aside>
+
+          <!-- Editor -->
+          <div class="code-editor-wrapper">
+            <CodeEditor
+              v-model="code"
+              :diagnostics="diagnostics"
+              :file-name="activeFile?.name"
+              @format="handleFormat"
+            />
+          </div>
         </div>
-      </aside>
+      </div>
     </div>
   </div>
 </template>
@@ -248,6 +271,7 @@ body {
   padding: 8px 16px;
   background: #323233;
   border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -275,7 +299,7 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .header-btn {
@@ -288,8 +312,13 @@ body {
   cursor: pointer;
 }
 
-.header-btn:hover {
+.header-btn:hover:not(:disabled) {
   background: #4c4c4c;
+}
+
+.header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .header-link {
@@ -334,75 +363,143 @@ body {
 .main-content {
   flex: 1;
   display: flex;
+  flex-direction: column;
   overflow: hidden;
-  gap: 8px;
-  padding: 8px;
 }
 
-.sidebar {
-  width: 200px;
+.main-content.resizing {
+  cursor: row-resize;
+  user-select: none;
+}
+
+.daw-panel {
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.resize-handle-h {
+  height: 8px;
   flex-shrink: 0;
-}
-
-.editor-panel {
-  flex: 1;
-  min-width: 300px;
-}
-
-.resize-handle {
-  width: 8px;
-  flex-shrink: 0;
-  cursor: col-resize;
+  cursor: row-resize;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: #252526;
   transition: background 0.15s;
 }
 
-.resize-handle:hover {
+.resize-handle-h:hover {
   background: rgba(55, 148, 255, 0.2);
 }
 
-.resize-grip {
-  width: 4px;
-  height: 40px;
+.resize-grip-h {
+  width: 40px;
+  height: 4px;
   background: #3c3c3c;
   border-radius: 2px;
   transition: background 0.15s;
 }
 
-.resize-handle:hover .resize-grip {
+.resize-handle-h:hover .resize-grip-h {
   background: #3794ff;
 }
 
-.main-content.resizing {
-  cursor: col-resize;
-  user-select: none;
-}
-
-.main-content.resizing .resize-handle {
-  background: rgba(55, 148, 255, 0.3);
-}
-
-.main-content.resizing .resize-grip {
-  background: #3794ff;
-}
-
-.preview-panel {
-  flex-shrink: 0;
+.editor-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  min-height: 100px;
+  background: #1e1e1e;
+  border-top: 1px solid #3c3c3c;
 }
 
-.staff-section {
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  background: #252526;
+  border-bottom: 1px solid #3c3c3c;
+  height: 35px;
+}
+
+.editor-tabs {
+  display: flex;
+  gap: 1px;
+}
+
+.editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #2d2d2d;
+  color: #858585;
+  font-size: 12px;
+  cursor: pointer;
+  border-top: 2px solid transparent;
+}
+
+.editor-tab.active {
+  background: #1e1e1e;
+  color: #cccccc;
+  border-top-color: #d97706;
+}
+
+.tab-icon {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.tab-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.editor-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #858585;
+  cursor: pointer;
+}
+
+.editor-action-btn:hover {
+  background: #3c3c3c;
+  color: #cccccc;
+}
+
+.editor-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.editor-content {
   flex: 1;
-  min-height: 200px;
+  display: flex;
+  overflow: hidden;
 }
 
-.player-section {
+.sidebar {
+  width: 180px;
   flex-shrink: 0;
+  border-right: 1px solid #3c3c3c;
+}
+
+.code-editor-wrapper {
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 1000px) {
@@ -410,23 +507,12 @@ body {
     flex-direction: column;
   }
 
-  .sidebar {
-    width: 100%;
-    height: 150px;
-  }
-
-  .editor-panel {
-    min-width: auto;
-    flex: 1;
-  }
-
-  .resize-handle {
-    display: none;
+  .daw-panel {
+    height: 60% !important;
   }
 
   .preview-panel {
-    width: 100% !important;
-    height: 250px;
+    height: 40% !important;
   }
 }
 </style>

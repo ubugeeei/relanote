@@ -1,0 +1,35 @@
+; ===========================================
+; Retro / Lo-Fi Sound Presets
+; ===========================================
+
+synth LoFiPiano = {
+  osc: (Triangle |> mix 0.5) + (Square |> mix 0.3) + (Sine |> mix 0.2),
+  env: envelope 0.01 0.3 0.4 0.5,
+  filter: LowPass 2000 0.2
+}
+
+synth VintageOrgan = {
+  osc: (Sine |> mix 0.4) + (Sine |> mix 0.3 |> octave 1) + (Sine |> mix 0.2 |> octave 2) + (Sine |> mix 0.1 |> octave -1),
+  env: envelope 0.01 0.0 1.0 0.15
+}
+
+synth RetroSynth = {
+  osc: (Pulse 0.25 |> mix 0.5) + (Saw |> mix 0.3) + (Square |> mix 0.2),
+  env: envelope 0.02 0.15 0.7 0.2,
+  filter: LowPass 3000 0.5,
+  detune: 6
+}
+
+synth TapeBass = {
+  osc: (Saw |> mix 0.5) + (Sine |> mix 0.35) + (Triangle |> mix 0.15),
+  env: envelope 0.015 0.2 0.55 0.3,
+  filter: LowPass 1000 0.3,
+  detune: 4
+}
+
+synth VHSPad = {
+  osc: (Saw |> mix 0.35 |> osc_detune -15) + (Triangle |> mix 0.35) + (Saw |> mix 0.3 |> osc_detune 15),
+  env: envelope 0.6 0.4 0.65 1.0,
+  filter: LowPass 2200 0.25,
+  detune: 12
+}

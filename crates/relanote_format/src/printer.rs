@@ -132,6 +132,10 @@ impl Formatter {
                             self.output.push_str("detune: ");
                             self.format_expr(expr);
                         }
+                        relanote_ast::music::SynthProperty::PitchEnvelope(expr) => {
+                            self.output.push_str("pitch_env: ");
+                            self.format_expr(expr);
+                        }
                     }
                 }
                 self.output.push_str(" }");

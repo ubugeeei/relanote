@@ -316,9 +316,21 @@ impl Parser {
     pub fn parse_layer(&mut self) -> ParseResult<Spanned<Expr>> {
         let start = self.current_span();
         self.expect(&TokenKind::Layer, "layer")?;
+        self.skip_comments_and_newlines();
         self.expect(&TokenKind::LBracket, "[")?;
+        self.skip_comments_and_newlines();
 
-        let parts = self.parse_list(&TokenKind::RBracket, |p| p.parse_expression())?;
+        let mut parts = Vec::new();
+        while !self.check(&TokenKind::RBracket) && !self.is_at_end() {
+            parts.push(self.parse_expression()?);
+            self.skip_comments_and_newlines();
+
+            if self.match_token(&TokenKind::Comma) {
+                self.skip_comments_and_newlines();
+            } else {
+                break;
+            }
+        }
 
         self.expect(&TokenKind::RBracket, "]")?;
         let span = self.span_from(start);
