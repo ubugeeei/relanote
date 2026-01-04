@@ -102,7 +102,7 @@ let full_clap = clap_pattern |> repeat 8
 
 layer [
   full_lead |> voice Lead |> cutoff 3500.0 |> resonance 0.3 |> volume 0.8,
-  full_bass |> voice FatBass |> cutoff 600.0 |> volume 0.9 |> transpose (R - P8),
+  full_bass |> transpose (R - P8) |> voice FatBass |> cutoff 600.0 |> volume 0.9,
   full_arp |> voice Pluck |> cutoff 2500.0 |> volume 0.5,
   full_kick |> voice Kick |> volume 0.9,
   full_snare |> voice Snare |> volume 0.6,

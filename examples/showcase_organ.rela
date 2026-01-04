@@ -159,7 +159,7 @@ let full_descant = descant_1 ++ descant_2
 
 layer [
   full_melody |> voice Organ |> volume 0.8,
-  full_chords |> voice Organ |> volume 0.6 |> transpose (R - P8),
-  full_descant |> voice Organ |> volume 0.5 |> transpose P8,
-  full_bass |> voice Organ |> volume 0.7 |> transpose (R - P8 - P8)
+  full_chords |> transpose (R - P8) |> voice Organ |> volume 0.6,
+  full_descant |> transpose P8 |> voice Organ |> volume 0.5,
+  full_bass |> transpose (R - P8 - P8) |> voice Organ |> volume 0.7
 ]

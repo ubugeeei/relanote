@@ -77,8 +77,8 @@ let pluck_sparkle = |
 layer [
   pad_main |> voice SoftPad |> volume 0.6,
   strings_melody |> voice Strings |> volume 0.5,
-  strings_counter |> voice Strings |> volume 0.4 |> transpose (R - P8),
+  strings_counter |> transpose (R - P8) |> voice Strings |> volume 0.4,
   lead_melody |> voice Lead |> cutoff 1500.0 |> volume 0.4,
-  bass_movement |> voice SoftPad |> cutoff 400.0 |> volume 0.5 |> transpose (R - P8 - P8),
-  pluck_sparkle |> voice Pluck |> volume 0.3 |> transpose P8
+  bass_movement |> transpose (R - P8 - P8) |> voice SoftPad |> cutoff 400.0 |> volume 0.5,
+  pluck_sparkle |> transpose P8 |> voice Pluck |> volume 0.3
 ]

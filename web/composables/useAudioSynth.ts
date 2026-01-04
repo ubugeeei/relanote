@@ -94,6 +94,9 @@ export function useAudioSynth() {
   const noteOn = (midiNote: number, velocity: number = 100, synth?: SynthData) => {
     if (!audioContext || !masterGain) return;
 
+    // Debug: log synth data
+    console.log('[AudioSynth] noteOn:', { midiNote, velocity, synth });
+
     const voiceKey = getVoiceKey(midiNote, synth?.name);
 
     // Stop existing voice on same note (same synth + pitch)
@@ -270,6 +273,10 @@ export function useAudioSynth() {
   ) => {
     await init();
     if (!audioContext) return;
+
+    // Debug: log all notes with synth data
+    console.log('[AudioSynth] playNotes called:', { noteCount: notes.length, tempo });
+    console.log('[AudioSynth] first few notes:', notes.slice(0, 5));
 
     const beatsPerSecond = tempo / 60;
     const startTime = audioContext.currentTime;

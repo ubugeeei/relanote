@@ -143,19 +143,13 @@ watch(
 let playbackAbortController: AbortController | null = null;
 
 const handlePlay = async () => {
-  if (!selectedTrack.value) return;
-
   await init();
   play();
 
   playbackAbortController = new AbortController();
 
-  const notes: AudioNoteEvent[] = selectedTrack.value.notes.map((n) => ({
-    pitch: n.pitch,
-    start: n.start,
-    duration: n.duration,
-    velocity: n.velocity,
-  }));
+  // Use audioData from props which includes synth information
+  const notes: AudioNoteEvent[] = props.audioData?.notes || [];
 
   try {
     await playNotes(
