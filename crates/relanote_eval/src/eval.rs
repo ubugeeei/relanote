@@ -1120,12 +1120,72 @@ impl Evaluator {
                 new_arr.extend(arr);
                 Ok(Value::Array(new_arr))
             }
+            // Handle Builtin oscillators (auto-call them)
+            (BinaryOp::Add, Value::Builtin(f), Value::Builtin(g)) => {
+                if let (Ok(Value::Oscillator(a)), Ok(Value::Oscillator(b))) = (f(vec![]), g(vec![])) {
+                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                } else {
+                    Err(EvalError::TypeError {
+                        expected: "oscillators".to_string(),
+                        found: "non-oscillator builtins".to_string(),
+                        span,
+                    })
+                }
+            }
+            (BinaryOp::Add, Value::Builtin(f), Value::Oscillator(b)) => {
+                if let Ok(Value::Oscillator(a)) = f(vec![]) {
+                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                } else {
+                    Err(EvalError::TypeError {
+                        expected: "oscillator".to_string(),
+                        found: "non-oscillator builtin".to_string(),
+                        span,
+                    })
+                }
+            }
+            (BinaryOp::Add, Value::Oscillator(a), Value::Builtin(g)) => {
+                if let Ok(Value::Oscillator(b)) = g(vec![]) {
+                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                } else {
+                    Err(EvalError::TypeError {
+                        expected: "oscillator".to_string(),
+                        found: "non-oscillator builtin".to_string(),
+                        span,
+                    })
+                }
+            }
+            (BinaryOp::Add, Value::Array(arr), Value::Builtin(f)) => {
+                if let Ok(Value::Oscillator(osc)) = f(vec![]) {
+                    let mut new_arr = arr;
+                    new_arr.push(Value::Oscillator(osc));
+                    Ok(Value::Array(new_arr))
+                } else {
+                    Err(EvalError::TypeError {
+                        expected: "oscillator".to_string(),
+                        found: "non-oscillator builtin".to_string(),
+                        span,
+                    })
+                }
+            }
+            (BinaryOp::Add, Value::Builtin(f), Value::Array(arr)) => {
+                if let Ok(Value::Oscillator(osc)) = f(vec![]) {
+                    let mut new_arr = vec![Value::Oscillator(osc)];
+                    new_arr.extend(arr);
+                    Ok(Value::Array(new_arr))
+                } else {
+                    Err(EvalError::TypeError {
+                        expected: "oscillator".to_string(),
+                        found: "non-oscillator builtin".to_string(),
+                        span,
+                    })
+                }
+            }
 
             _ => Err(EvalError::TypeError {
                 expected: "compatible types".to_string(),
                 found: "incompatible types".to_string(),
                 span,
-            }),
+            })
         }
     }
 

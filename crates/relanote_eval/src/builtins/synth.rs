@@ -461,6 +461,22 @@ pub fn builtin_noise(_args: Vec<Value>) -> Result<Value, EvalError> {
 // Oscillator modifier functions
 // ============================================
 
+/// Helper to extract an Oscillator from a Value, auto-calling Builtins if needed
+fn extract_oscillator(v: &Value) -> Option<OscillatorValue> {
+    match v {
+        Value::Oscillator(osc) => Some(osc.clone()),
+        Value::Builtin(f) => {
+            // Auto-call zero-arg builtins like Saw, Square, etc.
+            if let Ok(Value::Oscillator(osc)) = f(vec![]) {
+                Some(osc)
+            } else {
+                None
+            }
+        }
+        _ => None,
+    }
+}
+
 /// Set the mix level for an oscillator
 /// Usage: Saw |> mix 0.5
 pub fn builtin_osc_mix(args: Vec<Value>) -> Result<Value, EvalError> {
@@ -471,36 +487,31 @@ pub fn builtin_osc_mix(args: Vec<Value>) -> Result<Value, EvalError> {
         });
     }
 
-    let (osc, level) = match (&args[0], &args[1]) {
-        (Value::Oscillator(osc), v) => {
-            let level = extract_number(v).ok_or_else(|| EvalError::TypeError {
-                expected: "number".to_string(),
-                found: format!("{:?}", v),
-                span: relanote_core::Span::dummy(),
-            })?;
-            (osc.clone(), level)
+    // Try to extract oscillator from first arg, number from second
+    if let Some(osc) = extract_oscillator(&args[0]) {
+        if let Some(level) = extract_number(&args[1]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                mix: level.clamp(0.0, 1.0),
+                ..osc
+            }));
         }
-        (v, Value::Oscillator(osc)) => {
-            let level = extract_number(v).ok_or_else(|| EvalError::TypeError {
-                expected: "number".to_string(),
-                found: format!("{:?}", v),
-                span: relanote_core::Span::dummy(),
-            })?;
-            (osc.clone(), level)
-        }
-        _ => {
-            return Err(EvalError::TypeError {
-                expected: "Oscillator and number".to_string(),
-                found: format!("{:?}, {:?}", args[0], args[1]),
-                span: relanote_core::Span::dummy(),
-            })
-        }
-    };
+    }
 
-    Ok(Value::Oscillator(OscillatorValue {
-        mix: level.clamp(0.0, 1.0),
-        ..osc
-    }))
+    // Try to extract oscillator from second arg, number from first
+    if let Some(osc) = extract_oscillator(&args[1]) {
+        if let Some(level) = extract_number(&args[0]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                mix: level.clamp(0.0, 1.0),
+                ..osc
+            }));
+        }
+    }
+
+    Err(EvalError::TypeError {
+        expected: "Oscillator and number".to_string(),
+        found: format!("{:?}, {:?}", args[0], args[1]),
+        span: relanote_core::Span::dummy(),
+    })
 }
 
 /// Set the octave offset for an oscillator
@@ -513,24 +524,31 @@ pub fn builtin_osc_octave(args: Vec<Value>) -> Result<Value, EvalError> {
         });
     }
 
-    let (osc, offset) = match (&args[0], &args[1]) {
-        (Value::Oscillator(osc), Value::Int(offset)) => (osc.clone(), *offset as i8),
-        (Value::Int(offset), Value::Oscillator(osc)) => (osc.clone(), *offset as i8),
-        (Value::Oscillator(osc), Value::Float(offset)) => (osc.clone(), *offset as i8),
-        (Value::Float(offset), Value::Oscillator(osc)) => (osc.clone(), *offset as i8),
-        _ => {
-            return Err(EvalError::TypeError {
-                expected: "Oscillator and number".to_string(),
-                found: format!("{:?}, {:?}", args[0], args[1]),
-                span: relanote_core::Span::dummy(),
-            })
+    // Try first arg as oscillator, second as offset
+    if let Some(osc) = extract_oscillator(&args[0]) {
+        if let Some(offset) = extract_number(&args[1]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                octave_offset: (offset as i8).clamp(-4, 4),
+                ..osc
+            }));
         }
-    };
+    }
 
-    Ok(Value::Oscillator(OscillatorValue {
-        octave_offset: offset.clamp(-4, 4),
-        ..osc
-    }))
+    // Try second arg as oscillator, first as offset
+    if let Some(osc) = extract_oscillator(&args[1]) {
+        if let Some(offset) = extract_number(&args[0]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                octave_offset: (offset as i8).clamp(-4, 4),
+                ..osc
+            }));
+        }
+    }
+
+    Err(EvalError::TypeError {
+        expected: "Oscillator and number".to_string(),
+        found: format!("{:?}, {:?}", args[0], args[1]),
+        span: relanote_core::Span::dummy(),
+    })
 }
 
 /// Set the detune in cents for an oscillator
@@ -543,34 +561,29 @@ pub fn builtin_osc_detune(args: Vec<Value>) -> Result<Value, EvalError> {
         });
     }
 
-    let (osc, cents) = match (&args[0], &args[1]) {
-        (Value::Oscillator(osc), v) => {
-            let cents = extract_number(v).ok_or_else(|| EvalError::TypeError {
-                expected: "number".to_string(),
-                found: format!("{:?}", v),
-                span: relanote_core::Span::dummy(),
-            })?;
-            (osc.clone(), cents)
+    // Try first arg as oscillator, second as cents
+    if let Some(osc) = extract_oscillator(&args[0]) {
+        if let Some(cents) = extract_number(&args[1]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                detune_cents: cents.clamp(-100.0, 100.0),
+                ..osc
+            }));
         }
-        (v, Value::Oscillator(osc)) => {
-            let cents = extract_number(v).ok_or_else(|| EvalError::TypeError {
-                expected: "number".to_string(),
-                found: format!("{:?}", v),
-                span: relanote_core::Span::dummy(),
-            })?;
-            (osc.clone(), cents)
-        }
-        _ => {
-            return Err(EvalError::TypeError {
-                expected: "Oscillator and number".to_string(),
-                found: format!("{:?}, {:?}", args[0], args[1]),
-                span: relanote_core::Span::dummy(),
-            })
-        }
-    };
+    }
 
-    Ok(Value::Oscillator(OscillatorValue {
-        detune_cents: cents.clamp(-100.0, 100.0),
-        ..osc
-    }))
+    // Try second arg as oscillator, first as cents
+    if let Some(osc) = extract_oscillator(&args[1]) {
+        if let Some(cents) = extract_number(&args[0]) {
+            return Ok(Value::Oscillator(OscillatorValue {
+                detune_cents: cents.clamp(-100.0, 100.0),
+                ..osc
+            }));
+        }
+    }
+
+    Err(EvalError::TypeError {
+        expected: "Oscillator and number".to_string(),
+        found: format!("{:?}, {:?}", args[0], args[1]),
+        span: relanote_core::Span::dummy(),
+    })
 }

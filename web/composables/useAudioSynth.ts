@@ -23,18 +23,57 @@ const DEFAULT_ADSR: ADSRData = {
 export function useAudioSynth() {
   let audioContext: AudioContext | null = null;
   let masterGain: GainNode | null = null;
+  let reverbNode: ConvolverNode | null = null;
+  let reverbGain: GainNode | null = null;
+  let dryGain: GainNode | null = null;
   let noiseBuffer: AudioBuffer | null = null;
   const activeVoices = new Map<string, Voice>();
 
   const isInitialized = ref(false);
 
+  // Create impulse response for reverb
+  const createReverbImpulse = (ctx: AudioContext, duration: number = 2.5, decay: number = 3.0): AudioBuffer => {
+    const sampleRate = ctx.sampleRate;
+    const length = sampleRate * duration;
+    const buffer = ctx.createBuffer(2, length, sampleRate);
+
+    for (let channel = 0; channel < 2; channel++) {
+      const data = buffer.getChannelData(channel);
+      for (let i = 0; i < length; i++) {
+        // Exponential decay with some randomness for natural sound
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+      }
+    }
+    return buffer;
+  };
+
   const init = async () => {
     if (audioContext) return;
 
     audioContext = new AudioContext();
+
+    // Create master gain
     masterGain = audioContext.createGain();
     masterGain.gain.value = 0.3;
-    masterGain.connect(audioContext.destination);
+
+    // Create reverb chain
+    reverbNode = audioContext.createConvolver();
+    reverbNode.buffer = createReverbImpulse(audioContext, 2.5, 2.5);
+
+    reverbGain = audioContext.createGain();
+    reverbGain.gain.value = 0.4; // Reverb wet level
+
+    dryGain = audioContext.createGain();
+    dryGain.gain.value = 0.7; // Dry level
+
+    // Connect: masterGain -> dryGain -> destination
+    //          masterGain -> reverbNode -> reverbGain -> destination
+    masterGain.connect(dryGain);
+    dryGain.connect(audioContext.destination);
+
+    masterGain.connect(reverbNode);
+    reverbNode.connect(reverbGain);
+    reverbGain.connect(audioContext.destination);
 
     // Create noise buffer for noise oscillators
     noiseBuffer = createNoiseBuffer(audioContext);
@@ -93,9 +132,6 @@ export function useAudioSynth() {
 
   const noteOn = (midiNote: number, velocity: number = 100, synth?: SynthData) => {
     if (!audioContext || !masterGain) return;
-
-    // Debug: log synth data
-    console.log('[AudioSynth] noteOn:', { midiNote, velocity, synth });
 
     const voiceKey = getVoiceKey(midiNote, synth?.name);
 
@@ -274,10 +310,6 @@ export function useAudioSynth() {
     await init();
     if (!audioContext) return;
 
-    // Debug: log all notes with synth data
-    console.log('[AudioSynth] playNotes called:', { noteCount: notes.length, tempo });
-    console.log('[AudioSynth] first few notes:', notes.slice(0, 5));
-
     const beatsPerSecond = tempo / 60;
     const startTime = audioContext.currentTime;
 
@@ -365,6 +397,9 @@ export function useAudioSynth() {
       audioContext.close();
       audioContext = null;
       masterGain = null;
+      reverbNode = null;
+      reverbGain = null;
+      dryGain = null;
       noiseBuffer = null;
     }
     isInitialized.value = false;

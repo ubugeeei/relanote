@@ -9,9 +9,10 @@ synth PluckBass = {
 }
 
 synth PluckLead = {
-  osc: (Saw |> mix 0.4) + (Square |> mix 0.35) + (Triangle |> mix 0.25),
-  env: envelope 0.001 0.35 0.0 0.12,
-  filter: LowPass 3000 0.5
+  osc: (Saw |> mix 0.4) + (Square |> mix 0.35) + (Saw |> mix 0.25 |> octave 1),
+  env: envelope 0.001 0.3 0.0 0.15,
+  filter: LowPass 5000 0.4,
+  detune: 8
 }
 
 synth Marimba = {

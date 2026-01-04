@@ -9,7 +9,7 @@ synth LoFiPiano = {
 }
 
 synth VintageOrgan = {
-  osc: (Sine |> mix 0.4) + (Sine |> mix 0.3 |> octave 1) + (Sine |> mix 0.2 |> octave 2) + (Sine |> mix 0.1 |> octave -1),
+  osc: (Sine |> mix 0.4) + (Sine |> mix 0.3 |> octave 1) + (Sine |> mix 0.2 |> octave 2) + (Sine |> mix 0.1 |> octave (-1)),
   env: envelope 0.01 0.0 1.0 0.15
 }
 
@@ -28,7 +28,7 @@ synth TapeBass = {
 }
 
 synth VHSPad = {
-  osc: (Saw |> mix 0.35 |> osc_detune -15) + (Triangle |> mix 0.35) + (Saw |> mix 0.3 |> osc_detune 15),
+  osc: (Saw |> mix 0.35 |> osc_detune (-15)) + (Triangle |> mix 0.35) + (Saw |> mix 0.3 |> osc_detune 15),
   env: envelope 0.6 0.4 0.65 1.0,
   filter: LowPass 2200 0.25,
   detune: 12

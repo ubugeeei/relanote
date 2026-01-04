@@ -17,7 +17,7 @@ synth MutedTrumpet = {
 }
 
 synth Trombone = {
-  osc: (Saw |> mix 0.4) + (Triangle |> mix 0.4) + (Sine |> mix 0.2 |> octave -1),
+  osc: (Saw |> mix 0.4) + (Triangle |> mix 0.4) + (Sine |> mix 0.2 |> octave (-1)),
   env: envelope 0.06 0.2 0.7 0.3,
   filter: LowPass 2000 0.4,
   detune: 4
@@ -38,7 +38,7 @@ synth Brass = {
 }
 
 synth BrassSection = {
-  osc: (Saw |> mix 0.35 |> osc_detune -8) + (Saw |> mix 0.35 |> osc_detune 8) + (Square |> mix 0.3),
+  osc: (Saw |> mix 0.35 |> osc_detune (-8)) + (Saw |> mix 0.35 |> osc_detune 8) + (Square |> mix 0.3),
   env: envelope 0.06 0.2 0.8 0.3,
   filter: LowPass 3000 0.4,
   detune: 6
