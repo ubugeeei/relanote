@@ -32,6 +32,9 @@ let chords = | [R, M3, P5]^ - - - [P4, M6, R]^ - [P5, M7, M2]^ - |
 ; ============================================
 ; Full Fanfare
 ; ============================================
-let fanfare = opening
+let fanfare = opening ++ rise ++ triumph
 
-fanfare
+layer [
+  fanfare |> voice Lead,
+  chords |> voice Organ
+]

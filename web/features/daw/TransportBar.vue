@@ -70,7 +70,7 @@ const handleTempoBlur = (e: FocusEvent) => {
 
       <button
         class="transport-btn play-btn"
-        @click="() => { console.log('[DEBUG] Play button clicked, isPlaying:', isPlaying); isPlaying ? $emit('pause') : $emit('play'); }"
+        @click="isPlaying ? $emit('pause') : $emit('play')"
         :title="isPlaying ? 'Pause' : 'Play'"
       >
         <svg v-if="isPlaying" viewBox="0 0 24 24" fill="currentColor">

@@ -175,6 +175,8 @@ impl Parser {
             };
 
             if let Some(op) = op {
+                // Allow expressions to continue across lines after binary operators
+                self.skip_comments_and_newlines();
                 let right = self.parse_multiplicative_expr()?;
                 let span = left.span.merge(right.span);
                 left = Spanned::new(

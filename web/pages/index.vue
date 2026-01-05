@@ -68,22 +68,17 @@ const code = computed({
 const analyzeCode = () => {
   if (!isReady.value) return;
 
-  console.log("[DEBUG] analyzeCode - code:", code.value);
-
   const result = analyze(code.value);
-  console.log("[DEBUG] analyzeCode - analyze result:", result);
   if (result) {
     diagnostics.value = result.diagnostics;
   }
 
   const staff = getStaffData(code.value);
-  console.log("[DEBUG] analyzeCode - staff:", staff);
   if (staff) {
     staffData.value = staff;
   }
 
   const audio = getAudioData(code.value);
-  console.log("[DEBUG] analyzeCode - audio:", audio);
   if (audio) {
     audioData.value = audio;
   }
@@ -160,6 +155,14 @@ watch(isReady, (ready) => {
         <button class="header-btn" @click="exportAllFiles" title="Export All Files">
           Export Project
         </button>
+        <a
+          class="header-link"
+          href="https://github.com/ubugeeei/relanote/tree/main/examples"
+          target="_blank"
+          rel="noopener"
+        >
+          Examples
+        </a>
         <a
           class="header-link"
           href="https://github.com/ubugeeei/relanote"

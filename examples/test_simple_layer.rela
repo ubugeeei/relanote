@@ -1,8 +1,0 @@
-; Simple layer test
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <8> |
-
-layer [
-  melody |> voice Chiptune
-]
