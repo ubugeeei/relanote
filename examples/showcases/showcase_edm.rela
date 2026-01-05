@@ -1,111 +1,187 @@
 ; ============================================
-; "Neon Rush" - Electronic/EDM Showcase
-; Heavy dance track using SuperSaw, ReeseBass, PluckLead
+; "DARK MATTER" - Dark Techno / Industrial
+; Aggressive, technical, pounding
 ; ============================================
 
-set tempo = 128
+set tempo = 145
 
-scale Minor = { R, M2, m3, P4, P5, m6, m7 }
-
-; ============================================
-; Main Lead - Catchy synth hook (lower register)
-; ============================================
-
-let lead_hook = |
-  <1>:2 <1> <2> <3>:2 <2>:2
-  <1>:2 - <1> <2>:4
-  <1>:2 <1> <2> <3>:2 <5>:2
-  <3>:4 - - - -
-|:32
-
-let lead_drop = |
-  <3>^ <3> - <3> <2>^ <2> - <2>
-  <1>^ <1> - <1> - - - -
-  <3>^ <3> - <3> <2>^ <2> - <2>
-  <5>^ - <3>^ - <2>^ - <1>^ -
-|:32
-
-let lead_buildup = |
-  <1> <1> <1> <1> <1> <1> <1> <1>
-  <2> <2> <2> <2> <2> <2> <2> <2>
-  <3> <3> <3> <3> <3> <3> <3> <3>
-  <5> <5> <5> <5> <5> <5> <5> <5>
-|:32
+scale Phrygian = { R, m2, m3, P4, P5, m6, m7 }
 
 ; ============================================
-; Bass - Heavy sub bass (2 octaves down)
+; Custom Synth Definitions
 ; ============================================
 
-let bass_main = |
-  <1>^ - - - - - - -
-  <1>^ - - - - - - -
-  <4>^ - - - - - - -
-  <5>^ - - - - - - -
-|:32
+synth DarkLead = {
+  osc: Saw,
+  detune: 30,
+  env: envelope 0.005 0.1 0.6 0.2,
+  filter: LowPass(1800, 0.6)
+}
 
-let bass_drop = |
-  <1>^ - - - <1>^ - - -
-  <1>^ - - - <1> - - -
-  <4>^ - - - <4>^ - - -
-  <5>^ - - - <5> - <3> -
-|:32
+synth IndustrialBass = {
+  osc: Square,
+  detune: 12,
+  env: envelope 0.01 0.1 0.8 0.15,
+  filter: LowPass(350, 0.7)
+}
 
-; ============================================
-; Pluck Arpeggios - Lower register
-; ============================================
+synth AcidScream = {
+  osc: Saw,
+  env: envelope 0.002 0.15 0.2 0.1,
+  filter: LowPass(800, 0.9)
+}
 
-let arp_main = |
-  <1> <3> <5> <3> <1> <3> <5> <3>
-  <1> <3> <5> <3> <1> <3> <5> <3>
-  <4> <6> <8> <6> <4> <6> <8> <6>
-  <5> <7> <8> <7> <5> <7> <8> <7>
-|:32
-
-let arp_fast = |
-  <1> <5> <1> <5> <1> <5> <1> <5>
-  <1> <5> <1> <5> <1> <5> <1> <5>
-  <4> <8> <4> <8> <4> <8> <4> <8>
-  <5> <8> <5> <8> <5> <8> <5> <8>
-|:32
-
-let arp_stab = |
-  [R, m3, P5]^ - - - - - - -
-  [R, m3, P5]^ - - - - - [R, m3, P5]^ -
-  [P4, m6, P8]^ - - - - - - -
-  [P5, m7, P8]^ - - - [P5, m7, P8]^ - - -
-|:32
+synth DarkStab = {
+  osc: Square,
+  detune: 20,
+  env: envelope 0.001 0.1 0.0 0.05,
+  filter: LowPass(2000, 0.5)
+}
 
 ; ============================================
-; Drums - Four on the floor
+; KICK - Relentless pounding
 ; ============================================
 
-let kick_pattern = | R - - - R - - - R - - - R - - - |:16
-let snare_pattern = | - - - - R - - - - - - - R - - - |:16
-let hihat_pattern = | R - R - R - R - R - R - R - R - |:16
-let clap_pattern = | - - - - R - - - - - - - R - - - |:16
+let kick_4x4 = |
+  R^ - - - R^ - - - R^ - - - R^ - - -
+|:8
+
+let kick_offbeat = |
+  R^ - - R R^ - - R R^ - - R R^ - R -
+|:8
+
+let kick_double = |
+  R^ - R - R^ - R - R^ - R - R^ - R -
+|:8
+
+let kick_triplet = |
+  R^ - R R^ - R R^ - R R^ - R R^ - R R
+|:8
+
+let kick_buildup = |
+  R - - - R - - - R - R - R R R -
+  R R R - R R R R R R R R R R R R
+|:8
 
 ; ============================================
-; Full Composition
+; BASS - Dark and heavy
 ; ============================================
 
-let full_lead = lead_hook ++ lead_buildup ++ lead_drop ++ lead_drop
-let full_bass = bass_main ++ bass_main ++ bass_drop ++ bass_drop
-let full_arp = arp_main ++ arp_fast ++ arp_stab ++ arp_fast
-let full_kick = kick_pattern |> repeat 8
-let full_snare = snare_pattern |> repeat 8
-let full_hihat = hihat_pattern |> repeat 8
-let full_clap = clap_pattern |> repeat 8
+let bass_dark = |
+  <1>^ - - - - - <1> - <1>^ - - - <1> - <1> -
+  <1>^ - - - - - <4> - <5>^ - - - <4> - <1> -
+|:16
+
+let bass_rolling = |
+  <1> <1> - <1> <1> - <1> <1> - <1> <1> - <1> <1> <1> -
+  <5> <5> - <5> <4> - <4> <4> - <4> <1> - <1> <1> -
+|:16
+
+let bass_stab = |
+  <1>^ - - - - - - - <5>^ - - - <4>^ - - -
+  <1>^ - - - <1> - - - <2>^ - - - <1>^ - - -
+|:16
 
 ; ============================================
-; Output: Heavy EDM drop
+; LEAD - Technical and dark
+; ============================================
+
+let lead_dark = |
+  <1> - <2> - <3>^ - <1> - <5> - <3> - <2> - <1> -
+  <4> - <3> - <1> - <7> - <5> - <3> - <2> - <1>^ -
+|:16
+
+let lead_chromatic = |
+  <8> <7> <7> <6> <6> <5> <5> <4>
+  <4> <4> <3> <3> <3> <2> <2> <1>
+|:8
+
+let lead_scream = |
+  <8>~ - - - - - - - <8> - <5> - <3>^ - - -
+  <8>~ - - - - - - - <7> - <5> - <2>^ - <1>^ -
+|:16
+
+let lead_arp = |
+  <1> <3> <5> <7> <5> <3> <1> <7>
+  <1> <3> <5> <8> <5> <3> <1> <7>
+  <4> <6> <8> <3> <8> <6> <4> <3>
+  <5> <7> <2> <4> <2> <7> <5> <4>
+|:16
+
+; ============================================
+; ACID
+; ============================================
+
+let acid_dark = |
+  <1> - <1> <2> - <1> <3> - <1> - <1> <2> - <3> <2> -
+  <5> - <5> <6> - <5> <7> - <5> - <5> <6> - <5> <1> -
+|:16
+
+let acid_scream = |
+  <1> <1> <1> <1> <2> <2> <2> <2> <3> <3> <3> <3> <1> <1> <1> <1>
+  <5> <5> <5> <5> <6> <6> <6> <6> <7> <7> <7> <7> <8> <8> <8> <8>
+|:16
+
+; ============================================
+; STABS
+; ============================================
+
+let stab_hit = |
+  [R, m3, P5]^ - - - - - - - - - - - - - - -
+  - - - - [R, m3, d5]^ - - - - - - - [m2, P4, m6]^ - - -
+|:16
+
+let stab_rhythm = |
+  [R, m3, P5]^ - - - [R, m3, P5]^ - - - - - - - [R, m3, P5]^ - - -
+  [P4, m6, P8]^ - - - - - [m2, P4, m6]^ - [P5, m7, m2]^ - - - - - - -
+|:16
+
+; ============================================
+; HI-HATS & CLAPS
+; ============================================
+
+let hat_16th = | R R R R R R R R R R R R R R R R |:8
+let hat_offbeat = | - - R - - - R - - - R - - - R - |:8
+let hat_syncopated = | R - R R - R R - R - R R - R - R |:8
+
+let clap_main = | - - - - R^ - - - - - - - R^ - - - |:8
+let clap_double = | - - - - R^ - R - - - - - R^ - R - |:8
+
+; ============================================
+; ARRANGEMENT
+; ============================================
+
+let intro_kick = kick_4x4 ++ kick_offbeat
+let intro_bass = bass_dark ++ bass_dark
+
+let drop_kick = kick_offbeat ++ kick_double ++ kick_triplet ++ kick_double
+let drop_bass = bass_rolling ++ bass_stab ++ bass_rolling ++ bass_dark
+let drop_lead = lead_dark ++ lead_chromatic ++ lead_arp ++ lead_scream
+
+let break_kick = | R^ - - - - - - - |:8 ++ kick_buildup
+let break_acid = acid_dark ++ acid_scream
+
+let full_kick = intro_kick ++ drop_kick ++ break_kick ++ drop_kick
+let full_bass = intro_bass ++ drop_bass ++ bass_stab ++ bass_stab ++ drop_bass
+let full_lead = | - |:32 ++ drop_lead ++ | - |:16 ++ lead_scream ++ drop_lead
+let full_acid = | - |:32 ++ | - |:32 ++ break_acid ++ acid_dark ++ acid_dark
+let full_stab = | - |:32 ++ stab_hit ++ stab_rhythm ++ | - |:32 ++ stab_rhythm ++ stab_hit
+let full_hat = hat_offbeat ++ hat_syncopated ++ hat_16th ++ hat_syncopated ++
+               hat_offbeat ++ hat_syncopated ++ hat_16th ++ hat_16th
+let clap_intro = clap_main |> repeat 4
+let clap_outro = clap_main |> repeat 3
+let full_clap = clap_intro ++ clap_double ++ clap_outro
+
+; ============================================
+; OUTPUT
 ; ============================================
 
 layer [
-  full_lead |> transpose (R - P8) |> voice SuperSaw |> cutoff 4000.0 |> volume 0.7,
-  full_bass |> transpose (R - P8 - P8) |> voice ReeseBass |> cutoff 400.0 |> volume 0.9,
-  full_arp |> transpose (R - P8) |> voice PluckLead |> cutoff 2000.0 |> volume 0.4,
   full_kick |> voice Kick |> volume 1.0,
-  full_snare |> voice Snare |> volume 0.7,
-  full_hihat |> voice HiHat |> volume 0.35,
-  full_clap |> voice Clap |> volume 0.6
+  full_clap |> voice Clap |> volume 0.8,
+  full_hat |> voice HiHat |> volume 0.35,
+  full_bass |> transpose (R - P8 - P8) |> voice IndustrialBass |> volume 0.9,
+  full_lead |> voice DarkLead |> volume 0.65,
+  full_acid |> transpose (R - P8) |> voice AcidScream |> cutoff 1200.0 |> resonance 0.8 |> volume 0.45,
+  full_stab |> voice DarkStab |> volume 0.5
 ]

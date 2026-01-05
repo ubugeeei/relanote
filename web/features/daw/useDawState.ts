@@ -208,7 +208,7 @@ export function useDawState() {
 
   // Tempo
   const setTempo = (tempo: number) => {
-    state.tempo = Math.max(20, Math.min(300, tempo));
+    state.tempo = Math.max(20, tempo);
   };
 
   // Loop

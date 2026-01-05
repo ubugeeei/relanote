@@ -27,11 +27,12 @@ Complete musical pieces demonstrating Relanote in action.
 | [showcase_8bit_adventure.rela](./showcases/showcase_8bit_adventure.rela) | 8-bit | "Pixel Quest" - NES-style RPG theme |
 | [showcase_8bit_battle.rela](./showcases/showcase_8bit_battle.rela) | 8-bit | "GYM LEADER BATTLE" - Harmonic minor battle theme |
 | [showcase_ambient.rela](./showcases/showcase_ambient.rela) | Ambient | "Floating Dreams" - Atmospheric soundscape |
-| [showcase_drums.rela](./showcases/showcase_drums.rela) | Drums | "Rhythm Factory" - Rock, dance, breakbeat, hip-hop, funk, D&B |
-| [showcase_edm.rela](./showcases/showcase_edm.rela) | EDM | "Neon Rush" - Heavy dance track with SuperSaw |
+| [showcase_dnb.rela](./showcases/showcase_dnb.rela) | D&B | "NEUROFUNK CHAOS" - Fast, aggressive breakbeat madness |
+| [showcase_drums.rela](./showcases/showcase_drums.rela) | Drums | "Rhythm Factory" - Rock, dance, breakbeat, hip-hop, funk |
+| [showcase_edm.rela](./showcases/showcase_edm.rela) | Techno | "DARK MATTER" - Dark industrial techno |
 | [showcase_ff_fanfare.rela](./showcases/showcase_ff_fanfare.rela) | Fanfare | Victory Fanfare - Classic celebration tune |
 | [showcase_ff_prelude.rela](./showcases/showcase_ff_prelude.rela) | Classical | Classic arpeggio prelude |
-| [showcase_jazz.rela](./showcases/showcase_jazz.rela) | Jazz | "Bebop Improvisation" - Charlie Parker style |
+| [showcase_jazz.rela](./showcases/showcase_jazz.rela) | Jazz | "Autumn Leaves" - Piano trio with walking bass |
 | [showcase_n_battle.rela](./showcases/showcase_n_battle.rela) | 8-bit | "N's THEME" - Custom Prime number scale |
 | [showcase_organ.rela](./showcases/showcase_organ.rela) | Classical | "Sacred Hymn" - Church organ style |
 | [showcase_symphony.rela](./showcases/showcase_symphony.rela) | Classical | "Symphony in C" - Multi-movement orchestral piece |

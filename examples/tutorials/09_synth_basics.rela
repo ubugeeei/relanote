@@ -11,7 +11,7 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <3> |
 
-; Apply synth presets to blocks using voice 
+; Apply synth presets to blocks using voice
 let lead_melody = melody |> voice Lead
 let pad_melody = melody |> voice SoftPad
 let bass_line = melody |> voice FatBass
@@ -24,7 +24,7 @@ let bass_line = melody |> voice FatBass
 let bright_lead = | <5> <6> <5> <3> | |> voice Lead
 
 ; SoftPad: warm sustained pad
-let warm_pad = | [<1> <3> <5>] | |> voice SoftPad
+let warm_pad = | [R, m3, P5] | |> voice SoftPad
 
 ; FatBass: thick detuned bass
 let thick_bass = | <1> - <1> <5> | |> voice FatBass
@@ -33,7 +33,7 @@ let thick_bass = | <1> - <1> <5> | |> voice FatBass
 let plucky = | <1> <2> <3> <4> <5> | |> voice Pluck
 
 ; Strings: slow attack orchestral
-let strings = | [<1> <5>] | |> voice Strings
+let strings = | [R, P5] | |> voice Strings
 
 ; Organ: harmonic sine waves
 let organ = | <1> <3> <5> | |> voice Organ
@@ -43,53 +43,27 @@ let organ = | <1> <3> <5> | |> voice Organ
 ; ============================================
 
 ; Adjust filter cutoff (Hz)
-let filtered = melody
-  |> voice Lead
-  |> cutoff 1000
+let filtered = melody |> voice Lead |> cutoff 1000.0
 
 ; Adjust resonance (0.0 - 1.0)
-let resonant = melody
-  |> voice Lead
-  |> cutoff 800
-  |> resonance 0.6
-
-; Adjust detune (cents)
-let detuned = melody
-  |> voice Lead
-  |> detune(15)
-
-; Custom ADSR envelope (attack, decay, sustain, release)
-let custom_env = melody
-  |> voice Lead
-  |> adsr(0.1, 0.2, 0.6, 0.5)
+let resonant = melody |> voice Lead |> cutoff 800.0 |> resonance 0.6
 
 ; ============================================
 ; Combining Synth with Effects
 ; ============================================
 
-let processed = melody
-  |> voice Lead
-  |> cutoff 2000
-  |> resonance 0.3
-  |> reverb 0.4
-  |> volume 0.8
+let processed = melody |> voice Lead |> cutoff 2000.0 |> resonance 0.3 |> volume 0.8
 
 ; ============================================
 ; Multi-Part Arrangement
 ; ============================================
 
-let full_arrangement = section "Main" {
-  part "Lead" {
-    | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
-  } |> voice Lead |> volume 0.8
+let main_lead = | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
+let main_pad = | [R, m3, P5] - - - | ++ | [R, m3, P5] - - - |
+let main_bass = | <1> - <1> <5> | ++ | <4> - <4> <1> |
 
-  part "Pad" {
-    | [<1> <3> <5>] | ++ | [<1> <3> <5>] |
-  } |> voice SoftPad |> volume 0.5
-
-  part "Bass" {
-    | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice FatBass |> volume 0.7
-}
-
-compose([full_arrangement])
+layer [
+  main_lead |> voice Lead |> volume 0.8,
+  main_pad |> voice SoftPad |> volume 0.5,
+  main_bass |> transpose (R - P8 - P8) |> voice FatBass |> volume 0.7
+]

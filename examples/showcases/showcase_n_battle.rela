@@ -7,15 +7,11 @@ set key = C3
 ; 素数をセミトーンとしてスケール定義 (2, 3, 5, 7, 11, 13, 17, 19, 23)
 scale Prime = { R, M2, m3, P4, P5, M7, m9, P11, P12, M14 }
 
-; 小節1-2: 降下する素数列 (23→19→17→13→11→7→5→3)
-let intro_descend =
-  | <10> <9> <8> <7> <6> <5> <4> <3> |:8
-  |> in Prime
+; Descending prime sequence
+let intro_descend = | <10> <9> <8> <7> <6> <5> <4> <3> |:8 |> in Prime
 
-; 小節3以降: 上昇する素数列 (2→3→5→7→11→13→17→19) 16分音符で「脳内の電気の流れ」
-let intro_ascend =
-  | <2> <3> <4> <5> <6> <7> <8> <9> |:16
-  |> in Prime
+; Ascending prime sequence
+let intro_ascend = | <2> <3> <4> <5> <6> <7> <8> <9> |:16 |> in Prime
 
 let theme_A = |
   <2> <3> <4> <5> <2> <3> <4> <5>
@@ -174,29 +170,18 @@ let kick = | <1> - - - <1> - - - <1> - - - <1> - <1> - |:32 |> in Prime
 let snare = | - - <1> - - - <1> - - - <1> - - <1> <1> - |:32 |> in Prime
 let hihat = | <1> <1> <1> <1> <1> <1> <1> <1> |:128 |> in Prime
 
-let full_lead =
-  intro_descend ++
-  intro_ascend ++
-  theme_A ++
-  theme_B ++
-  theme_C ++
-  theme_D ++
-  theme_E ++
-  finale
+let lead_part1 = intro_descend ++ intro_ascend ++ theme_A ++ theme_B
+let lead_part2 = theme_C ++ theme_D ++ theme_E ++ finale
+let full_lead = lead_part1 ++ lead_part2
 
-let full_harmony =
-  theme_A_counter ++
-  theme_B_harmony ++
-  (theme_C |> transpose P5) ++
-  theme_D_high ++
-  theme_E_harmony ++
-  finale_harmony
+let harmony_part1 = theme_A_counter ++ theme_B_harmony
+let theme_C_up = theme_C |> transpose P5
+let harmony_part2 = theme_C_up ++ theme_D_high ++ theme_E_harmony ++ finale_harmony
+let full_harmony = harmony_part1 ++ harmony_part2
 
-let full_arp =
-  arp_prime ++ arp_prime ++
-  arp_prime ++ arp_high ++
-  arp_high ++ arp_prime ++
-  arp_high ++ arp_high
+let arp_part1 = arp_prime ++ arp_prime ++ arp_prime ++ arp_high
+let arp_part2 = arp_high ++ arp_prime ++ arp_high ++ arp_high
+let full_arp = arp_part1 ++ arp_part2
 
 layer [
   full_lead |> voice NES,

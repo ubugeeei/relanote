@@ -27,9 +27,7 @@ let four_times = motif |> repeat 4
 ; ============================================
 
 ; Pipe multiple transformations together
-let variation = motif
-  |> transpose P5
-  |> reverse
+let variation = motif |> transpose P5 |> reverse
 
 ; Create call and response
 let call = motif
@@ -42,10 +40,10 @@ let response = motif |> transpose P5 |> reverse
 let theme = | <1> <2> <3> <5> |
 
 ; Sequence: same pattern at different pitches
-let sequence = theme
-  ++ (theme |> transpose M2)
-  ++ (theme |> transpose M3)
-  ++ (theme |> transpose P4)
+let theme_up2 = theme |> transpose M2
+let theme_up3 = theme |> transpose M3
+let theme_up4 = theme |> transpose P4
+let sequence = theme ++ theme_up2 ++ theme_up3 ++ theme_up4
 
 ; Theme and variations
 let var1 = theme |> reverse
@@ -55,15 +53,13 @@ let var3 = theme |> reverse |> transpose P5
 let development = theme ++ var1 ++ var2 ++ var3
 
 ; ============================================
-; Custom Transformations with Lambdas
+; Advanced Combinations
 ; ============================================
 
-; Define your own transformation
-let up_octave = \b -> b |> transpose P8
-let double_reverse = \b -> b |> repeat 2 |> reverse
+; Transpose up an octave
+let high_motif = motif |> transpose P8
 
-; Apply custom transformations
-let high_motif = motif |> up_octave
-let complex = motif |> double_reverse
+; Repeat and reverse for complex pattern
+let complex = motif |> repeat 2 |> reverse
 
 development

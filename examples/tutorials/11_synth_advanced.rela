@@ -10,9 +10,10 @@ scale Minor = { R, M2, m3, P4, P5, m6, m7 }
 ; ============================================
 
 ; Define a custom synth with full control
+; env: envelope Attack Decay Sustain Release
 synth MyLead = {
   osc: Saw,
-  env: { A: 0.02, D: 0.15, S: 0.7, R: 0.2 },
+  env: envelope 0.02 0.15 0.7 0.2,
   filter: LowPass(3000, 0.3)
 }
 
@@ -20,21 +21,21 @@ synth MyLead = {
 synth ThickBass = {
   osc: Saw,
   detune: 10,
-  env: { A: 0.05, D: 0.2, S: 0.6, R: 0.3 },
+  env: envelope 0.05 0.2 0.6 0.3,
   filter: LowPass(200, 0.5)
 }
 
 ; Punchy pluck sound
 synth ShortPluck = {
   osc: Saw,
-  env: { A: 0.001, D: 0.2, S: 0.0, R: 0.1 },
+  env: envelope 0.001 0.2 0.0 0.1,
   filter: LowPass(2000, 0.6)
 }
 
 ; Warm pad
 synth WarmPad = {
   osc: Triangle,
-  env: { A: 0.5, D: 0.3, S: 0.8, R: 1.0 },
+  env: envelope 0.5 0.3 0.8 1.0,
   filter: LowPass(1500, 0.2)
 }
 
@@ -43,19 +44,19 @@ synth WarmPad = {
 ; ============================================
 
 let melody = | <1> <3> <5> <8> |
-let bass = | <1> - <1> <5> |
+let bass_line = | <1> - <1> <5> |
 
-let lead_line = melody |> voice MyLead
-let bass_line = bass |> voice ThickBass
+let lead_part = melody |> voice MyLead
+let bass_part = bass_line |> voice ThickBass
 
 ; ============================================
 ; Synth Parameter Automation
 ; ============================================
 
 ; Create variations with different parameters
-let dark = melody |> voice MyLead |> cutoff 800
-let bright = melody |> voice MyLead |> cutoff 4000
-let resonant = melody |> voice MyLead |> cutoff 1500 |> resonance 0.7
+let dark = melody |> voice MyLead |> cutoff 800.0
+let bright = melody |> voice MyLead |> cutoff 4000.0
+let resonant = melody |> voice MyLead |> cutoff 1500.0 |> resonance 0.7
 
 ; ============================================
 ; Drum Sound Design
@@ -64,99 +65,76 @@ let resonant = melody |> voice MyLead |> cutoff 1500 |> resonance 0.7
 ; Custom kick drum
 synth DeepKick = {
   osc: Sine,
-  env: { A: 0.001, D: 0.15, S: 0.0, R: 0.1 },
+  env: envelope 0.001 0.15 0.0 0.1,
   filter: LowPass(100, 0.0)
 }
 
 ; Custom snare
 synth CrispSnare = {
   osc: Noise,
-  env: { A: 0.001, D: 0.1, S: 0.0, R: 0.15 },
+  env: envelope 0.001 0.1 0.0 0.15,
   filter: BandPass(1000, 0.8)
 }
 
 ; Custom hi-hat
 synth SharpHat = {
   osc: Noise,
-  env: { A: 0.001, D: 0.05, S: 0.0, R: 0.05 },
+  env: envelope 0.001 0.05 0.0 0.05,
   filter: HighPass(8000, 0.5)
 }
 
-let kick_pattern = | R - - - | |> voice DeepKick
-let snare_pattern = | - - R - | |> voice CrispSnare
-let hat_pattern = | R R R R | |> voice SharpHat |> volume 0.4
+let kick_pattern = | R - - - |:4
+let snare_pattern = | - - R - |:4
+let hat_pattern = | R R R R |:4
 
 ; ============================================
 ; Layered Sound Design
 ; ============================================
 
 ; Create complex sounds by layering parts
-let layered_lead = section "Layered" {
-  part "Main" {
-    | <1> <3> <5> <8> |
-  } |> voice MyLead
-
-  part "Sub" {
-    | <1> <3> <5> <8> |
-  } |> voice WarmPad |> volume 0.4
-
-  part "Top" {
-    | <1> <3> <5> <8> |
-  } |> voice ShortPluck |> volume 0.3
-}
+let layered_melody = | <1> <3> <5> <8> |:4
+let layer_main = layered_melody |> voice MyLead
+let layer_sub = layered_melody |> voice WarmPad |> volume 0.4
+let layer_top = layered_melody |> voice ShortPluck |> volume 0.3
 
 ; ============================================
 ; Full Composition with Custom Synths
 ; ============================================
 
-let intro = section "Intro" {
-  part "Pad" {
-    | [<1> <5>] | ++ | [<1> <5>] |
-  } |> voice WarmPad |> volume 0.6
-}
+; Intro - just pad
+let intro_pad = | [R, P5] - - - |:8 |> voice WarmPad |> volume 0.6
 
-let verse = section "Verse" {
-  part "Lead" {
-    | <1> <3> <5> <3> | ++ | <5> <6> <5> <3> |
-  } |> voice MyLead
+; Verse patterns
+let verse_lead = | <1> <3> <5> <3> | ++ | <5> <6> <5> <3> |:8
+let verse_bass = | <1> - <1> <5> | ++ | <4> - <4> <1> |:8
+let verse_kick = | R - - - | ++ | R - - R |:8
+let verse_hat = | R R R R | ++ | R R R R |:8
 
-  part "Bass" {
-    | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice ThickBass
+; Chorus patterns - more energy
+let chorus_lead = | <8> <8> <5> <3> | ++ | <5> <5> <3> <1> |:8
+let chorus_pad = | [R, m3, P5] - - - | ++ | [P4, m6, P8] - - - |:8
+let chorus_bass = | <1> <3> <5> <3> | ++ | <4> <6> <4> <1> |:8
+let chorus_kick = | R - R - | ++ | R - R R |:8
+let chorus_snare = | - - R - | ++ | - - R - |:8
+let chorus_hat = | R R R R | ++ | R R R R |:8
 
-  part "Kick" {
-    | R - - - | ++ | R - - R |
-  } |> voice DeepKick
+; Build full arrangement
+let full_lead = intro_pad ++ verse_lead ++ chorus_lead ++ verse_lead ++ chorus_lead
+let full_pad = intro_pad ++ | - |:16 ++ chorus_pad ++ | - |:16 ++ chorus_pad
+let full_bass = | - |:8 ++ verse_bass ++ chorus_bass ++ verse_bass ++ chorus_bass
+let full_kick = | - |:8 ++ verse_kick ++ chorus_kick ++ verse_kick ++ chorus_kick
+let full_snare = | - |:24 ++ chorus_snare ++ | - |:16 ++ chorus_snare
+let full_hat = | - |:8 ++ verse_hat ++ chorus_hat ++ verse_hat ++ chorus_hat
 
-  part "Hat" {
-    | R R R R | ++ | R R R R |
-  } |> voice SharpHat |> volume 0.3
-}
+; ============================================
+; Output - Full Song
+; ============================================
 
-let chorus = section "Chorus" {
-  part "Lead" {
-    | <8> <8> <5> <3> | ++ | <5> <5> <3> <1> |
-  } |> voice MyLead |> cutoff 3500
-
-  part "Pad" {
-    | [<1> <3> <5>] | ++ | [<4> <6> <8>] |
-  } |> voice WarmPad |> volume 0.5
-
-  part "Bass" {
-    | <1> <3> <5> <3> | ++ | <4> <6> <4> <1> |
-  } |> voice ThickBass
-
-  part "Kick" {
-    | R - R - | ++ | R - R R |
-  } |> voice DeepKick
-
-  part "Snare" {
-    | - - R - | ++ | - - R - |
-  } |> voice CrispSnare |> volume 0.7
-
-  part "Hat" {
-    | R R R R | ++ | R R R R |
-  } |> voice SharpHat |> volume 0.35
-}
-
-compose([intro, verse, chorus, verse, chorus])
+layer [
+  full_lead |> voice MyLead |> volume 0.7,
+  full_pad |> voice WarmPad |> volume 0.5,
+  full_bass |> transpose (R - P8 - P8) |> voice ThickBass |> volume 0.8,
+  full_kick |> voice DeepKick |> volume 1.0,
+  full_snare |> voice CrispSnare |> volume 0.7,
+  full_hat |> voice SharpHat |> volume 0.35
+]

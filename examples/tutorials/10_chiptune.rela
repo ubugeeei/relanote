@@ -43,10 +43,10 @@ let chip_blips = blips |> voice Chip8bit
 ; ============================================
 
 ; Simple pumping bass
-let pump_bass = | <1> - <1> - | |> repeat 2 |> voice Chiptune |> cutoff 500
+let pump_bass = | <1> - <1> - | |> repeat 2 |> voice Chiptune |> cutoff 500.0
 
 ; Walking bass
-let walk_bass = | <1> <3> <5> <3> | |> voice Chiptune |> cutoff 400
+let walk_bass = | <1> <3> <5> <3> | |> voice Chiptune |> cutoff 400.0
 
 ; ============================================
 ; 8-bit Drums
@@ -61,33 +61,31 @@ let hihat_pattern = | R R R R | |> voice HiHat |> volume 0.5
 ; Full 8-bit Song
 ; ============================================
 
-let intro = section "Intro" {
-  layer [
-    (| <5> <6> <5> <3> | ++ | <1> <2> <3> <5> |) |> voice Chiptune,
-    (| <1> - <1> <5> | ++ | <4> - <4> <1> |) |> voice Chiptune |> cutoff 400
-  ]
-}
+; Intro - simple melody with bass
+let intro_lead = | <5> <6> <5> <3> | ++ | <1> <2> <3> <5> |
+let intro_bass = | <1> - <1> <5> | ++ | <4> - <4> <1> |
 
-let verse = section "Verse" {
-  layer [
-    (| <1> <3> <5> <8> | ++ | <8> <5> <3> <1> |) |> voice NES,
-    (| <3> <5> <8> <10> | ++ | <10> <8> <5> <3> |) |> voice GameBoy |> volume 0.6,
-    (| <1> <1> <5> <5> | ++ | <4> <4> <1> <1> |) |> voice Chiptune |> cutoff 300,
-    (| R - R - | ++ | R - R R |) |> voice Snare |> volume 0.4
-  ]
-}
+; Verse - layered melodies
+let verse_lead = | <1> <3> <5> <8> | ++ | <8> <5> <3> <1> |
+let verse_harmony = | <3> <5> <8> <10> | ++ | <10> <8> <5> <3> |
+let verse_bass = | <1> <1> <5> <5> | ++ | <4> <4> <1> <1> |
+let verse_snare = | R - R - | ++ | R - R R |
 
-let chorus = section "Chorus" {
-  layer [
-    (| <8> <8> <5> <3> | ++ | <5> <5> <3> <1> |) |> voice Chiptune,
-    (| <5> <5> <3> <1> | ++ | <3> <3> <1> <5> |) |> voice NES |> volume 0.7,
-    (| <1> <3> <5> <3> | ++ | <4> <5> <6> <5> |) |> voice Chiptune |> cutoff 350
-  ]
-}
+; Chorus - energetic
+let chorus_lead = | <8> <8> <5> <3> | ++ | <5> <5> <3> <1> |
+let chorus_harmony = | <5> <5> <3> <1> | ++ | <3> <3> <1> <5> |
+let chorus_bass = | <1> <3> <5> <3> | ++ | <4> <5> <6> <5> |
 
-; TODO: compose is not implemented yet, using layer for now
+; Build full arrangement
+let full_lead = intro_lead ++ verse_lead ++ chorus_lead
+let full_harmony = | - |:8 ++ verse_harmony ++ chorus_harmony
+let full_bass = intro_bass ++ verse_bass ++ chorus_bass
+
 layer [
-  intro,
-  verse,
-  chorus
+  full_lead |> voice Chiptune |> volume 0.8,
+  full_harmony |> voice GameBoy |> volume 0.5,
+  full_bass |> transpose (R - P8 - P8) |> voice Chiptune |> cutoff 400.0 |> volume 0.7,
+  kick_pattern |> repeat 3 |> volume 0.9,
+  snare_pattern |> repeat 3 |> volume 0.6,
+  hihat_pattern |> repeat 3 |> volume 0.4
 ]

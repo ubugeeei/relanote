@@ -1,0 +1,255 @@
+; ============================================
+; "VOID PROTOCOL" - Dark Neurofunk
+; Aggressive, dark, industrial D&B
+; ============================================
+
+set tempo = 174
+
+; Custom dark scale with M7 for tension
+scale Dark = { R, m2, m3, P4, P5, m6, M7 }
+
+; ============================================
+; Custom Dark Synths
+; ============================================
+
+synth DarkReese = {
+  osc: Saw,
+  detune: 25,
+  env: envelope 0.01 0.1 0.8 0.2,
+  filter: LowPass(400, 0.7)
+}
+
+synth NeuroLead = {
+  osc: Square,
+  detune: 15,
+  env: envelope 0.002 0.1 0.5 0.15,
+  filter: LowPass(1500, 0.6)
+}
+
+synth DarkPad = {
+  osc: Saw,
+  detune: 20,
+  env: envelope 0.3 0.2 0.6 0.5,
+  filter: LowPass(800, 0.3)
+}
+
+synth AggroStab = {
+  osc: Square,
+  env: envelope 0.001 0.08 0.0 0.05,
+  filter: LowPass(2500, 0.8)
+}
+
+synth EDMKick = {
+  osc: Sine,
+  env: envelope 0.001 0.08 0.0 0.05,
+  filter: LowPass(60, 0.0)
+}
+
+synth KickClick = {
+  osc: Square,
+  env: envelope 0.001 0.02 0.0 0.01,
+  filter: LowPass(3000, 0.5)
+}
+
+synth KickBody = {
+  osc: Triangle,
+  env: envelope 0.001 0.12 0.0 0.08,
+  filter: LowPass(100, 0.3)
+}
+
+; ============================================
+; AMEN BREAK - Aggressive patterns
+; ============================================
+
+let amen_kick = |
+  R^ - - - - - R - - - R^ - - - - -
+  R^ - - - - - R - - - - - R^ - R -
+|:8
+
+let kick_double = |
+  R^ - R - R^ - R - R^ - R - R^ - R -
+  R^ - R - R^ - R R R^ - R - R^ R R -
+|:8
+
+let kick_rolling = |
+  R R - R R - R R R - R R - R R -
+  R^ - R R^ - R R^ - R R^ - R R R R
+|:8
+
+let kick_offbeat = |
+  R^ - - R R^ - - R R^ - - R R^ - R -
+  R^ - R - R^ - R - R^ R - R R^ R R -
+|:8
+
+let amen_snare = |
+  - - - - R^ - - - - - - - R^ - - -
+  - - - - R^ - - - - - - - R^ - R^ -
+|:8
+
+let hihat_chaos = |
+  R R - R R - R R R - R R - R R -
+  R - R R - R R - R R R - R - R R
+|:8
+
+let hihat_roll = | R R R R R R R R R R R R R R R R |:4
+
+let ghost_snare = |
+  - R - - - R - - - R - - - R - R
+  R - - R - - R - - R - - R - - -
+|:8
+
+; ============================================
+; DARK BASS - Heavy, distorted
+; ============================================
+
+let bass_dark = |
+  <1>^ - - - <3> - - <7>^ - - - - <3> - - -
+  - - <1>^ - - <7> - - <3>^ - - - - <1> - -
+|:8
+
+let bass_rolling = |
+  <1> - <3> - - <7> - <1> - <3> - - <7> - <1> -
+  <7> - - <3> - <1> - - <7> - <3> - - <1> - -
+|:8
+
+let bass_stab = |
+  <1>^ - - - - - - - - - - - <7>^ - - -
+  - - - - <3>^ - - - - - - - - - <1>^ -
+|:8
+
+let sub_bass = |
+  <1>~ - - - - - - - - - - - - - - -
+  - - - - - - - - <7>~ - - - - - - -
+|:8
+
+; ============================================
+; NEURO LEAD - Dark, aggressive
+; ============================================
+
+let neuro_riff = |
+  <1>^ - - <3> - - <7>^ - - - <3> - - <1> - -
+  - - <7>^ - - <3> - - <1>^ - - - <7> <3> <1> -
+|:8
+
+let neuro_dark = |
+  - <1> - - <3>^ - - <7> - - - <3> - <1>^ - -
+  <7>^ - - - - <3> - - <1> - <7>^ - - - <3> -
+|:8
+
+let neuro_stab = |
+  [R, m3, M7]^ - - - - - - - - - - - - - - -
+  - - - - - - [m3, M7]^ - - - - - [R, M7]^ - - -
+|:8
+
+let neuro_glitch = |
+  <1> - - <7> - <3> - - <1> - - <7>^ - - - -
+  - <3> - - <7> - - <1>^ - - <3> - <7> - - -
+|:8
+
+let scream_lead = |
+  <7>~ - - - - - - - - - <3> - - <1>^ - -
+  - - - <7>~ - - - - <3> - - - <1> - <7>^ -
+|:8
+
+; ============================================
+; DARK ARPS - Tension building
+; ============================================
+
+let arp_dark = |
+  <1> - <3> <7> - <3> - <7> <1> - <7> <3> - <1> - <7>
+  <3> - <1> - <7> - <3> <1> - <7> - <3> <7> - <1> -
+|:8
+
+let arp_broken = |
+  <1> - - <7> - - <3> - <1> - - <7> - - <3> -
+  - <7> - - <3> - - <1> - <7> - - <3> - - <1>
+|:8
+
+let arp_tension = |
+  <1> <7> - <3> - <7> <1> - - <3> <7> - <1> - <7> <3>
+  - <1> <7> - <3> - - <7> <1> - <3> <7> - <1> - -
+|:8
+
+; ============================================
+; DARK PAD - Atmosphere
+; ============================================
+
+let dark_pad = |
+  [R, m3, M7]~ - - - - - - - - - - - - - - -
+  [m3, M7]~ - - - - - - - - - - - - - - -
+|:16
+
+; ============================================
+; BUILD UP
+; ============================================
+
+let snare_roll = |
+  R - - - R - - - R - R - R - R -
+  R - R - R R R - R R R R R R R R
+|:8
+
+let riser = |
+  <1> - - - <1> - - - <1> - <1> - <1> - <1> -
+  <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1> <1>
+|:8
+
+; ============================================
+; SECTIONS
+; ============================================
+
+let intro_kick = amen_kick ++ kick_offbeat
+let intro_snare = amen_snare
+let intro_hat = hihat_chaos
+let intro_bass = sub_bass ++ sub_bass
+
+let drop_kick = kick_double ++ kick_rolling ++ amen_kick ++ kick_offbeat
+let drop_snare = amen_snare ++ ghost_snare
+let drop_hat = hihat_chaos ++ hihat_roll ++ hihat_chaos ++ hihat_roll
+let drop_bass = bass_dark ++ bass_rolling ++ bass_dark ++ bass_stab
+
+let break_kick = kick_rolling ++ kick_double
+let break_snare = snare_roll
+let break_riser = riser
+
+; ============================================
+; FULL ARRANGEMENT
+; ============================================
+
+let full_kick = intro_kick ++ drop_kick ++ break_kick ++ drop_kick
+let full_snare = intro_snare ++ drop_snare ++ break_snare ++ drop_snare
+let full_ghost = | - |:8 ++ ghost_snare ++ | - |:8 ++ ghost_snare
+let full_hat = intro_hat ++ drop_hat ++ intro_hat ++ drop_hat
+let full_bass = intro_bass ++ drop_bass ++ intro_bass ++ drop_bass
+let full_sub = sub_bass |> repeat 8
+
+let neuro_part1 = | - |:16 ++ neuro_riff ++ neuro_stab ++ neuro_glitch
+let neuro_part2 = | - |:16 ++ neuro_dark ++ neuro_stab ++ scream_lead
+let full_neuro = neuro_part1 ++ neuro_part2
+
+let full_arp = | - |:32 ++ arp_dark ++ arp_broken ++ arp_tension
+let full_pad = dark_pad ++ dark_pad ++ | - |:32 ++ dark_pad
+
+; ============================================
+; OUTPUT - DARK CHAOS
+; ============================================
+
+layer [
+  ; Drums - EDM layered kicks (dry)
+  full_kick |> transpose (R - P8 - P8 - P8) |> voice EDMKick |> volume 1.0,
+  full_kick |> transpose (R - P8 - P8) |> voice KickBody |> volume 0.8,
+  full_kick |> voice KickClick |> volume 0.5,
+  full_snare |> voice Snare |> reverb 0.3 |> volume 0.85,
+  full_ghost |> voice Snare |> reverb 0.2 |> volume 0.25,
+  full_hat |> voice HiHat |> reverb 0.4 |> volume 0.35,
+
+  ; Bass layers - dark and heavy (slight reverb)
+  full_bass |> transpose (R - P8 - P8) |> voice DarkReese |> reverb 0.2 |> volume 0.9,
+  full_sub |> transpose (R - P8 - P8 - P8) |> voice FatBass |> cutoff 150.0 |> volume 0.7,
+
+  ; Synths - aggressive (medium reverb)
+  full_neuro |> transpose (R - P8) |> voice NeuroLead |> reverb 0.5 |> volume 0.6,
+  full_arp |> voice AggroStab |> cutoff 2000.0 |> reverb 0.6 |> volume 0.4,
+
+  ; Atmosphere (heavy reverb)
+  full_pad |> transpose (R - P8) |> voice DarkPad |> hall_reverb |> volume 0.4
+]

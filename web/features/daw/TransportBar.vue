@@ -49,8 +49,6 @@ const handleTempoBlur = (e: FocusEvent) => {
   const value = parseInt((e.target as HTMLInputElement).value);
   if (isNaN(value) || value < 20) {
     emit("update:tempo", 20);
-  } else if (value > 300) {
-    emit("update:tempo", 300);
   }
 };
 </script>
@@ -126,7 +124,6 @@ const handleTempoBlur = (e: FocusEvent) => {
         class="tempo-input"
         :value="tempo"
         min="20"
-        max="300"
         @input="handleTempoChange"
         @blur="handleTempoBlur"
       />
