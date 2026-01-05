@@ -105,9 +105,9 @@ pub struct FilterData {
 /// Pitch envelope data for WebAudio (used for drum sounds like kicks)
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PitchEnvelopeData {
-    pub start_hz: f64,      // Starting frequency in Hz
-    pub end_hz: f64,        // Ending frequency in Hz
-    pub time_seconds: f64,  // Duration of the pitch sweep
+    pub start_hz: f64,     // Starting frequency in Hz
+    pub end_hz: f64,       // Ending frequency in Hz
+    pub time_seconds: f64, // Duration of the pitch sweep
 }
 
 /// Complete synth data for WebAudio playback
@@ -652,11 +652,13 @@ fn synth_value_to_data(synth: &relanote_eval::value::SynthValue) -> SynthData {
         }
     });
 
-    let pitch_envelope = synth.pitch_envelope.map(|(start, end, time)| PitchEnvelopeData {
-        start_hz: start,
-        end_hz: end,
-        time_seconds: time,
-    });
+    let pitch_envelope = synth
+        .pitch_envelope
+        .map(|(start, end, time)| PitchEnvelopeData {
+            start_hz: start,
+            end_hz: end,
+            time_seconds: time,
+        });
 
     SynthData {
         name: synth.name.clone(),
@@ -770,15 +772,19 @@ fn extract_audio_notes_from_part(
 /// Note data from piano roll for code generation
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PianoRollNote {
-    pub pitch: i32,      // MIDI note (0-127)
-    pub start: f64,      // Start time in beats
-    pub duration: f64,   // Duration in beats
-    pub velocity: u8,    // 0-127
+    pub pitch: i32,    // MIDI note (0-127)
+    pub start: f64,    // Start time in beats
+    pub duration: f64, // Duration in beats
+    pub velocity: u8,  // 0-127
 }
 
 /// Generate Relanote code from piano roll notes
 #[wasm_bindgen]
-pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Option<i32>) -> String {
+pub fn notes_to_code(
+    notes_json: &str,
+    synth_name: Option<String>,
+    key_pitch: Option<i32>,
+) -> String {
     let notes: Vec<PianoRollNote> = match serde_json::from_str(notes_json) {
         Ok(n) => n,
         Err(_) => return "".to_string(),
@@ -792,7 +798,8 @@ pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Op
     let base_pitch = key_pitch.unwrap_or(60);
 
     // Group notes by start time
-    let mut time_groups: std::collections::BTreeMap<i64, Vec<&PianoRollNote>> = std::collections::BTreeMap::new();
+    let mut time_groups: std::collections::BTreeMap<i64, Vec<&PianoRollNote>> =
+        std::collections::BTreeMap::new();
     for note in &notes {
         // Round to 1/16 beat precision
         let start_key = (note.start * 16.0).round() as i64;
@@ -800,7 +807,8 @@ pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Op
     }
 
     // Find the total duration
-    let total_beats = notes.iter()
+    let total_beats = notes
+        .iter()
         .map(|n| n.start + n.duration)
         .fold(0.0_f64, f64::max);
 
@@ -821,7 +829,8 @@ pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Op
         let mut current_time = bar_start;
 
         // Find all unique time points in this bar
-        let mut time_points: Vec<f64> = time_groups.keys()
+        let mut time_points: Vec<f64> = time_groups
+            .keys()
             .map(|k| *k as f64 / 16.0)
             .filter(|t| *t >= bar_start && *t < bar_end)
             .collect();
@@ -849,15 +858,22 @@ pub fn notes_to_code(notes_json: &str, synth_name: Option<String>, key_pitch: Op
                         // Single note
                         let note = notes_at_time[0];
                         let interval = pitch_to_interval(note.pitch, base_pitch);
-                        if note.duration >= 1.0 && (note.duration - note.duration.round()).abs() < 0.001 {
-                            bar_slots.push(format!("{}:{}", interval, note.duration.round() as i32));
+                        if note.duration >= 1.0
+                            && (note.duration - note.duration.round()).abs() < 0.001
+                        {
+                            bar_slots.push(format!(
+                                "{}:{}",
+                                interval,
+                                note.duration.round() as i32
+                            ));
                         } else {
                             bar_slots.push(interval);
                         }
                         current_time = time + note.duration;
                     } else {
                         // Chord
-                        let intervals: Vec<String> = notes_at_time.iter()
+                        let intervals: Vec<String> = notes_at_time
+                            .iter()
                             .map(|n| pitch_to_interval(n.pitch, base_pitch))
                             .collect();
                         let duration = notes_at_time[0].duration;

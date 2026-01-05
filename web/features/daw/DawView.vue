@@ -151,6 +151,10 @@ const handlePlay = async () => {
   // Use audioData from props which includes synth information
   const notes: AudioNoteEvent[] = props.audioData?.notes || [];
 
+  console.log("[DEBUG] handlePlay - audioData:", props.audioData);
+  console.log("[DEBUG] handlePlay - notes:", notes);
+  console.log("[DEBUG] handlePlay - notes.length:", notes.length);
+
   try {
     await playNotes(
       notes,

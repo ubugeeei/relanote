@@ -259,7 +259,10 @@ impl Parser {
     /// Note: Newlines terminate Haskell-style application to prevent cross-line parsing
     pub fn can_start_argument(&self) -> bool {
         // Newlines and comments terminate Haskell-style application
-        if matches!(self.current(), TokenKind::Newline | TokenKind::LineComment(_)) {
+        if matches!(
+            self.current(),
+            TokenKind::Newline | TokenKind::LineComment(_)
+        ) {
             return false;
         }
         // Reserved words that should not be consumed as arguments

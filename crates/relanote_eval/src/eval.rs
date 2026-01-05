@@ -409,9 +409,11 @@ impl Evaluator {
                                         Value::Int(i) => Some(*i as f64),
                                         _ => None,
                                     };
-                                    if let (Some(start), Some(end), Some(time)) =
-                                        (extract(&values[0]), extract(&values[1]), extract(&values[2]))
-                                    {
+                                    if let (Some(start), Some(end), Some(time)) = (
+                                        extract(&values[0]),
+                                        extract(&values[1]),
+                                        extract(&values[2]),
+                                    ) {
                                         synth.pitch_envelope = Some((start, end, time));
                                     }
                                 }
@@ -1107,9 +1109,10 @@ impl Evaluator {
             }
 
             // Oscillator addition: Saw + Square => Array of oscillators for multi-osc synths
-            (BinaryOp::Add, Value::Oscillator(a), Value::Oscillator(b)) => {
-                Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
-            }
+            (BinaryOp::Add, Value::Oscillator(a), Value::Oscillator(b)) => Ok(Value::Array(vec![
+                Value::Oscillator(a),
+                Value::Oscillator(b),
+            ])),
             (BinaryOp::Add, Value::Array(arr), Value::Oscillator(osc)) => {
                 let mut new_arr = arr;
                 new_arr.push(Value::Oscillator(osc));
@@ -1122,8 +1125,12 @@ impl Evaluator {
             }
             // Handle Builtin oscillators (auto-call them)
             (BinaryOp::Add, Value::Builtin(f), Value::Builtin(g)) => {
-                if let (Ok(Value::Oscillator(a)), Ok(Value::Oscillator(b))) = (f(vec![]), g(vec![])) {
-                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                if let (Ok(Value::Oscillator(a)), Ok(Value::Oscillator(b))) = (f(vec![]), g(vec![]))
+                {
+                    Ok(Value::Array(vec![
+                        Value::Oscillator(a),
+                        Value::Oscillator(b),
+                    ]))
                 } else {
                     Err(EvalError::TypeError {
                         expected: "oscillators".to_string(),
@@ -1134,7 +1141,10 @@ impl Evaluator {
             }
             (BinaryOp::Add, Value::Builtin(f), Value::Oscillator(b)) => {
                 if let Ok(Value::Oscillator(a)) = f(vec![]) {
-                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                    Ok(Value::Array(vec![
+                        Value::Oscillator(a),
+                        Value::Oscillator(b),
+                    ]))
                 } else {
                     Err(EvalError::TypeError {
                         expected: "oscillator".to_string(),
@@ -1145,7 +1155,10 @@ impl Evaluator {
             }
             (BinaryOp::Add, Value::Oscillator(a), Value::Builtin(g)) => {
                 if let Ok(Value::Oscillator(b)) = g(vec![]) {
-                    Ok(Value::Array(vec![Value::Oscillator(a), Value::Oscillator(b)]))
+                    Ok(Value::Array(vec![
+                        Value::Oscillator(a),
+                        Value::Oscillator(b),
+                    ]))
                 } else {
                     Err(EvalError::TypeError {
                         expected: "oscillator".to_string(),
@@ -1185,7 +1198,7 @@ impl Evaluator {
                 expected: "compatible types".to_string(),
                 found: "incompatible types".to_string(),
                 span,
-            })
+            }),
         }
     }
 
