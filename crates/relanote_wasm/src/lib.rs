@@ -946,6 +946,510 @@ fn pitch_to_interval(midi_pitch: i32, base_pitch: i32) -> String {
     }
 }
 
+// =============================================================================
+// LSP-like functionality for Monaco editor integration
+// =============================================================================
+
+/// Completion item for the editor
+#[derive(Serialize, Deserialize, Clone)]
+pub struct CompletionItem {
+    pub label: String,
+    pub kind: String, // "keyword" | "function" | "constant" | "property" | "class" | "enum_member" | "snippet"
+    pub detail: String,
+    pub insert_text: Option<String>,
+}
+
+/// Get all completion items
+#[wasm_bindgen]
+pub fn get_completions() -> JsValue {
+    let mut completions = Vec::new();
+
+    // Keywords
+    let keywords = [
+        ("scale", "Define a scale"),
+        ("chord", "Define a chord"),
+        ("let", "Define a binding"),
+        ("in", "Local binding scope"),
+        ("section", "Define a section"),
+        ("layer", "Combine multiple parts"),
+        ("part", "Define a part"),
+        ("if", "Conditional expression"),
+        ("then", "Then branch"),
+        ("else", "Else branch"),
+        ("match", "Pattern matching"),
+        ("with", "Match patterns"),
+        ("set", "Set global property"),
+        ("import", "Import module"),
+        ("export", "Export binding"),
+        ("from", "Import source"),
+        ("as", "Alias"),
+        ("true", "Boolean true"),
+        ("false", "Boolean false"),
+    ];
+    for (label, detail) in keywords {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "keyword".to_string(),
+            detail: detail.to_string(),
+            insert_text: None,
+        });
+    }
+
+    // Set statements
+    let set_items = [
+        ("set tempo = ", "Set tempo (BPM)", "set tempo = ${1:120}"),
+        ("set key = ", "Set key (e.g., C4, D#3)", "set key = ${1:C4}"),
+    ];
+    for (label, detail, insert) in set_items {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "snippet".to_string(),
+            detail: detail.to_string(),
+            insert_text: Some(insert.to_string()),
+        });
+    }
+
+    // Built-in functions
+    let functions = [
+        ("reverse", "Reverse a block"),
+        ("transpose", "Transpose by an interval"),
+        ("repeat", "Repeat n times"),
+        ("volume", "Set volume (0.0-1.0)"),
+        ("reverb", "Apply reverb (0.0-1.0)"),
+        ("hall_reverb", "Hall reverb preset"),
+        ("room_reverb", "Room reverb preset"),
+        ("plate_reverb", "Plate reverb preset"),
+        ("dry", "No reverb"),
+        ("voice", "Set instrument voice"),
+        ("swing", "Apply swing feel"),
+        ("double_time", "Double tempo"),
+        ("half_time", "Half tempo"),
+        ("metronome", "Generate metronome"),
+        ("cutoff", "Filter cutoff frequency"),
+        ("pan", "Stereo pan (-1.0 to 1.0)"),
+        ("delay", "Apply delay effect"),
+        ("stretch", "Time stretch"),
+        ("compress", "Time compress"),
+        ("quantize", "Quantize to note value"),
+        ("invert", "Invert intervals"),
+        ("retrograde", "Retrograde melody"),
+        ("shuffle", "Shuffle notes"),
+    ];
+    for (label, detail) in functions {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "function".to_string(),
+            detail: detail.to_string(),
+            insert_text: None,
+        });
+    }
+
+    // Voice/Instruments
+    let voices = [
+        // 8-bit / Chiptune
+        ("NES", "NES pulse wave"),
+        ("GameBoy", "GameBoy sound"),
+        ("Chiptune", "Classic chiptune"),
+        ("Chip8bit", "8-bit chip sound"),
+        ("C64", "Commodore 64 SID"),
+        ("Retro", "Retro game sound"),
+        ("Arcade", "Arcade game sound"),
+        // Drums
+        ("Kick8bit", "8-bit kick drum"),
+        ("Snare8bit", "8-bit snare drum"),
+        ("HiHat8bit", "8-bit hi-hat"),
+        ("Clap8bit", "8-bit clap"),
+        ("Kick", "Kick drum"),
+        ("Snare", "Snare drum"),
+        ("HiHat", "Hi-hat"),
+        ("Clap", "Clap sound"),
+        ("Tom", "Tom drum"),
+        // Bass
+        ("FatBass", "Fat bass synth"),
+        ("SubBass", "Sub bass"),
+        ("AcidBass", "Acid bass (303-style)"),
+        ("SynthBass", "Synth bass"),
+        ("PluckBass", "Plucked bass"),
+        ("Bass", "Basic bass"),
+        // Synths
+        ("Sine", "Pure sine wave"),
+        ("Square", "Square wave"),
+        ("Sawtooth", "Sawtooth wave"),
+        ("Triangle", "Triangle wave"),
+        ("SawLead", "Saw wave lead"),
+        ("SquareLead", "Square wave lead"),
+        ("SineLead", "Sine wave lead"),
+        ("SuperSaw", "Super saw"),
+        ("Synth", "Basic synth"),
+        ("SynthLead", "Lead synth"),
+        ("SynthPad", "Pad synth"),
+        ("Pad", "Pad synth"),
+        ("DarkPad", "Dark pad"),
+        ("FMSynth", "FM synthesis"),
+        ("AnalogSynth", "Analog-style synth"),
+        // Keyboard
+        ("Piano", "Acoustic piano"),
+        ("ElectricPiano", "Electric piano"),
+        ("EPiano", "Electric piano"),
+        ("Rhodes", "Rhodes piano"),
+        ("Organ", "Organ"),
+        ("Harpsichord", "Harpsichord"),
+        // Strings/Brass
+        ("String", "String ensemble"),
+        ("Brass", "Brass section"),
+        // Pluck
+        ("Guitar", "Acoustic guitar"),
+        ("ElectricGuitar", "Electric guitar"),
+        ("Pluck", "Plucked string"),
+        ("Bell", "Bell sound"),
+        ("Marimba", "Marimba"),
+        ("Vibraphone", "Vibraphone"),
+        // Special
+        ("Noise", "Noise generator"),
+        ("WhiteNoise", "White noise"),
+    ];
+    for (label, detail) in voices {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "enum_member".to_string(),
+            detail: format!("Voice: {}", detail),
+            insert_text: None,
+        });
+    }
+
+    // Intervals
+    let intervals = [
+        ("R", "Root / Unison (0 semitones)"),
+        ("P1", "Perfect Unison (0 semitones)"),
+        ("m2", "Minor Second (1 semitone)"),
+        ("M2", "Major Second (2 semitones)"),
+        ("m3", "Minor Third (3 semitones)"),
+        ("M3", "Major Third (4 semitones)"),
+        ("P4", "Perfect Fourth (5 semitones)"),
+        ("A4", "Augmented Fourth (6 semitones)"),
+        ("d5", "Diminished Fifth (6 semitones)"),
+        ("P5", "Perfect Fifth (7 semitones)"),
+        ("m6", "Minor Sixth (8 semitones)"),
+        ("M6", "Major Sixth (9 semitones)"),
+        ("m7", "Minor Seventh (10 semitones)"),
+        ("M7", "Major Seventh (11 semitones)"),
+        ("P8", "Perfect Octave (12 semitones)"),
+        ("m9", "Minor Ninth (13 semitones)"),
+        ("M9", "Major Ninth (14 semitones)"),
+        ("m10", "Minor Tenth (15 semitones)"),
+        ("M10", "Major Tenth (16 semitones)"),
+        ("P11", "Perfect Eleventh (17 semitones)"),
+        ("P12", "Perfect Twelfth (19 semitones)"),
+        ("M13", "Major Thirteenth (21 semitones)"),
+        ("M14", "Major Fourteenth (23 semitones)"),
+        ("P15", "Perfect Fifteenth (24 semitones)"),
+    ];
+    for (label, detail) in intervals {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "constant".to_string(),
+            detail: detail.to_string(),
+            insert_text: None,
+        });
+    }
+
+    // Scales
+    let scales = [
+        ("Major", "Major scale { R, M2, M3, P4, P5, M6, M7 }"),
+        ("Minor", "Natural minor { R, M2, m3, P4, P5, m6, m7 }"),
+        (
+            "HarmonicMinor",
+            "Harmonic minor { R, M2, m3, P4, P5, m6, M7 }",
+        ),
+        (
+            "MelodicMinor",
+            "Melodic minor { R, M2, m3, P4, P5, M6, M7 }",
+        ),
+        ("Dorian", "Dorian mode { R, M2, m3, P4, P5, M6, m7 }"),
+        ("Phrygian", "Phrygian mode { R, m2, m3, P4, P5, m6, m7 }"),
+        ("Lydian", "Lydian mode { R, M2, M3, A4, P5, M6, M7 }"),
+        (
+            "Mixolydian",
+            "Mixolydian mode { R, M2, M3, P4, P5, M6, m7 }",
+        ),
+        ("Locrian", "Locrian mode { R, m2, m3, P4, d5, m6, m7 }"),
+        ("MajorPentatonic", "Major pentatonic { R, M2, M3, P5, M6 }"),
+        ("MinorPentatonic", "Minor pentatonic { R, m3, P4, P5, m7 }"),
+        ("Blues", "Blues scale { R, m3, P4, d5, P5, m7 }"),
+        ("WholeTone", "Whole tone { R, M2, M3, A4, A5, A6 }"),
+        ("Chromatic", "Chromatic scale (all 12 tones)"),
+    ];
+    for (label, detail) in scales {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "class".to_string(),
+            detail: format!("Scale: {}", detail),
+            insert_text: None,
+        });
+    }
+
+    // Chords
+    let chords = [
+        ("MajorTriad", "Major triad { R, M3, P5 }"),
+        ("MinorTriad", "Minor triad { R, m3, P5 }"),
+        ("Diminished", "Diminished { R, m3, d5 }"),
+        ("Augmented", "Augmented { R, M3, A5 }"),
+        ("Major7", "Major 7th { R, M3, P5, M7 }"),
+        ("Minor7", "Minor 7th { R, m3, P5, m7 }"),
+        ("Dominant7", "Dominant 7th { R, M3, P5, m7 }"),
+        ("MinorMajor7", "Minor-major 7th { R, m3, P5, M7 }"),
+        ("HalfDiminished7", "Half-diminished { R, m3, d5, m7 }"),
+        ("Diminished7", "Diminished 7th { R, m3, d5, d7 }"),
+        ("Sus2", "Suspended 2nd { R, M2, P5 }"),
+        ("Sus4", "Suspended 4th { R, P4, P5 }"),
+        ("Add9", "Add 9 { R, M3, P5, M9 }"),
+        ("Add11", "Add 11 { R, M3, P5, P11 }"),
+        ("Power", "Power chord { R, P5 }"),
+    ];
+    for (label, detail) in chords {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "class".to_string(),
+            detail: format!("Chord: {}", detail),
+            insert_text: None,
+        });
+    }
+
+    // Dynamics
+    let dynamics = [
+        ("ppp", "Pianississimo (very very soft)"),
+        ("pp", "Pianissimo (very soft)"),
+        ("p", "Piano (soft)"),
+        ("mp", "Mezzo-piano (moderately soft)"),
+        ("mf", "Mezzo-forte (moderately loud)"),
+        ("f", "Forte (loud)"),
+        ("ff", "Fortissimo (very loud)"),
+        ("fff", "Fortississimo (very very loud)"),
+        ("sfz", "Sforzando (sudden accent)"),
+        ("fp", "Forte-piano (loud then soft)"),
+    ];
+    for (label, detail) in dynamics {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "property".to_string(),
+            detail: format!("Dynamic: {}", detail),
+            insert_text: None,
+        });
+    }
+
+    // Articulations
+    let articulations = [
+        ("staccato", "Short, detached notes"),
+        ("legato", "Smooth, connected notes"),
+        ("accent", "Emphasized notes"),
+        ("tenuto", "Held full duration"),
+        ("portamento", "Sliding between notes"),
+    ];
+    for (label, detail) in articulations {
+        completions.push(CompletionItem {
+            label: label.to_string(),
+            kind: "property".to_string(),
+            detail: format!("Articulation: {}", detail),
+            insert_text: None,
+        });
+    }
+
+    serde_wasm_bindgen::to_value(&completions).unwrap()
+}
+
+/// Hover information result
+#[derive(Serialize, Deserialize)]
+pub struct HoverResult {
+    pub found: bool,
+    pub content: Option<String>,
+    pub start: usize,
+    pub end: usize,
+}
+
+/// Get hover information at a position
+#[wasm_bindgen]
+pub fn get_hover(source: &str, offset: usize) -> JsValue {
+    use relanote_lexer::{Lexer, TokenKind};
+
+    let src = Source::from_string("editor", source.to_string());
+    let lexer = Lexer::new(&src);
+    let tokens: Vec<_> = lexer.collect();
+
+    for token in &tokens {
+        if token.span.start <= offset && offset <= token.span.end {
+            let hover_content = match &token.kind {
+                TokenKind::Ident(name) => get_builtin_hover(name),
+                TokenKind::Interval(interval) => {
+                    let semitones = interval_to_semitones(interval);
+                    let name = interval_data_to_name(interval);
+                    Some(format!("**Interval**: {} ({} semitones)", name, semitones))
+                }
+                TokenKind::AbsolutePitch(pitch) => {
+                    let midi = pitch.to_midi_note();
+                    let acc_str = match pitch.accidental {
+                        1 => "#",
+                        -1 => "b",
+                        _ => "",
+                    };
+                    Some(format!("**Absolute Pitch**: {}{}{} (MIDI {})",
+                        pitch.note, acc_str, pitch.octave, midi))
+                }
+                TokenKind::Root => Some("**Root** (R): The root/unison of the current scale (0 semitones)".to_string()),
+                TokenKind::Let => Some("**let**: Define a variable binding\n\n```rela\nlet name = value\nlet name = value in expr\n```".to_string()),
+                TokenKind::Set => Some("**set**: Set a global property\n\n```rela\nset tempo = 120\nset key = C4\n```".to_string()),
+                TokenKind::Scale => Some("**scale**: Define a named scale\n\n```rela\nscale Major = { R, M2, M3, P4, P5, M6, M7 }\n```".to_string()),
+                TokenKind::Chord => Some("**chord**: Define a named chord\n\n```rela\nchord Maj = { R, M3, P5 }\n```".to_string()),
+                TokenKind::Layer => Some("**layer**: Combine multiple parts (polyphony)\n\n```rela\nlayer [\n  melody,\n  bass\n]\n```".to_string()),
+                TokenKind::Section => Some("**section**: Define a song section".to_string()),
+                TokenKind::Part => Some("**part**: Define an instrument part".to_string()),
+                TokenKind::PipeOp => Some("**|>**: Pipe operator - applies a function to the left operand".to_string()),
+                TokenKind::Pipe => Some("**|**: Bar/block delimiter".to_string()),
+                _ => None,
+            };
+
+            if let Some(content) = hover_content {
+                let result = HoverResult {
+                    found: true,
+                    content: Some(content),
+                    start: token.span.start,
+                    end: token.span.end,
+                };
+                return serde_wasm_bindgen::to_value(&result).unwrap();
+            }
+        }
+    }
+
+    let result = HoverResult {
+        found: false,
+        content: None,
+        start: 0,
+        end: 0,
+    };
+    serde_wasm_bindgen::to_value(&result).unwrap()
+}
+
+/// Get hover documentation for builtin identifiers
+fn get_builtin_hover(name: &str) -> Option<String> {
+    match name {
+        // Functions
+        "transpose" => Some("**transpose**: Transpose notes by an interval\n\n```rela\nblock |> transpose P8  ; up one octave\nblock |> transpose (R - P8)  ; down one octave\n```".to_string()),
+        "reverse" => Some("**reverse**: Reverse the order of notes in a block".to_string()),
+        "repeat" => Some("**repeat**: Repeat a block N times\n\n```rela\nblock |> repeat 4\n```".to_string()),
+        "volume" => Some("**volume**: Set the volume level (0.0-1.0)\n\n```rela\nblock |> volume 0.8\n```".to_string()),
+        "reverb" => Some("**reverb**: Apply reverb effect (0.0-1.0)\n\n```rela\nblock |> reverb 0.3\n```".to_string()),
+        "voice" => Some("**voice**: Set the instrument/synth voice\n\n```rela\nblock |> voice NES\nblock |> voice Piano\n```".to_string()),
+        "in" => Some("**in**: Apply a scale to a block\n\n```rela\nblock |> in Major\nblock |> in MinorPentatonic\n```".to_string()),
+        "pan" => Some("**pan**: Set stereo pan (-1.0 left to 1.0 right)\n\n```rela\nblock |> pan -0.5  ; left\nblock |> pan 0.5   ; right\n```".to_string()),
+        "delay" => Some("**delay**: Apply delay effect (0.0-1.0)".to_string()),
+        "swing" => Some("**swing**: Apply swing feel (0.5 straight to 0.67 triplet)".to_string()),
+        "double_time" => Some("**double_time**: Double the tempo".to_string()),
+        "half_time" => Some("**half_time**: Halve the tempo".to_string()),
+        "metronome" => Some("**metronome**: Generate a metronome click track".to_string()),
+        // Voices
+        "NES" => Some("**NES**: NES-style 8-bit pulse wave synthesizer".to_string()),
+        "GameBoy" => Some("**GameBoy**: GameBoy-style 8-bit sound".to_string()),
+        "Chiptune" => Some("**Chiptune**: Classic 8-bit chiptune sound".to_string()),
+        "Chip8bit" => Some("**Chip8bit**: Generic 8-bit chip sound".to_string()),
+        "Kick8bit" => Some("**Kick8bit**: 8-bit style kick drum".to_string()),
+        "Snare8bit" => Some("**Snare8bit**: 8-bit style snare drum".to_string()),
+        "HiHat8bit" => Some("**HiHat8bit**: 8-bit style hi-hat".to_string()),
+        "FatBass" => Some("**FatBass**: Fat/thick bass synthesizer".to_string()),
+        "Piano" => Some("**Piano**: Acoustic piano sound".to_string()),
+        "Sine" => Some("**Sine**: Pure sine wave oscillator".to_string()),
+        "Square" => Some("**Square**: Square wave oscillator".to_string()),
+        "Sawtooth" => Some("**Sawtooth**: Sawtooth wave oscillator".to_string()),
+        "Triangle" => Some("**Triangle**: Triangle wave oscillator".to_string()),
+        // Scales
+        "Major" => Some("**Major Scale**: { R, M2, M3, P4, P5, M6, M7 }\n\nThe major scale (Ionian mode).".to_string()),
+        "Minor" => Some("**Minor Scale**: { R, M2, m3, P4, P5, m6, m7 }\n\nThe natural minor scale (Aeolian mode).".to_string()),
+        "Dorian" => Some("**Dorian Mode**: { R, M2, m3, P4, P5, M6, m7 }\n\nMinor scale with raised 6th.".to_string()),
+        "Phrygian" => Some("**Phrygian Mode**: { R, m2, m3, P4, P5, m6, m7 }\n\nMinor scale with lowered 2nd.".to_string()),
+        "Lydian" => Some("**Lydian Mode**: { R, M2, M3, A4, P5, M6, M7 }\n\nMajor scale with raised 4th.".to_string()),
+        "Mixolydian" => Some("**Mixolydian Mode**: { R, M2, M3, P4, P5, M6, m7 }\n\nMajor scale with lowered 7th.".to_string()),
+        "Blues" => Some("**Blues Scale**: { R, m3, P4, d5, P5, m7 }\n\nMinor pentatonic with added blue note.".to_string()),
+        "MajorPentatonic" => Some("**Major Pentatonic**: { R, M2, M3, P5, M6 }\n\n5-note major scale.".to_string()),
+        "MinorPentatonic" => Some("**Minor Pentatonic**: { R, m3, P4, P5, m7 }\n\n5-note minor scale.".to_string()),
+        _ => None,
+    }
+}
+
+/// Convert IntervalData to semitones
+fn interval_to_semitones(interval: &relanote_lexer::token::IntervalData) -> i32 {
+    use relanote_lexer::token::{Accidental, IntervalQuality};
+
+    let base = match (interval.quality, interval.degree) {
+        (IntervalQuality::Perfect, 1) => 0,
+        (IntervalQuality::Minor, 2) => 1,
+        (IntervalQuality::Major, 2) => 2,
+        (IntervalQuality::Minor, 3) => 3,
+        (IntervalQuality::Major, 3) => 4,
+        (IntervalQuality::Perfect, 4) => 5,
+        (IntervalQuality::Augmented, 4) => 6,
+        (IntervalQuality::Diminished, 5) => 6,
+        (IntervalQuality::Perfect, 5) => 7,
+        (IntervalQuality::Minor, 6) => 8,
+        (IntervalQuality::Major, 6) => 9,
+        (IntervalQuality::Minor, 7) => 10,
+        (IntervalQuality::Major, 7) => 11,
+        (IntervalQuality::Perfect, 8) => 12,
+        (IntervalQuality::Minor, 9) => 13,
+        (IntervalQuality::Major, 9) => 14,
+        (IntervalQuality::Minor, 10) => 15,
+        (IntervalQuality::Major, 10) => 16,
+        (IntervalQuality::Perfect, 11) => 17,
+        (IntervalQuality::Perfect, 12) => 19,
+        (IntervalQuality::Major, 13) => 21,
+        (IntervalQuality::Major, 14) => 23,
+        (IntervalQuality::Perfect, 15) => 24,
+        _ => 0,
+    };
+
+    let acc_offset: i32 = interval
+        .accidentals
+        .iter()
+        .map(|a| match a {
+            Accidental::Sharp => 1,
+            Accidental::Flat => -1,
+        })
+        .sum();
+
+    base + acc_offset
+}
+
+/// Get interval name from IntervalData
+fn interval_data_to_name(interval: &relanote_lexer::token::IntervalData) -> String {
+    use relanote_lexer::token::IntervalQuality;
+
+    let quality = match interval.quality {
+        IntervalQuality::Perfect => "Perfect",
+        IntervalQuality::Major => "Major",
+        IntervalQuality::Minor => "Minor",
+        IntervalQuality::Augmented => "Augmented",
+        IntervalQuality::Diminished => "Diminished",
+    };
+
+    let degree_name = match interval.degree {
+        1 => "Unison",
+        2 => "Second",
+        3 => "Third",
+        4 => "Fourth",
+        5 => "Fifth",
+        6 => "Sixth",
+        7 => "Seventh",
+        8 => "Octave",
+        9 => "Ninth",
+        10 => "Tenth",
+        11 => "Eleventh",
+        12 => "Twelfth",
+        13 => "Thirteenth",
+        14 => "Fourteenth",
+        15 => "Fifteenth",
+        _ => "Interval",
+    };
+
+    format!("{} {}", quality, degree_name)
+}
+
 /// Get audio playback data including synth information
 #[wasm_bindgen]
 pub fn get_audio_data(source: &str) -> JsValue {

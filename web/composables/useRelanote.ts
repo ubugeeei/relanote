@@ -5,6 +5,8 @@ import type {
   StaffData,
   AudioPlaybackData,
   PianoRollNote,
+  CompletionItem,
+  HoverResult,
 } from "../types/relanote";
 
 let wasmModule: typeof import("../wasm/pkg/relanote_wasm") | null = null;
@@ -93,6 +95,16 @@ export function useRelanote() {
     return wasmModule.notes_to_code(notesJson, synthName, keyPitch);
   };
 
+  const getCompletions = (): CompletionItem[] | null => {
+    if (!wasmModule) return null;
+    return wasmModule.get_completions() as CompletionItem[];
+  };
+
+  const getHover = (source: string, offset: number): HoverResult | null => {
+    if (!wasmModule) return null;
+    return wasmModule.get_hover(source, offset) as HoverResult;
+  };
+
   return {
     isReady,
     error,
@@ -104,5 +116,7 @@ export function useRelanote() {
     getAudioData,
     getTokens,
     notesToCode,
+    getCompletions,
+    getHover,
   };
 }

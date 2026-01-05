@@ -302,64 +302,269 @@ impl LanguageServer for RelanoteLanguageServer {
     }
 
     async fn completion(&self, _params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        // Basic keyword completion
-        let completions = vec![
-            CompletionItem {
-                label: "scale".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a scale".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "chord".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a chord".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "let".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a binding".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "section".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a section".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "layer".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a layer".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "Part".to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("Define a part".to_string()),
-                ..Default::default()
-            },
-            // Built-in functions
-            CompletionItem {
-                label: "reverse".to_string(),
-                kind: Some(CompletionItemKind::FUNCTION),
-                detail: Some("Reverse a block".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "transpose".to_string(),
-                kind: Some(CompletionItemKind::FUNCTION),
-                detail: Some("Transpose a block by an interval".to_string()),
-                ..Default::default()
-            },
-            CompletionItem {
-                label: "repeat".to_string(),
-                kind: Some(CompletionItemKind::FUNCTION),
-                detail: Some("Repeat a block n times".to_string()),
-                ..Default::default()
-            },
+        let mut completions = Vec::new();
+
+        // Keywords
+        let keywords = [
+            ("scale", "Define a scale"),
+            ("chord", "Define a chord"),
+            ("let", "Define a binding"),
+            ("in", "Local binding scope"),
+            ("section", "Define a section"),
+            ("layer", "Combine multiple parts"),
+            ("Part", "Define a part"),
+            ("if", "Conditional expression"),
+            ("then", "Then branch"),
+            ("else", "Else branch"),
+            ("match", "Pattern matching"),
+            ("with", "Match patterns"),
+            ("set", "Set global property"),
+            ("import", "Import module"),
+            ("export", "Export binding"),
+            ("from", "Import source"),
+            ("as", "Alias"),
+            ("true", "Boolean true"),
+            ("false", "Boolean false"),
         ];
+        for (label, detail) in keywords {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::KEYWORD),
+                detail: Some(detail.to_string()),
+                ..Default::default()
+            });
+        }
+
+        // Set statements
+        let set_items = [
+            ("set tempo = ", "Set tempo (BPM)"),
+            ("set key = ", "Set key (e.g., C4, D#3)"),
+        ];
+        for (label, detail) in set_items {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::SNIPPET),
+                detail: Some(detail.to_string()),
+                insert_text: Some(label.to_string()),
+                ..Default::default()
+            });
+        }
+
+        // Built-in functions
+        let functions = [
+            ("reverse", "Reverse a block"),
+            ("transpose", "Transpose by an interval"),
+            ("repeat", "Repeat n times"),
+            ("volume", "Set volume (0.0-1.0)"),
+            ("reverb", "Apply reverb (0.0-1.0)"),
+            ("hall_reverb", "Hall reverb preset"),
+            ("room_reverb", "Room reverb preset"),
+            ("plate_reverb", "Plate reverb preset"),
+            ("dry", "No reverb"),
+            ("voice", "Set instrument voice"),
+            ("swing", "Apply swing feel"),
+            ("double_time", "Double tempo"),
+            ("half_time", "Half tempo"),
+            ("metronome", "Generate metronome"),
+            ("cutoff", "Filter cutoff frequency"),
+        ];
+        for (label, detail) in functions {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::FUNCTION),
+                detail: Some(detail.to_string()),
+                ..Default::default()
+            });
+        }
+
+        // Voice/Instruments
+        let voices = [
+            // 8-bit / Chiptune
+            ("NES", "NES pulse wave"),
+            ("GameBoy", "GameBoy sound"),
+            ("Chiptune", "Classic chiptune"),
+            ("Chip8bit", "8-bit chip sound"),
+            // Drums
+            ("Kick8bit", "8-bit kick drum"),
+            ("Snare8bit", "8-bit snare drum"),
+            ("HiHat8bit", "8-bit hi-hat"),
+            ("Kick", "Kick drum"),
+            ("Snare", "Snare drum"),
+            ("HiHat", "Hi-hat"),
+            ("Clap", "Clap sound"),
+            ("Tom", "Tom drum"),
+            // Bass
+            ("FatBass", "Fat bass synth"),
+            ("SubBass", "Sub bass"),
+            ("AcidBass", "Acid bass (303-style)"),
+            ("SynthBass", "Synth bass"),
+            ("PluckBass", "Plucked bass"),
+            // Synths
+            ("SawLead", "Saw wave lead"),
+            ("SquareLead", "Square wave lead"),
+            ("SineLead", "Sine wave lead"),
+            ("SuperSaw", "Super saw"),
+            ("Pad", "Pad synth"),
+            ("DarkPad", "Dark pad"),
+            ("String", "String ensemble"),
+            ("Brass", "Brass section"),
+            ("Organ", "Organ"),
+            // Piano
+            ("Piano", "Acoustic piano"),
+            ("EPiano", "Electric piano"),
+            ("Rhodes", "Rhodes piano"),
+            // Pluck
+            ("Pluck", "Plucked string"),
+            ("Bell", "Bell sound"),
+            ("Marimba", "Marimba"),
+            ("Vibraphone", "Vibraphone"),
+            // Special
+            ("Noise", "Noise generator"),
+            ("WhiteNoise", "White noise"),
+        ];
+        for (label, detail) in voices {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::ENUM_MEMBER),
+                detail: Some(format!("Voice: {}", detail)),
+                ..Default::default()
+            });
+        }
+
+        // Intervals
+        let intervals = [
+            ("R", "Root / Unison (0 semitones)"),
+            ("P1", "Perfect Unison (0 semitones)"),
+            ("m2", "Minor Second (1 semitone)"),
+            ("M2", "Major Second (2 semitones)"),
+            ("m3", "Minor Third (3 semitones)"),
+            ("M3", "Major Third (4 semitones)"),
+            ("P4", "Perfect Fourth (5 semitones)"),
+            ("A4", "Augmented Fourth (6 semitones)"),
+            ("d5", "Diminished Fifth (6 semitones)"),
+            ("P5", "Perfect Fifth (7 semitones)"),
+            ("m6", "Minor Sixth (8 semitones)"),
+            ("M6", "Major Sixth (9 semitones)"),
+            ("m7", "Minor Seventh (10 semitones)"),
+            ("M7", "Major Seventh (11 semitones)"),
+            ("P8", "Perfect Octave (12 semitones)"),
+            ("m9", "Minor Ninth (13 semitones)"),
+            ("M9", "Major Ninth (14 semitones)"),
+            ("P11", "Perfect Eleventh (17 semitones)"),
+            ("P12", "Perfect Twelfth (19 semitones)"),
+            ("M13", "Major Thirteenth (21 semitones)"),
+            ("M14", "Major Fourteenth (23 semitones)"),
+            ("P15", "Perfect Fifteenth (24 semitones)"),
+        ];
+        for (label, detail) in intervals {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::CONSTANT),
+                detail: Some(detail.to_string()),
+                ..Default::default()
+            });
+        }
+
+        // Scales (predefined)
+        let scales = [
+            ("Major", "Major scale { R, M2, M3, P4, P5, M6, M7 }"),
+            ("Minor", "Natural minor { R, M2, m3, P4, P5, m6, m7 }"),
+            (
+                "HarmonicMinor",
+                "Harmonic minor { R, M2, m3, P4, P5, m6, M7 }",
+            ),
+            (
+                "MelodicMinor",
+                "Melodic minor { R, M2, m3, P4, P5, M6, M7 }",
+            ),
+            ("Dorian", "Dorian mode { R, M2, m3, P4, P5, M6, m7 }"),
+            ("Phrygian", "Phrygian mode { R, m2, m3, P4, P5, m6, m7 }"),
+            ("Lydian", "Lydian mode { R, M2, M3, A4, P5, M6, M7 }"),
+            (
+                "Mixolydian",
+                "Mixolydian mode { R, M2, M3, P4, P5, M6, m7 }",
+            ),
+            ("Locrian", "Locrian mode { R, m2, m3, P4, d5, m6, m7 }"),
+            ("MajorPentatonic", "Major pentatonic { R, M2, M3, P5, M6 }"),
+            ("MinorPentatonic", "Minor pentatonic { R, m3, P4, P5, m7 }"),
+            ("Blues", "Blues scale { R, m3, P4, d5, P5, m7 }"),
+            ("WholeTone", "Whole tone { R, M2, M3, A4, A5, A6 }"),
+            ("Chromatic", "Chromatic scale"),
+        ];
+        for (label, detail) in scales {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::CLASS),
+                detail: Some(format!("Scale: {}", detail)),
+                ..Default::default()
+            });
+        }
+
+        // Chords (predefined)
+        let chords = [
+            ("MajorTriad", "Major triad { R, M3, P5 }"),
+            ("MinorTriad", "Minor triad { R, m3, P5 }"),
+            ("Diminished", "Diminished { R, m3, d5 }"),
+            ("Augmented", "Augmented { R, M3, A5 }"),
+            ("Major7", "Major 7th { R, M3, P5, M7 }"),
+            ("Minor7", "Minor 7th { R, m3, P5, m7 }"),
+            ("Dominant7", "Dominant 7th { R, M3, P5, m7 }"),
+            ("MinorMajor7", "Minor-major 7th { R, m3, P5, M7 }"),
+            ("HalfDiminished7", "Half-diminished { R, m3, d5, m7 }"),
+            ("Diminished7", "Diminished 7th { R, m3, d5, d7 }"),
+            ("Sus2", "Suspended 2nd { R, M2, P5 }"),
+            ("Sus4", "Suspended 4th { R, P4, P5 }"),
+            ("Add9", "Add 9 { R, M3, P5, M9 }"),
+            ("Add11", "Add 11 { R, M3, P5, P11 }"),
+            ("Power", "Power chord { R, P5 }"),
+        ];
+        for (label, detail) in chords {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::CLASS),
+                detail: Some(format!("Chord: {}", detail)),
+                ..Default::default()
+            });
+        }
+
+        // Dynamics
+        let dynamics = [
+            ("ppp", "Pianississimo (very very soft)"),
+            ("pp", "Pianissimo (very soft)"),
+            ("p", "Piano (soft)"),
+            ("mp", "Mezzo-piano (moderately soft)"),
+            ("mf", "Mezzo-forte (moderately loud)"),
+            ("f", "Forte (loud)"),
+            ("ff", "Fortissimo (very loud)"),
+            ("fff", "Fortississimo (very very loud)"),
+            ("sfz", "Sforzando (sudden accent)"),
+            ("fp", "Forte-piano (loud then soft)"),
+        ];
+        for (label, detail) in dynamics {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::PROPERTY),
+                detail: Some(format!("Dynamic: {}", detail)),
+                ..Default::default()
+            });
+        }
+
+        // Articulations
+        let articulations = [
+            ("staccato", "Short, detached notes"),
+            ("legato", "Smooth, connected notes"),
+            ("accent", "Emphasized notes"),
+            ("tenuto", "Held full duration"),
+            ("portamento", "Sliding between notes"),
+        ];
+        for (label, detail) in articulations {
+            completions.push(CompletionItem {
+                label: label.to_string(),
+                kind: Some(CompletionItemKind::PROPERTY),
+                detail: Some(format!("Articulation: {}", detail)),
+                ..Default::default()
+            });
+        }
 
         Ok(Some(CompletionResponse::Array(completions)))
     }

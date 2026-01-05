@@ -121,3 +121,18 @@ export interface DawState {
 }
 
 export type ViewMode = "pianoroll" | "code";
+
+// LSP-like types for Monaco integration
+export interface CompletionItem {
+  label: string;
+  kind: "keyword" | "function" | "constant" | "property" | "class" | "enum_member" | "snippet";
+  detail: string;
+  insert_text?: string;
+}
+
+export interface HoverResult {
+  found: boolean;
+  content?: string;
+  start: number;
+  end: number;
+}
