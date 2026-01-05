@@ -429,7 +429,6 @@ fn test_format_command() {
 // ===== Render Command Tests =====
 
 #[test]
-#[ignore = "render command requires Song output, not Block - needs layer or voice"]
 fn test_render_command() {
     // Render requires a Song (layer or voice output), not just a Block
     let file = create_temp_file(
@@ -463,6 +462,115 @@ layer [melody]
     // MIDI files start with "MThd"
     assert_eq!(&midi_content[0..4], b"MThd");
 }
+
+// ===== Audio Generation Tests from Example Files =====
+// These tests ensure that .rela files can be rendered to MIDI without errors
+
+fn get_examples_dir() -> std::path::PathBuf {
+    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("examples")
+}
+
+fn test_render_example_file(relative_path: &str) {
+    let examples_dir = get_examples_dir();
+    let file_path = examples_dir.join(relative_path);
+
+    assert!(
+        file_path.exists(),
+        "Example file not found: {}",
+        file_path.display()
+    );
+
+    let output_midi = tempfile::NamedTempFile::with_suffix(".mid").unwrap();
+
+    let output = relanote_cmd()
+        .args([
+            "render",
+            file_path.to_str().unwrap(),
+            "-o",
+            output_midi.path().to_str().unwrap(),
+        ])
+        .output()
+        .expect("Failed to execute command");
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        output.status.success(),
+        "Failed to render {relative_path}\nstdout: {stdout}\nstderr: {stderr}"
+    );
+
+    // Verify MIDI file was created with valid header
+    let midi_content = fs::read(output_midi.path()).unwrap();
+    assert!(
+        !midi_content.is_empty(),
+        "MIDI output is empty for {relative_path}"
+    );
+    assert_eq!(
+        &midi_content[0..4],
+        b"MThd",
+        "Invalid MIDI header for {relative_path}"
+    );
+}
+
+// Showcase examples (all produce Song via layer)
+#[test]
+fn test_render_showcase_8bit_adventure() {
+    test_render_example_file("showcases/showcase_8bit_adventure.rela");
+}
+
+#[test]
+fn test_render_showcase_8bit_battle() {
+    test_render_example_file("showcases/showcase_8bit_battle.rela");
+}
+
+#[test]
+fn test_render_showcase_ambient() {
+    test_render_example_file("showcases/showcase_ambient.rela");
+}
+
+#[test]
+fn test_render_showcase_dnb() {
+    test_render_example_file("showcases/showcase_dnb.rela");
+}
+
+#[test]
+fn test_render_showcase_drums() {
+    test_render_example_file("showcases/showcase_drums.rela");
+}
+
+#[test]
+fn test_render_showcase_edm() {
+    test_render_example_file("showcases/showcase_edm.rela");
+}
+
+#[test]
+fn test_render_showcase_ff_fanfare() {
+    test_render_example_file("showcases/showcase_ff_fanfare.rela");
+}
+
+// Note: showcase_ff_prelude.rela outputs Block, not Song (no layer/voice)
+
+#[test]
+fn test_render_showcase_jazz() {
+    test_render_example_file("showcases/showcase_jazz.rela");
+}
+
+#[test]
+fn test_render_showcase_n_battle() {
+    test_render_example_file("showcases/showcase_n_battle.rela");
+}
+
+#[test]
+fn test_render_showcase_organ() {
+    test_render_example_file("showcases/showcase_organ.rela");
+}
+
+// Note: showcase_symphony.rela outputs Block, not Song (no layer/voice)
 
 // ===== Newline Handling Tests (regression) =====
 
