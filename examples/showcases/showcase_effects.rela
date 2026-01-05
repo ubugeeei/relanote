@@ -1,0 +1,139 @@
+; ============================================
+; EFFECTS & SYNTHS SHOWCASE
+; Demonstration of all new builtin effects
+; and clap/percussion presets
+; ============================================
+
+set tempo = 120
+set key = C4
+
+; ============================================
+; BASE PATTERNS
+; ============================================
+
+let base_melody = | R - M3 - P5 - M3 - R - M2 - P4 - M2 - |:4
+let base_pad = | [R, M3, P5]:4 - - - - - - - [P4, M6, P8]:4 - - - - - - - |:8
+let base_riff = | R - R - R - R R - R - R - R R R P4 - P4 - P5 - R - R R - R - R R |:8
+let base_clap = | - - - - R^ - - - - - - - R^ - - - |:8
+let base_ambient = | R - - - - - - - M3 - - - - - - - P5 - - - - - - - M6 - - - P5 - - - |:16
+
+; ============================================
+; SECTION 1: DELAY EFFECTS
+; ============================================
+
+let delay_slapback = base_melody |> voice Lead |> slapback
+let delay_stereo = base_melody |> voice Lead |> stereo_delay
+let delay_dotted = base_melody |> voice Lead |> dotted_eighth_delay
+let delay_tape = base_melody |> voice Lead |> tape_delay
+let delay_dub = base_melody |> voice Lead |> dub_delay
+let delay_ambient = base_melody |> voice Lead |> ambient_delay
+
+; ============================================
+; SECTION 2: PHASER EFFECTS
+; ============================================
+
+let phaser_classic = base_pad |> voice SoftPad |> classic_phaser
+let phaser_jet = base_pad |> voice SoftPad |> jet_phaser
+let phaser_space = base_pad |> voice SoftPad |> space_phaser
+let phaser_fast = base_pad |> voice Strings |> fast_phaser
+let phaser_deep = base_pad |> voice WarmPad |> deep_phaser
+let phaser_liquid = base_pad |> voice SoftPad |> liquid_phaser
+
+; ============================================
+; SECTION 3: DISTORTION EFFECTS
+; ============================================
+
+let dist_saturation = base_riff |> transpose (R - P8) |> voice FatBass |> saturation
+let dist_overdrive = base_riff |> transpose (R - P8) |> voice FatBass |> warm_overdrive
+let dist_crunch = base_riff |> transpose (R - P8) |> voice FatBass |> crunch
+let dist_classic = base_riff |> transpose (R - P8) |> voice FatBass |> classic_dist
+let dist_fuzz = base_riff |> transpose (R - P8) |> voice FatBass |> heavy_fuzz
+let dist_lofi = base_riff |> transpose (R - P8) |> voice FatBass |> lofi_crush
+
+; ============================================
+; SECTION 4: CLAP SYNTHS
+; ============================================
+
+let clap_hand = base_clap |> voice HandClap
+let clap_808 = base_clap |> voice Clap808
+let clap_909 = base_clap |> voice Clap909
+let clap_tight = base_clap |> voice TightClap
+let clap_room = base_clap |> voice RoomClap
+let clap_stadium = base_clap |> voice StadiumClap
+let clap_snap = base_clap |> voice FingerSnap
+let clap_vintage = base_clap |> voice VintageClap
+
+; ============================================
+; SECTION 5: COMBINED EFFECTS
+; ============================================
+
+; Ambient pad: delay + phaser
+let combined_ambient = base_ambient |> voice SoftPad |> ambient_delay |> slow_phaser
+
+; Gritty lead: distortion + delay
+let combined_gritty = | R M3 P5 M6 P5 M3 R M2 |:8 |> voice Lead |> crunch |> tape_delay
+
+; Lo-fi bass: bitcrush
+let combined_lofi = | R - - - P5 - - - P4 - - - R - - - |:8 |> transpose (R - P8 - P8) |> voice FatBass |> lofi_crush
+
+; ============================================
+; DEMO OUTPUTS - Uncomment to play
+; ============================================
+
+; === DELAY DEMOS ===
+; delay_slapback
+; delay_stereo
+; delay_dotted
+; delay_tape
+; delay_dub
+; delay_ambient
+
+; === PHASER DEMOS ===
+; phaser_classic
+; phaser_jet
+; phaser_space
+; phaser_fast
+; phaser_deep
+; phaser_liquid
+
+; === DISTORTION DEMOS ===
+; dist_saturation
+; dist_overdrive
+; dist_crunch
+; dist_classic
+; dist_fuzz
+; dist_lofi
+
+; === CLAP DEMOS ===
+; clap_hand
+; clap_808
+; clap_909
+; clap_tight
+; clap_room
+; clap_stadium
+; clap_snap
+; clap_vintage
+
+; === COMBINED EFFECTS ===
+; combined_ambient
+; combined_gritty
+; combined_lofi
+
+; ============================================
+; FULL DEMO TRACK
+; ============================================
+
+let demo_kick = | R^ - - - R^ - - - R^ - - - R^ - - - |:16
+let demo_hat = | - - R - - - R - - - R - - - R - |:16
+let demo_bass = | R - - - - - R - R - - - P5 - P4 - R - - - - - R - P4 - - - P5 - R - |:16
+let demo_lead = | - - - - - - - - R - M3 - P5 - M3 - M6 - P5 - M3 - R - P5 - M3 - R - - - |:16
+let demo_pad = | [R, M3, P5]:4 - - - - - - - - - - - - - - - [P4, M6, P8]:4 - - - - - - - - - - - - - - - |:16
+
+layer [
+  demo_kick |> voice Kick,
+  demo_hat |> voice HiHat |> volume 0.4,
+  base_clap |> repeat 2 |> voice Clap909,
+  demo_bass |> transpose (R - P8 - P8) |> voice AcidBass |> warm_overdrive,
+  demo_lead |> voice Lead |> dotted_eighth_delay,
+  demo_pad |> voice WarmPad |> slow_phaser |> volume 0.5
+]

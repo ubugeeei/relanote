@@ -1,0 +1,33 @@
+; ===========================================
+; Delay Effect Presets
+; ===========================================
+
+; Slapback delay - rockabilly/vintage style
+let slapback = \x -> x |> delay 80 0.2 0.4
+
+; Short delay - subtle doubling
+let short_delay = \x -> x |> delay 125 0.25 0.35
+
+; Stereo delay - classic stereo widening
+let stereo_delay = \x -> x |> delay 375 0.35 0.5
+
+; Dotted eighth delay - U2/Edge style
+let dotted_eighth_delay = \x -> x |> delay 562 0.4 0.45
+
+; Quarter note delay - rhythmic echo
+let quarter_delay = \x -> x |> delay 500 0.35 0.4
+
+; Ping pong delay - bouncing stereo
+let pingpong_delay = \x -> x |> delay 250 0.45 0.5
+
+; Tape delay - warm analog character
+let tape_delay = \x -> x |> delay 400 0.5 0.4
+
+; Ambient delay - long atmospheric
+let ambient_delay = \x -> x |> delay 800 0.6 0.35
+
+; Dub delay - heavy feedback reggae style
+let dub_delay = \x -> x |> delay 600 0.7 0.55
+
+; Shimmer delay - ethereal trails
+let shimmer_delay = \x -> x |> delay 700 0.55 0.45

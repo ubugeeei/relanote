@@ -477,6 +477,9 @@ pub fn builtin_metronome(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: None,
         reverb_level: None,
         volume_level: None,
+        delay: None,
+        phaser: None,
+        distortion: None,
         synth: None,
     }))
 }

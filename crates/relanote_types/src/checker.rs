@@ -98,6 +98,118 @@ impl TypeChecker {
             TypeScheme::mono(Type::function_n(vec![Type::Float, Type::Block], Type::Part)),
         );
 
+        // delay : Float -> Float -> Float -> Part -> Part
+        self.ctx.bind(
+            intern("delay"),
+            TypeScheme::mono(Type::function_n(
+                vec![Type::Float, Type::Float, Type::Float, Type::Part],
+                Type::Part,
+            )),
+        );
+
+        // phaser : Float -> Float -> Float -> Part -> Part
+        self.ctx.bind(
+            intern("phaser"),
+            TypeScheme::mono(Type::function_n(
+                vec![Type::Float, Type::Float, Type::Float, Type::Part],
+                Type::Part,
+            )),
+        );
+
+        // distortion : Float -> DistortionType -> Float -> Part -> Part
+        self.ctx.bind(
+            intern("distortion"),
+            TypeScheme::mono(Type::function_n(
+                vec![Type::Float, Type::DistortionType, Type::Float, Type::Part],
+                Type::Part,
+            )),
+        );
+
+        // Distortion type constructors
+        self.ctx
+            .bind(intern("SoftClip"), TypeScheme::mono(Type::DistortionType));
+        self.ctx
+            .bind(intern("HardClip"), TypeScheme::mono(Type::DistortionType));
+        self.ctx
+            .bind(intern("Fuzz"), TypeScheme::mono(Type::DistortionType));
+        self.ctx
+            .bind(intern("BitCrush"), TypeScheme::mono(Type::DistortionType));
+
+        // Delay presets : Part -> Part
+        for name in [
+            "slapback",
+            "short_delay",
+            "stereo_delay",
+            "dotted_eighth_delay",
+            "quarter_delay",
+            "pingpong_delay",
+            "tape_delay",
+            "ambient_delay",
+            "dub_delay",
+            "shimmer_delay",
+        ] {
+            self.ctx.bind(
+                intern(name),
+                TypeScheme::mono(Type::function(Type::Part, Type::Part)),
+            );
+        }
+
+        // Phaser presets : Part -> Part
+        for name in [
+            "subtle_phaser",
+            "slow_phaser",
+            "classic_phaser",
+            "fast_phaser",
+            "deep_phaser",
+            "jet_phaser",
+            "funk_phaser",
+            "space_phaser",
+            "wobble_phaser",
+            "liquid_phaser",
+        ] {
+            self.ctx.bind(
+                intern(name),
+                TypeScheme::mono(Type::function(Type::Part, Type::Part)),
+            );
+        }
+
+        // Distortion presets : Part -> Part
+        for name in [
+            "saturation",
+            "light_overdrive",
+            "warm_overdrive",
+            "crunch",
+            "classic_dist",
+            "heavy_dist",
+            "light_fuzz",
+            "heavy_fuzz",
+            "classic_fuzz",
+            "lofi_crush",
+            "bit8_crush",
+            "extreme_crush",
+        ] {
+            self.ctx.bind(
+                intern(name),
+                TypeScheme::mono(Type::function(Type::Part, Type::Part)),
+            );
+        }
+
+        // Additional reverb presets : Part -> Part
+        // (room_reverb, hall_reverb, plate_reverb already defined above as Block -> Part)
+        for name in [
+            "studio_reverb",
+            "spring_reverb",
+            "chamber_reverb",
+            "ambient_reverb",
+            "cathedral_reverb",
+            "infinite_reverb",
+        ] {
+            self.ctx.bind(
+                intern(name),
+                TypeScheme::mono(Type::function(Type::Part, Type::Part)),
+            );
+        }
+
         // Synth functions
         // voice : Synth -> Block -> Part
         self.ctx.bind(
@@ -170,6 +282,32 @@ impl TypeChecker {
             .bind(intern("OpenHat"), TypeScheme::mono(Type::Synth));
         self.ctx.bind(intern("Tom"), TypeScheme::mono(Type::Synth));
         self.ctx.bind(intern("Clap"), TypeScheme::mono(Type::Synth));
+
+        // Synth presets (claps)
+        for name in [
+            "HandClap",
+            "TightClap",
+            "RoomClap",
+            "Clap808",
+            "Clap909",
+            "VintageClap",
+            "SharpClap",
+            "SoftClap",
+            "StadiumClap",
+            "FingerSnap",
+        ] {
+            self.ctx.bind(intern(name), TypeScheme::mono(Type::Synth));
+        }
+
+        // Additional synth presets
+        for name in [
+            "Piano",
+            "EPiano",
+            "WarmPad",
+            "AcidBass",
+        ] {
+            self.ctx.bind(intern(name), TypeScheme::mono(Type::Synth));
+        }
 
         // map : (a -> b) -> [a] -> [b]
         let a = self.ctx.fresh_var();

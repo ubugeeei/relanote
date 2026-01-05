@@ -1,0 +1,33 @@
+; ===========================================
+; Phaser Effect Presets
+; ===========================================
+
+; Subtle phaser - gentle movement
+let subtle_phaser = \x -> x |> phaser 0.2 0.3 0.3
+
+; Slow phaser - sweeping motion
+let slow_phaser = \x -> x |> phaser 0.3 0.5 0.4
+
+; Classic phaser - vintage character
+let classic_phaser = \x -> x |> phaser 0.5 0.6 0.5
+
+; Fast phaser - quick modulation
+let fast_phaser = \x -> x |> phaser 2.0 0.5 0.45
+
+; Deep phaser - pronounced effect
+let deep_phaser = \x -> x |> phaser 0.4 0.8 0.6
+
+; Jet phaser - airplane-like sweep
+let jet_phaser = \x -> x |> phaser 0.15 0.9 0.7
+
+; Funk phaser - auto-wah like
+let funk_phaser = \x -> x |> phaser 1.5 0.6 0.55
+
+; Space phaser - sci-fi character
+let space_phaser = \x -> x |> phaser 0.1 0.85 0.65
+
+; Wobble phaser - tremolo-like
+let wobble_phaser = \x -> x |> phaser 3.0 0.4 0.4
+
+; Liquid phaser - smooth flowing
+let liquid_phaser = \x -> x |> phaser 0.25 0.7 0.5

@@ -39,6 +39,9 @@ pub enum Type {
     Oscillator,
     Filter,
 
+    // Effect primitives
+    DistortionType,
+
     // Compound types
     Function(Arc<Type>, Arc<Type>),
     Tuple(Vec<Type>),
@@ -119,6 +122,7 @@ impl fmt::Display for Type {
             Type::Synth => write!(f, "Synth"),
             Type::Oscillator => write!(f, "Oscillator"),
             Type::Filter => write!(f, "Filter"),
+            Type::DistortionType => write!(f, "DistortionType"),
             Type::Function(param, ret) => {
                 // Handle nested functions for curried display
                 match param.as_ref() {

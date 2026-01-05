@@ -36,6 +36,9 @@ pub enum Value {
     Filter(FilterValue),
     ADSR(ADSREnvelope),
 
+    // Effect values
+    DistortionType(DistortionType),
+
     // Collections
     Array(Vec<Value>),
     Tuple(Vec<Value>),
@@ -230,6 +233,12 @@ pub struct PartValue {
     pub reverb_level: Option<f64>,
     /// Volume level (0.0 to 1.0, maps to MIDI CC#7 0-127)
     pub volume_level: Option<f64>,
+    /// Delay effect parameters
+    pub delay: Option<DelayParams>,
+    /// Phaser effect parameters
+    pub phaser: Option<PhaserParams>,
+    /// Distortion effect parameters
+    pub distortion: Option<DistortionParams>,
     /// Synthesizer configuration (for WebAudio output)
     pub synth: Option<SynthValue>,
 }
@@ -304,6 +313,98 @@ pub enum FilterType {
     LowPass,
     HighPass,
     BandPass,
+}
+
+// ============================================================================
+// Effect Types
+// ============================================================================
+
+/// Distortion type
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum DistortionType {
+    /// Soft clipping (tube-like warmth)
+    Soft,
+    /// Hard clipping (aggressive)
+    Hard,
+    /// Fuzz (asymmetric clipping)
+    Fuzz,
+    /// Bit reduction (lo-fi)
+    BitCrush,
+}
+
+impl DistortionType {
+    /// Get the WebAudio distortion curve type name
+    pub fn to_web_audio_type(&self) -> &'static str {
+        match self {
+            DistortionType::Soft => "soft",
+            DistortionType::Hard => "hard",
+            DistortionType::Fuzz => "fuzz",
+            DistortionType::BitCrush => "bitcrush",
+        }
+    }
+}
+
+/// Delay effect parameters
+#[derive(Clone, Debug)]
+pub struct DelayParams {
+    /// Delay time in milliseconds (0-2000)
+    pub time_ms: f64,
+    /// Feedback amount (0.0-0.95)
+    pub feedback: f64,
+    /// Wet/dry mix (0.0-1.0)
+    pub mix: f64,
+}
+
+impl DelayParams {
+    pub fn new(time_ms: f64, feedback: f64, mix: f64) -> Self {
+        Self {
+            time_ms: time_ms.clamp(0.0, 2000.0),
+            feedback: feedback.clamp(0.0, 0.95),
+            mix: mix.clamp(0.0, 1.0),
+        }
+    }
+}
+
+/// Phaser effect parameters
+#[derive(Clone, Debug)]
+pub struct PhaserParams {
+    /// LFO rate in Hz (0.1-10)
+    pub rate: f64,
+    /// Modulation depth (0.0-1.0)
+    pub depth: f64,
+    /// Wet/dry mix (0.0-1.0)
+    pub mix: f64,
+}
+
+impl PhaserParams {
+    pub fn new(rate: f64, depth: f64, mix: f64) -> Self {
+        Self {
+            rate: rate.clamp(0.1, 10.0),
+            depth: depth.clamp(0.0, 1.0),
+            mix: mix.clamp(0.0, 1.0),
+        }
+    }
+}
+
+/// Distortion effect parameters
+#[derive(Clone, Debug)]
+pub struct DistortionParams {
+    /// Drive amount (0.0-1.0)
+    pub amount: f64,
+    /// Distortion type
+    pub dist_type: DistortionType,
+    /// Wet/dry mix (0.0-1.0)
+    pub mix: f64,
+}
+
+impl DistortionParams {
+    pub fn new(amount: f64, dist_type: DistortionType, mix: f64) -> Self {
+        Self {
+            amount: amount.clamp(0.0, 1.0),
+            dist_type,
+            mix: mix.clamp(0.0, 1.0),
+        }
+    }
 }
 
 impl FilterType {

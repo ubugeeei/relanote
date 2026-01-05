@@ -42,6 +42,21 @@ pub mod prelude {
     /// Retro / Lo-Fi sound presets
     pub const SYNTHS_RETRO: &str = include_str!("prelude/synths_retro.rela");
 
+    /// Clap & hand percussion presets
+    pub const SYNTHS_CLAP: &str = include_str!("prelude/synths_clap.rela");
+
+    /// Reverb effect presets
+    pub const EFFECTS_REVERB: &str = include_str!("prelude/effects_reverb.rela");
+
+    /// Delay effect presets
+    pub const EFFECTS_DELAY: &str = include_str!("prelude/effects_delay.rela");
+
+    /// Phaser effect presets
+    pub const EFFECTS_PHASER: &str = include_str!("prelude/effects_phaser.rela");
+
+    /// Distortion effect presets
+    pub const EFFECTS_DISTORTION: &str = include_str!("prelude/effects_distortion.rela");
+
     /// Combined prelude - all modules concatenated
     /// This maintains backward compatibility with existing code
     pub const PRELUDE: &str = concat!(
@@ -72,5 +87,15 @@ pub mod prelude {
         include_str!("prelude/synths_percussion.rela"),
         "\n",
         include_str!("prelude/synths_retro.rela"),
+        "\n",
+        include_str!("prelude/synths_clap.rela"),
+        "\n",
+        include_str!("prelude/effects_reverb.rela"),
+        "\n",
+        include_str!("prelude/effects_delay.rela"),
+        "\n",
+        include_str!("prelude/effects_phaser.rela"),
+        "\n",
+        include_str!("prelude/effects_distortion.rela"),
     );
 }

@@ -1,0 +1,39 @@
+; ===========================================
+; Distortion Effect Presets
+; ===========================================
+
+; Subtle saturation - warm tube-like
+let saturation = \x -> x |> distortion 0.15 SoftClip 0.6
+
+; Light overdrive - slight breakup
+let light_overdrive = \x -> x |> distortion 0.25 SoftClip 0.65
+
+; Warm overdrive - classic tube tone
+let warm_overdrive = \x -> x |> distortion 0.35 SoftClip 0.7
+
+; Crunch - moderate distortion
+let crunch = \x -> x |> distortion 0.45 SoftClip 0.75
+
+; Classic distortion - rock/metal tone
+let classic_dist = \x -> x |> distortion 0.55 HardClip 0.8
+
+; Heavy distortion - aggressive sound
+let heavy_dist = \x -> x |> distortion 0.7 HardClip 0.85
+
+; Light fuzz - vintage fuzz tone
+let light_fuzz = \x -> x |> distortion 0.5 Fuzz 0.7
+
+; Heavy fuzz - thick, buzzy tone
+let heavy_fuzz = \x -> x |> distortion 0.8 Fuzz 0.9
+
+; Classic fuzz - 60s/70s character
+let classic_fuzz = \x -> x |> distortion 0.65 Fuzz 0.8
+
+; Lo-fi crush - bit reduction effect
+let lofi_crush = \x -> x |> distortion 0.6 BitCrush 0.7
+
+; 8-bit crush - retro game sound
+let bit8_crush = \x -> x |> distortion 0.75 BitCrush 0.8
+
+; Extreme crush - heavily degraded
+let extreme_crush = \x -> x |> distortion 0.9 BitCrush 0.9

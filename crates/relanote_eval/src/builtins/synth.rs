@@ -59,6 +59,9 @@ pub fn builtin_voice(args: Vec<Value>) -> Result<Value, EvalError> {
                 envelope: part.envelope.clone(),
                 reverb_level: part.reverb_level,
                 volume_level: part.volume_level,
+                delay: part.delay.clone(),
+                phaser: part.phaser.clone(),
+                distortion: part.distortion.clone(),
                 synth: Some(synth.clone()),
             }));
         }
@@ -69,6 +72,9 @@ pub fn builtin_voice(args: Vec<Value>) -> Result<Value, EvalError> {
                 envelope: part.envelope.clone(),
                 reverb_level: part.reverb_level,
                 volume_level: part.volume_level,
+                delay: part.delay.clone(),
+                phaser: part.phaser.clone(),
+                distortion: part.distortion.clone(),
                 synth: Some(synth.clone()),
             }));
         }
@@ -87,6 +93,9 @@ pub fn builtin_voice(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: None,
         reverb_level: None,
         volume_level: None,
+        delay: None,
+        phaser: None,
+        distortion: None,
         synth: Some(synth),
     }))
 }
@@ -128,6 +137,9 @@ pub fn builtin_cutoff(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: part.envelope,
         reverb_level: part.reverb_level,
         volume_level: part.volume_level,
+        delay: part.delay,
+        phaser: part.phaser,
+        distortion: part.distortion,
         synth: Some(synth),
     }))
 }
@@ -168,6 +180,9 @@ pub fn builtin_resonance(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: part.envelope,
         reverb_level: part.reverb_level,
         volume_level: part.volume_level,
+        delay: part.delay,
+        phaser: part.phaser,
+        distortion: part.distortion,
         synth: Some(synth),
     }))
 }
@@ -205,6 +220,9 @@ pub fn builtin_detune(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: part.envelope,
         reverb_level: part.reverb_level,
         volume_level: part.volume_level,
+        delay: part.delay,
+        phaser: part.phaser,
+        distortion: part.distortion,
         synth: Some(synth),
     }))
 }
@@ -271,6 +289,9 @@ pub fn builtin_adsr(args: Vec<Value>) -> Result<Value, EvalError> {
         envelope: part.envelope,
         reverb_level: part.reverb_level,
         volume_level: part.volume_level,
+        delay: part.delay,
+        phaser: part.phaser,
+        distortion: part.distortion,
         synth: Some(synth),
     }))
 }

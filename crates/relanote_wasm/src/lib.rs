@@ -320,6 +320,9 @@ fn create_song_from_value(value: &Value) -> SongValue {
                     envelope: None,
                     reverb_level: None,
                     volume_level: None,
+                    delay: None,
+                    phaser: None,
+                    distortion: None,
                     synth: None,
                 }],
             }],
@@ -1484,6 +1487,9 @@ pub fn get_audio_data(source: &str) -> JsValue {
                         envelope: None,
                         reverb_level: None,
                         volume_level: None,
+                        delay: None,
+                        phaser: None,
+                        distortion: None,
                         synth: None,
                     };
                     let (notes, _) = extract_audio_notes_from_part(&part, 0.0, base_note);

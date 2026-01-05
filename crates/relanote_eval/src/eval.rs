@@ -13,6 +13,45 @@ use crate::env::Env;
 use crate::error::EvalError;
 use crate::value::*;
 
+/// Source of a module (file or virtual/embedded)
+enum ModuleSource {
+    /// File-based module
+    File(PathBuf),
+    /// Virtual module (embedded stdlib)
+    Virtual(String),
+}
+
+/// Helper: combine all synth modules into one string
+fn all_synths() -> String {
+    use relanote_stdlib::prelude::*;
+    format!(
+        "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
+        SYNTHS_BASIC,
+        SYNTHS_PIANO,
+        SYNTHS_BASS,
+        SYNTHS_BRASS,
+        SYNTHS_LEADS,
+        SYNTHS_PADS,
+        SYNTHS_PLUCK,
+        SYNTHS_DRUMS,
+        SYNTHS_PERCUSSION,
+        SYNTHS_RETRO,
+        SYNTHS_CLAP
+    )
+}
+
+/// Helper: combine all effect modules into one string
+fn all_effects() -> String {
+    use relanote_stdlib::prelude::*;
+    format!(
+        "{}\n{}\n{}\n{}",
+        EFFECTS_REVERB,
+        EFFECTS_DELAY,
+        EFFECTS_PHASER,
+        EFFECTS_DISTORTION
+    )
+}
+
 /// Module registry to track loaded modules
 #[derive(Default)]
 pub struct ModuleRegistry {
@@ -91,6 +130,15 @@ impl Evaluator {
             e.bind(intern("plate_reverb"), Value::Builtin(builtin_plate_reverb));
             e.bind(intern("dry"), Value::Builtin(builtin_dry));
             e.bind(intern("volume"), Value::Builtin(builtin_volume));
+            e.bind(intern("delay"), Value::Builtin(builtin_delay));
+            e.bind(intern("phaser"), Value::Builtin(builtin_phaser));
+            e.bind(intern("distortion"), Value::Builtin(builtin_distortion));
+
+            // Distortion type constructors
+            e.bind(intern("SoftClip"), Value::Builtin(builtin_soft_clip));
+            e.bind(intern("HardClip"), Value::Builtin(builtin_hard_clip));
+            e.bind(intern("Fuzz"), Value::Builtin(builtin_fuzz));
+            e.bind(intern("BitCrush"), Value::Builtin(builtin_bitcrush));
 
             // Synth functions
             e.bind(intern("voice"), Value::Builtin(builtin_voice));
@@ -174,16 +222,20 @@ impl Evaluator {
             });
         }
 
-        // Resolve module path
-        let module_path = self.resolve_module_path(name)?;
+        // Resolve module source (file or virtual)
+        let module_source = self.resolve_module_source(name)?;
 
-        // Read module source
-        let source =
-            std::fs::read_to_string(&module_path).map_err(|e| EvalError::ModuleNotFound {
-                module: name.to_string(),
-                path: module_path.display().to_string(),
-                reason: e.to_string(),
-            })?;
+        // Get source code
+        let source = match &module_source {
+            ModuleSource::File(path) => {
+                std::fs::read_to_string(path).map_err(|e| EvalError::ModuleNotFound {
+                    module: name.to_string(),
+                    path: path.display().to_string(),
+                    reason: e.to_string(),
+                })?
+            }
+            ModuleSource::Virtual(content) => content.clone(),
+        };
 
         // Mark as loading
         self.modules.start_loading(name);
@@ -211,20 +263,65 @@ impl Evaluator {
         result.map(|_| ())
     }
 
-    /// Resolve module path from module name
-    fn resolve_module_path(&self, name: &str) -> Result<PathBuf, EvalError> {
+    /// Resolve module source (virtual stdlib or file-based)
+    fn resolve_module_source(&self, name: &str) -> Result<ModuleSource, EvalError> {
+        // First check for virtual stdlib modules
+        if let Some(source) = self.resolve_stdlib_module(name) {
+            return Ok(ModuleSource::Virtual(source));
+        }
+
+        // Fall back to file-based resolution
         let base_dir = self.base_dir.clone().unwrap_or_else(|| PathBuf::from("."));
-        let module_file = format!("{}.rela", name);
+        let module_file = format!("{}.rela", name.replace("::", "/"));
         let path = base_dir.join(&module_file);
 
         if path.exists() {
-            Ok(path)
+            Ok(ModuleSource::File(path))
         } else {
             Err(EvalError::ModuleNotFound {
                 module: name.to_string(),
                 path: path.display().to_string(),
                 reason: "file does not exist".to_string(),
             })
+        }
+    }
+
+    /// Resolve stdlib virtual module by path
+    fn resolve_stdlib_module(&self, path: &str) -> Option<String> {
+        use relanote_stdlib::prelude::*;
+
+        // Strip optional "std::" prefix
+        let path = path.strip_prefix("std::").unwrap_or(path);
+
+        match path {
+            // Core
+            "scales" => Some(SCALES.to_string()),
+            "chords" => Some(CHORDS.to_string()),
+
+            // Synths - hierarchical paths
+            "synths::basic" => Some(SYNTHS_BASIC.to_string()),
+            "synths::bass" => Some(SYNTHS_BASS.to_string()),
+            "synths::brass" => Some(SYNTHS_BRASS.to_string()),
+            "synths::leads" => Some(SYNTHS_LEADS.to_string()),
+            "synths::pads" => Some(SYNTHS_PADS.to_string()),
+            "synths::piano" => Some(SYNTHS_PIANO.to_string()),
+            "synths::pluck" => Some(SYNTHS_PLUCK.to_string()),
+            "synths::drums" => Some(SYNTHS_DRUMS.to_string()),
+            "synths::percussion" => Some(SYNTHS_PERCUSSION.to_string()),
+            "synths::retro" => Some(SYNTHS_RETRO.to_string()),
+            "synths::clap" => Some(SYNTHS_CLAP.to_string()),
+
+            // Effects - hierarchical paths
+            "effects::reverb" => Some(EFFECTS_REVERB.to_string()),
+            "effects::delay" => Some(EFFECTS_DELAY.to_string()),
+            "effects::phaser" => Some(EFFECTS_PHASER.to_string()),
+            "effects::distortion" => Some(EFFECTS_DISTORTION.to_string()),
+
+            // Parent modules (all synths/effects combined)
+            "synths" => Some(all_synths()),
+            "effects" => Some(all_effects()),
+
+            _ => None,
         }
     }
 
@@ -241,16 +338,31 @@ impl Evaluator {
             return Ok(());
         }
 
-        // First segment is the module name
-        let module_name = &segments[0];
+        // Build module path from segments
+        // For `use synths::bass::*`, module_name = "synths::bass"
+        // For `use synths::bass::AcidBass`, module_name = "synths::bass"
+        let module_name = match &use_decl.path.kind {
+            UseKind::Glob | UseKind::Group(_) => {
+                // All segments form the module path
+                segments.join("::")
+            }
+            UseKind::Simple => {
+                // All but the last segment form the module path
+                if segments.len() >= 2 {
+                    segments[..segments.len() - 1].join("::")
+                } else {
+                    segments[0].clone()
+                }
+            }
+        };
 
         // Load module if not already loaded
-        self.load_module(module_name)?;
+        self.load_module(&module_name)?;
 
         // Get module environment
         let module_env =
             self.modules
-                .get(module_name)
+                .get(&module_name)
                 .ok_or_else(|| EvalError::ModuleNotFound {
                     module: module_name.clone(),
                     path: format!("{}.rela", module_name),
@@ -710,6 +822,9 @@ impl Evaluator {
                                 envelope: None,
                                 reverb_level: None,
                                 volume_level: None,
+                                delay: None,
+                                phaser: None,
+                                distortion: None,
                                 synth: None,
                             });
                         }
@@ -910,6 +1025,9 @@ impl Evaluator {
                             envelope: part.envelope.clone(),
                             reverb_level: part.reverb_level,
                             volume_level: part.volume_level,
+                            delay: part.delay.clone(),
+                            phaser: part.phaser.clone(),
+                            distortion: part.distortion.clone(),
                             synth: part.synth.clone(),
                         }))
                     }
