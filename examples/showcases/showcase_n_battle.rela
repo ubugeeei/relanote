@@ -1,197 +1,267 @@
-; N's THEME - Prime Number Scale
+; N's Battle Theme - Prime Number Scale
 ; Based on Jun'ichi Masuda's composition technique
+; Prime intervals create the characteristic unsettling atmosphere
 
-set tempo = 176
-set key = C3
+set tempo = 180
+set key = D#3
 
-; Scale defined using prime numbers as semitones (2, 3, 5, 7, 11, 13, 17, 19, 23)
+; Scale defined using prime numbers as semitones
+; Primes: 2, 3, 5, 7, 11, 13, 17, 19, 23
+; This creates the characteristic unstable N's theme atmosphere
 scale Prime = { R, M2, m3, P4, P5, M7, m9, P11, P12, M14 }
 
-; Descending prime sequence
-let intro_descend = | <10> <9> <8> <7> <6> <5> <4> <3> |:8 |> in Prime
+; === MEASURES 1-2: Prime descent (23,19,17,13,11,7,5,3) ===
+; 8th note unit, prime timing (2,3,5,7,11,13) with 9 notes stacked
+let intro_descent = |
+  <10>:2 - <9>:3 - - <8>:5 - - - - <7>:7 - - - - - - <6>:11 - - - - - - - - - - <5>:13 <4> <3>
+|:8 |> in Prime |> transpose P8
 
-; Ascending prime sequence
-let intro_ascend = | <2> <3> <4> <5> <6> <7> <8> <9> |:16 |> in Prime
+; === MEASURES 3-13: Prime descent - fast sextuplets ===
+; 6-note pattern descending through primes (high to low)
+let intro_descent_fast = |
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+  <10> <9> <8> <7> <6> <5>
+|:18 |> in Prime |> transpose P15
 
+let intro_harmony = |
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+  <8> <7> <6> <5> <4> <3>
+|:18 |> in Prime |> transpose P15
+
+; === MEASURE 14: Dotted quarter (3 eighths = prime) x 2 (prime) ===
+let m14_transition = | <5>:3 <5>:3 |:8 |> in Prime
+
+; === MEASURES 15-19: 5-bar long tone with steel drum fade in ===
+let steel_shimmer = |
+  <9>:8 <9>:8 <9>:8 <9>:8 <9>:8
+|:8 |> in Prime |> transpose P8
+
+; === MEASURE 20: Steel drum rewind - chromatic descent ===
+let steel_rewind = | <9> <8> <7> <6> <5> <4> <3> <2> |:8 |> in Prime |> transpose P8
+
+let intro = intro_descent ++ intro_descent_fast
+
+; === MAIN THEME A - Signature descending melody ===
 let theme_A = |
-  <2> <3> <4> <5> <2> <3> <4> <5>
-  <6> <7> <8> <9> <6> <7> <8> <9>
-  <10> <9> <8> <7> <10> <9> <8> <7>
-  <6> <5> <4> <3> <2> <3> <4> <5>
-  <2> <4> <6> <8> <3> <5> <7> <9>
-  <10> <8> <6> <4> <9> <7> <5> <3>
-  <2> <2> <3> <3> <4> <4> <5> <5>
-  <6> <6> <7> <7> <8> <8> <9> <10>
+  <6> <5> <4> <3> <6> <5> <4> <3>
+  <5> <4> <3> <2> <5> <4> <3> <2>
+  <4> <3> <2> <1> <4> <3> <2> <1>
+  <3> <2> <1> <2> <3> <4> <5> <6>
+  <6> <5> <6> <5> <4> <3> <4> <3>
+  <5> <4> <5> <4> <3> <2> <3> <2>
+  <6> <5> <4> <3> <2> <1> <2> <3>
+  <4> <5> <6> <5> <4> <3> <2> <1>
 |:16 |> in Prime
 
-let theme_A_counter = |
-  <4> <5> <6> <7> <4> <5> <6> <7>
-  <8> <9> <10> <10> <8> <9> <10> <10>
-  <10> <10> <9> <8> <10> <10> <9> <8>
-  <7> <6> <5> <4> <3> <4> <5> <6>
-  <4> <6> <8> <10> <5> <7> <9> <10>
-  <10> <9> <7> <5> <10> <8> <6> <4>
-  <4> <4> <5> <5> <6> <6> <7> <7>
-  <8> <8> <9> <9> <10> <10> <10> <10>
+let theme_A_harmony = |
+  <4> <3> <2> <1> <4> <3> <2> <1>
+  <3> <2> <1> <1> <3> <2> <1> <1>
+  <2> <1> <1> <1> <2> <1> <1> <1>
+  <1> <1> <1> <1> <1> <2> <3> <4>
+  <4> <3> <4> <3> <2> <1> <2> <1>
+  <3> <2> <3> <2> <1> <1> <1> <1>
+  <4> <3> <2> <1> <1> <1> <1> <1>
+  <2> <3> <4> <3> <2> <1> <1> <1>
 |:16 |> in Prime
 
+; === THEME B - Syncopated aggressive phrase ===
 let theme_B = |
-  <3> <4> <3> <4> <4> <5> <4> <5>
-  <6> <7> <6> <7> <8> <9> <8> <9>
-  <9> <8> <9> <8> <7> <6> <7> <6>
-  <5> <4> <5> <4> <4> <3> <4> <3>
-  <3> <4> <4> <5> <6> <7> <8> <9>
-  <8> <9> <6> <7> <4> <5> <3> <4>
-  <3> <5> <3> <5> <4> <6> <4> <6>
-  <7> <8> <7> <8> <9> <10> <9> <10>
+  <1> - <3> - <5> - <6> <5>
+  <4> - <3> - <2> - <3> <4>
+  <5> - <6> - <5> - <4> <3>
+  <2> - <1> - <2> - <3> <4>
+  <5> <6> <5> <4> <3> <2> <3> <4>
+  <5> <6> <5> <4> <3> <2> <1> -
+  <1> <2> <3> <4> <5> <6> <5> <4>
+  <3> <2> <1> <2> <3> <4> <5> <6>
 |:16 |> in Prime
 
-let theme_B_harmony = |
-  <5> <6> <5> <6> <6> <7> <6> <7>
-  <8> <9> <8> <9> <10> <10> <10> <10>
-  <10> <10> <10> <10> <9> <8> <9> <8>
-  <7> <6> <7> <6> <6> <5> <6> <5>
-  <5> <6> <6> <7> <8> <9> <10> <10>
-  <10> <10> <8> <9> <6> <7> <5> <6>
-  <5> <7> <5> <7> <6> <8> <6> <8>
-  <9> <10> <9> <10> <10> <10> <10> <10>
+let theme_B_counter = |
+  <3> - <5> - <6> - <6> <6>
+  <6> - <5> - <4> - <5> <6>
+  <6> - <6> - <6> - <6> <5>
+  <4> - <3> - <4> - <5> <6>
+  <6> <6> <6> <6> <5> <4> <5> <6>
+  <6> <6> <6> <6> <5> <4> <3> -
+  <3> <4> <5> <6> <6> <6> <6> <6>
+  <5> <4> <3> <4> <5> <6> <6> <6>
 |:16 |> in Prime
 
+; === THEME C - Climax buildup ===
 let theme_C = |
-  <3> <5> <3> <5> <3> <5> <3> <5>
-  <5> <3> <5> <3> <5> <3> <5> <3>
-  <3> <3> <5> <5> <3> <3> <5> <5>
-  <5> <5> <3> <3> <5> <5> <3> <3>
-  <3> <5> <6> <3> <5> <6> <3> <5>
-  <6> <5> <3> <6> <5> <3> <6> <5>
-  <3> <4> <5> <6> <7> <8> <9> <10>
-  <10> <9> <8> <7> <6> <5> <4> <3>
+  <1> <1> <2> <2> <3> <3> <4> <4>
+  <5> <5> <6> <6> <5> <5> <4> <4>
+  <3> <3> <4> <4> <5> <5> <6> <6>
+  <6> <6> <5> <5> <4> <4> <3> <3>
+  <2> <3> <4> <5> <6> <5> <4> <3>
+  <4> <5> <6> <5> <4> <3> <2> <1>
+  <1> <2> <3> <4> <5> <6> <6> <6>
+  <6> <5> <4> <3> <2> <1> <1> <1>
 |:16 |> in Prime
 
-let theme_C_bass = |
-  <1>:4 <3>:4 <5>:4 <1>:4
-  <3>:4 <5>:4 <1>:4 <3>:4
-|:16 |> in Prime |> transpose (R - P8)
-
-let theme_D = |
-  <2> <4> <2> <4> <3> <5> <3> <5>
-  <4> <6> <4> <6> <6> <10> <6> <10>
-  <2> <4> <3> <5> <4> <6> <6> <10>
-  <10> <6> <6> <4> <5> <3> <4> <2>
-  <2> <3> <4> <6> <2> <3> <4> <6>
-  <4> <5> <6> <10> <4> <5> <6> <10>
-  <10> <6> <5> <4> <10> <6> <5> <4>
-  <6> <4> <3> <2> <4> <3> <2> <1>
-|:16 |> in Prime
-
-let theme_D_high = |
-  <4> <6> <4> <6> <5> <7> <5> <7>
-  <6> <8> <6> <8> <8> <10> <8> <10>
-  <4> <6> <5> <7> <6> <8> <8> <10>
-  <10> <8> <8> <6> <7> <5> <6> <4>
-  <4> <5> <6> <8> <4> <5> <6> <8>
-  <6> <7> <8> <10> <6> <7> <8> <10>
-  <10> <8> <7> <6> <10> <8> <7> <6>
-  <8> <6> <5> <4> <6> <5> <4> <3>
+let theme_C_high = |
+  <3> <3> <4> <4> <5> <5> <6> <6>
+  <6> <6> <6> <6> <6> <6> <6> <6>
+  <5> <5> <6> <6> <6> <6> <6> <6>
+  <6> <6> <6> <6> <6> <6> <5> <5>
+  <4> <5> <6> <6> <6> <6> <6> <5>
+  <6> <6> <6> <6> <6> <5> <4> <3>
+  <3> <4> <5> <6> <6> <6> <6> <6>
+  <6> <6> <6> <5> <4> <3> <3> <3>
 |:16 |> in Prime |> transpose P8
 
-let theme_E = |
-  <2> <3> <4> <5> <6> <7> <8> <9>
-  <10> <2> <3> <4> <5> <6> <7> <8>
-  <9> <10> <2> <3> <4> <5> <6> <7>
-  <8> <9> <10> <2> <3> <4> <5> <6>
-  <7> <8> <9> <10> <9> <8> <7> <6>
-  <5> <4> <3> <2> <10> <9> <8> <7>
-  <6> <5> <4> <3> <2> <3> <4> <5>
-  <6> <7> <8> <9> <10> <9> <8> <7>
-|:16 |> in Prime
-
-let theme_E_harmony = |
-  <4> <5> <6> <7> <8> <9> <10> <10>
-  <10> <4> <5> <6> <7> <8> <9> <10>
-  <10> <10> <4> <5> <6> <7> <8> <9>
-  <10> <10> <10> <4> <5> <6> <7> <8>
-  <9> <10> <10> <10> <10> <10> <9> <8>
-  <7> <6> <5> <4> <10> <10> <10> <9>
-  <8> <7> <6> <5> <4> <5> <6> <7>
-  <8> <9> <10> <10> <10> <10> <10> <9>
-|:16 |> in Prime
-
+; === FINALE - Triumphant resolution ===
 let finale = |
-  <10> <9> <8> <7> <6> <5> <4> <3>
-  <2> <3> <4> <5> <6> <7> <8> <9>
-  <10> <9> <8> <7> <6> <5> <4> <3>
-  <2> <1> <2> <3> <4> <5> <6> <7>
-  <8> <9> <10> <9> <8> <7> <6> <5>
-  <4> <3> <2> <3> <4> <5> <6> <7>
-  <8> <9> <10> <10> <10> <10> <10> <10>
-  <10>:2 <9>:2 <7>:2 <5>:2
+  <6> <5> <4> <3> <2> <1> <2> <3>
+  <4> <5> <6> <5> <4> <3> <2> <1>
+  <6> <5> <4> <3> <2> <1> <2> <3>
+  <4> <5> <6> <6> <6> <6> <6> <6>
+  <6>:2 <5>:2 <4>:2 <3>:2
+  <2>:2 <1>:2 <2>:2 <3>:2
+  <4>:2 <5>:2 <6>:4 <6>:4
+  <6>:8 <5>:4 <4>:4
 |:16 |> in Prime
 
 let finale_harmony = |
-  <10> <10> <10> <9> <8> <7> <6> <5>
-  <4> <5> <6> <7> <8> <9> <10> <10>
-  <10> <10> <10> <9> <8> <7> <6> <5>
-  <4> <3> <4> <5> <6> <7> <8> <9>
-  <10> <10> <10> <10> <10> <9> <8> <7>
-  <6> <5> <4> <5> <6> <7> <8> <9>
-  <10> <10> <10> <10> <10> <10> <10> <10>
-  <10>:2 <10>:2 <9>:2 <7>:2
+  <4> <3> <2> <1> <1> <1> <1> <1>
+  <2> <3> <4> <3> <2> <1> <1> <1>
+  <4> <3> <2> <1> <1> <1> <1> <1>
+  <2> <3> <4> <4> <4> <4> <4> <4>
+  <4>:2 <3>:2 <2>:2 <1>:2
+  <1>:2 <1>:2 <1>:2 <1>:2
+  <2>:2 <3>:2 <4>:4 <4>:4
+  <4>:8 <3>:4 <2>:4
 |:16 |> in Prime
 
-let arp_prime = |
-  <1> <2> <3> <4> <3> <2> <1> <2>
-  <3> <4> <5> <4> <3> <2> <1> <2>
-  <3> <4> <5> <6> <5> <4> <3> <2>
-  <1> <2> <3> <4> <5> <6> <7> <8>
-|:16 |> in Prime
+; === ARPEGGIOS - Fast unsettling patterns ===
+let arp_fast = |
+  <1> <3> <5> <6> <5> <3> <1> <3>
+  <5> <6> <5> <3> <1> <3> <5> <6>
+|:32 |> in Prime
 
-let arp_high = |
-  <5> <6> <7> <8> <7> <6> <5> <6>
-  <7> <8> <9> <8> <7> <6> <5> <6>
-  <7> <8> <9> <10> <9> <8> <7> <6>
-  <5> <6> <7> <8> <9> <10> <9> <8>
-|:16 |> in Prime
+let arp_desc = |
+  <6> <5> <3> <1> <6> <5> <3> <1>
+  <5> <4> <2> <1> <5> <4> <2> <1>
+|:32 |> in Prime |> transpose P8
 
-let bass_pedal = |
-  <1>:8 <1>:8 <1>:8 <1>:8
-  <1>:8 <1>:8 <1>:8 <1>:8
-|:64 |> in Prime |> transpose (R - P8)
-
-let bass_prime = |
-  <1> <1> <2> <2> <3> <3> <4> <4>
-  <5> <5> <4> <4> <3> <3> <2> <2>
+; === BASS - Aggressive octave pattern ===
+let bass_drive = |
+  <1> <1> <1> <1> <1> <1> <1> <1>
+  <1> <1> <1> <1> <1> - <1> -
+  <3> <3> <3> <3> <3> <3> <3> <3>
+  <3> <3> <3> <3> <3> - <2> -
 |:32 |> in Prime |> transpose (R - P8)
 
-let ostinato = | <2> <3> <2> <3> <4> <5> <4> <5> |:64 |> in Prime
-let ostinato_high = | <6> <7> <6> <7> <8> <9> <8> <9> |:64 |> in Prime
+let bass_octave = |
+  <1> - <1> - <1> - <1> <1>
+  <1> - <1> - <1> <1> <1> <1>
+|:64 |> in Prime |> transpose (R - P8)
 
-let kick = | <1> - - - <1> - - - <1> - - - <1> - <1> - |:32 |> in Prime
-let snare = | - - <1> - - - <1> - - - <1> - - <1> <1> - |:32 |> in Prime
-let hihat = | <1> <1> <1> <1> <1> <1> <1> <1> |:128 |> in Prime
+; === DRUMS - Intense battle rhythm ===
+let kick_intense = |
+  <1> - - <1> - - <1> -
+  <1> - - <1> - - <1> -
+  <1> - - <1> - - <1> -
+  <1> - - <1> - <1> <1> <1>
+|:32 |> in Prime
 
-let lead_part1 = intro_descend ++ intro_ascend ++ theme_A ++ theme_B
-let lead_part2 = theme_C ++ theme_D ++ theme_E ++ finale
-let full_lead = lead_part1 ++ lead_part2
+let snare_battle = |
+  - - - - <1> - - -
+  - - - - <1> - - -
+  - - - - <1> - - -
+  - - - - <1> - <1> <1>
+|:32 |> in Prime
 
-let harmony_part1 = theme_A_counter ++ theme_B_harmony
-let theme_C_up = theme_C |> transpose P5
-let harmony_part2 = theme_C_up ++ theme_D_high ++ theme_E_harmony ++ finale_harmony
-let full_harmony = harmony_part1 ++ harmony_part2
+let hihat_16th = |
+  <1> - <1> - <1> - <1> -
+  <1> - <1> - <1> - <1> -
+  <1> - <1> - <1> - <1> -
+  <1> - <1> - <1> <1> <1> <1>
+|:32 |> in Prime
 
-let arp_part1 = arp_prime ++ arp_prime ++ arp_prime ++ arp_high
-let arp_part2 = arp_high ++ arp_prime ++ arp_high ++ arp_high
-let full_arp = arp_part1 ++ arp_part2
+let crash = |
+  <1>:8 -:8 -:8 -:8
+  <1>:8 -:8 -:8 <1>:8
+|:16 |> in Prime
+
+let tom_fill = |
+  - - - - - - - -
+  - - - - <1> <1> <1> <1>
+|:64 |> in Prime
+
+; === STRUCTURE ===
+; Rest for intro duration (matches intro_descent_fast length)
+let intro_rest = |
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+  - - - - - -
+|:18 |> in Prime
+
+let section_A = theme_A ++ theme_A
+let section_B = theme_B ++ theme_B
+let section_C = theme_C ++ theme_C
+let section_finale = finale ++ finale
+
+; Main melody starts after intro
+let main_lead = intro_rest ++ section_A ++ section_B ++ section_C ++ section_finale
+
+let harmony_A = theme_A_harmony ++ theme_A_harmony
+let harmony_B = theme_B_counter ++ theme_B_counter
+let harmony_C = theme_C_high ++ theme_C_high
+let harmony_finale = finale_harmony ++ finale_harmony
+
+let main_harmony = intro_rest ++ harmony_A ++ harmony_B ++ harmony_C ++ harmony_finale
+
+let arp_section = intro_rest ++ arp_fast ++ arp_fast ++ arp_fast ++ arp_desc ++ arp_fast ++ arp_desc ++ arp_fast
+
+let bass_full = intro_rest ++ bass_drive
+let bass_oct_full = intro_rest ++ bass_octave
+let kick_full = intro_rest ++ kick_intense
+let snare_full = intro_rest ++ snare_battle
+let hihat_full = intro_rest ++ hihat_16th
 
 layer [
-  full_lead |> voice NES,
-  full_harmony |> voice NES |> volume 0.35,
-  full_arp |> voice GameBoy |> volume 0.4,
-  (ostinato ++ ostinato) |> voice Chip8bit |> volume 0.25,
-  ((ostinato_high ++ ostinato_high) |> transpose P8) |> voice Chip8bit |> volume 0.2,
-  bass_pedal |> voice Chiptune |> volume 0.6,
-  (bass_prime ++ bass_prime ++ bass_prime ++ bass_prime) |> voice FatBass |> volume 0.4,
-  kick |> voice Kick8bit |> volume 0.9,
-  snare |> voice Snare8bit |> volume 0.75,
-  hihat |> voice HiHat8bit |> volume 0.25
+  ; Intro - only the terotero descent
+  intro_descent_fast |> voice NES |> reverb 0.35 |> volume 0.8,
+  intro_harmony |> voice NES |> reverb 0.4 |> volume 0.3,
+
+  ; Main parts (start after intro)
+  main_lead |> voice NES |> reverb 0.25 |> volume 0.75,
+  main_harmony |> voice NES |> reverb 0.3 |> volume 0.4,
+  arp_section |> voice GameBoy |> reverb 0.2 |> volume 0.25,
+  (arp_section |> transpose P8) |> voice Chip8bit |> reverb 0.2 |> volume 0.15,
+  bass_full |> voice Chiptune |> reverb 0.1 |> volume 0.7,
+  bass_oct_full |> voice FatBass |> reverb 0.1 |> volume 0.6,
+  kick_full |> voice Kick8bit |> volume 0.95,
+  snare_full |> voice Snare8bit |> reverb 0.1 |> volume 0.85,
+  hihat_full |> voice HiHat8bit |> volume 0.5
 ]
