@@ -47,8 +47,19 @@ export function useAudioSynth() {
     return buffer;
   };
 
+  // Resume AudioContext if suspended (e.g., after tab becomes inactive)
+  const ensureContextRunning = async () => {
+    if (audioContext && audioContext.state === "suspended") {
+      await audioContext.resume();
+    }
+  };
+
   const init = async () => {
-    if (audioContext) return;
+    if (audioContext) {
+      // Context exists but might be suspended after tab switch
+      await ensureContextRunning();
+      return;
+    }
 
     audioContext = new AudioContext();
 
@@ -79,9 +90,7 @@ export function useAudioSynth() {
     noiseBuffer = createNoiseBuffer(audioContext);
 
     // Resume context if suspended (required by browsers)
-    if (audioContext.state === "suspended") {
-      await audioContext.resume();
-    }
+    await ensureContextRunning();
 
     isInitialized.value = true;
   };
@@ -130,8 +139,11 @@ export function useAudioSynth() {
     return 440 * Math.pow(2, (midiNote - 69) / 12);
   };
 
-  const noteOn = (midiNote: number, velocity: number = 100, synth?: SynthData) => {
+  const noteOn = async (midiNote: number, velocity: number = 100, synth?: SynthData) => {
     if (!audioContext || !masterGain) return;
+
+    // Ensure context is running (may be suspended after tab switch)
+    await ensureContextRunning();
 
     const voiceKey = getVoiceKey(midiNote, synth?.name);
 
@@ -374,7 +386,7 @@ export function useAudioSynth() {
       }
 
       if (event.type === "on") {
-        noteOn(event.pitch, event.velocity, event.synth);
+        await noteOn(event.pitch, event.velocity, event.synth);
       } else {
         noteOff(event.pitch, event.synth?.name);
       }
