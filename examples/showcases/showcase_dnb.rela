@@ -14,9 +14,22 @@ scale Dark = { R, m2, m3, P4, P5, m6, M7 }
 
 synth DarkReese = {
   osc: Saw,
-  detune: 25,
-  env: envelope 0.01 0.1 0.8 0.2,
-  filter: LowPass(400, 0.7)
+  detune: 30,
+  env: envelope 0.01 0.15 0.9 0.25,
+  filter: LowPass(300, 0.8)
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope 0.01 0.2 0.95 0.3,
+  filter: LowPass(80, 0.0)
+}
+
+synth HeavyBass = {
+  osc: Square,
+  detune: 20,
+  env: envelope 0.005 0.1 0.85 0.2,
+  filter: LowPass(200, 0.6)
 }
 
 synth NeuroLead = {
@@ -41,20 +54,32 @@ synth AggroStab = {
 
 synth EDMKick = {
   osc: Sine,
-  env: envelope 0.001 0.08 0.0 0.05,
-  filter: LowPass(60, 0.0)
+  env: envelope 0.001 0.15 0.0 0.1,
+  filter: LowPass(50, 0.0)
 }
 
 synth KickClick = {
   osc: Square,
-  env: envelope 0.001 0.02 0.0 0.01,
-  filter: LowPass(3000, 0.5)
+  env: envelope 0.0005 0.015 0.0 0.008,
+  filter: LowPass(5000, 0.7)
+}
+
+synth KickAttack = {
+  osc: Noise,
+  env: envelope 0.0001 0.01 0.0 0.005,
+  filter: LowPass(8000, 0.5)
 }
 
 synth KickBody = {
   osc: Triangle,
-  env: envelope 0.001 0.12 0.0 0.08,
-  filter: LowPass(100, 0.3)
+  env: envelope 0.001 0.18 0.0 0.12,
+  filter: LowPass(80, 0.2)
+}
+
+synth KickSub = {
+  osc: Sine,
+  env: envelope 0.001 0.25 0.0 0.15,
+  filter: LowPass(40, 0.0)
 }
 
 ; ============================================
@@ -180,6 +205,53 @@ let dark_pad = |
 |:16
 
 ; ============================================
+; FILLS - Crescendo rolls
+; ============================================
+
+; Short 1-bar fill with crescendo (32nd notes)
+let fill_snare_short = | R R R R R R R R R R R R R R R R |:2
+
+; Medium 2-bar fill - building intensity
+let fill_snare_med = |
+  - - - - - - - - R R R R R R R R
+  R R R R R R R R R R R R R R R R
+|:4
+
+; Long 4-bar crescendo fill
+let fill_snare_long = |
+  - - - - - - - - - - - - R - R -
+  - - - - - - - - R - R - R R R -
+  - - - - R - R - R R R - R R R R
+  R - R R R R R R R R R R R R R R
+|:8
+
+; Hi-hat machine gun fill (gradual)
+let fill_hat_roll = |
+  - - - - R - - - R - - - R - R -
+  R - R - R - R R R R R R R R R R
+|:4
+
+; Hi-hat crescendo (very sparse to dense)
+let fill_hat_crescendo = |
+  - - - - - - - - R - - - - - - -
+  - - - - R - - - - - R - R - - -
+  - - R - - - R - R - R - R - R -
+  R - R - R R R R R R R R R R R R
+|:8
+
+; Kick fill - rapid fire
+let fill_kick_rapid = |
+  - - - - - - - - R R R R R R R R
+  R R R R R R R R R R R R R R R R
+|:4
+
+; Combined drum fill (kick + snare alternating)
+let fill_combo = |
+  - - - - - - - - R - R - R R R R
+  R R R R R R R R R R R R R R R R
+|:4
+
+; ============================================
 ; BUILD UP
 ; ============================================
 
@@ -212,13 +284,21 @@ let break_snare = snare_roll
 let break_riser = riser
 
 ; ============================================
-; FULL ARRANGEMENT
+; FULL ARRANGEMENT (clean - fills are separate)
 ; ============================================
 
+; Main patterns without fills
 let full_kick = intro_kick ++ drop_kick ++ break_kick ++ drop_kick
 let full_snare = intro_snare ++ drop_snare ++ break_snare ++ drop_snare
 let full_ghost = | - |:8 ++ ghost_snare ++ | - |:8 ++ ghost_snare
 let full_hat = intro_hat ++ drop_hat ++ intro_hat ++ drop_hat
+
+; Fill tracks - all at consistent timing
+let fill_snare_track = | - |:14 ++ fill_snare_med ++ | - |:28 ++ fill_snare_long ++ | - |:12 ++ fill_snare_med ++ | - |:28
+let fill_hat_track = | - |:14 ++ fill_hat_crescendo ++ | - |:28 ++ fill_hat_crescendo ++ | - |:12 ++ fill_hat_crescendo ++ | - |:28
+let fill_kick_track = | - |:14 ++ fill_kick_rapid ++ | - |:28 ++ fill_combo ++ | - |:12 ++ fill_kick_rapid ++ | - |:28
+
+; Bass
 let full_bass = intro_bass ++ drop_bass ++ intro_bass ++ drop_bass
 let full_sub = sub_bass |> repeat 8
 
@@ -234,22 +314,42 @@ let full_pad = dark_pad ++ dark_pad ++ | - |:32 ++ dark_pad
 ; ============================================
 
 layer [
-  ; Drums - EDM layered kicks (dry)
-  full_kick |> transpose (R - P8 - P8 - P8) |> voice EDMKick |> volume 1.0,
-  full_kick |> transpose (R - P8 - P8) |> voice KickBody |> volume 0.8,
-  full_kick |> voice KickClick |> volume 0.5,
-  full_snare |> voice Snare |> reverb 0.3 |> volume 0.85,
-  full_ghost |> voice Snare |> reverb 0.2 |> volume 0.25,
-  full_hat |> voice HiHat |> reverb 0.4 |> volume 0.35,
+  ; ========== KICKS - Layered for punch ==========
+  ; Sub layer (20-50Hz) - Pure weight
+  full_kick |> transpose (R - P8 - P8 - P8 - P8) |> voice KickSub |> volume 2.0,
+  ; Low layer (50-100Hz) - Body
+  full_kick |> transpose (R - P8 - P8 - P8) |> voice EDMKick |> volume 2.0,
+  ; Mid layer (80-200Hz) - Punch
+  full_kick |> transpose (R - P8 - P8) |> voice KickBody |> volume 1.8,
+  ; High layer (4-5kHz) - Click
+  full_kick |> voice KickClick |> volume 1.5,
+  ; Attack layer (noise transient)
+  full_kick |> voice KickAttack |> volume 1.0,
 
-  ; Bass layers - dark and heavy (slight reverb)
-  full_bass |> transpose (R - P8 - P8) |> voice DarkReese |> reverb 0.2 |> volume 0.9,
-  full_sub |> transpose (R - P8 - P8 - P8) |> voice FatBass |> cutoff 150.0 |> volume 0.7,
+  ; ========== SNARE & HATS ==========
+  full_snare |> voice Snare |> reverb 0.25 |> volume 0.7,
+  full_ghost |> voice Snare |> reverb 0.15 |> volume 0.25,
+  full_hat |> voice HiHat |> reverb 0.3 |> volume 0.35,
 
-  ; Synths - aggressive (medium reverb)
-  full_neuro |> transpose (R - P8) |> voice NeuroLead |> reverb 0.5 |> volume 0.6,
-  full_arp |> voice AggroStab |> cutoff 2000.0 |> reverb 0.6 |> volume 0.4,
+  ; ========== FILLS - Crescendo rolls (consistent volumes) ==========
+  fill_snare_track |> voice Snare |> reverb 0.2 |> volume 0.7,
+  fill_hat_track |> voice HiHat |> reverb 0.2 |> volume 0.35,
+  fill_kick_track |> transpose (R - P8 - P8) |> voice KickBody |> volume 0.9,
 
-  ; Atmosphere (heavy reverb)
-  full_pad |> transpose (R - P8) |> voice DarkPad |> hall_reverb |> volume 0.4
+  ; ========== BASS - Heavy & Deep ==========
+  ; Sub bass (30-80Hz) - Foundation
+  full_sub |> transpose (R - P8 - P8 - P8 - P8) |> voice DeepSub |> volume 1.0,
+  ; Low bass (60-150Hz) - Weight
+  full_sub |> transpose (R - P8 - P8 - P8) |> voice HeavyBass |> cutoff 120.0 |> volume 0.85,
+  ; Mid bass (100-300Hz) - Character
+  full_bass |> transpose (R - P8 - P8) |> voice DarkReese |> reverb 0.15 |> volume 0.95,
+  ; High bass (200-400Hz) - Growl
+  full_bass |> transpose (R - P8) |> voice HeavyBass |> cutoff 350.0 |> reverb 0.2 |> volume 0.5,
+
+  ; ========== SYNTHS ==========
+  full_neuro |> transpose (R - P8) |> voice NeuroLead |> reverb 0.4 |> volume 0.55,
+  full_arp |> voice AggroStab |> cutoff 2000.0 |> reverb 0.5 |> volume 0.35,
+
+  ; ========== ATMOSPHERE ==========
+  full_pad |> transpose (R - P8) |> voice DarkPad |> hall_reverb |> volume 0.35
 ]
