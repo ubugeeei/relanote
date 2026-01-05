@@ -17,6 +17,7 @@ const {
   exportAllFiles,
   importFiles,
 } = useFileManager();
+const { showCopied, getCodeFromUrl, share, clearShare } = useShare();
 
 const diagnostics = ref<WasmDiagnostic[]>([]);
 const staffData = ref<StaffData | null>(null);
@@ -124,12 +125,39 @@ const handleCodeUpdate = (newCode: string) => {
   code.value = newCode;
 };
 
+const handleShare = async () => {
+  await share(code.value);
+};
+
+// Track if code was loaded from URL
+const loadedFromUrl = ref(false);
+
 onMounted(async () => {
+  // Check for shared code in URL first
+  const sharedCode = getCodeFromUrl();
+  if (sharedCode) {
+    loadedFromUrl.value = true;
+  }
+
   loadFromStorage();
+
+  // If we have shared code, update the active file
+  if (sharedCode && activeFile.value) {
+    updateContent(activeFile.value.id, sharedCode);
+  }
+
   await init();
   if (isReady.value) {
     analyzeCode();
   }
+});
+
+// Clear share state when code changes (user is editing)
+watch(code, () => {
+  if (!loadedFromUrl.value) {
+    clearShare();
+  }
+  loadedFromUrl.value = false;
 });
 
 watch(isReady, (ready) => {
@@ -149,6 +177,12 @@ watch(isReady, (ready) => {
         <span class="app-subtitle">Functional Music Notation</span>
       </div>
       <div class="header-right">
+        <button class="header-btn share-btn" @click="handleShare" title="Share code via URL">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="share-icon">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          {{ showCopied ? 'Copied!' : 'Share' }}
+        </button>
         <button class="header-btn" @click="handleExportMidi" :disabled="!midiResult?.midi_data">
           Export MIDI
         </button>
@@ -327,6 +361,22 @@ body {
 .header-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.share-btn .share-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.share-btn:hover {
+  background: #d97706;
+  color: #ffffff;
 }
 
 .header-link {
