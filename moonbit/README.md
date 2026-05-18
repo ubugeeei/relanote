@@ -22,6 +22,7 @@ for status.
 | `relanote_eval`    | `crates/relanote_eval`   | Env, EvalError, Evaluator skeleton (walker + builtins deferred) |
 | `relanote_format`  | `crates/relanote_format` | FormatConfig + Formatter skeleton (AST walker deferred)         |
 | `relanote_render`  | `crates/relanote_render` | MidiConfig + MidiRenderer skeleton (SMF byte writer deferred)   |
+| `relanote_lsp`     | `crates/relanote_lsp`    | LSP server skeleton — JSON-RPC framing + dispatch deferred      |
 
 Regenerate the stdlib embedding after editing the `.rela` sources with
 `bash moonbit/scripts/gen_stdlib.sh`.
