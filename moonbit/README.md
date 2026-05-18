@@ -20,6 +20,7 @@ for status.
 | `relanote_parser`  | `crates/relanote_parser` | Public API + ParseError + Parser skeleton (descent deferred) |
 | `relanote_resolver`| `crates/relanote_resolver`| ResolveError, ModuleLoader, ModuleResolver (filesystem stub) |
 | `relanote_eval`    | `crates/relanote_eval`   | Env, EvalError, Evaluator skeleton (walker + builtins deferred) |
+| `relanote_format`  | `crates/relanote_format` | FormatConfig + Formatter skeleton (AST walker deferred)         |
 
 Regenerate the stdlib embedding after editing the `.rela` sources with
 `bash moonbit/scripts/gen_stdlib.sh`.
