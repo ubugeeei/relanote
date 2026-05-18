@@ -1,208 +1,119 @@
 # Blocks
 
-Blocks are sequences of musical events - notes, rests, and chords - that form the basic unit of composition.
+A block — `| ... |` — is the unit of time in relanote. Everything
+inside a block **shares its slot equally**: four notes split the slot
+into quarters, two notes into halves, eight into eighths. The block
+doesn't carry durations. It carries *how the slot is divided*.
 
-> **Core Concept:** In Relanote, **rhythm is relative**. Just as pitches are described by intervals rather than absolute notes, rhythm is determined by how notes divide up a block's duration. This is a fundamental design choice that makes musical patterns portable and composable.
+That's the rhythmic half of "everything is relative". The same line
+plays as 16th notes against a one-beat slot or as quarters against a
+four-beat slot.
 
-## Basic Block Syntax
-
-A block is enclosed in pipe delimiters `| |`:
+## Syntax
 
 ```rela
-; A simple melody using intervals
-| R M3 P5 M3 |
-
-; Using scale degrees
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let melody = | <1> <2> <3> <4> <5> |
-
-melody
+| R M3 P5 M3 |             ; intervals
+let melody = | <1> <2> <3> <4> <5> |  ; scale-degree references
 ```
 
 ## Rests
 
-Use `-` for rests:
+`-` is a rest. It takes a share of the slot just like any pitched
+note:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> - <3> - <5> |    ; Note, rest, note, rest, note
-
-melody
+let with_breath = | <1> - <3> - <5> |
 ```
 
-## Relative Rhythm
+## Relative rhythm
 
-Relanote uses **relative rhythm**: all slots within a block are equally divided.
-By default, a block lasts 1 beat.
+A block defaults to one beat. The shape inside it is what changes:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-| <1> <2> <3> <4> |    ; 4 notes in 1 beat (each 1/4 beat = 16th notes)
-| <1> <2> |            ; 2 notes in 1 beat (each 1/2 beat = 8th notes)
-| <1> |                ; 1 note in 1 beat (quarter note)
-| <1> <2> <3> <4> <5> <6> <7> <8> |  ; 8 notes in 1 beat (32nd notes)
+| <1> <2> <3> <4> |                ; 4 share 1 beat   → 16th notes
+| <1> <2> |                        ; 2 share 1 beat   → 8th  notes
+| <1> |                            ; 1 fills 1 beat   → quarter note
+| <1> <2> <3> <4> <5> <6> <7> <8> |; 8 share 1 beat   → 32nd notes
 ```
 
-This means **the number of slots determines the rhythm**, not explicit duration values.
-
-### Note Duration
-
-Individual notes can have explicit durations using `:n` after the note:
+Pin the block's total time with `:n`:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Half note followed by two quarter notes
-let melody = | <1>:2 <2> <3> |
-
-; Whole note (takes 4 slot positions)
-let held = | <1>:4 |
-
-; Rests can also have durations
-let with_pause = | <1> -:2 <3> |
-
-melody
+| <1> <2> <3> |:2     ; 3 over 2 beats
+| <1> <2> <3> <4> |:4 ; 4 over 4 beats → quarter notes
+| <1> <2> |:0.5       ; 2 over half a beat
 ```
 
-The `:n` syntax means the note occupies `n` slot positions worth of time.
-
-### Specifying Block Duration
-
-Use `:n` after a block to specify its duration in beats:
+Pin an individual note's share with `:n` directly after it:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-| <1> <2> <3> |:2      ; 3 notes in 2 beats (each 2/3 beat)
-| <1> <2> <3> <4> |:4  ; 4 notes in 4 beats (each 1 beat = quarter notes)
-| <1> <2> |:0.5        ; 2 notes in half a beat (each 1/4 beat)
+| <1>:2 <2> <3> |     ; first note holds 2 slot-positions, others 1
+| <1>:4 |             ; one held note across 4 slot-positions
+| <1> -:2 <3> |       ; rests carry durations too
 ```
 
 ## Articulations
 
-Add articulations after notes:
+After the note, before any duration:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let staccato = | <1>* <3>* <5> |      ; Staccato (*) - short, detached
-let accented = | <1>^ <3>^ <5> |      ; Accent (^) - emphasized
-let legato = | <1>~ <3>~ <5> |        ; Portamento (~) - connected
+| <1>* <3>* <5> |     ; staccato — short, detached
+| <1>^ <3>^ <5> |     ; accent   — emphasised
+| <1>~ <3>~ <5> |     ; portamento — connected / sliding
 ```
 
-## Block Concatenation
+## Concatenation preserves shape
 
-### Basic Concatenation
-
-Use `++` to join blocks:
+`++` glues blocks; **each side keeps the rhythm it was written in**:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |   ; 8 share 1 beat
+let slow = | <1> <5> |                            ; 2 share 1 beat
+let held = | <1> |:2                              ; 1 over 2 beats
 
-let a = | <1> <3> |
-let b = | <5> <8> |
-let combined = a ++ b    ; | <1> <3> <5> <8> |
-
-combined
+let phrase = fast ++ slow ++ held
 ```
 
-### Preserving Rhythm Across Concatenation
-
-**Important:** When concatenating blocks, each block's original rhythm is preserved!
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Fast: 8 notes in 1 beat (each 0.125 beats)
-let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |
-
-; Slow: 2 notes in 1 beat (each 0.5 beats)
-let slow = | <1> <5> |
-
-; Held: 1 note in 2 beats
-let held = | <1> |:2
-
-; Combined: each block keeps its original note durations!
-let melody = fast ++ slow ++ held
-
-melody
-```
-
-This is crucial for creating varied rhythmic patterns. The `fast` notes remain quick, `slow` notes remain longer, and `held` note stays for 2 beats.
+This is what makes `++` more interesting than string concatenation —
+you can splice different densities and tempos without recomputing any
+durations.
 
 ## Tuplets
 
-Use `{ }:n` for tuplets (fitting notes into a specific number of beats):
+`{ ... }:n` fits its contents into *n* beats — a way to write a
+triplet, septuplet or any odd grouping without breaking the surrounding
+metre:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Triplet: 3 notes in 2 beats
-let triplet = | { <1> <2> <3> }:2 |
-
-; Ornamental turn
-let ornament = | <5>~ { <6> <5> <4> }:2 <5>~ - |
-
-ornament
+let triplet  = | { <1> <2> <3> }:2 |                 ; 3 in 2 beats
+let turn     = | <5>~ { <6> <5> <4> }:2 <5>~ - |     ; ornamental turn
 ```
 
-## Block Transformations
+## Transformations on blocks
 
-### Repetition
+Blocks are values. Everything that's a function from a block to a block
+works:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let pattern = | <1> <3> <5> |
-let repeated = pattern |> repeat 4    ; Play 4 times
-
-repeated
+let pattern   = | <1> <3> <5> |
+let repeated  = pattern |> repeat 4
+let backwards = pattern |> reverse
+let higher    = pattern |> transpose P5
+let octave_up = pattern |> map (\n -> n + P8)
 ```
 
-### Transformation
+## Chords inside blocks
+
+`[ ... ]` is a chord — multiple intervals played simultaneously. Drop
+one into a slot and the slot plays the whole chord at once:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+let triad        = | [R, M3, P5] |
 
-let melody = | <1> <3> <5> <3> |
-
-; Reverse
-let backwards = melody |> reverse
-
-; Transpose
-let higher = melody |> transpose P5
-
-backwards
+let progression  = | [R, M3, P5]  [P4, M6, R]  [P5, M7, M2]  [R, M3, P5] |
 ```
 
-### Mapping
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <2> <3> |
-
-; Add octave to each note
-let octaveUp = melody |> map (\n -> n + P8)
-
-octaveUp
-```
-
-## Chords
-
-Use `[ ]` to play multiple notes simultaneously:
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Major triad
-let triad = | [R, M3, P5] |
-
-; Chord progression
-let progression = | [R, M3, P5] [P4, M6, R] [P5, M7, M2] [R, M3, P5] |
-
-progression
-```
+A block of chords obeys the same relative-rhythm rules — four chords in
+the slot are each played for a quarter of it.

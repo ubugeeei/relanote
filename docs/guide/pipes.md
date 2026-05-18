@@ -1,120 +1,111 @@
-# Pipes & Composition
+# Pipes and composition
 
-Relanote uses pipes for data transformation, making code read left-to-right like music flows.
+A relanote piece is a value, and most transformations on it are
+functions. The pipe `|>` is how you chain those functions so the code
+reads in the order the music flows.
 
-## The Pipe Operator
-
-The pipe operator `|>` passes the left value as the argument to the right function:
+## `|>` is "then"
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <3> |
 
-; Without pipes
+; Without pipes — read inside out.
 reverse (transpose P5 melody)
 
-; With pipes (much clearer!)
+; With pipes — read left to right.
 melody |> transpose P5 |> reverse
 ```
 
-## Chaining Transformations
+## Chains
 
-Build complex transformations step by step:
+For multi-step transformations, put each step on its own line:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <3> |
-
 let result = melody
-  |> transpose P5              ; Transpose up a fifth
-  |> repeat 2                  ; Repeat twice
-
-result
+  |> transpose P5    ; up a fifth
+  |> repeat 2        ; then twice
+  |> reverb 0.3      ; with a little reverb
 ```
 
-## Function Composition
+## Composing functions without applying them
 
-Use `>>` to compose functions without applying them:
+`>>` glues functions; the result is a new function:
 
 ```rela
-; Create a reusable transformation
-let myTransform = transpose P5 >> reverse >> repeat 2
+let style = transpose P5 >> reverse >> repeat 2
 
-; Apply to different melodies
-melody1 |> myTransform
-melody2 |> myTransform
+melody1 |> style
+melody2 |> style
 ```
 
-## Partial Application
+Same shape as a Unix pipeline, only the values flowing through are
+musical phrases instead of bytes.
 
-Many functions support partial application:
+## Partial application
+
+Most builtins take their non-input arguments first, so currying gives
+you point-free names for free:
 
 ```rela
-let upFifth = transpose P5      ; Partially applied
-let doubled = repeat 2
+let up_fifth = transpose P5
+let doubled  = repeat 2
 
-melody |> upFifth |> doubled
+melody |> up_fifth |> doubled
 ```
 
-## Common Pipe Patterns
+## Lambdas
 
-### Transform and Combine
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let theme = | <1> <3> <5> <3> |
-
-let variation = theme
-  |> transpose P4
-  |> reverse
-
-let combined = theme ++ variation
-
-combined
-```
-
-### Conditional Transformation
-
-```rela
-let loud = melody |> volume 1.0
-let soft = melody |> volume 0.4
-
-if energetic then loud else soft
-```
-
-## Lambda Expressions
-
-Create inline functions with `\`:
+`\arg -> body` defines an inline function. Used most often with `map`,
+`filter`, `fold`:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <2> <3> |
-
-; Add an octave to each note
-let higher = melody |> map (\note -> note + P8)
-
-higher
+melody |> map (\n -> n + P8)         ; everything up an octave
 ```
 
-## Pipeline Best Practices
+## Patterns
 
-1. **Read left-to-right**: Each step should logically follow the previous
-2. **Name intermediate results**: For complex pipelines, use `let` bindings
-3. **Keep functions pure**: Avoid side effects in pipe chains
-4. **Compose for reuse**: Create named transformations for common patterns
+A handful of pipeline shapes show up over and over.
+
+**Transform-then-combine** — develop a theme by piping a variation off
+it, then concatenate:
+
+```rela
+let theme     = | <1> <3> <5> <3> |
+let variation = theme |> transpose P4 |> reverse
+
+theme ++ variation
+```
+
+**Branching on a flag** — pipes inside an `if`:
+
+```rela
+let mixed = if energetic then
+  melody |> volume 1.0
+else
+  melody |> volume 0.4
+```
+
+## A few rules of thumb
+
+- **Read top-to-bottom, left-to-right.** If a chain reads in any other
+  direction it's too long; break it up with `let`.
+- **Name intermediates when they have a meaning.** A `let variation =`
+  documents intent better than a long unbroken pipe.
+- **Keep transformations pure.** Pipes are at their best when each step
+  is a function from value to value.
+- **Compose for reuse.** When the same chain appears twice, give it a
+  name with `>>`.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Good: Clear, named stages
-let melody = | <1> <3> <5> |
-let transposed = melody |> transpose P5
-let final = transposed |> repeat 2
-
-; Also good: Fluent chain for simple cases
-| <1> <3> <5> | |> transpose P5 |> repeat 2
+; Named intermediates, single direction:
+let melody     = | <1> <3> <5> |
+let transposed = melody     |> transpose P5
+let repeated   = transposed |> repeat 2
 ```
