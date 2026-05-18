@@ -1,103 +1,96 @@
-# What is Relanote?
+# What is relanote?
 
-Relanote is a **pure functional**, **statically-typed** programming language designed specifically for describing music. Unlike traditional notation or MIDI programming, Relanote uses **relative intervals** as its foundation, making transposition, modulation, and musical transformations natural and effortless.
+**relanote** is a pure functional, statically-typed language for music.
+It has a single big idea: **everything is relative**. Pitch is relative.
+Rhythm is relative. Chords are intervals over a root, sections are
+blocks over a beat-grid, parts are sections over an instrument, layers
+are parts over time. A line is the relationship between its notes;
+nothing in the language pins music to where it absolutely sits.
 
-## Why Relative Intervals?
+That's not a stylistic preference. It's the entire design.
 
-Traditional music notation and most programming approaches use absolute pitches (C4, D4, E4...). This creates problems:
+## Pitch is relative
 
-- **Transposition requires rewriting** - Moving a melody up a step means changing every note
-- **Modal thinking is awkward** - Scale degrees are fundamental to music theory but secondary in absolute systems
-- **Patterns are obscured** - A "I-IV-V progression" looks different in every key
+Conventional notation and most code-based approaches tie pitches to
+absolute positions: `C4`, `D4`, `E4`. That's fine for engraving — and
+the worst possible shape for software. Transpose a melody and every
+pitch needs rewriting. Try a different mode and you start over. The
+musical idea is hidden inside the encoding.
 
-Relanote solves these by making intervals first-class:
+relanote describes lines by their **scale-degree references** instead:
 
 ```rela
-; Define a scale
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; This melody works in ANY key
-let melody = | <1> <3> <5> <3> <1> |
-
-; Transform with builtins
-let transformed = melody |> transpose P5
-
-transformed
+; Five degrees, in any key, in any mode.
+let theme = | <1> <3> <5> <3> <1> |
 ```
 
-## Why Relative Rhythm?
-
-Traditional notation ties rhythm to absolute values (quarter notes, eighth notes...). Relanote uses **relative rhythm** within blocks:
+`<1>` is the root, `<3>` is the third, `<5>` is the fifth — of whatever
+scale is in scope. The same five symbols play `C-E-G-E-C` in C major,
+`G-B-D-B-G` in G major and `D-F-A-F-D` in D minor. Switching key is one
+edit. Switching mode is one edit. Transposing for a different instrument
+is one function call:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+theme |> transpose P5
+```
 
-; 4 notes = each is 1/4 of the block duration
+## Rhythm is relative
+
+Conventional notation pins rhythm to absolute durations too — quarter
+notes, eighth notes, milliseconds. relanote's blocks share a slot
+**equally** among the notes inside them:
+
+```rela
+; Four notes share the slot equally.
 let fast = | <1> <3> <5> <3> |
 
-; 2 notes = each is 1/2 of the block duration
+; Two notes share the same slot — each at half the density of `fast`.
 let slow = | <1> <5> |
 
-; Both blocks take the same total time!
+; Both blocks take the same total time. Density is what changed.
 fast ++ slow
 ```
 
-This approach brings the same benefits as relative pitch:
+Tempo changes the *length* of the slot, not the *shape* inside it.
+Double the tempo and you don't rewrite anything.
 
-- **Tempo-independent patterns** - Double tempo without rewriting
-- **Natural feel** - Think in beats and subdivisions, not milliseconds
-- **Composability** - Combine blocks of different densities seamlessly
+## Everything else, recursively
 
-## Functional Approach
+Once pitch and rhythm are relative, the rest follows. A chord is
+intervals over a root. A section is blocks over a beat-grid. A part is
+a section played by an instrument. A layer is parts running in parallel.
+The whole language is built out of relationships, and the runtime
+unwinds them when it's time to produce sound.
 
-Relanote embraces functional programming principles:
+## Functional, pure, typed
 
-### Immutability
+relanote is also a programming language, with the things you'd expect:
 
-Values never change. Transformations create new values:
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let original = | <1> <2> <3> |
-let reversed = original |> reverse  ; original unchanged
-```
-
-### First-Class Functions
-
-Functions are values. Pass them around, compose them:
-
-```rela
-let transform = transpose M3 >> reverse >> repeat 2
-melody |> transform
-```
-
-### Pure Functions
-
-No side effects. Same input always produces same output:
-
-```rela
-let doubled = melody |> map (\n -> n + P8)
-```
-
-## Static Typing
-
-Relanote catches errors before you hear them:
+- **Immutable values.** Transformations return new values; the originals
+  never change.
+- **First-class functions.** Pass them, compose them, store them.
+- **Pure functions.** No hidden state, no surprise side effects.
+- **Hindley-Milner type inference.** The type checker rejects programs
+  that would have produced nonsense at runtime.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Type error: can't add a Scale to an Interval
-let wrong = Major + P5  ; Compile error
+; Compile error: a Scale and an Interval don't add.
+let wrong = Major + P5
 
-; Correct: transpose the scale
+; OK: transpose the scale by a perfect fifth.
 let correct = Major |> transpose P5
 ```
 
-## What Can You Build?
+## What you can build
 
-- **Melodies** using scale degrees and intervals
-- **Chord progressions** with functional harmony
-- **Multi-part arrangements** with parts and sections
-- **Algorithmic compositions** using map, filter, and recursion
-- **MIDI files** for DAW integration
+- Melodies with scale-degree references and intervals.
+- Chord progressions with functional harmony.
+- Multi-part arrangements with parts, sections and layers.
+- Algorithmic compositions using `map`, `filter`, `fold` and recursion.
+- Standard MIDI files ready for any DAW.
+
+Ready to write one? Start with the [Quick Start](./quick-start).

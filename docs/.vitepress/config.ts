@@ -180,7 +180,7 @@ const base = process.env.GITHUB_ACTIONS ? "/relanote/" : "/";
 
 export default defineConfig({
   title: "Relanote",
-  description: "A pure functional, statically-typed music notation language",
+  description: "Everything is relative. A pure functional, statically-typed language for music.",
   base,
 
   vite: {
@@ -197,7 +197,7 @@ export default defineConfig({
       "meta",
       {
         property: "og:description",
-        content: "Music as a function. A pure functional, statically-typed language for music.",
+        content: "Everything is relative. A pure functional, statically-typed language for music.",
       },
     ],
     ["meta", { property: "og:image", content: `https://ubugeeei.github.io${base}og-image.png` }],
@@ -210,7 +210,7 @@ export default defineConfig({
       "meta",
       {
         name: "twitter:description",
-        content: "Music as a function. A pure functional, statically-typed language for music.",
+        content: "Everything is relative. A pure functional, statically-typed language for music.",
       },
     ],
     ["meta", { name: "twitter:image", content: `https://ubugeeei.github.io${base}og-image.png` }],
