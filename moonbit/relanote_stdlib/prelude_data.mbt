@@ -5,7 +5,7 @@
 
 ///|
 /// Embedded source of `prelude/chords.rela`.
-pub let CHORDS : String =
+pub const CHORDS : String =
   #|; ===========================================
   #|; Chords
   #|; ===========================================
@@ -31,7 +31,7 @@ pub let CHORDS : String =
 
 ///|
 /// Embedded source of `prelude/effects_delay.rela`.
-pub let EFFECTS_DELAY : String =
+pub const EFFECTS_DELAY : String =
   #|; ===========================================
   #|; Delay Effect Presets
   #|; ===========================================
@@ -68,7 +68,7 @@ pub let EFFECTS_DELAY : String =
 
 ///|
 /// Embedded source of `prelude/effects_distortion.rela`.
-pub let EFFECTS_DISTORTION : String =
+pub const EFFECTS_DISTORTION : String =
   #|; ===========================================
   #|; Distortion Effect Presets
   #|; ===========================================
@@ -111,7 +111,7 @@ pub let EFFECTS_DISTORTION : String =
 
 ///|
 /// Embedded source of `prelude/effects_phaser.rela`.
-pub let EFFECTS_PHASER : String =
+pub const EFFECTS_PHASER : String =
   #|; ===========================================
   #|; Phaser Effect Presets
   #|; ===========================================
@@ -148,7 +148,7 @@ pub let EFFECTS_PHASER : String =
 
 ///|
 /// Embedded source of `prelude/effects_reverb.rela`.
-pub let EFFECTS_REVERB : String =
+pub const EFFECTS_REVERB : String =
   #|; ===========================================
   #|; Reverb Effect Presets
   #|; ===========================================
@@ -179,7 +179,7 @@ pub let EFFECTS_REVERB : String =
 
 ///|
 /// Embedded source of `prelude/scales.rela`.
-pub let SCALES : String =
+pub const SCALES : String =
   #|; ===========================================
   #|; Scales
   #|; ===========================================
@@ -210,7 +210,7 @@ pub let SCALES : String =
 
 ///|
 /// Embedded source of `prelude/synths_basic.rela`.
-pub let SYNTHS_BASIC : String =
+pub const SYNTHS_BASIC : String =
   #|; ===========================================
   #|; Basic Synth Presets - 8-bit & Classic
   #|; ===========================================
@@ -328,7 +328,7 @@ pub let SYNTHS_BASIC : String =
 
 ///|
 /// Embedded source of `prelude/synths_bass.rela`.
-pub let SYNTHS_BASS : String =
+pub const SYNTHS_BASS : String =
   #|; ===========================================
   #|; Bass Instrument Presets
   #|; ===========================================
@@ -373,7 +373,7 @@ pub let SYNTHS_BASS : String =
 
 ///|
 /// Embedded source of `prelude/synths_brass.rela`.
-pub let SYNTHS_BRASS : String =
+pub const SYNTHS_BRASS : String =
   #|; ===========================================
   #|; Brass Instrument Presets
   #|; ===========================================
@@ -422,7 +422,7 @@ pub let SYNTHS_BRASS : String =
 
 ///|
 /// Embedded source of `prelude/synths_clap.rela`.
-pub let SYNTHS_CLAP : String =
+pub const SYNTHS_CLAP : String =
   #|; ===========================================
   #|; Clap & Hand Percussion Presets
   #|; ===========================================
@@ -499,7 +499,7 @@ pub let SYNTHS_CLAP : String =
 
 ///|
 /// Embedded source of `prelude/synths_drums.rela`.
-pub let SYNTHS_DRUMS : String =
+pub const SYNTHS_DRUMS : String =
   #|; ===========================================
   #|; Drum Kit Presets (with pitch envelope)
   #|; ===========================================
@@ -660,7 +660,7 @@ pub let SYNTHS_DRUMS : String =
 
 ///|
 /// Embedded source of `prelude/synths_leads.rela`.
-pub let SYNTHS_LEADS : String =
+pub const SYNTHS_LEADS : String =
   #|; ===========================================
   #|; Synth Lead Presets
   #|; ===========================================
@@ -706,7 +706,7 @@ pub let SYNTHS_LEADS : String =
 
 ///|
 /// Embedded source of `prelude/synths_pads.rela`.
-pub let SYNTHS_PADS : String =
+pub const SYNTHS_PADS : String =
   #|; ===========================================
   #|; Synth Pad Presets
   #|; ===========================================
@@ -753,7 +753,7 @@ pub let SYNTHS_PADS : String =
 
 ///|
 /// Embedded source of `prelude/synths_percussion.rela`.
-pub let SYNTHS_PERCUSSION : String =
+pub const SYNTHS_PERCUSSION : String =
   #|; ===========================================
   #|; Percussion Instrument Presets
   #|; ===========================================
@@ -815,7 +815,7 @@ pub let SYNTHS_PERCUSSION : String =
 
 ///|
 /// Embedded source of `prelude/synths_piano.rela`.
-pub let SYNTHS_PIANO : String =
+pub const SYNTHS_PIANO : String =
   #|; ===========================================
   #|; Piano & Electric Piano Presets
   #|; ===========================================
@@ -867,7 +867,7 @@ pub let SYNTHS_PIANO : String =
 
 ///|
 /// Embedded source of `prelude/synths_pluck.rela`.
-pub let SYNTHS_PLUCK : String =
+pub const SYNTHS_PLUCK : String =
   #|; ===========================================
   #|; Pluck & Percussive Synth Presets
   #|; ===========================================
@@ -917,7 +917,7 @@ pub let SYNTHS_PLUCK : String =
 
 ///|
 /// Embedded source of `prelude/synths_retro.rela`.
-pub let SYNTHS_RETRO : String =
+pub const SYNTHS_RETRO : String =
   #|; ===========================================
   #|; Retro / Lo-Fi Sound Presets
   #|; ===========================================

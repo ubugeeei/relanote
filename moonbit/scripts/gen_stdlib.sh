@@ -21,7 +21,7 @@ out="$stdlib_dir/prelude_data.mbt"
     name=$(printf '%s' "$base" | tr '[:lower:]' '[:upper:]')
     echo "///|"
     echo "/// Embedded source of \`prelude/${base}.rela\`."
-    printf 'pub let %s : String =\n' "$name"
+    printf 'pub const %s : String =\n' "$name"
     awk 'BEGIN{first=1} {
       if (first) { first=0; printf "  #|%s", $0 }
       else        { printf "\n  #|%s", $0 }

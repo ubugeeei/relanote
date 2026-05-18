@@ -1,7 +1,7 @@
 ///|
 /// Header banner that the Rust crate prepends to the combined `PRELUDE`
 /// string.
-let PRELUDE_HEADER : String =
+const PRELUDE_HEADER : String =
   #|; ===========================================
   #|; Relanote Standard Prelude
   #|; Automatically imported into every program
@@ -11,7 +11,7 @@ let PRELUDE_HEADER : String =
 /// Combined prelude source — every module concatenated with single newline
 /// separators, in the same order the Rust crate stitches them together so
 /// downstream parsers see byte-identical input.
-pub let PRELUDE : String =
+pub const PRELUDE : String =
   PRELUDE_HEADER +
   "\n\n" +
   SCALES + "\n" +
