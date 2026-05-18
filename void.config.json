@@ -1,0 +1,11 @@
+{
+  "name": "relanote",
+  "build": {
+    "dir": "dist"
+  },
+  "routes": [
+    { "src": "/playground/*", "dest": "/playground/$1" },
+    { "src": "/*", "dest": "/$1" }
+  ],
+  "fallback": "/index.html"
+}
