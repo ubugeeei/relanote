@@ -9,10 +9,11 @@ for status.
 
 ## Packages
 
-| Package          | Mirrors Rust crate     | Status                          |
-| ---------------- | ---------------------- | ------------------------------- |
-| `relanote_core`  | `crates/relanote_core` | Span / SourceId / Source ported |
-| `relanote_lexer` | `crates/relanote_lexer`| TokenKind + tokenizer ported    |
+| Package          | Mirrors Rust crate     | Status                                                |
+| ---------------- | ---------------------- | ----------------------------------------------------- |
+| `relanote_core`  | `crates/relanote_core` | Span / SourceId / Source / Spanned / InternedStr      |
+| `relanote_lexer` | `crates/relanote_lexer`| TokenKind + tokenizer                                 |
+| `relanote_ast`   | `crates/relanote_ast`  | AST data types (visitor deferred to a follow-up)      |
 
 ## Build
 
