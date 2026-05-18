@@ -1,0 +1,80 @@
+; ===========================================
+; Polyrhythm study — 3 against 4 against 5
+; ===========================================
+;
+; Each part loops on a different period. The combined figure realigns
+; every lcm(3, 4, 5) = 60 slots — once every five bars at the
+; standard 4-beat block.
+
+set key = E3
+set tempo = 92
+set groove = Swing67
+
+scale Dorian = { R, M2, m3, P4, P5, M6, m7 }
+
+; ---------------------------------------------------------------
+; Period-3 ostinato in the bass
+; ---------------------------------------------------------------
+
+let bass_3 = | <1> <5> <8> |:3
+
+; ---------------------------------------------------------------
+; Period-4 chord pattern
+; ---------------------------------------------------------------
+
+let chords_4 = |
+  [<1> m3 P5]  [<4> M6 P8]  [<5> m7 P9]  [<1> m3 P5]
+|:4
+
+; ---------------------------------------------------------------
+; Period-5 melody
+; ---------------------------------------------------------------
+
+let lead_5 = | <1> <3> <5> <7> <5> |:5
+
+; ---------------------------------------------------------------
+; The three lines play simultaneously — `over` chains right-to-left
+; ---------------------------------------------------------------
+
+let combined = lead_5 over chords_4 over bass_3
+
+; ---------------------------------------------------------------
+; Drums lock onto the period-4 chord, leaving the polyrhythm
+; against bass and lead audible.
+; ---------------------------------------------------------------
+
+part "Drums" {
+  | R - <8>* - | - - R - |
+  |> repeat 16
+} |> voice LofiKick |> volume 0.55
+
+part "Hat" {
+  | R R R R | R R R R |
+  |> repeat 16
+} |> voice LofiHat |> volume 0.30
+
+part "Bass" {
+  bass_3 |> repeat 20
+} |> voice BassRound |> volume 0.65
+
+part "Keys" {
+  chords_4 |> repeat 15
+} |> voice KeysRhodes |> volume 0.50
+
+part "Lead" {
+  lead_5 |> repeat 12
+} |> voice ModularLead |> volume 0.55
+
+mix {
+  bus Verb = effect PlateLarge
+  bus Glue = effect BusGlue
+
+  track "Bass"  |> send Glue 1.0
+  track "Keys"  |> send Verb 0.35 |> send Glue 1.0
+  track "Lead"  |> send Verb 0.45
+  track "Drums" |> send Glue 1.0
+
+  sidechain track "Drums" -> track "Bass" 0.40
+
+  master = effect MasterChain
+}

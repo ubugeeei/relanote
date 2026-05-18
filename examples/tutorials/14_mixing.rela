@@ -1,0 +1,64 @@
+; ===========================================
+; Tutorial 14 — Mixing
+; ===========================================
+;
+; A five-part piece with three buses, four sends, a sidechain link
+; and a master chain. Every mix construct is exercised once.
+
+set key = A3
+set tempo = 100
+
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+; ---------------------------------------------------------------
+; Material
+; ---------------------------------------------------------------
+
+let bass    = | <1> - <1> <5> <4> - <1> <5> |:8 |> repeat 4
+let keys    = | [<1> m3 P5]:2 [<4> m6 R]:2 |:8 |> repeat 4
+let kick    = | R - - - | - - R - |:8 |> repeat 4
+let snare   = | - - R - | - - R - |:8 |> repeat 4
+let hat     = | R R R R | R R R R |:8 |> repeat 4
+let lead    = | <5>~ <3> <1>~ - | <5>~ <8> <5>~ - |:8 |> repeat 4
+
+; ---------------------------------------------------------------
+; Parts
+; ---------------------------------------------------------------
+
+part "Bass"  { bass }  |> voice BassMoog  |> volume 0.75
+part "Keys"  { keys }  |> voice KeysRhodes|> volume 0.55
+part "Kick"  { kick }  |> voice LofiKick  |> volume 0.70
+part "Snare" { snare } |> voice LofiSnare |> volume 0.50
+part "Hat"   { hat }   |> voice LofiHat   |> volume 0.30
+part "Lead"  { lead }  |> voice ModularLead |> volume 0.55
+
+; ---------------------------------------------------------------
+; Mix — every construct is used once
+; ---------------------------------------------------------------
+
+mix {
+  ; --- Per-track effects ---
+  track "Bass"  |> saturate 0.18
+  track "Keys"  |> compress -12 3
+  track "Kick"  |> effect DrumBus
+  track "Snare" |> effect DrumBus
+
+  ; --- Buses (shared effect chains) ---
+  bus Verb  = effect PlateLarge
+  bus Tape  = effect TapeEcho
+  bus Glue  = effect BusGlue
+
+  ; --- Sends (track signal → bus) ---
+  track "Lead"  |> send Verb 0.35 |> send Tape 0.25
+  track "Keys"  |> send Verb 0.45
+  track "Snare" |> send Verb 0.30 |> send Glue 1.00
+  track "Kick"  |> send Glue 1.00
+  track "Hat"   |> send Glue 1.00
+
+  ; --- Sidechain (one track ducks another) ---
+  sidechain track "Kick" -> track "Bass" 0.65
+  sidechain track "Kick" -> track "Keys" 0.20
+
+  ; --- Master chain ---
+  master = effect MasterChain
+}

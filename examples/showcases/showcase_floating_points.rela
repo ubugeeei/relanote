@@ -1,0 +1,94 @@
+; ===========================================
+; Floating Points sleeve — lush evolving pads
+; in 5-limit Just Intonation
+; ===========================================
+;
+; Three slowly-blooming pad layers over a sub bass and a sparse drum
+; pattern. The whole piece runs in `JustIntonation` so the major
+; thirds are 13.7 cents flatter than 12-EDO; the pads beat
+; differently against the sub than a tempered patch would.
+
+set key = D3
+set tempo = 84
+set tuning = JustIntonation
+set groove = Straight
+
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+; ---------------------------------------------------------------
+; Material
+; ---------------------------------------------------------------
+
+let chord_i  = | [<1> <3> <5>] |:8
+let chord_iv = | [<4> <6> <8>] |:8
+let chord_v  = | [<5> <7> <9>] |:8
+let chord_vi = | [<6> <8> <10>] |:8
+
+let progression = chord_i ++ chord_iv ++ chord_vi ++ chord_v
+
+let sub_root = | <1>:4 - - - |:8
+
+let lead = |
+  <5>~ - <8>~ - <7> <6> <5>~ - |:8
+  ++
+  | <3>~ - <5>~ - <6> <5> <3>~ - |:8
+  ++
+  | <8>~ - <10>~ - <9> <8> <6>~ - |:8
+  ++
+  | <5>~ - <8>~ - <9>:2 - |:8
+
+; ---------------------------------------------------------------
+; Parts
+; ---------------------------------------------------------------
+
+part "Bloom" {
+  progression
+} |> voice FloatingBloom |> volume 0.55
+
+part "Choir" {
+  progression
+} |> voice FloatingChoir |> volume 0.30 |> transpose P8
+
+part "Glass" {
+  lead
+} |> voice FloatingGlass |> volume 0.40 |> transpose P8
+
+part "Drift" {
+  progression
+} |> voice FloatingDrift |> volume 0.20 |> transpose -P8
+
+part "Sub" {
+  sub_root |> repeat 4
+} |> voice BassDubSub |> volume 0.65
+
+part "Kick" {
+  | R - - - |:2 |> repeat 16
+} |> voice LofiSub |> volume 0.35
+
+part "Hat" {
+  | - R - R |:2 |> repeat 16
+} |> voice LofiHat |> volume 0.18
+
+; ---------------------------------------------------------------
+; Mix
+; ---------------------------------------------------------------
+
+mix {
+  bus Verb  = effect PlateLarge
+  bus Tape  = effect TapeEcho
+  bus Glue  = effect BusGlue
+
+  track "Bloom"  |> send Verb 0.45
+  track "Choir"  |> send Verb 0.55
+  track "Glass"  |> send Tape 0.35 |> send Verb 0.55
+  track "Drift"  |> send Verb 0.65
+  track "Sub"    |> send Glue 1.00
+  track "Kick"   |> send Glue 1.00 |> send Verb 0.10
+  track "Hat"    |> send Glue 1.00 |> send Tape 0.15
+
+  sidechain track "Kick" -> track "Sub"   0.45
+  sidechain track "Kick" -> track "Bloom" 0.20
+
+  master = effect MasterChain
+}

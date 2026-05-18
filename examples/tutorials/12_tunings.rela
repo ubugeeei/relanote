@@ -1,0 +1,77 @@
+; ===========================================
+; Tutorial 12 — Tunings and microtones
+; ===========================================
+;
+; A tour through the four ways relanote describes pitch outside
+; 12-tone equal temperament. Read top to bottom, then play the
+; whole file — the same melodic shape sounds different in each
+; section.
+
+set key = C4
+set tempo = 90
+
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let shape = | <1> <3> <5> <8> <5> <3> <1> - |
+
+; ---------------------------------------------------------------
+; 1. Default — 12-tone equal temperament.
+; ---------------------------------------------------------------
+
+let twelve_edo = section "12-EDO" {
+  part "Lead" { shape } |> voice ModularEnsemble
+}
+
+; ---------------------------------------------------------------
+; 2. 24-tone equal temperament — quarter tones.
+; ---------------------------------------------------------------
+
+set tuning = EDO24
+
+let quarter_tone = section "24-EDO" {
+  part "Lead" { shape } |> voice ModularEnsemble
+}
+
+; ---------------------------------------------------------------
+; 3. 5-limit just intonation — pure ratios.
+; ---------------------------------------------------------------
+
+set tuning = JustIntonation
+
+let just = section "JustIntonation" {
+  part "Lead" { shape } |> voice ModularEnsemble
+}
+
+; ---------------------------------------------------------------
+; 4. Werckmeister III — Bach-era well temperament.
+; ---------------------------------------------------------------
+
+set tuning = WerckmeisterIII
+
+let well = section "WerckmeisterIII" {
+  part "Lead" { shape } |> voice ModularEnsemble
+}
+
+; ---------------------------------------------------------------
+; 5. Bohlen-Pierce — equal divisions of a 3:1 tritave.
+; ---------------------------------------------------------------
+
+set tuning = BohlenPierce
+
+let bp = section "Bohlen-Pierce" {
+  part "Lead" { shape } |> voice ModularEnsemble
+}
+
+; ---------------------------------------------------------------
+; 6. Per-note cents offsets — the escape hatch.
+; ---------------------------------------------------------------
+
+set tuning = EDO12
+
+let bent = section "Bent" {
+  part "Lead" {
+    | <1> M3 -13.7c <5> P5 +5c <8> M3 -13.7c <1> - |
+  } |> voice ModularEnsemble
+}
+
+twelve_edo ++ quarter_tone ++ just ++ well ++ bp ++ bent

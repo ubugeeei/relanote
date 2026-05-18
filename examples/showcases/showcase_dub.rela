@@ -1,0 +1,94 @@
+; ===========================================
+; Dub piece — sparse, deep, send-heavy
+; ===========================================
+;
+; Dub is about *what's not there*. Most of the parts are silent at
+; any given moment; the buses are doing the work — long tape echoes,
+; cavernous plate reverbs, slow phaser sweeps. The mix block is
+; bigger than the parts.
+
+set key = D2
+set tempo = 76
+set groove = HalfTimeLazy
+
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+; ---------------------------------------------------------------
+; The whole piece is two sections — Drop / Space — repeated.
+; ---------------------------------------------------------------
+
+let bass_riff = |
+  <1>:2 - <5>:2 - | <4>:2 - <1>:2 - |
+|:8 |> repeat 4
+
+let stab = |
+  - - [<1> m3 P5]:2 - | - - - - |
+|:8 |> repeat 4
+
+let one_drop = |
+  - - R - | - - R - |
+|:8 |> repeat 4
+
+let hat = |
+  - R - R | - R - R |
+|:8 |> repeat 4
+
+let stab_echo = | - - [<1> m3 P5]:1 - |:8
+
+; ---------------------------------------------------------------
+; Drop section — full band.
+; ---------------------------------------------------------------
+
+let drop = section "Drop" {
+  part "Bass"  { bass_riff } |> voice BassDubSub |> volume 0.85
+  part "Sub"   { bass_riff } |> voice ModularBass |> volume 0.65 |> transpose -P8
+  part "Stab"  { stab }      |> voice KeysOrgan |> volume 0.55
+  part "Kick"  { one_drop }  |> voice LofiKick |> volume 0.70
+  part "Snare" { one_drop }  |> voice LofiSnare |> volume 0.55
+  part "Hat"   { hat }       |> voice LofiHat |> volume 0.30
+}
+
+; ---------------------------------------------------------------
+; Space section — drop everything except the stab echo and sub.
+; ---------------------------------------------------------------
+
+let space = section "Space" {
+  part "Sub"  { bass_riff |> repeat 2 } |> voice ModularBass |> volume 0.60 |> transpose -P8
+  part "Stab" { stab_echo |> repeat 2 } |> voice KeysOrgan |> volume 0.45
+  part "Hat"  { hat |> repeat 2 }       |> voice LofiHat |> volume 0.20
+}
+
+let song = drop ++ space ++ drop ++ space
+
+song
+
+; ---------------------------------------------------------------
+; Mix — dub's identity lives here
+; ---------------------------------------------------------------
+
+mix {
+  bus Verb    = effect PlateLarge
+  bus Echo    = effect TapeEcho
+  bus Spring  = effect SpringBright
+  bus Phase   = effect PhaserSlow
+
+  ; The stab is the dub instrument — almost all of it goes to the
+  ; sends rather than the dry channel.
+  track "Stab"  |> send Verb 0.85 |> send Echo 0.60 |> send Spring 0.30 |> volume 0.30
+
+  ; The snare hits the spring reverb hard, gets thrown into echo.
+  track "Snare" |> send Spring 0.75 |> send Echo 0.55
+
+  ; The hat is mostly the echo — almost no dry signal.
+  track "Hat"   |> send Echo 0.50 |> send Phase 0.30 |> volume 0.20
+
+  ; Bass and sub stay relatively dry but glue together.
+  track "Bass"  |> compress -10 3
+  track "Sub"   |> compress -10 3
+
+  ; Kick keys the most aggressive duck — bass pumps under every hit.
+  sidechain track "Kick" -> track "Bass" 0.80
+  sidechain track "Kick" -> track "Sub"  0.85
+
+  master = effect MasterChain
+}

@@ -1,0 +1,70 @@
+; ===========================================
+; Tutorial 13 — Polyrhythm and grooves
+; ===========================================
+;
+; Two lines with independent periods played simultaneously, plus
+; per-track groove templates. The whole piece is straight-quantised
+; until the final passage, when `Dilla` kicks in and everything
+; drags.
+
+set key = G3
+set tempo = 96
+
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+; ---------------------------------------------------------------
+; 1. Straight 4-on-the-floor, no groove.
+; ---------------------------------------------------------------
+
+set groove = Straight
+
+let straight = section "Straight" {
+  part "Bass"  { | <1> - <1> <5> |:4 |> repeat 4 } |> voice BassRound
+  part "Kick"  { | R - - - |:2 |> repeat 8 }       |> voice Kick
+  part "Snare" { | - - R - |:2 |> repeat 8 }       |> voice Snare
+  part "Hat"   { | R R R R |:2 |> repeat 8 }       |> voice HiHat
+}
+
+; ---------------------------------------------------------------
+; 2. 8th-note swing — same beat, different feel.
+; ---------------------------------------------------------------
+
+set groove = Swing67
+
+let swung = section "Swing 67%" {
+  part "Bass"  { | <1> - <1> <5> |:4 |> repeat 4 } |> voice BassRound
+  part "Kick"  { | R - - - |:2 |> repeat 8 }       |> voice Kick
+  part "Snare" { | - - R - |:2 |> repeat 8 }       |> voice Snare
+  part "Hat"   { | R R R R |:2 |> repeat 8 }       |> voice HiHat
+}
+
+; ---------------------------------------------------------------
+; 3. Polyrhythm — 3-against-4. Bass loops every 3 slots; chords
+; loop every 4. The combined figure realigns every 12 slots.
+; ---------------------------------------------------------------
+
+set groove = Straight
+
+let three = | <1> <5> <8> |:3
+let four  = | [<1> m3 P5] [<4> m6 R] [<5> m7 P9] [<1> m3 P5] |:4
+
+let polyrhythm = section "3 against 4" {
+  part "Bass"   { three over four |> repeat 4 } |> voice BassRound
+  part "Chords" { four |> repeat 12 }            |> voice KeysRhodes
+  part "Hat"    { | R R R R |:1 |> repeat 48 }   |> voice HiHat
+}
+
+; ---------------------------------------------------------------
+; 4. Same beat, Dilla groove — drunken, dragging snare.
+; ---------------------------------------------------------------
+
+set groove = Dilla
+
+let dilla = section "Dilla" {
+  part "Bass"  { | <1> - <1> <5> |:4 |> repeat 8 } |> voice BassRound
+  part "Kick"  { | R - - - |:2 |> repeat 16 }      |> voice LofiKick
+  part "Snare" { | - - R - |:2 |> repeat 16 }      |> voice LofiSnare
+  part "Hat"   { | R R R R |:2 |> repeat 16 }      |> voice LofiHat
+}
+
+straight ++ swung ++ polyrhythm ++ dilla

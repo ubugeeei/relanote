@@ -1,0 +1,91 @@
+; ===========================================
+; Microtonal blues — blue notes as cents
+; ===========================================
+;
+; A 12-bar blues with explicit blue thirds and blue sevenths sitting
+; between the minor and major shapes. The cents offsets are what
+; make it *sound* like the blues instead of a textbook minor-blues
+; scale.
+
+set key = A3
+set tempo = 96
+set groove = Shuffle
+
+scale Blues = { R, m3, P4, A4, P5, m7 }
+
+; ---------------------------------------------------------------
+; Walking bass — straight scale-degree pattern
+; ---------------------------------------------------------------
+
+let walk = | <1> <3> <5> <7> <8> <7> <5> <3> |
+
+let bass_line =
+  walk ++ walk ++ walk ++ walk ++             ; I (4 bars)
+  walk ++ walk ++                             ; IV (2 bars)
+  walk ++ walk ++                             ; back to I (2 bars)
+  walk ++ walk ++                             ; V → IV (2 bars)
+  walk ++ walk                                ; turnaround (2 bars)
+
+; ---------------------------------------------------------------
+; Lead — blue thirds and blue sevenths
+; ---------------------------------------------------------------
+;
+; m3 +30c sits a third of the way between m3 and M3 — the classic
+; "bent third" that a guitar player would worry up to. m7 -10c is a
+; slightly-flat seventh — the "groan" you hear from a horn section.
+
+let blue_phrase = |
+  <1> m3 +30c <4> P4+    | P5 m7 -10c <8> <5> |
+  m3 +30c <4> <1> -      | <1> -    -   -      |
+|:8
+
+let lead = blue_phrase ++ blue_phrase ++ blue_phrase
+
+; ---------------------------------------------------------------
+; Comping — Rhodes-style chords with sevenths
+; ---------------------------------------------------------------
+
+let comp = |
+  [<1> m3 P5 m7] - [<1> m3 P5 m7] -
+  [<1> m3 P5 m7] - [<1> m3 P5 m7] -
+|:8
+
+; ---------------------------------------------------------------
+; Parts
+; ---------------------------------------------------------------
+
+part "Bass" {
+  bass_line
+} |> voice BassUpright |> volume 0.70
+
+part "Lead" {
+  lead
+} |> voice ModularLead |> volume 0.55
+
+part "Rhodes" {
+  comp |> repeat 4
+} |> voice KeysRhodes |> volume 0.45
+
+part "Kick" {
+  | R - - <8>* | - - R - |:4 |> repeat 12
+} |> voice Kick |> volume 0.55
+
+part "Snare" {
+  | - - R - | - - R - |:4 |> repeat 12
+} |> voice Snare |> volume 0.45
+
+part "Hat" {
+  | R R R R |:4 |> repeat 12
+} |> voice HiHat |> volume 0.30
+
+mix {
+  bus Verb = effect SpringBright
+  bus Tape = effect TapeEcho
+
+  track "Bass"   |> compress -10 3
+  track "Lead"   |> send Verb 0.30 |> send Tape 0.20
+  track "Rhodes" |> send Verb 0.40
+  track "Snare"  |> send Verb 0.25
+
+  master = effect MasterChain
+}
