@@ -1,0 +1,6 @@
+import {
+  "ubugeeei/relanote/relanote_parser" @parser,
+  "ubugeeei/relanote/relanote_format" @format,
+  "ubugeeei/relanote/relanote_eval" @eval,
+  "ubugeeei/relanote/relanote_render" @render,
+}
