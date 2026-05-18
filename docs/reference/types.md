@@ -24,14 +24,20 @@ Relanote uses static typing with Hindley-Milner type inference.
 | `Section` | Song section | `section "Verse" ...` |
 | `Song` | Complete composition | `render ...` |
 
-## Synth Types
+## Synth and sound-design types
 
 | Type | Description | Example |
-|------|-------------|---------|
+| --- | --- | --- |
 | `Synth` | Synthesizer definition | `synth Lead = {...}` |
-| `Oscillator` | Waveform type | `Sine`, `Square`, `Saw` |
-| `Filter` | Filter type | `LowPass(1000, 0.5)` |
-| `Envelope` | ADSR envelope | `{ A: 0.01, D: 0.1, S: 0.7, R: 0.2 }` |
+| `Oscillator` | Waveform / source | `Sine`, `Saw`, `FM(...)`, `Wavetable(...)`, `Granular(...)` |
+| `Filter` | Filter | `LowPass(1000, 0.5)` |
+| `Envelope` | ADSR | `{ A: 0.01, D: 0.1, S: 0.7, R: 0.2 }` |
+| `Modulation` | Modulation routing | `lfo(target, rate, depth, shape)` / `env(...)` |
+| `Tuning` | Pitch system | `tuning JI = ratios [ ... ]` |
+| `Groove` | Per-slot timing offsets | `groove Dilla = offsets { ... }` |
+| `Effect` | Reusable FX chain | `effect Verb = reverb { ... }` |
+| `Bus` | Named send destination | `bus Verb = effect PlateLarge` |
+| `Mix` | Top-level routing graph | `mix { ... }` |
 
 ## Compound Types
 
