@@ -19,11 +19,14 @@
 
 ## What is relanote?
 
-**relanote** is a pure functional, statically-typed language that
-describes music by what it *relates to* — not by where it sits on a
-staff. A line is the relationship between its notes; chords, sections,
-layers, parts are built out of those relationships. Change the key, the
-scale or the tempo, and the shape doesn't change. That's the point.
+**relanote** is a pure functional, statically-typed language for music
+where **everything is relative**. Pitch is relative — a melody is
+scale-degree references, not absolute pitches. Rhythm is relative — a
+block divides one slot equally among the notes inside it. Chords are
+intervals over a root, sections are blocks over a beat-grid, parts are
+sections over an instrument, layers are parts over time. Change the
+key, the scale or the tempo, and the *shape* doesn't change. That's the
+whole point.
 
 ```rela
 ; A scale is the seven intervals that define it.
@@ -39,15 +42,18 @@ theme |> transpose P5 |> repeat 2
 
 ## Features
 
-- **Everything is relative.** Pitches are scale-degree references, rhythm
-  is "n notes share this slot equally". Reshape music by reshaping the
-  scale, not by rewriting every pitch.
+- **Pitch is relative.** `<1> <3> <5>` works in every key, every mode,
+  every scale. Transpose, modulate or reshape without rewriting a single
+  pitch.
+- **Rhythm is relative.** `| a b c d |` shares its slot equally among
+  four notes; `| a b |` gives two notes the same slot at half the
+  density. Tempo and meter don't change the shape.
 - **Pure, typed, total.** Immutable values, first-class functions, and
   Hindley-Milner inference. No runtime surprises.
-- **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3`.
-  Build pieces by composing small functions.
+- **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3` —
+  build pieces by composing small functions.
 - **MIDI out, web in.** Render to a standard MIDI file or drive the live
-  playground directly in the browser — no DAW round-trips.
+  playground directly in the browser. No DAW round-trips.
 
 ## Quick Start
 

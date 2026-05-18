@@ -1,23 +1,23 @@
-# Getting Started
+# Getting started
 
-Welcome to Relanote! This tutorial will guide you through creating your first musical composition using relative intervals and functional programming.
+The shortest path from zero to a piece of music. We'll write a few lines
+of relanote, see why "relative" matters, and render the result.
 
-## What You'll Learn
+By the end you'll have written:
 
-1. Understanding intervals
-2. Creating melodies with scale degrees
-3. Using pipes for transformation
-4. Rendering to MIDI
+1. An interval — the relationship between two notes.
+2. A scale-degree melody — pitches expressed by what they relate to.
+3. A pipe-driven transformation — composition the way you'd compose code.
+4. A MIDI file you can drop into any DAW.
 
-## Prerequisites
+If you don't have relanote installed locally, follow the
+[Installation guide](/guide/installation), or just open the
+[Playground](https://ubugeeei.github.io/relanote/playground/) and
+follow along in the browser.
 
-Make sure you have Relanote installed. If not, see the [Installation Guide](/guide/installation).
+## Your first program
 
-Or use the [Web Playground](https://ubugeeei.github.io/relanote/playground/) to follow along in your browser.
-
-## Your First Program
-
-Create a new file called `tutorial.rela` and add:
+Create `tutorial.rela`:
 
 ```rela
 ; My first Relanote program!
