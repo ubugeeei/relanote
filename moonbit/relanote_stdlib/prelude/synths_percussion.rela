@@ -1,0 +1,58 @@
+; ===========================================
+; Percussion Instrument Presets
+; ===========================================
+
+synth HandClap = {
+  osc: Noise,
+  env: envelope 0.001 0.08 0.0 0.15,
+  filter: BandPass 1500 0.7
+}
+
+synth Cowbell = {
+  osc: (Square |> mix 0.5) + (Sine |> mix 0.5 |> octave 1),
+  env: envelope 0.001 0.15 0.0 0.1,
+  filter: BandPass 800 0.6
+}
+
+synth Shaker = {
+  osc: Noise,
+  env: envelope 0.001 0.06 0.0 0.04,
+  filter: HighPass 6000 0.3
+}
+
+synth Tambourine = {
+  osc: Noise,
+  env: envelope 0.001 0.1 0.05 0.15,
+  filter: HighPass 5000 0.4
+}
+
+synth Conga = {
+  osc: (Sine |> mix 0.7) + (Triangle |> mix 0.3),
+  env: envelope 0.001 0.2 0.0 0.15,
+  pitch_env: (350, 180, 0.05)
+}
+
+synth Bongo = {
+  osc: (Sine |> mix 0.65) + (Triangle |> mix 0.35),
+  env: envelope 0.001 0.15 0.0 0.1,
+  pitch_env: (500, 280, 0.04)
+}
+
+synth Timbale = {
+  osc: (Sine |> mix 0.5) + (Triangle |> mix 0.3) + (Noise |> mix 0.2),
+  env: envelope 0.001 0.12 0.0 0.1,
+  filter: BandPass 2000 0.5,
+  pitch_env: (600, 400, 0.03)
+}
+
+synth WoodBlock = {
+  osc: (Triangle |> mix 0.6) + (Sine |> mix 0.4 |> octave 1),
+  env: envelope 0.001 0.08 0.0 0.06,
+  filter: BandPass 1500 0.4
+}
+
+synth Claves = {
+  osc: (Sine |> mix 0.5) + (Triangle |> mix 0.5 |> octave 1),
+  env: envelope 0.001 0.05 0.0 0.04,
+  filter: HighPass 2000 0.3
+}

@@ -1,0 +1,27 @@
+; ===========================================
+; Reverb Effect Presets
+; ===========================================
+
+; Small room reverb - intimate, close sound
+let room_reverb = \x -> x |> reverb 0.25
+
+; Studio room reverb - controlled ambience
+let studio_reverb = \x -> x |> reverb 0.35
+
+; Spring reverb - classic vintage character
+let spring_reverb = \x -> x |> reverb 0.45
+
+; Chamber reverb - medium space
+let chamber_reverb = \x -> x |> reverb 0.55
+
+; Hall reverb - concert hall ambience
+let hall_reverb = \x -> x |> reverb 0.65
+
+; Ambient reverb - lush, atmospheric
+let ambient_reverb = \x -> x |> reverb 0.75
+
+; Cathedral reverb - massive space
+let cathedral_reverb = \x -> x |> reverb 0.85
+
+; Infinite reverb - ethereal, endless
+let infinite_reverb = \x -> x |> reverb 0.95
