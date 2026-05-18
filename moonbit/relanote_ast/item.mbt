@@ -7,6 +7,14 @@ pub(all) enum Item {
   ChordDef(ChordDef)
   /// `synth Lead = { osc: Saw, env: { ... } }`.
   SynthDef(SynthDef)
+  /// `tuning JustIntonation = ratios [ ... ]`.
+  TuningDef(TuningDef)
+  /// `groove Dilla = offsets { ... }`.
+  GrooveDef(GrooveDef)
+  /// `effect DubDelay = delay { ... }`.
+  EffectDef(EffectDef)
+  /// `mix { ... }` — top-level routing graph.
+  MixDef(MixDef)
   /// Top-level `let x = expr`.
   LetBinding(LetBinding)
   /// Built-in configuration binding — `set key = C4`, `set tempo = 120`.

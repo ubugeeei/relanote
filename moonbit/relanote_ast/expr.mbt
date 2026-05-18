@@ -83,6 +83,11 @@ pub(all) enum Expr {
   Annotated(@core.Spanned[Expr], TypeAnnotation)
   Paren(@core.Spanned[Expr])
 
+  /// Polyrhythm — `a over b`. Both sides play simultaneously with
+  /// independent periods; the resulting figure repeats every lcm
+  /// of their slot counts.
+  Over(@core.Spanned[Expr], @core.Spanned[Expr])
+
   // Error node, for parser recovery.
   Error
 }

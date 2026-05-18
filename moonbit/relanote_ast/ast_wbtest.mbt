@@ -172,3 +172,89 @@ test "Expr::Error is detected" {
   assert_true(Expr::Error.is_error())
   assert_false(Expr::Integer(0L).is_error())
 }
+
+// ============================================================
+// Sound-design extensions
+// ============================================================
+
+test "Pitch::Microtone carries a cents offset" {
+  let p : Pitch = Microtone(12.5)
+  match p {
+    Microtone(c) => assert_eq(c, 12.5)
+    _ => abort("expected Microtone variant")
+  }
+}
+
+test "Pitch::MicrotonalInterval pairs an interval with cents fine-tuning" {
+  let iv = IntervalLit::new(@lexer.Major, 3)
+  let p : Pitch = MicrotonalInterval(iv, -14.0)
+  match p {
+    MicrotonalInterval(_, c) => assert_eq(c, -14.0)
+    _ => abort("expected MicrotonalInterval variant")
+  }
+}
+
+test "TuningDef::Equal preserves the step count" {
+  let t = TuningDef::new(Ident::new("EDO24"), Equal(24))
+  assert_eq(t.name().name(), "EDO24")
+  match t.mode() {
+    Equal(n) => assert_eq(n, 24)
+    _ => abort("expected Equal mode")
+  }
+}
+
+test "TuningDef::Ratios round-trips ratio pairs" {
+  let ratios : Array[(Int, Int)] = [(1, 1), (9, 8), (5, 4), (4, 3)]
+  let t = TuningDef::new(Ident::new("JustIntonation"), Ratios(ratios))
+  match t.mode() {
+    Ratios(rs) => assert_eq(rs.length(), 4)
+    _ => abort("expected Ratios mode")
+  }
+}
+
+test "GrooveDef captures per-slot offsets" {
+  let g = GrooveDef::new(Ident::new("Swing67"), 2, [0.0, 0.17])
+  assert_eq(g.length(), 2)
+  assert_eq(g.steps().length(), 2)
+  assert_eq(g.steps()[1], 0.17)
+}
+
+test "MixDef::empty has no tracks or buses" {
+  let m = MixDef::empty()
+  assert_eq(m.tracks().length(), 0)
+  assert_eq(m.buses().length(), 0)
+  assert_true(m.master() == None)
+}
+
+test "MixDef::new threads tracks / buses / sends / sidechains" {
+  let span = @core.Span::dummy()
+  let track : @core.Spanned[Expr] = @core.Spanned::new(
+    Ident(Ident::new("lead")),
+    span,
+  )
+  let chain : @core.Spanned[Expr] = @core.Spanned::new(
+    Ident(Ident::new("DubDelay")),
+    span,
+  )
+  let bus = BusDef::new(Ident::new("Verb"), chain)
+  let amount : @core.Spanned[Expr] = @core.Spanned::new(Expr::Float(0.3), span)
+  let send = SendDef::new(Ident::new("Verb"), amount)
+  let sc_amt : @core.Spanned[Expr] = @core.Spanned::new(Expr::Float(0.5), span)
+  let sc = SidechainDef::new(Ident::new("kick"), Ident::new("bass"), sc_amt)
+  let m = MixDef::new([track], [bus], [send], [sc], None)
+  assert_eq(m.tracks().length(), 1)
+  assert_eq(m.buses().length(), 1)
+  assert_eq(m.sends().length(), 1)
+  assert_eq(m.sidechains().length(), 1)
+}
+
+test "Expr::Over constructs a polyrhythm node" {
+  let span = @core.Span::dummy()
+  let three : @core.Spanned[Expr] = @core.Spanned::new(Expr::Integer(3L), span)
+  let four : @core.Spanned[Expr] = @core.Spanned::new(Expr::Integer(4L), span)
+  let poly = Expr::Over(three, four)
+  match poly {
+    Over(_, _) => ()
+    _ => abort("expected Over variant")
+  }
+}

@@ -205,6 +205,15 @@ pub(all) enum Pitch {
   ScaleIndex(Int)
   /// Scale-index with one or more accidentals (`<4+>`).
   ScaleIndexMod(Int, Array[@lexer.Accidental])
+  /// Microtonal pitch — explicit cents offset from C (`+150c` syntax,
+  /// or a raw cents literal). Lets every microtonal feature land
+  /// without committing to a single tuning system.
+  Microtone(Double)
+  /// Interval with a cents fine-tuning offset — `M3 +12.5c` lands a
+  /// just-major third on top of the conventional major-third interval.
+  MicrotonalInterval(IntervalLit, Double)
+  /// Scale-index with a cents offset (`<3 +5c>`).
+  ScaleIndexCents(Int, Double)
   /// Root reference (`R`).
   Root
 }
