@@ -233,6 +233,7 @@ export default defineConfig({
     nav: [
       { text: "Guide", link: "/guide/introduction" },
       { text: "Tutorial", link: "/tutorial/getting-started" },
+      { text: "Cookbook", link: "/cookbook" },
       { text: "Reference", link: "/reference/syntax" },
       { text: "Deep Dive", link: "/deep-dive/architecture" },
       { text: "Playground", link: "https://ubugeeei.github.io/relanote/playground/" },
