@@ -18,6 +18,7 @@ for status.
 | `relanote_types`   | `crates/relanote_types`  | Type ADT, scheme, context, unify (inference walker deferred) |
 | `relanote_hir`     | `crates/relanote_hir`    | Placeholder mirroring the Rust crate (also a placeholder)    |
 | `relanote_parser`  | `crates/relanote_parser` | Public API + ParseError + Parser skeleton (descent deferred) |
+| `relanote_resolver`| `crates/relanote_resolver`| ResolveError, ModuleLoader, ModuleResolver (filesystem stub) |
 
 Regenerate the stdlib embedding after editing the `.rela` sources with
 `bash moonbit/scripts/gen_stdlib.sh`.
