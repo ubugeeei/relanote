@@ -147,7 +147,12 @@ repeated
 
 ## Playground
 
-Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/)
+Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/).
+
+Deployment is migrating from GitHub Pages to [Void](https://void.cloud);
+once `deploy-void.yml` proves itself green on `main`, the GitHub Pages
+workflow will be removed and the URL will switch to the Void edge
+(tracked in #16).
 
 Features:
 - Monaco editor with syntax highlighting
@@ -194,18 +199,18 @@ truth while the rewrite lands.
 | ----------------------- | --------------------------------------- | :----: |
 | `relanote_core`         | `moonbit/relanote_core`                 | ✅     |
 | `relanote_lexer`        | `moonbit/relanote_lexer`                | ✅     |
-| `relanote_ast`          | `moonbit/relanote_ast`                  | ⏳     |
-| `relanote_parser`       | `moonbit/relanote_parser`               | ⏳     |
-| `relanote_hir`          | `moonbit/relanote_hir`                  | ⏳     |
-| `relanote_resolver`     | `moonbit/relanote_resolver`             | ⏳     |
-| `relanote_types`        | `moonbit/relanote_types`                | ⏳     |
-| `relanote_eval`         | `moonbit/relanote_eval`                 | ⏳     |
-| `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ⏳     |
-| `relanote_format`       | `moonbit/relanote_format`               | ⏳     |
-| `relanote_lsp`          | `moonbit/relanote_lsp`                  | ⏳     |
-| `relanote_render`       | `moonbit/relanote_render`               | ⏳     |
-| `relanote_cli`           | `moonbit/cmd/relanote`                  | ⏳     |
-| `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | ⏳     |
+| `relanote_ast`          | `moonbit/relanote_ast`                  | ✅     |
+| `relanote_parser`       | `moonbit/relanote_parser`               | 🟡     |
+| `relanote_hir`          | `moonbit/relanote_hir`                  | ✅     |
+| `relanote_resolver`     | `moonbit/relanote_resolver`             | 🟡     |
+| `relanote_types`        | `moonbit/relanote_types`                | 🟡     |
+| `relanote_eval`         | `moonbit/relanote_eval`                 | 🟡     |
+| `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ✅     |
+| `relanote_format`       | `moonbit/relanote_format`               | 🟡     |
+| `relanote_lsp`          | `moonbit/relanote_lsp`                  | 🟡     |
+| `relanote_render`       | `moonbit/relanote_render`               | 🟡     |
+| `relanote_cli`           | `moonbit/cmd/relanote`                  | 🟡     |
+| `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | 🟡     |
 
 ## Development
 

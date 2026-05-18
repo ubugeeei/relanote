@@ -1,0 +1,12 @@
+import {
+  "ubugeeei/relanote/relanote_parser" @parser,
+  "ubugeeei/relanote/relanote_format" @format,
+  "ubugeeei/relanote/relanote_eval" @eval,
+  "ubugeeei/relanote/relanote_render" @render,
+  "ubugeeei/relanote/relanote_lsp" @lsp,
+  "moonbitlang/core/env",
+}
+
+options(
+  "is-main": true,
+)

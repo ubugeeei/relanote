@@ -9,10 +9,25 @@ for status.
 
 ## Packages
 
-| Package          | Mirrors Rust crate     | Status                          |
-| ---------------- | ---------------------- | ------------------------------- |
-| `relanote_core`  | `crates/relanote_core` | Span / SourceId / Source ported |
-| `relanote_lexer` | `crates/relanote_lexer`| TokenKind + tokenizer ported    |
+| Package            | Mirrors Rust crate       | Status                                                |
+| ------------------ | ------------------------ | ----------------------------------------------------- |
+| `relanote_core`    | `crates/relanote_core`   | Span / SourceId / Source / Spanned / InternedStr      |
+| `relanote_lexer`   | `crates/relanote_lexer`  | TokenKind + tokenizer                                 |
+| `relanote_ast`     | `crates/relanote_ast`    | AST data types (visitor deferred to a follow-up)      |
+| `relanote_stdlib`  | `crates/relanote_stdlib` | Embedded prelude `.rela` modules + combined `PRELUDE` |
+| `relanote_types`   | `crates/relanote_types`  | Type ADT, scheme, context, unify (inference walker deferred) |
+| `relanote_hir`     | `crates/relanote_hir`    | Placeholder mirroring the Rust crate (also a placeholder)    |
+| `relanote_parser`  | `crates/relanote_parser` | Public API + ParseError + Parser skeleton (descent deferred) |
+| `relanote_resolver`| `crates/relanote_resolver`| ResolveError, ModuleLoader, ModuleResolver (filesystem stub) |
+| `relanote_eval`    | `crates/relanote_eval`   | Env, EvalError, Evaluator skeleton (walker + builtins deferred) |
+| `relanote_format`  | `crates/relanote_format` | FormatConfig + Formatter skeleton (AST walker deferred)         |
+| `relanote_render`  | `crates/relanote_render` | MidiConfig + MidiRenderer skeleton (SMF byte writer deferred)   |
+| `relanote_lsp`     | `crates/relanote_lsp`    | LSP server skeleton — JSON-RPC framing + dispatch deferred      |
+| `cmd/relanote`     | `crates/relanote_cli`    | CLI entry point with parse/check/fmt/run/render/lsp dispatchers |
+| `web`              | `web/` (Nuxt)            | Vapor Moon bridge functions (UI components deferred)            |
+
+Regenerate the stdlib embedding after editing the `.rela` sources with
+`bash moonbit/scripts/gen_stdlib.sh`.
 
 ## Build
 
