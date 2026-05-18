@@ -1,0 +1,13 @@
+{
+  "name": "ubugeeei/relanote",
+  "version": "0.1.0",
+  "readme": "README.md",
+  "repository": "https://github.com/ubugeeei/relanote",
+  "license": "MIT",
+  "keywords": [
+    "music",
+    "dsl",
+    "compiler"
+  ],
+  "description": "Relanote — a music DSL. MoonBit port (work in progress)."
+}

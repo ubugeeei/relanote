@@ -45,10 +45,7 @@ fn all_effects() -> String {
     use relanote_stdlib::prelude::*;
     format!(
         "{}\n{}\n{}\n{}",
-        EFFECTS_REVERB,
-        EFFECTS_DELAY,
-        EFFECTS_PHASER,
-        EFFECTS_DISTORTION
+        EFFECTS_REVERB, EFFECTS_DELAY, EFFECTS_PHASER, EFFECTS_DISTORTION
     )
 }
 
