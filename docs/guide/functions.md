@@ -1,190 +1,148 @@
 # Functions
 
-Relanote is a **pure functional** language. Functions are first-class values that can be passed around, composed, and applied to data.
+A relanote piece is a value. Functions are how you turn one value
+into another — and the language treats them like every other value:
+pass them around, store them, compose them, partially apply them.
 
-## Lambda Expressions
+## Lambdas
 
-Create anonymous functions with the `\` (lambda) syntax:
+`\arg -> body` is an inline function. Stack arguments to take more
+than one:
 
 ```rela
-; Single parameter
-\x -> x + P8
+let up_an_octave = \b -> b |> transpose P8
+let glue         = \a b -> a ++ b
+```
 
-; Multiple parameters
-\x y -> x ++ y
+Use a lambda directly inside a pipe when the transformation is
+one-off:
 
-; Used inline
+```rela
 | <1> <2> <3> | |> (\b -> b |> repeat 2)
 ```
 
-## Let Bindings
+## `let`
 
-Use `let` to bind values and create named functions:
+`let name = expr` binds a value (or a function — they're the same
+thing):
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Bind a value
-let melody = | <1> <3> <5> |
-
-; Bind a function
-let up_octave = \b -> b |> transpose P8
-
-; Apply
-melody |> up_octave
+let theme       = | <1> <3> <5> |
+let up_octave   = \b -> b |> transpose P8
+let backwards   = \b -> b |> reverse
 ```
 
-### Let-In Expressions
-
-For local bindings within an expression:
+`let name = expr in body` is a local binding scoped to `body`:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let result =
-  let theme = | <1> <3> <5> | in
+let song =
+  let theme     = | <1> <3> <5> | in
   let variation = theme |> reverse in
   theme ++ variation
-
-result
 ```
 
-## Built-in Functions
+## Builtin transformations
 
-### Block Transformations
+The shipped library is small and orthogonal — combine them to taste:
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `reverse` | Reverse slot order | `melody \|> reverse` |
-| `repeat n` | Repeat n times | `melody \|> repeat 2` |
-| `transpose interval` | Shift all pitches | `melody \|> transpose P5` |
+| Category | Function | What it does |
+| --- | --- | --- |
+| **Block shape** | `reverse b` | reverse slot order |
+| | `repeat n b` | concatenate `b` with itself `n` times |
+| | `transpose i b` | shift every pitch by interval `i` |
+| | `map f b` | apply `f` to each note |
+| | `in_scale s b` | reinterpret scale-degree references against `s` |
+| | `in_tuning t b` | resolve pitches through tuning `t` |
+| **Rhythm & feel** | `swing` | apply 8th-note swing |
+| | `groove g b` | apply a `groove` template |
+| | `double_time b` | halve durations |
+| | `half_time b` | double durations |
+| **Synth & FX** | `voice s b` | apply synth `s` |
+| | `volume v b` | scale amplitude (0–1) |
+| | `reverb amt b` | quick reverb send |
+| | `effect e b` | apply a named `effect` |
+| **Routing** | `send bus amt b` | route a fraction of `b`'s signal to a bus |
+| **Layering** | `layer [...]` | run multiple lines concurrently |
+| **Polyrhythm** | `over a b` | `a` and `b` play simultaneously at their own periods |
+
+A complete reference lives in
+[Built-in Functions](/reference/builtins).
+
+## Composing with `>>`
+
+`f >> g` is "first f, then g" — the same as a function that pipes its
+argument through both:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+let dub_style = transpose P5 >> swing >> reverb 0.4
 
-let theme = | <1> <2> <3> <4> |
-
-; Transformations
-let reversed = theme |> reverse
-let doubled = theme |> repeat 2
-let higher = theme |> transpose P5
+melody1 |> dub_style
+melody2 |> dub_style
 ```
 
-### Rhythm & Feel
+`>>` and `|>` are duals: pick `>>` when you want a *named*
+transformation; pick `|>` when you want a *value*.
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `swing` | Apply swing feel | `melody \|> swing` |
-| `double_time` | Halve durations | `melody \|> double_time` |
+## Partial application
+
+A multi-argument builtin called with a missing argument returns a
+function expecting the rest. That's why `transpose P5` is itself a
+function:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+let up_fifth = transpose P5
+let louder   = volume 0.9
 
-let straight = | <1> <2> <3> <4> <5> <6> <7> <8> |
-
-; Jazz swing feel
-let swung = straight |> swing
-
-; Double tempo
-let fast = straight |> double_time
+melody |> up_fifth |> louder
 ```
 
-### Effects
+The point-free style isn't required, but it reads cleanly for the
+common cases.
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `volume level` | Set volume (0.0-1.0) | `melody \|> volume 0.8` |
-| `reverb level` | Add reverb | `melody \|> reverb 0.5` |
-| `room_reverb` | Room reverb preset | `melody \|> room_reverb` |
-| `hall_reverb` | Hall reverb preset | `melody \|> hall_reverb` |
-| `plate_reverb` | Plate reverb preset | `melody \|> plate_reverb` |
-| `dry` | No reverb | `melody \|> dry` |
+## Higher-order functions
+
+Functions can take and return other functions. Useful when one
+parameter governs the *shape* of the transformation:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <8> |
-
-; Apply effects
-melody
-  |> hall_reverb
-  |> volume 0.7
-```
-
-### Utility
-
-| Function | Description | Example |
-|----------|-------------|---------|
-| `metronome bars beats` | Generate click track | `metronome 4 4` |
-
-```rela
-; 4 bars of 4/4 metronome
-let click = metronome 4 4 |> volume 0.3
-```
-
-## Function Composition
-
-Compose functions with `>>`:
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Create a reusable transformation
-let jazz_transform = transpose P5 >> swing >> room_reverb
-
-; Apply to any melody
-let melody1 = | <1> <3> <5> |
-let melody2 = | <5> <4> <3> <2> |
-
-melody1 |> jazz_transform
-melody2 |> jazz_transform
-```
-
-## Higher-Order Functions
-
-Functions that take or return other functions:
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Function that returns a transposition function
 let make_transposer = \interval -> (\b -> b |> transpose interval)
 
-let up_fifth = make_transposer P5
+let up_fifth  = make_transposer P5
 let up_octave = make_transposer P8
-
-| <1> <3> <5> | |> up_fifth
-| <1> <3> <5> | |> up_octave
 ```
 
-## Practical Example: Theme and Variations
+## A theme-and-variations sketch
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Original theme
 let theme = | <1> <3> <5> <3> <1>~ - - - |
 
-; Variation functions
-let retrograde = \b -> b |> reverse
-let inversion = \b -> b |> transpose P8 |> reverse
-let augmentation = \b -> b |> repeat 2
-let diminution = \b -> b |> double_time
+; Four operations, each one a function from block to block.
+let retrograde   = \b -> b |> reverse
+let inversion    = \b -> b |> map (\n -> R - n) |> transpose P8
+let augmentation = \b -> b |> half_time
+let diminution   = \b -> b |> double_time
 
-; Apply variations
-let var1 = theme |> retrograde
-let var2 = theme |> inversion
-let var3 = theme |> augmentation
-let var4 = theme |> diminution
-
-; Combine all
-theme ++ var1 ++ var2 ++ var3 ++ var4
+theme
+  ++ retrograde   theme
+  ++ inversion    theme
+  ++ augmentation theme
+  ++ diminution   theme
 ```
 
-## Best Practices
+Variations are just function applications. The structure of the
+piece is the structure of the code.
 
-1. **Name transformations**: Give meaningful names to composed functions
-2. **Keep functions pure**: No side effects, same input = same output
-3. **Compose small functions**: Build complex behavior from simple pieces
-4. **Use partial application**: `transpose P5` creates a reusable function
-5. **Document with comments**: Use `;` to explain complex transformations
+## Rules of thumb
+
+- **Name the transformation, not the result.** `let jazz_style = ...`
+  is reusable; `let jazzed_theme = ...` isn't.
+- **Compose small functions.** A 6-step pipe is fine. A 12-step pipe
+  needs a name (split it into two named compositions).
+- **Pure stays pure.** Every builtin is pure — same input, same
+  output. Stay there and the type checker remains useful.
+- **Reach for `let ... in`** for true locals. Top-level `let`
+  exports a name; `let ... in` keeps it private to one expression.
