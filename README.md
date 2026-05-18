@@ -55,24 +55,46 @@ theme |> transpose P5 |> repeat 2
 - **MIDI out, web in.** Render to a standard MIDI file or drive the live
   playground directly in the browser. No DAW round-trips.
 
-## Quick Start
+## Quick start
 
-### Using mise (Recommended)
+### Using Nix (recommended)
+
+The repo ships a [flake](./flake.nix) that pins Rust, Node, pnpm and
+`wasm-pack` to the versions everything else was built against, and a
+root [`package.json`](./package.json) wiring every common task through
+[`vite-node`](https://github.com/vitest-dev/vitest/tree/main/packages/vite-node)
+(see [`tasks/`](./tasks)).
 
 ```bash
-# Clone the repository
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
 
-# Trust and setup
-mise trust
-mise run setup
+# Enter the dev shell (rust 1.83, node 22, pnpm, wasm-pack, …).
+nix develop
 
-# Start the web playground
-mise run dev
+# First time only — install root deps so vite-node is on PATH.
+pnpm install
+
+# Web + docs deps, build WASM, prepare Nuxt types.
+pnpm setup
+
+# Build WASM and start the live playground.
+pnpm dev
 ```
 
-### Manual Installation
+`pnpm tasks` lists every available task.
+
+If you have [direnv](https://direnv.net/), `direnv allow` reads
+[`.envrc`](./.envrc) so the dev shell is activated automatically when
+you `cd` into the repo.
+
+MoonBit isn't on nixpkgs yet — install it once with:
+
+```bash
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+```
+
+### Without Nix
 
 ```bash
 # Build the CLI
@@ -215,21 +237,23 @@ truth while the rewrite lands.
 ## Development
 
 ```bash
-# Run tests
-mise run test
+# Run tests (Rust + MoonBit)
+pnpm test
 
 # Run lints
-mise run lint
+pnpm lint
 
 # Format code
-mise run fmt
+pnpm fmt
 
 # Build WASM
-mise run wasm:build
+pnpm wasm:build
 
 # Start docs dev server
-mise run docs:dev
+pnpm docs:dev
 ```
+
+`pnpm tasks` (with no argument) lists every available recipe.
 
 ## Contributing
 
