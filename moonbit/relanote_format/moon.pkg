@@ -1,0 +1,3 @@
+import {
+  "ubugeeei/relanote/relanote_ast" @ast,
+}
