@@ -1,0 +1,73 @@
+; ===========================================
+; Granular cloud — three granular layers
+; resolving over a sub drone
+; ===========================================
+;
+; Four parts that never really sit on a beat. The granular layers
+; produce a slowly-shifting cloud of micro-pitches; the sub anchors
+; everything to a single root, modulated only by very slow LFOs.
+
+set key = C2
+set tempo = 60
+set tuning = EDO53
+set groove = Drunken
+
+scale Aeolian = { R, M2, m3, P4, P5, m6, m7 }
+
+; ---------------------------------------------------------------
+; Sub drone — a held root with a slow octave-up answer every 16
+; beats.
+; ---------------------------------------------------------------
+
+let drone = | <1>:16 | ++ | <1>:8 <8>:8 |
+
+; ---------------------------------------------------------------
+; Granular sources — each at a different period so their grains
+; never line up the same way twice.
+; ---------------------------------------------------------------
+
+let cloud_a = | <1> <3> <5> |:7 |> repeat 3   ; period 7 over 21 slots
+let cloud_b = | <2> <4> <6> <5> |:5 |> repeat 4 ; period 5 over 20 slots
+let cloud_c = | <8> <7> <5> |:11 |> repeat 2  ; period 11 over 22 slots
+
+; The cloud is `a over b over c` — the resulting figure repeats
+; every lcm(21, 20, 22) = 4620 slots, well past the length of the
+; piece, so it sounds continuous.
+let cloud = cloud_a over cloud_b over cloud_c
+
+; ---------------------------------------------------------------
+; Parts
+; ---------------------------------------------------------------
+
+part "Drone" {
+  drone |> repeat 8
+} |> voice FloatingDrone |> volume 0.60
+
+part "Shimmer" {
+  cloud
+} |> voice GrainShimmer |> volume 0.35 |> transpose P8
+
+part "Vocal" {
+  cloud
+} |> voice GrainVocal |> volume 0.30
+
+part "Slowmo" {
+  cloud_a |> repeat 4
+} |> voice GrainSlowmo |> volume 0.40 |> transpose -P5
+
+; ---------------------------------------------------------------
+; Mix — almost all wet, glued by a single long reverb tail.
+; ---------------------------------------------------------------
+
+mix {
+  bus Verb   = effect PlateLarge
+  bus Tape   = effect TapeEcho
+  bus Freeze = effect Freeze
+
+  track "Drone"   |> send Verb 0.55
+  track "Shimmer" |> send Verb 0.75 |> send Tape 0.45
+  track "Vocal"   |> send Verb 0.65 |> send Tape 0.35 |> send Freeze 0.20
+  track "Slowmo"  |> send Verb 0.70 |> send Freeze 0.30
+
+  master = effect MasterChain
+}

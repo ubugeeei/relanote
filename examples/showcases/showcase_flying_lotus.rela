@@ -1,0 +1,112 @@
+; ===========================================
+; Flying Lotus sleeve — chopped drums, granular
+; vocal textures, modal harmony
+; ===========================================
+;
+; Hip-hop adjacent. Dilla groove on every track, granular vocal
+; cloud bouncing between Verb and Tape sends, sub bass parallel-
+; smashed, master chain pulling everything together.
+
+set key = F#3
+set tempo = 88
+set tuning = EDO24    ; quarter-tone bending in the lead is in scope
+set groove = Dilla
+
+scale MinorBlues = { R, m3, P4, A4, P5, m7 }
+
+; ---------------------------------------------------------------
+; Material
+; ---------------------------------------------------------------
+
+let bassline = |
+  <1>:2 - <1> <5> | <4>:2 - <1>:2 |
+  <1>:2 - <1> m7-13c | <5>:2 - <1>:2 |
+|:16
+
+let kick_pattern = |
+  R - - <8>* - - R - | R - R - - - - - |
+|:8 |> repeat 4
+
+let snare_pattern = |
+  - - - - R - - R | - R - - R - - - |
+|:8 |> repeat 4
+
+let hat_pattern = |
+  R R - R R - R - | - R R R - R - R |
+|:8 |> repeat 4
+
+let vocal_phrase = |
+  <1>~ - <m3 +33c>~ - <5>~ - <m7 -10c>~ - |:8
+|> repeat 2
+
+let lead_riff = |
+  - <5> <m7 +12.5c> <8> | <5>~ <m3 -7c>~ - - |
+|:8 |> repeat 4
+
+; ---------------------------------------------------------------
+; Parts
+; ---------------------------------------------------------------
+
+part "Bass" {
+  bassline
+} |> voice BassMoog |> volume 0.80
+
+part "Sub" {
+  bassline
+} |> voice LofiSub |> volume 0.55 |> transpose -P8
+
+part "Kick" {
+  kick_pattern
+} |> voice LofiKick |> volume 0.75
+
+part "Snare" {
+  snare_pattern
+} |> voice LofiSnare |> volume 0.55
+
+part "Hat" {
+  hat_pattern
+} |> voice LofiHat |> volume 0.40
+
+part "Vocal" {
+  vocal_phrase
+} |> voice GrainVocal |> volume 0.50
+
+part "Stutter" {
+  vocal_phrase |> reverse
+} |> voice GrainStutter |> volume 0.30
+
+part "Lead" {
+  lead_riff
+} |> voice FMRhodes |> volume 0.45
+
+part "Pad" {
+  | [<1> m3 P5] |:8 |> repeat 4
+} |> voice ModularBreath |> volume 0.20
+
+; ---------------------------------------------------------------
+; Mix — Dilla groove + sidechained Sub + parallel smash on drums
+; ---------------------------------------------------------------
+
+mix {
+  bus Verb     = effect DubRoom
+  bus Tape     = effect TapeEcho
+  bus DrumBus  = effect DrumBus
+  bus Smash    = effect ParallelSmash
+
+  ; Drum bus first — all percussive parts land here.
+  track "Kick"    |> send DrumBus 1.00 |> send Smash 0.40
+  track "Snare"   |> send DrumBus 1.00 |> send Verb  0.30 |> send Smash 0.45
+  track "Hat"     |> send DrumBus 1.00 |> send Tape  0.25
+
+  ; Tonal sends.
+  track "Vocal"   |> send Verb 0.50 |> send Tape 0.30
+  track "Stutter" |> send Tape 0.45 |> send Verb 0.20
+  track "Lead"    |> send Verb 0.30 |> send Tape 0.20
+  track "Pad"     |> send Verb 0.55
+
+  ; Kick keys a 60% duck on both bass layers — that's the FlyLo pump.
+  sidechain track "Kick" -> track "Bass" 0.60
+  sidechain track "Kick" -> track "Sub"  0.70
+
+  master = effect MasterChain
+}

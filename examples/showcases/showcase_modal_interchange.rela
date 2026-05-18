@@ -1,0 +1,71 @@
+; ===========================================
+; Modal interchange — same shape, four scales,
+; three tunings
+; ===========================================
+;
+; A single melodic shape <1> <3> <5> <3> resolves into five different
+; pieces depending on what scale is in scope. Half of them are also
+; in different tunings, so the *interval qualities* between notes
+; change too.
+
+set key = C4
+set tempo = 100
+
+scale Major          = { R, M2, M3, P4, P5, M6, M7 }
+scale Minor          = { R, M2, m3, P4, P5, m6, m7 }
+scale Dorian         = { R, M2, m3, P4, P5, M6, m7 }
+scale Phrygian       = { R, m2, m3, P4, P5, m6, m7 }
+scale Lydian         = { R, M2, M3, A4, P5, M6, M7 }
+
+let shape = | <1> <3> <5> <3> <1> |
+
+; ---------------------------------------------------------------
+; Five passages — the *only* thing that changes between them is the
+; scale that's in scope.
+; ---------------------------------------------------------------
+
+let major_passage    = shape |> in_scale Major
+let minor_passage    = shape |> in_scale Minor
+let dorian_passage   = shape |> in_scale Dorian
+let phrygian_passage = shape |> in_scale Phrygian
+let lydian_passage   = shape |> in_scale Lydian
+
+let modal_tour =
+  major_passage    ++
+  dorian_passage   ++
+  phrygian_passage ++
+  lydian_passage   ++
+  minor_passage    ++
+  major_passage
+
+; ---------------------------------------------------------------
+; Re-run the same tour in two different tunings.
+; ---------------------------------------------------------------
+
+let tempered_tour = modal_tour |> in_tuning EDO12    ; default 12-EDO
+let just_tour     = modal_tour |> in_tuning JustIntonation
+let well_tour     = modal_tour |> in_tuning WerckmeisterIII
+
+let full_journey = tempered_tour ++ just_tour ++ well_tour
+
+; ---------------------------------------------------------------
+; A single instrument — so the differences between sections are
+; *only* the scale and tuning, nothing else.
+; ---------------------------------------------------------------
+
+part "Tour" {
+  full_journey
+} |> voice ModularEnsemble |> volume 0.65
+
+part "Pad" {
+  full_journey |> map (\n -> n + P8)
+} |> voice FloatingBloom |> volume 0.30 |> transpose -P8
+
+mix {
+  bus Verb = effect PlateLarge
+
+  track "Tour" |> send Verb 0.45
+  track "Pad"  |> send Verb 0.65
+
+  master = effect MasterChain
+}
