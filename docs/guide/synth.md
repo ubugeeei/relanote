@@ -1,248 +1,259 @@
 # Synthesizers
 
-Relanote includes built-in synthesizer support for creating custom sounds. You can use preset synths or define your own with full control over oscillators, envelopes, and filters.
-
-## Using Preset Synths
-
-Apply a synth preset to a block using the `voice` function:
+A *synth* in relanote is a record of how a note becomes sound:
+oscillator(s), envelope, filter, optional modulation, optional inline
+effects. Apply one to anything that produces notes — a block, a part,
+a section — with `|> voice <Name>`.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <3> |
-
-; Apply synth preset
-let lead = melody |> voice Lead
-let pad = melody |> voice SoftPad
-let bass = melody |> voice FatBass
-
-lead
+melody |> voice Lead
 ```
 
-## Available Presets
+Everything below is a different *shape* the oscillator / envelope /
+modulation triple can take.
 
-Relanote includes 80+ professionally designed synth presets. See the [Preset Reference](/deep-dive/preset-reference) for a complete list.
+## Subtractive — oscillator → filter → envelope
 
-### Piano & Electric Piano
-
-| Preset | Description |
-|--------|-------------|
-| `AcousticPiano` | Warm, natural acoustic piano |
-| `BrightPiano` | Clear, present piano |
-| `Rhodes` | Warm, bell-like electric piano |
-| `Wurlitzer` | Gritty, funky electric piano |
-| `Clavinet` | Funky, percussive |
-
-### Bass Instruments
-
-| Preset | Description |
-|--------|-------------|
-| `WoodBass` | Warm upright bass |
-| `ElectricBass` | Punchy electric bass |
-| `SynthBass` | Fat electronic bass |
-| `SubBass` | Deep sub-heavy bass |
-| `AcidBass` | Squelchy resonant bass |
-
-### Brass Instruments
-
-| Preset | Description |
-|--------|-------------|
-| `Trumpet` | Bright, cutting brass |
-| `MutedTrumpet` | Soft, nasal trumpet |
-| `Trombone` | Rich, warm brass |
-| `Brass` | Generic brass section |
-| `BrassSection` | Wide, powerful section |
-
-### Synth Leads
-
-| Preset | Description |
-|--------|-------------|
-| `Lead` | Classic versatile lead |
-| `SuperSaw` | Huge detuned trance lead |
-| `SquareLead` | Hollow, punchy lead |
-| `ResoLead` | Squelchy filtered lead |
-
-### Pads
-
-| Preset | Description |
-|--------|-------------|
-| `SoftPad` | Warm sustained pad |
-| `WarmPad` | Rich, enveloping pad |
-| `StringPad` | Orchestral string pad |
-| `ChoirPad` | Vocal, ethereal pad |
-
-### Classic & 8-bit
-
-| Preset | Description |
-|--------|-------------|
-| `Chiptune` | Classic square wave |
-| `NES` | Nintendo-style sound |
-| `GameBoy` | Narrow pulse wave |
-| `Pluck` | Short attack pluck |
-| `Strings` | Slow attack strings |
-| `Organ` | Harmonic sine organ |
-
-### Drums (with Pitch Envelope)
-
-| Preset | Description |
-|--------|-------------|
-| `DeepKick` | Sub-heavy kick drum |
-| `PunchyKick` | Attack-focused kick |
-| `TightSnare` | Short, punchy snare |
-| `FatSnare` | Big, roomy snare |
-| `ClosedHat` | Tight hi-hat |
-| `OpenHiHat` | Sizzling open hat |
-| `HighTom` / `MidTom` / `FloorTom` | Pitched toms |
-| `CrashCymbal` / `RideCymbal` | Cymbals |
-
-### Percussion
-
-| Preset | Description |
-|--------|-------------|
-| `HandClap` | Snappy clap |
-| `Cowbell` | Pitched metallic |
-| `Conga` / `Bongo` | Latin drums |
-| `Tambourine` / `Shaker` | Rhythm instruments |
-
-## Modifying Synth Parameters
-
-Use pipe functions to adjust synth parameters:
+The classic analogue chain. Pick a waveform; pass it through a
+filter; shape its amplitude with an envelope:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <8> |
-
-; Filter cutoff (Hz)
-let dark = melody |> voice Lead |> cutoff 800
-let bright = melody |> voice Lead |> cutoff 4000
-
-; Resonance (0.0 - 1.0)
-let resonant = melody |> voice Lead |> cutoff 1500 |> resonance 0.6
-
-; Detune (cents)
-let detuned = melody |> voice Lead |> detune 15
-
-; Custom ADSR envelope
-let custom = melody |> voice Lead |> adsr 0.1 0.2 0.6 0.5
-
-custom
-```
-
-### Parameter Functions
-
-| Function | Parameters | Description |
-|----------|------------|-------------|
-| `cutoff freq` | freq: Hz | Filter cutoff frequency |
-| `resonance q` | q: 0.0-1.0 | Filter resonance/Q |
-| `detune cents` | cents: number | Detune in cents |
-| `adsr a d s r` | a,d,r: seconds, s: 0.0-1.0 | ADSR envelope |
-
-## Custom Synth Definitions
-
-Define your own synth with the `synth` keyword:
-
-```rela
-synth MyLead = {
+synth Subtractive = {
   osc: Saw,
-  env: { A: 0.02, D: 0.15, S: 0.7, R: 0.2 },
-  filter: LowPass(3000, 0.3)
+  env: { A: 0.01, D: 0.2, S: 0.7, R: 0.3 },
+  filter: LowPass(2500, 0.4)
 }
-
-synth ThickBass = {
-  osc: Saw,
-  detune: 10,
-  env: { A: 0.05, D: 0.2, S: 0.6, R: 0.3 },
-  filter: LowPass(200, 0.5)
-}
-
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> |
-melody |> voice MyLead
 ```
 
-### Synth Properties
-
-| Property | Values | Description |
-|----------|--------|-------------|
-| `osc` | Sine, Square, Saw, Triangle, Noise | Oscillator waveform |
-| `env` | `{ A: s, D: s, S: level, R: s }` | ADSR envelope |
-| `filter` | LowPass(Hz, Q), HighPass(Hz, Q), BandPass(Hz, Q) | Filter type |
-| `detune` | cents | Oscillator detune amount |
-
-### Oscillator Types
-
-- `Sine` - Pure sine wave
-- `Square` - Square wave (50% duty)
-- `Saw` - Sawtooth wave
-- `Triangle` - Triangle wave
-- `Noise` - White noise
-
-### Filter Types
-
-- `LowPass(cutoff, resonance)` - Low-pass filter
-- `HighPass(cutoff, resonance)` - High-pass filter
-- `BandPass(cutoff, resonance)` - Band-pass filter
-
-## Combining with Effects
-
-Synth parameters can be combined with other effects:
+Stack oscillators with `+` and detune them for thickness:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+synth FatSaw = {
+  osc: Saw(voices: 5) + Sine(level: 0.4, octave: -1),
+  detune: 18,
+  env: { A: 0.02, D: 0.3, S: 0.8, R: 0.4 },
+  filter: LowPass(3500, 0.3)
+}
+```
 
-let melody = | <1> <3> <5> <8> |
+See [`synths_basic.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/synths_basic.rela)
+and [`synths_modular.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/synths_modular.rela)
+for ready-to-use shapes.
 
-let processed = melody
+## FM — operators modulating operators
+
+FM (frequency modulation) is what Yamaha's DX series did so well. Two
+sine oscillators is enough for a *lot* of timbres — bell, electric
+piano, brass, kalimba, all from two `Sine`s and three numbers:
+
+```rela
+synth FMBell = {
+  osc: FM(
+    op1: Sine,         ; carrier — the listener hears this
+    op2: Sine,         ; modulator
+    op2_ratio: 3.5,    ; ratio of modulator to carrier frequency
+    op2_level: 0.6,    ; modulation index (depth)
+    feedback: 0.0      ; self-feedback on the carrier
+  ),
+  env: { A: 0.001, D: 1.6, S: 0.0, R: 1.2 },
+  filter: LowPass(9000, 0.1)
+}
+```
+
+The combinatorics are wide: low `op2_ratio` + high `op2_level` is an
+electric piano, high `op2_ratio` + short envelope is a kalimba, saw
+carrier + sine modulator + feedback is brass. The
+[`synths_fm.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/synths_fm.rela)
+preset ships six.
+
+## Wavetable — scan through single-cycle waves
+
+A wavetable is a sequence of waveforms the oscillator scans through.
+The position into the table is the *timbral* parameter; modulate it
+and the patch *changes shape* over time:
+
+```rela
+synth WaveLead = {
+  osc: Wavetable(table: "vapor"),
+  wave_pos: 0.5,                              ; static position
+  env: { A: 0.05, D: 0.2, S: 0.7, R: 0.3 },
+  filter: LowPass(2500, 0.3),
+  mod: [
+    lfo(target: wave_pos, rate: 0.2, depth: 0.5, shape: Sine)
+  ]
+}
+```
+
+[`synths_wavetable.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/synths_wavetable.rela)
+ships six — `WaveVapor`, `WaveDriftPad`, `WaveFormant`, `WaveBellPad`,
+`WaveAcid`, `WaveSupersaw`.
+
+## Granular — clouds of micro-grains
+
+Granular oscillators chop a source into 5-100 ms grains and
+rearrange them. Excellent for evolving textures, vocal chops and
+"stuck-tape" stutters:
+
+```rela
+synth GrainDrift = {
+  osc: Granular(
+    source: "drone",         ; sample bank
+    grain_size: 0.08,        ; seconds per grain
+    density: 28,             ; grains per second
+    spray: 0.4,              ; position jitter (0 locked → 1 scattered)
+    pitch_jitter: 0          ; per-grain detune in cents
+  ),
+  env: { A: 1.5, D: 0.5, S: 1.0, R: 2.5 },
+  filter: LowPass(4500, 0.2)
+}
+```
+
+Floating Points-style pads, Flying Lotus-style vocal chops and
+shimmer reverbs all live here.
+See [`synths_granular.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/synths_granular.rela)
+and [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/pads_floating.rela).
+
+## Modulation matrix
+
+`mod: [ ... ]` describes a list of routings — each entry connects a
+source (LFO, envelope, sample-and-hold, …) to a destination
+parameter:
+
+```rela
+synth Breathing = {
+  osc: Saw(voices: 5),
+  detune: 18,
+  env: { A: 1.5, D: 0.5, S: 0.95, R: 3.0 },
+  filter: LowPass(4000, 0.25),
+  mod: [
+    lfo(target: filter.cutoff, rate: 0.1, depth: 1800, shape: Sine),
+    lfo(target: pitch,         rate: 5.0, depth: 8,    shape: Sine, delay: 0.4),
+    env(target: filter.cutoff, attack: 2.0, depth: 2500)
+  ]
+}
+```
+
+| Source | Description |
+| --- | --- |
+| `lfo(rate, depth, shape, sync?, delay?)` | low-frequency oscillator. `shape` ∈ `Sine` / `Triangle` / `Square` / `SampleHold`. |
+| `env(attack, decay?, sustain?, release?, depth)` | dedicated envelope, independent of the amp envelope. |
+| `keytrack(amount)` | scales by note pitch. |
+| `velocity(amount)` | scales by note velocity. |
+
+Common destinations: `filter.cutoff`, `filter.resonance`, `pitch`,
+`wave_pos`, `amp`, `op2_level`, `detune`.
+
+## Pitch envelope
+
+Drums and other transient-led sounds usually need a pitch sweep at
+the front:
+
+```rela
+synth Kick = {
+  osc: Sine + Triangle(level: 0.35),
+  pitch_env: { from: 220, to: 55, time: 0.06 },   ; Hz, down in 60 ms
+  env: { A: 0.001, D: 0.18, S: 0.0, R: 0.18 },
+  filter: LowPass(2200, 0.2)
+}
+```
+
+## Inline effects on a synth
+
+Synths can declare per-voice effects. They run *inside* the synth,
+before any per-track or per-bus effects in the [mix](./mixing):
+
+```rela
+synth Crush = {
+  osc: Saw(voices: 5),
+  detune: 16,
+  env: { A: 0.05, D: 0.3, S: 0.9, R: 1.0 },
+  filter: LowPass(3500, 0.25),
+  bitcrush: { bits: 10, rate: 0.85 },
+  saturate: 0.18
+}
+```
+
+For shared effects (one reverb across the whole mix, glue
+compression across a drum subgroup, …) reach for the [Mixing](./mixing)
+guide instead.
+
+## Applying a synth — `voice`, then parameters
+
+`voice X` picks the synth. After that, pipe through one or more
+parameter functions to tweak this *instance*:
+
+```rela
+melody
   |> voice Lead
-  |> cutoff 2000
-  |> resonance 0.3
-  |> reverb 0.4
+  |> cutoff 800
+  |> resonance 0.4
+  |> detune 12
   |> volume 0.8
-
-processed
 ```
 
-## Multi-Part Arrangements
+The parameter functions match the synth's surface — `cutoff`,
+`resonance`, `detune`, `adsr a d s r`, `volume`, …. Anything declared
+in the synth's record is reachable; anything else is not (the type
+checker will tell you).
 
-Use synths in full arrangements:
+## Multi-part arrangements
+
+A `section` groups parts; each `part` pins a block to a voice:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
 
-let song = section "Main" {
+section "Main" {
   part "Lead" {
     | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
-  } |> voice Lead |> volume 0.8
+  } |> voice ModularLead |> volume 0.8
 
   part "Pad" {
-    | [<1> <3> <5>] | ++ | [<1> <3> <5>] |
-  } |> voice SoftPad |> volume 0.5
+    | [<1> m3 P5] | ++ | [<1> m3 P5] |
+  } |> voice FloatingBloom |> volume 0.5
 
   part "Bass" {
     | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice FatBass |> volume 0.7
+  } |> voice BassMoog |> volume 0.7
 
   part "Drums" {
     | R - R - | ++ | R - R R |
-  } |> voice Kick
+  } |> voice LofiKick
 }
-
-compose([song])
 ```
 
-## MIDI Output
+For the routing graph that ties all those parts together — buses,
+sends, sidechain, master — see the [Mixing](./mixing) guide.
 
-When rendering to MIDI, synth parameters are converted to MIDI CC messages:
+## MIDI output
 
-| Parameter | MIDI CC | Range |
-|-----------|---------|-------|
-| Cutoff | CC#74 | 0-127 |
-| Resonance | CC#71 | 0-127 |
-| Attack | CC#73 | 0-127 |
-| Decay | CC#75 | 0-127 |
-| Release | CC#72 | 0-127 |
-| Detune (as Modulation) | CC#1 | 0-127 |
+When rendering to MIDI, synth parameters are translated to standard
+CC messages so a DAW or external synth can respond:
 
-This allows DAWs and hardware synths to respond to your parameter changes.
+| Parameter | CC | Range |
+| --- | --- | --- |
+| Cutoff | 74 | 0-127 |
+| Resonance | 71 | 0-127 |
+| Attack | 73 | 0-127 |
+| Decay | 75 | 0-127 |
+| Release | 72 | 0-127 |
+| Modulation | 1 | 0-127 |
+
+## Preset library
+
+The stdlib ships a starter pack across every chapter above. See
+[Presets](./presets) for the full catalogue, or grep
+[`moonbit/relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/moonbit/relanote_stdlib/prelude)
+directly. Every preset is plain `.rela` source — read one, copy it,
+change three numbers, ship a new sound.
+
+## Status
+
+The synth declaration syntax above is on the AST today —
+`synth`, `SynthProperty`, modulation routings, FM / wavetable /
+granular oscillator forms all parse. The DSP underneath lands
+alongside the evaluator port; at that point each preset becomes
+audible.
