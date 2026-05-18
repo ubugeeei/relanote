@@ -135,7 +135,12 @@ repeated
 
 ## Playground
 
-Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/)
+Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/).
+
+Deployment is migrating from GitHub Pages to [Void](https://void.cloud);
+once `deploy-void.yml` proves itself green on `main`, the GitHub Pages
+workflow will be removed and the URL will switch to the Void edge
+(tracked in #16).
 
 Features:
 - Monaco editor with syntax highlighting
