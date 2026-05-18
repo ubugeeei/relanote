@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/og-image.svg" alt="Relanote - Everything is relative">
+  <img src="assets/og-image.svg" alt="relanote — music as a function">
 </p>
 
 <p align="center">
@@ -8,40 +8,46 @@
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#quick-start">Quick Start</a> •
+  <a href="#what-is-relanote">What</a> •
   <a href="#example">Example</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#playground">Playground</a>
+  <a href="#quick-start">Quick start</a> •
+  <a href="#playground">Playground</a> •
+  <a href="#documentation">Docs</a>
 </p>
 
 ---
 
-## What is Relanote?
+## What is relanote?
 
-Relanote is a programming language designed for describing music using **relative intervals** rather than absolute pitches. Built with functional programming principles and static typing, it makes musical transformations like transposition, modulation, and composition natural and type-safe.
+**relanote** is a pure functional, statically-typed language that
+describes music by what it *relates to* — not by where it sits on a
+staff. A line is the relationship between its notes; chords, sections,
+layers, parts are built out of those relationships. Change the key, the
+scale or the tempo, and the shape doesn't change. That's the point.
 
 ```rela
-; Define a major scale using intervals
+; A scale is the seven intervals that define it.
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Create a melody using scale degrees
-let melody = | <1> <3> <5> <3> <1> |
+; A melody is scale-degree references. <1> is the root,
+; <3> is the third, <5> is the fifth — of whatever scale is in scope.
+let theme = | <1> <3> <5> <3> <1> |
 
-; Transform with builtins
-let transformed = melody |> repeat 2
-
-transformed
+; Compose the same way you'd compose code.
+theme |> transpose P5 |> repeat 2
 ```
 
 ## Features
 
-- **🎵 Relative Intervals** - Describe melodies using intervals (M3, P5, m7) instead of absolute pitches
-- **λ Pure Functional** - Immutable values, first-class functions, and composable transformations
-- **🔒 Static Typing** - Hindley-Milner type inference catches errors at compile time
-- **🎼 Compositional** - Build complex pieces from simple building blocks
-- **🎹 MIDI Export** - Render compositions to standard MIDI files
-- **🌐 Web Playground** - Try Relanote in your browser with live preview
+- **Everything is relative.** Pitches are scale-degree references, rhythm
+  is "n notes share this slot equally". Reshape music by reshaping the
+  scale, not by rewriting every pitch.
+- **Pure, typed, total.** Immutable values, first-class functions, and
+  Hindley-Milner inference. No runtime surprises.
+- **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3`.
+  Build pieces by composing small functions.
+- **MIDI out, web in.** Render to a standard MIDI file or drive the live
+  playground directly in the browser — no DAW round-trips.
 
 ## Quick Start
 
