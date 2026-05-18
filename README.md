@@ -196,7 +196,7 @@ truth while the rewrite lands.
 | `relanote_lexer`        | `moonbit/relanote_lexer`                | ✅     |
 | `relanote_ast`          | `moonbit/relanote_ast`                  | ✅     |
 | `relanote_parser`       | `moonbit/relanote_parser`               | ⏳     |
-| `relanote_hir`          | `moonbit/relanote_hir`                  | ⏳     |
+| `relanote_hir`          | `moonbit/relanote_hir`                  | ✅     |
 | `relanote_resolver`     | `moonbit/relanote_resolver`             | ⏳     |
 | `relanote_types`        | `moonbit/relanote_types`                | 🟡     |
 | `relanote_eval`         | `moonbit/relanote_eval`                 | ⏳     |
