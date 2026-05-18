@@ -300,12 +300,7 @@ impl TypeChecker {
         }
 
         // Additional synth presets
-        for name in [
-            "Piano",
-            "EPiano",
-            "WarmPad",
-            "AcidBass",
-        ] {
+        for name in ["Piano", "EPiano", "WarmPad", "AcidBass"] {
             self.ctx.bind(intern(name), TypeScheme::mono(Type::Synth));
         }
 

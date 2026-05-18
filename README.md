@@ -148,25 +148,52 @@ Features:
 
 ```
 relanote/
-├── crates/
-│   ├── relanote_core/      # Shared types, spans, diagnostics
-│   ├── relanote_lexer/     # Tokenizer (logos)
-│   ├── relanote_ast/       # AST definitions
-│   ├── relanote_parser/    # Parser (chumsky)
-│   ├── relanote_hir/       # High-level IR
-│   ├── relanote_resolver/  # Name resolution
-│   ├── relanote_types/     # Type system (Hindley-Milner)
-│   ├── relanote_eval/      # Evaluator
-│   ├── relanote_stdlib/    # Standard library
-│   ├── relanote_format/    # Code formatter
-│   ├── relanote_lsp/       # Language Server Protocol
-│   ├── relanote_render/    # MIDI rendering
-│   ├── relanote_cli/       # CLI tool
-│   └── relanote_wasm/      # WebAssembly bindings
-├── web/                    # Nuxt web playground
-├── docs/                   # VitePress documentation
-└── examples/               # Example files
+├── crates/                  # Rust implementation (current source of truth)
+│   ├── relanote_core/       # Shared types, spans, diagnostics
+│   ├── relanote_lexer/      # Tokenizer (logos)
+│   ├── relanote_ast/        # AST definitions
+│   ├── relanote_parser/     # Parser (chumsky)
+│   ├── relanote_hir/        # High-level IR
+│   ├── relanote_resolver/   # Name resolution
+│   ├── relanote_types/      # Type system (Hindley-Milner)
+│   ├── relanote_eval/       # Evaluator
+│   ├── relanote_stdlib/     # Standard library
+│   ├── relanote_format/     # Code formatter
+│   ├── relanote_lsp/        # Language Server Protocol
+│   ├── relanote_render/     # MIDI rendering
+│   ├── relanote_cli/        # CLI tool
+│   └── relanote_wasm/       # WebAssembly bindings
+├── moonbit/                 # MoonBit port (in progress)
+│   ├── relanote_core/       # ← mirrors crates/relanote_core
+│   └── relanote_lexer/      # ← mirrors crates/relanote_lexer
+├── web/                     # Nuxt web playground
+├── docs/                    # VitePress documentation
+└── examples/                # Example files
 ```
+
+## Rewrite roadmap
+
+Relanote is being incrementally rewritten in [MoonBit](https://www.moonbitlang.com/),
+with [Vapor Moon](https://github.com/moonbitlang/vapor-moon) eventually
+replacing the Nuxt playground. The Rust + Nuxt stack stays the source of
+truth while the rewrite lands.
+
+| Crate                   | MoonBit package                         | Status |
+| ----------------------- | --------------------------------------- | :----: |
+| `relanote_core`         | `moonbit/relanote_core`                 | ✅     |
+| `relanote_lexer`        | `moonbit/relanote_lexer`                | ✅     |
+| `relanote_ast`          | `moonbit/relanote_ast`                  | ⏳     |
+| `relanote_parser`       | `moonbit/relanote_parser`               | ⏳     |
+| `relanote_hir`          | `moonbit/relanote_hir`                  | ⏳     |
+| `relanote_resolver`     | `moonbit/relanote_resolver`             | ⏳     |
+| `relanote_types`        | `moonbit/relanote_types`                | ⏳     |
+| `relanote_eval`         | `moonbit/relanote_eval`                 | ⏳     |
+| `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ⏳     |
+| `relanote_format`       | `moonbit/relanote_format`               | ⏳     |
+| `relanote_lsp`          | `moonbit/relanote_lsp`                  | ⏳     |
+| `relanote_render`       | `moonbit/relanote_render`               | ⏳     |
+| `relanote_cli`           | `moonbit/cmd/relanote`                  | ⏳     |
+| `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | ⏳     |
 
 ## Development
 

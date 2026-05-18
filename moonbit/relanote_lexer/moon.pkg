@@ -1,0 +1,4 @@
+import {
+  "ubugeeei/relanote/relanote_core" @core,
+  "moonbitlang/core/strconv",
+}
