@@ -1,168 +1,148 @@
-# Control Flow
+# Control flow
 
-Relanote provides control flow constructs for conditional logic and decision-making in your compositions.
+relanote has the conventional pure-functional toolbox: `if-then-else`,
+pattern matching, comparison and boolean operators, destructuring.
+Use them sparingly — most "control flow" in a piece of music is
+better expressed as values that you assemble rather than choices that
+you branch on.
 
-## If-Then-Else
+## `if … then … else`
 
-The basic conditional expression:
+A standard expression. Both branches must produce the same type:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let loud = true
+let loud   = true
 let melody = | <1> <3> <5> |
 
-if loud then
-  melody |> volume 1.0
-else
-  melody |> volume 0.5
+if loud
+  then melody |> volume 1.0
+  else melody |> volume 0.5
 ```
 
-### Chained Conditionals
+Chain with `else if`:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let dynamic = "ff"
-let melody = | <1> <3> <5> |
-
 if dynamic == "ff" then
   melody |> volume 1.0
 else if dynamic == "mf" then
   melody |> volume 0.7
-else if dynamic == "p" then
-  melody |> volume 0.4
 else
-  melody |> volume 0.5
+  melody |> volume 0.4
 ```
 
-## Boolean Operators
+## Pattern matching
 
-Combine conditions with `and`, `or`, and `not`:
+`match` deconstructs values by shape — more readable than a chain of
+`if`s when there are several cases:
 
 ```rela
-let x = 5
-let y = 10
+let dynamic = "mf"
 
-; Logical and
-if x > 0 and y > 0 then "both positive" else "not both positive"
-
-; Logical or
-if x > 10 or y > 5 then "at least one condition met" else "neither"
-
-; Logical not
-if not (x == y) then "different" else "same"
+match dynamic {
+  "ff" => melody |> volume 1.0
+  "mf" => melody |> volume 0.7
+  "p"  => melody |> volume 0.4
+  _    => melody |> volume 0.5
+}
 ```
 
-## Comparison Operators
+Patterns can destructure tuples, lists and constructors:
+
+```rela
+let chord_quality = \chord ->
+  match chord {
+    [R, M3, P5]      => "major"
+    [R, m3, P5]      => "minor"
+    [R, M3, P5, M7]  => "major7"
+    [R, m3, P5, m7]  => "minor7"
+    _                => "other"
+  }
+```
+
+## Boolean and comparison operators
 
 | Operator | Meaning |
-|----------|---------|
-| `==` | Equal |
-| `!=` | Not equal |
-| `<` | Less than |
-| `>` | Greater than |
-| `<=` | Less than or equal |
-| `>=` | Greater than or equal |
+| --- | --- |
+| `==` | equal |
+| `!=` | not equal |
+| `<`, `>`, `<=`, `>=` | ordering |
+| `and`, `or`, `not` | boolean |
 
 ```rela
-set tempo = 120
-
-if tempo >= 120 then
-  "fast tempo"
-else if tempo >= 80 then
-  "moderate tempo"
-else
-  "slow tempo"
+if tempo >= 120 then "fast"
+else if tempo >= 80 then "moderate"
+else "slow"
 ```
 
 ## Destructuring
 
-Destructure values in `let` bindings:
+`let (a, b) = (1, 2)` binds both halves at once. `_` ignores:
 
 ```rela
-; Simple binding
-let x = 5
-
-; Tuple destructuring
-let (a, b) = (1, 2)
-
-; Wildcard pattern (ignore a value)
-let (first, _) = (42, "unused")
+let (root, fifth) = (R, P5)
+let (first, _)    = (theme, ignored)
 ```
 
-### Lambda Parameters
-
-Lambda parameters support destructuring:
+Lambda parameters destructure the same way:
 
 ```rela
-; Simple parameter
-\x -> x + 1
-
-; Tuple parameter
-\(a, b) -> a + b
-
-; Wildcard (ignore parameter)
-\_ -> 0
+let sum_interval = \(a, b) -> a + b
+let always_zero  = \_ -> 0
 ```
 
-## Practical Examples
+## Practical patterns
 
-### Dynamic Volume Control
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let apply_dynamics = \dynamic melody ->
-  if dynamic == "forte" then
-    melody |> volume 1.0
-  else if dynamic == "piano" then
-    melody |> volume 0.4
-  else
-    melody |> volume 0.7
-
-let theme = | <1> <3> <5> |
-theme |> apply_dynamics "forte"
-```
-
-### Conditional Transformations
+### Conditional transformation
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let should_swing = true
-let melody = | <1> <2> <3> <4> <5> <6> <7> <8> |
-
 let processed =
-  if should_swing then
-    melody |> swing
-  else
-    melody
-
-processed
+  if should_swing then melody |> swing
+  else melody
 ```
 
-### Section Selection
+### Lookup-by-name
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let verse = | <1> <2> <3> <2> <1>~ - - - |
-let chorus = | <5>^ <6>^ <7>^ <8>^ <8> <7> <6> <5> |
-let bridge = | <4>~ <5> <6>~ <5> <3>~ - - - |
-
 let get_section = \name ->
-  if name == "verse" then verse
-  else if name == "chorus" then chorus
-  else if name == "bridge" then bridge
-  else | - - - - |  ; rest as default
-
-get_section "chorus"
+  match name {
+    "verse"  => verse
+    "chorus" => chorus
+    "bridge" => bridge
+    _        => | - - - - |   ; silent default
+  }
 ```
 
-## Best Practices
+### Velocity-driven dynamics
 
-1. **Keep conditions simple**: Complex logic should be broken into named functions
-2. **Use meaningful variable names**: `is_loud`, `should_swing`, `has_reverb`
-3. **Always handle else cases**: Provide default values for robustness
-4. **Prefer composition over conditionals**: When possible, use function composition instead of if-then-else
+```rela
+let apply_dynamics = \(dynamic, melody) ->
+  match dynamic {
+    "ff" => melody |> volume 1.00
+    "f"  => melody |> volume 0.85
+    "mf" => melody |> volume 0.70
+    "mp" => melody |> volume 0.55
+    "p"  => melody |> volume 0.40
+    "pp" => melody |> volume 0.25
+    _    => melody |> volume 0.60
+  }
+```
+
+## When *not* to branch
+
+In music code the choice between two values is usually less
+expressive than the *third* value that contains both:
+
+```rela
+; Branchy:
+let intro = if upbeat then loud_intro else soft_intro
+
+; Better — make both audible somewhere in the piece.
+intro_soft ++ intro_loud
+```
+
+If you find a conditional inside a hot loop or at the top of every
+section, consider whether the underlying *shape* should change —
+maybe two parts in a layer, two sections in sequence, or two
+expressions parameterised by an interval.
