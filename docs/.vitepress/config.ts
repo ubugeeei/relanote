@@ -189,28 +189,28 @@ export default defineConfig({
 
   head: [
     ["link", { rel: "icon", href: `${base}logo-icon-transparent.svg` }],
-    ["meta", { name: "theme-color", content: "#b45309" }],
+    ["meta", { name: "theme-color", content: "#0F0F12" }],
     // Open Graph
     ["meta", { property: "og:type", content: "website" }],
-    ["meta", { property: "og:title", content: "Relanote" }],
+    ["meta", { property: "og:title", content: "relanote" }],
     [
       "meta",
       {
         property: "og:description",
-        content: "Everything is relative. A pure functional music notation language.",
+        content: "Music as a function. A pure functional, statically-typed language for music.",
       },
     ],
     ["meta", { property: "og:image", content: `https://ubugeeei.github.io${base}og-image.png` }],
     ["meta", { property: "og:url", content: "https://ubugeeei.github.io/relanote/" }],
-    ["meta", { property: "og:site_name", content: "Relanote" }],
+    ["meta", { property: "og:site_name", content: "relanote" }],
     // Twitter Card
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
-    ["meta", { name: "twitter:title", content: "Relanote" }],
+    ["meta", { name: "twitter:title", content: "relanote" }],
     [
       "meta",
       {
         name: "twitter:description",
-        content: "Everything is relative. A pure functional music notation language.",
+        content: "Music as a function. A pure functional, statically-typed language for music.",
       },
     ],
     ["meta", { name: "twitter:image", content: `https://ubugeeei.github.io${base}og-image.png` }],

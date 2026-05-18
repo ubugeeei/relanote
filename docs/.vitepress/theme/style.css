@@ -1,262 +1,308 @@
 /**
- * Score/Ink Color Palette
+ * Relanote documentation theme.
  *
- * Ink (primary): #44403c -> #292524
- * Sepia (accent): #d97706 -> #b45309
- * Paper (background): #faf6f1
- * Staff lines: #e7e5e4
+ * Ink   #0F0F12    (text + mark)
+ * Paper #FFFFFF / #0A0A0D
+ * Accent #FF5C35   (one colour, used sparingly)
+ *
+ * No serif italic, no aged-paper background. The product is code that
+ * produces music, not a sheet-music engraver, so the type system stack
+ * is sans + monospace, the surface stays high-contrast, and the only
+ * colour in the palette is reserved for things the reader needs to
+ * actually act on (links, the active sidebar item, brand buttons).
  */
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
-  /* Typography */
-  --vp-font-family-base: 'Crimson Pro', Georgia, 'Times New Roman', serif;
-  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  /* Brand colors - Sepia */
-  --vp-c-brand-1: #b45309;
-  --vp-c-brand-2: #d97706;
-  --vp-c-brand-3: #f59e0b;
-  --vp-c-brand-soft: rgba(180, 83, 9, 0.14);
+  /* ----- Type ----- */
+  --vp-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --vp-font-family-mono: ui-monospace, SFMono-Regular, "JetBrains Mono",
+    "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Ink colors for text emphasis */
-  --vp-c-text-1: #292524;
-  --vp-c-text-2: #44403c;
-  --vp-c-text-3: #78716c;
+  /* ----- Brand (accent) ----- */
+  --vp-c-brand-1: #FF5C35;
+  --vp-c-brand-2: #E04D26;
+  --vp-c-brand-3: #C2401E;
+  --vp-c-brand-soft: rgba(255, 92, 53, 0.12);
 
-  /* Background - aged paper */
-  --vp-c-bg: #faf6f1;
-  --vp-c-bg-alt: #f5f0e8;
-  --vp-c-bg-elv: #ffffff;
-  --vp-c-bg-soft: #f5f0e8;
+  /* ----- Text ----- */
+  --vp-c-text-1: #0F0F12;
+  --vp-c-text-2: #27272A;
+  --vp-c-text-3: #71717A;
 
-  /* Borders */
-  --vp-c-border: #e7e5e4;
-  --vp-c-divider: #e7e5e4;
-  --vp-c-gutter: #e7e5e4;
+  /* ----- Surface ----- */
+  --vp-c-bg: #FFFFFF;
+  --vp-c-bg-alt: #FAFAFA;
+  --vp-c-bg-elv: #FFFFFF;
+  --vp-c-bg-soft: #F4F4F5;
 
-  /* Code blocks - light paper style */
-  --vp-code-block-bg: #f5f0e8;
-  --vp-code-tab-bg: #ebe5db;
-  --vp-code-tab-text-color: #78716c;
-  --vp-code-tab-active-text-color: #292524;
-  --vp-code-tab-active-bar-color: #b45309;
-  --vp-code-copy-code-bg: #e7e5e4;
-  --vp-code-copy-code-hover-bg: #d6d3d1;
-  --vp-code-line-highlight-color: rgba(180, 83, 9, 0.08);
+  /* ----- Border ----- */
+  --vp-c-border: #E4E4E7;
+  --vp-c-divider: #E4E4E7;
+  --vp-c-gutter: #E4E4E7;
 
-  /* Home hero */
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(135deg, #44403c 0%, #292524 100%);
-  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(180, 83, 9, 0.3) 0%, rgba(217, 119, 6, 0.3) 100%);
-  --vp-home-hero-image-filter: blur(40px);
+  /* ----- Code ----- */
+  --vp-code-block-bg: #FAFAFA;
+  --vp-code-tab-bg: #F4F4F5;
+  --vp-code-tab-text-color: #71717A;
+  --vp-code-tab-active-text-color: #0F0F12;
+  --vp-code-tab-active-bar-color: #FF5C35;
+  --vp-code-copy-code-bg: #F4F4F5;
+  --vp-code-copy-code-hover-bg: #E4E4E7;
+  --vp-code-line-highlight-color: rgba(255, 92, 53, 0.08);
 
-  /* Buttons */
+  /* ----- Home hero (clean, no blurred sepia blob) ----- */
+  --vp-home-hero-name-color: #0F0F12;
+  --vp-home-hero-name-background: none;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
+
+  /* ----- Buttons ----- */
   --vp-button-brand-border: transparent;
-  --vp-button-brand-text: #faf6f1;
-  --vp-button-brand-bg: #b45309;
+  --vp-button-brand-text: #FFFFFF;
+  --vp-button-brand-bg: #0F0F12;
   --vp-button-brand-hover-border: transparent;
-  --vp-button-brand-hover-text: #faf6f1;
-  --vp-button-brand-hover-bg: #d97706;
+  --vp-button-brand-hover-text: #FFFFFF;
+  --vp-button-brand-hover-bg: #27272A;
   --vp-button-brand-active-border: transparent;
-  --vp-button-brand-active-text: #faf6f1;
-  --vp-button-brand-active-bg: #92400e;
+  --vp-button-brand-active-text: #FFFFFF;
+  --vp-button-brand-active-bg: #0F0F12;
 
-  /* Alt button */
-  --vp-button-alt-border: #d6d3d1;
-  --vp-button-alt-text: #44403c;
-  --vp-button-alt-bg: #f5f0e8;
-  --vp-button-alt-hover-border: #d6d3d1;
-  --vp-button-alt-hover-text: #292524;
-  --vp-button-alt-hover-bg: #e7e5e4;
+  --vp-button-alt-border: #E4E4E7;
+  --vp-button-alt-text: #0F0F12;
+  --vp-button-alt-bg: #FFFFFF;
+  --vp-button-alt-hover-border: #0F0F12;
+  --vp-button-alt-hover-text: #0F0F12;
+  --vp-button-alt-hover-bg: #FFFFFF;
+  --vp-button-alt-active-border: #0F0F12;
+  --vp-button-alt-active-text: #0F0F12;
+  --vp-button-alt-active-bg: #F4F4F5;
 
-  /* Custom blocks */
-  --vp-custom-block-tip-border: #d97706;
-  --vp-custom-block-tip-text: #44403c;
-  --vp-custom-block-tip-bg: rgba(217, 119, 6, 0.1);
-  --vp-custom-block-tip-code-bg: rgba(217, 119, 6, 0.2);
+  /* ----- Custom blocks ----- */
+  --vp-custom-block-tip-border: #FF5C35;
+  --vp-custom-block-tip-text: #0F0F12;
+  --vp-custom-block-tip-bg: rgba(255, 92, 53, 0.08);
+  --vp-custom-block-tip-code-bg: rgba(255, 92, 53, 0.14);
 
-  /* Sidebar */
-  --vp-sidebar-bg-color: #faf6f1;
+  /* ----- Sidebar / nav ----- */
+  --vp-sidebar-bg-color: #FFFFFF;
+  --vp-nav-bg-color: #FFFFFF;
 
-  /* Nav */
-  --vp-nav-bg-color: #faf6f1;
-
-  /* Local search */
-  --vp-local-search-highlight-bg: rgba(217, 119, 6, 0.2);
-  --vp-local-search-highlight-text: #b45309;
+  /* ----- Local search ----- */
+  --vp-local-search-highlight-bg: rgba(255, 92, 53, 0.16);
+  --vp-local-search-highlight-text: #C2401E;
 }
 
-/* Dark mode - using html.dark for higher specificity */
 html.dark {
-  --vp-c-brand-1: #d97706;
-  --vp-c-brand-2: #f59e0b;
-  --vp-c-brand-3: #fbbf24;
-  --vp-c-brand-soft: rgba(217, 119, 6, 0.16);
+  --vp-c-brand-1: #FF7A52;
+  --vp-c-brand-2: #FF5C35;
+  --vp-c-brand-3: #E04D26;
+  --vp-c-brand-soft: rgba(255, 122, 82, 0.16);
 
-  /* Neutral colors */
-  --vp-c-neutral: var(--vp-c-white);
-  --vp-c-neutral-inverse: var(--vp-c-black);
+  --vp-c-neutral: #FFFFFF;
+  --vp-c-neutral-inverse: #0A0A0D;
 
-  /* Gray scale for dark mode */
-  --vp-c-gray-1: #a8a29e;
-  --vp-c-gray-2: #78716c;
-  --vp-c-gray-3: #57534e;
-  --vp-c-gray-soft: rgba(120, 113, 108, 0.16);
+  --vp-c-gray-1: #A1A1AA;
+  --vp-c-gray-2: #71717A;
+  --vp-c-gray-3: #52525B;
+  --vp-c-gray-soft: rgba(82, 82, 91, 0.20);
 
-  /* Default colors (used by many VitePress components) */
   --vp-c-default-1: var(--vp-c-gray-1);
   --vp-c-default-2: var(--vp-c-gray-2);
   --vp-c-default-3: var(--vp-c-gray-3);
   --vp-c-default-soft: var(--vp-c-gray-soft);
 
-  /* Text colors - warm cream tones */
-  --vp-c-text-1: rgba(255, 255, 245, 0.86);
-  --vp-c-text-2: rgba(235, 235, 225, 0.6);
-  --vp-c-text-3: rgba(235, 235, 225, 0.38);
+  --vp-c-text-1: #FAFAFA;
+  --vp-c-text-2: #D4D4D8;
+  --vp-c-text-3: #A1A1AA;
 
-  /* Background - warm stone */
-  --vp-c-bg: #44403c;
-  --vp-c-bg-alt: #3a3633;
-  --vp-c-bg-elv: #4a4541;
-  --vp-c-bg-soft: #4a4541;
+  --vp-c-bg: #0A0A0D;
+  --vp-c-bg-alt: #13131A;
+  --vp-c-bg-elv: #18181D;
+  --vp-c-bg-soft: #18181D;
 
-  /* Borders */
-  --vp-c-border: #57534e;
-  --vp-c-divider: #57534e;
-  --vp-c-gutter: #3a3633;
+  --vp-c-border: #27272A;
+  --vp-c-divider: #27272A;
+  --vp-c-gutter: #13131A;
 
-  /* Code blocks */
-  --vp-code-block-bg: #292524;
-  --vp-code-tab-bg: #3a3633;
-  --vp-code-tab-text-color: rgba(235, 235, 225, 0.5);
-  --vp-code-tab-active-text-color: rgba(255, 255, 245, 0.86);
-  --vp-code-tab-active-bar-color: #d97706;
-  --vp-code-copy-code-bg: #57534e;
-  --vp-code-copy-code-hover-bg: #78716c;
-  --vp-code-line-highlight-color: rgba(217, 119, 6, 0.12);
+  --vp-code-block-bg: #13131A;
+  --vp-code-tab-bg: #18181D;
+  --vp-code-tab-text-color: #A1A1AA;
+  --vp-code-tab-active-text-color: #FAFAFA;
+  --vp-code-tab-active-bar-color: #FF7A52;
+  --vp-code-copy-code-bg: #27272A;
+  --vp-code-copy-code-hover-bg: #3F3F46;
+  --vp-code-line-highlight-color: rgba(255, 122, 82, 0.10);
 
-  /* Hero */
-  --vp-home-hero-name-background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
-  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(180, 83, 9, 0.4) 0%, rgba(217, 119, 6, 0.4) 100%);
+  --vp-home-hero-name-color: #FAFAFA;
+  --vp-home-hero-name-background: none;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
 
-  /* Buttons */
-  --vp-button-brand-bg: #d97706;
-  --vp-button-brand-hover-bg: #f59e0b;
-  --vp-button-brand-active-bg: #b45309;
+  --vp-button-brand-text: #0A0A0D;
+  --vp-button-brand-bg: #FAFAFA;
+  --vp-button-brand-hover-text: #0A0A0D;
+  --vp-button-brand-hover-bg: #FFFFFF;
+  --vp-button-brand-active-text: #0A0A0D;
+  --vp-button-brand-active-bg: #D4D4D8;
 
-  --vp-button-alt-border: #57534e;
-  --vp-button-alt-text: rgba(235, 235, 225, 0.7);
-  --vp-button-alt-bg: #44403c;
-  --vp-button-alt-hover-border: #78716c;
-  --vp-button-alt-hover-text: rgba(255, 255, 245, 0.86);
-  --vp-button-alt-hover-bg: #57534e;
+  --vp-button-alt-border: #27272A;
+  --vp-button-alt-text: #FAFAFA;
+  --vp-button-alt-bg: #0A0A0D;
+  --vp-button-alt-hover-border: #52525B;
+  --vp-button-alt-hover-text: #FFFFFF;
+  --vp-button-alt-hover-bg: #18181D;
 
-  /* Custom blocks */
-  --vp-custom-block-tip-border: #d97706;
-  --vp-custom-block-tip-text: rgba(235, 235, 225, 0.7);
-  --vp-custom-block-tip-bg: rgba(217, 119, 6, 0.12);
+  --vp-custom-block-tip-border: #FF7A52;
+  --vp-custom-block-tip-text: #FAFAFA;
+  --vp-custom-block-tip-bg: rgba(255, 122, 82, 0.10);
+  --vp-custom-block-tip-code-bg: rgba(255, 122, 82, 0.18);
 
-  /* Sidebar & Nav */
-  --vp-sidebar-bg-color: #44403c;
-  --vp-nav-bg-color: #44403c;
+  --vp-sidebar-bg-color: #0A0A0D;
+  --vp-nav-bg-color: #0A0A0D;
 
-  /* Local search */
-  --vp-local-search-highlight-bg: rgba(217, 119, 6, 0.25);
-  --vp-local-search-highlight-text: #f59e0b;
+  --vp-local-search-highlight-bg: rgba(255, 122, 82, 0.22);
+  --vp-local-search-highlight-text: #FF7A52;
 }
 
-/* Hero title styling */
+/* ----- Hero ----- */
 .VPHero .name {
-  font-family: Georgia, "Times New Roman", serif;
-  font-style: italic;
+  font-family: var(--vp-font-family-base);
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
-/* Tagline styling */
+.VPHero .text {
+  font-family: var(--vp-font-family-base);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
 .VPHero .tagline {
-  color: #78716c;
+  color: var(--vp-c-text-3);
+  font-weight: 400;
+  max-width: 540px;
 }
 
-html.dark .VPHero .tagline {
-  color: #a8a29e;
+/* The home hero "image" container is the icon mark — give it a clean
+   square frame with a hairline border instead of a coloured blur. */
+.VPHero .image-container {
+  background: transparent !important;
+  filter: none !important;
 }
 
-/* Links */
+.VPHero .image-bg {
+  background: transparent !important;
+  filter: none !important;
+}
+
+/* ----- Links ----- */
 .vp-doc a {
-  color: #b45309;
-  text-decoration-color: rgba(180, 83, 9, 0.4);
+  color: var(--vp-c-text-1);
+  text-decoration: underline;
+  text-decoration-color: var(--vp-c-brand-1);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 .vp-doc a:hover {
-  color: #d97706;
-}
-
-html.dark .vp-doc a {
-  color: #d97706;
-  text-decoration-color: rgba(217, 119, 6, 0.4);
-}
-
-html.dark .vp-doc a:hover {
-  color: #f59e0b;
+  color: var(--vp-c-brand-1);
+  text-decoration-color: var(--vp-c-brand-1);
 }
 
 /* Sidebar active link */
 .VPSidebar .is-active > .link > .text {
-  color: #b45309;
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
 }
 
-html.dark .VPSidebar .is-active > .link > .text {
-  color: #d97706;
-}
-
-/* Code syntax highlighting adjustments for sepia theme */
+/* ----- Code ----- */
 .vp-doc [class*="language-"] code {
-  color: #292524;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.92em;
 }
 
-html.dark .vp-doc [class*="language-"] code {
-  color: rgba(255, 255, 245, 0.86);
-}
-
-/* Inline code */
 .vp-doc :not(pre) > code {
-  background-color: rgba(180, 83, 9, 0.1);
-  color: #92400e;
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  color: var(--vp-c-text-1);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.88em;
   font-family: var(--vp-font-family-mono);
 }
 
 html.dark .vp-doc :not(pre) > code {
-  background-color: rgba(217, 119, 6, 0.2);
-  color: #f59e0b;
+  background-color: var(--vp-c-bg-soft);
+  border-color: var(--vp-c-border);
+  color: var(--vp-c-text-1);
 }
 
-/* Code block styling */
 .vp-doc div[class*="language-"] {
-  border: 1px solid #e7e5e4;
+  border: 1px solid var(--vp-c-border);
   border-radius: 8px;
+  margin: 1.25rem 0;
 }
 
-html.dark .vp-doc div[class*="language-"] {
-  border-color: #57534e;
-}
-
-/* Title and heading typography */
+/* ----- Headings ----- */
 h1, h2, h3, h4, h5, h6,
 .vp-doc h1, .vp-doc h2, .vp-doc h3, .vp-doc h4 {
-  font-family: 'Crimson Pro', Georgia, serif;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--vp-font-family-base);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
+.vp-doc h1 {
+  font-size: 2.4rem;
+  line-height: 1.15;
+}
+
+.vp-doc h2 {
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc h3 {
+  font-size: 1.2rem;
+}
+
+/* Navbar wordmark uses the same system stack — no italic Georgia */
 .VPNavBarTitle .title {
-  font-family: 'Crimson Pro', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
+  font-family: var(--vp-font-family-base);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-/* Body text adjustments */
-.vp-doc p, .vp-doc li {
-  font-size: 1.05rem;
-  line-height: 1.8;
+/* ----- Body text ----- */
+.vp-doc p,
+.vp-doc li {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+/* Generous paragraph spacing for readability */
+.vp-doc p + p {
+  margin-top: 1rem;
+}
+
+/* ----- Tables ----- */
+.vp-doc table {
+  border-collapse: collapse;
+  border: 1px solid var(--vp-c-border);
+  font-size: 0.95rem;
+}
+
+.vp-doc th,
+.vp-doc td {
+  border: 1px solid var(--vp-c-border);
+  padding: 0.6rem 0.85rem;
+}
+
+.vp-doc th {
+  background-color: var(--vp-c-bg-alt);
+  font-weight: 600;
 }
