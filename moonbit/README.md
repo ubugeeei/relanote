@@ -15,6 +15,7 @@ for status.
 | `relanote_lexer`   | `crates/relanote_lexer`  | TokenKind + tokenizer                                 |
 | `relanote_ast`     | `crates/relanote_ast`    | AST data types (visitor deferred to a follow-up)      |
 | `relanote_stdlib`  | `crates/relanote_stdlib` | Embedded prelude `.rela` modules + combined `PRELUDE` |
+| `relanote_types`   | `crates/relanote_types`  | Type ADT, scheme, context, unify (inference walker deferred) |
 
 Regenerate the stdlib embedding after editing the `.rela` sources with
 `bash moonbit/scripts/gen_stdlib.sh`.
