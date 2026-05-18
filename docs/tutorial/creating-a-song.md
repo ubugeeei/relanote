@@ -1,105 +1,86 @@
-# Creating a Song
+# Creating a song
 
-Put everything together to create a complete multi-part composition.
+A relanote piece is just a graph of relative things played together. A
+song is the same primitives — blocks, chords, transformations — at a
+larger scale. There's no new syntax. You just keep composing.
 
-## Song Structure
+## Material first, structure second
 
-A Relanote song consists of:
-- **Sections** - Named parts of the song (Intro, Verse, Chorus)
-- **Parts** - Instrument tracks within a section
-- **Blocks** - Musical content for each part
-
-## A Simple Song
-
-Let's create a complete piece:
+Write the smallest reusable phrases first. Don't think about the song
+shape yet:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Define our musical material
-let melody = | <5> <6> <7> <8> <8> <7> <6> <5> <5> <6> <7> <8> <8>:2 - - |
-
-let bass = | <1>:2 <5>:2 <4>:2 <1>:2 <1>:2 <5>:2 <1>:4 |
-
-melody
+let melody = | <5> <6> <7> <8> <8> <7> <6> <5>  <5> <6> <7> <8> <8>:2 - - |
+let bass   = | <1>:2 <5>:2 <4>:2 <1>:2  <1>:2 <5>:2 <1>:4 |
 ```
 
-## Repetition and Variation
+Each of those is a single value. They can be transposed, repeated,
+reversed, concatenated, layered — anything you'd do with any other
+relanote expression.
 
-Use transformations for development:
+## Develop a theme by transforming it
+
+A song that goes somewhere usually does so by transforming the same
+seed:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let theme = | <1> <3> <5> <3> |
 
-; Variations
-let theme_high = theme |> transpose P8
-let theme_reverse = theme |> reverse
-let theme_twice = theme |> repeat 2
+let answer    = theme |> transpose P5         ; harmonic answer up a fifth
+let inversion = theme |> reverse              ; play the contour backwards
+let echo      = theme |> repeat 2             ; double it
 
-; Combine all variations
-let full = theme ++ theme_high ++ theme_reverse ++ theme_twice
-
-full
+let development = theme ++ answer ++ inversion ++ echo
 ```
 
-## Complete Example: Simple Melody
+Reading the code is reading the structure: you can see at a glance that
+the second half answers the first, then inverts, then echoes.
+
+## Build the arrangement bottom-up
+
+Once you have phrases, the song is the concatenation of the sections
+that use them:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Main theme
-let theme = | <1> <2> <3> <4> <5> <5> <4> <3> <2> <1> <1>:2 |
+let main      = | <1> <2> <3> <4>  <5> <5> <4> <3>  <2> <1> <1>:2 |
+let answer    = main |> transpose P5
+let recap     = main
 
-; Variation - transposed up
-let variation = theme |> transpose P5
+let song      = main ++ answer ++ recap
 
-; Combine
-let fullSong = theme ++ variation ++ theme
-
-fullSong
+song
 ```
 
-## Tips for Song Writing
+Stack the song with a `bass` line as a layer (covered in the
+[Layers guide](/guide/layers)), or set up a `synth` so each part lands
+on the right instrument.
 
-1. **Start simple** - Begin with a melody, then add accompaniment
-2. **Use repetition** - Repeat themes with variations for coherence
-3. **Create contrast** - Vary dynamics, register, and texture between sections
-4. **Layer gradually** - Build from sparse to full arrangement
-5. **End strong** - Bring back main themes in the final section
+## Render to MIDI
 
-## Exercise
-
-Create your own song with:
-- At least 2 phrases
-- Some variation (transpose, reverse, repeat)
-- Rests for breathing room
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Your song here!
-let myTheme = | <1> <3> <5> <3> |
-
-let myVariation = myTheme |> transpose P4
-
-let mySong = myTheme ++ myVariation ++ myTheme
-
-mySong
-```
-
-## Rendering
-
-When you're happy with your song, render it to MIDI:
+When you're ready:
 
 ```bash
-relanote render mysong.rela -o mysong.mid
+relanote render song.rela -o song.mid
 ```
 
-Open the MIDI file in your favorite DAW to:
-- Add better instrument sounds
-- Fine-tune timing and dynamics
-- Mix and master your composition
+Drop the MIDI into any DAW for instrument choice, mix and master. The
+relanote source is the durable copy — the MIDI is one render of it.
 
-Congratulations! You've learned the basics of Relanote. Continue exploring the [Reference](/reference/syntax) for more advanced features.
+## A short checklist
+
+- **Reuse before you write more.** A small theme transformed four ways
+  is denser than four unrelated lines.
+- **Move by intervals, not by pitches.** Transpose, don't rewrite.
+- **Let density change the feel.** Switching from `| a b |` to
+  `| a b c d |` doubles density without touching timing config.
+- **Concat for structure, layer for texture.** `++` builds form across
+  time; layers build form across instruments.
+
+Continue with [Adding synth sounds](/tutorial/synth-sounds) when you want
+something other than the default tone.

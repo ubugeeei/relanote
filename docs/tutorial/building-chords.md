@@ -1,117 +1,85 @@
-# Building Chords
+# Building chords
 
-Learn to create chord progressions and harmonic structures.
+A chord in relanote is **a set of intervals over a root** — the same
+"relative" idea that runs through pitch and rhythm. Define it once with
+`chord`, place it on any root, transpose it like any other value.
 
-## Basic Chords
+## Defining chords
 
-A chord is multiple notes played simultaneously. Define them with the `chord` keyword:
-
-```rela
-; Major triad
-chord MajorTriad = [ R, M3, P5 ]
-
-; Minor triad
-chord MinorTriad = [ R, m3, P5 ]
-
-MajorTriad
-```
-
-## Chord Definitions
-
-Define reusable chord structures:
+`chord Name = [ ... ]` declares a reusable structure. The interior is
+intervals, starting from `R`:
 
 ```rela
-; Major triad
 chord MajorTriad = [ R, M3, P5 ]
-
-; Minor triad
 chord MinorTriad = [ R, m3, P5 ]
-
-; Dominant 7th
-chord Dom7 = [ R, M3, P5, m7 ]
-
-; Major 7th
-chord Maj7 = [ R, M3, P5, M7 ]
-
-; Minor 7th
-chord Min7 = [ R, m3, P5, m7 ]
+chord Dom7       = [ R, M3, P5, m7 ]
+chord Maj7       = [ R, M3, P5, M7 ]
+chord Min7       = [ R, m3, P5, m7 ]
 ```
 
-## Chord Progressions
+There's nothing magic about the names — `MajorTriad` is just three
+intervals. The shape is what's named. Play `MajorTriad` rooted on `C` to
+get C major; root it on `G` to get G major. The chord doesn't change.
 
-Create progressions using scale degrees:
+## Progressions are scale-degree blocks
+
+A progression is the same block syntax as a melody, only each slot
+resolves to a chord rooted on that scale degree:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; I-IV-V-I (the classic progression)
-let progression = | <1> <4> <5> <1> |
-
-progression
+let I_IV_V_I = | <1> <4> <5> <1> |
 ```
+
+Swap the scale to `Minor` and the same line plays a i-iv-v-i. That's
+the whole reason we kept everything relative.
 
 ## Arpeggios
 
-Play chord notes sequentially:
+Spell a chord out one note at a time and you have an arpeggio:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Chord as arpeggio
-let arpeggio = | <1> <3> <5> <8> |
-
-; Descending arpeggio
-let descArp = arpeggio |> reverse
-
-arpeggio
+let up   = | <1> <3> <5> <8> |
+let down = up |> reverse
 ```
 
-## Common Progressions
+Octaves are just another interval — `<8>` is the scale's eighth degree,
+which is the root one octave up.
 
-### I-V-vi-IV (Pop progression)
+## Common shapes
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let popProgression = | <1> <5> <6> <4> |
-
-popProgression
+let pop  = | <1> <5> <6> <4> |             ; I-V-vi-IV
+let jazz = | <2> <5> <1> |                 ; ii-V-I
 ```
 
-### ii-V-I (Jazz progression)
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let jazzProgression = | <2> <5> <1> |
-
-jazzProgression
-```
-
-### 12-Bar Blues
+A twelve-bar blues, in the relative-mode equivalent of every other
+twelve-bar blues ever written:
 
 ```rela
 scale Blues = { R, m3, P4, A4, P5, m7 }
 
-; Simplified 12-bar blues
-let bluesProgression = | <1> <1> <1> <1> <4> <4> <1> <1> <5> <4> <1> <5> |
-
-bluesProgression
+let blues = | <1> <1> <1> <1>  <4> <4> <1> <1>  <5> <4> <1> <5> |
 ```
 
-## Exercise
+## Your turn
 
-Create your own chord progression:
+Pick a four-degree progression you like (vi-IV-I-V is a useful one to
+try). Write it once, then transpose it by a few different intervals.
+Notice that each transposition keeps the same *shape* — the chord
+relationships don't change, only the absolute pitches do.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Try: vi-IV-I-V (another popular progression)
-let myProgression = | <6> <4> <1> <5> |
-
-myProgression
+let progression = | <6> <4> <1> <5> |
+progression ++ (progression |> transpose P5)
 ```
 
-## Next Steps
-
-Now let's put it all together in [Creating a Song](/tutorial/creating-a-song).
+Next: arrange parts, sections and layers in
+[Creating a song](/tutorial/creating-a-song).

@@ -1,162 +1,121 @@
-# Your First Melody
+# Your first melody
 
-Let's create a complete melody with rhythm, dynamics, and structure.
+Three things turn a block of scale degrees into a melody you'd actually
+recognise: **slots**, **rests** and **transformations**. We'll touch each
+one and end with the full *Twinkle Twinkle*.
 
-## Starting Simple
+## Slots are relative time
 
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-; Twinkle Twinkle Little Star
-let melody = | <1> <1> <5> <5> <6> <6> <5> - <4> <4> <3> <3> <2> <2> <1> - |
-
-melody
-```
-
-Each slot in the block has equal duration. With 16 slots in a default 1-beat block, each note is 1/16 of a beat.
-
-## Understanding Relative Rhythm
-
-In Relanote, rhythm is determined by **how many slots** are in a block, not by explicit duration values:
+A block divides one slot equally among the notes inside it. The number
+of notes is what sets the rhythm — not duration tags, not BPM:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; 4 slots = each note is 1/4 of the block duration
+; 4 notes share the slot equally.
 let fast = | <1> <2> <3> <4> |
 
-; 2 slots = each note is 1/2 of the block duration
-let slower = | <1> <5> |
+; 2 notes share the same slot — each at half the density of `fast`.
+let slow = | <1> <5> |
 
-; 1 slot = the note fills the whole block
+; 1 note holds the full slot.
 let whole = | <1> |
 ```
 
-## Controlling Block Duration
-
-Use `:n` after a block to set its total duration in beats:
+Append a `:n` to set how many beats the slot covers:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; 4 notes spread over 4 beats = quarter notes
-let quarters = | <1> <2> <3> <4> |:4
-
-; 4 notes in 2 beats = eighth notes
-let eighths = | <1> <2> <3> <4> |:2
-
-; 4 notes in 1 beat = sixteenth notes (default)
-let sixteenths = | <1> <2> <3> <4> |
-
-quarters
+let quarters = | <1> <2> <3> <4> |:4   ; 4 notes over 4 beats → quarter notes
+let eighths  = | <1> <2> <3> <4> |:2   ; 4 notes over 2 beats → eighths
+let sixteenths = | <1> <2> <3> <4> |   ; default slot → sixteenths
 ```
 
-## Rests Create Rhythm
+## Rests are notes too
 
-Use `-` for rests to add space:
+A `-` is a rest. It takes the same share of the slot as any pitched
+note next to it:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Notes with rests
-let with_rests = | <1> - <3> - <5> - - - |
-
-with_rests
+let breath = | <1> - <3> - <5> - - - |
 ```
 
-## Combining Different Rhythms
+## Combine blocks of different densities
 
-Concatenate blocks with `++` to create varied rhythms:
+`++` concatenates blocks. Each block keeps the relative rhythm it was
+written in, so you can splice fast passages into slow ones without
+recomputing durations:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Fast passage
-let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |
-
-; Slow resolution
-let slow = | <1> <5> |
-
-; Held final note (2 beats)
+let run    = | <1> <2> <3> <4> <5> <4> <3> <2> |
+let answer = | <1> <5> |
 let ending = | <1> |:2
 
-; Each block keeps its own rhythm!
-let phrase = fast ++ slow ++ ending
-
-phrase
+let phrase = run ++ answer ++ ending
 ```
 
-## Transformations
+## Transform what you already have
 
-Make variations using transformations:
+A melody is just a value, so the language's regular tools apply:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let theme = | <1> <3> <5> <3> |
 
-; Variations
-let higher = theme |> transpose P8      ; One octave up
-let backwards = theme |> reverse          ; Play in reverse
-let twice = theme |> repeat 2            ; Play twice
+let higher    = theme |> transpose P8
+let backwards = theme |> reverse
+let doubled   = theme |> repeat 2
 
-; Combine variations
-let combined = theme ++ higher ++ backwards
-
-combined
+let braided   = theme ++ higher ++ backwards
 ```
 
-## Complete Example: Twinkle Twinkle
+## Twinkle Twinkle
 
-Here's the full melody with proper phrasing:
+The first two phrases of *Twinkle Twinkle Little Star*, written in two
+lines that don't care what key you're in:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; First phrase: "Twinkle twinkle little star"
 let phrase1 = | <1> <1> <5> <5> <6> <6> <5> - |
-
-; Second phrase: "How I wonder what you are"
 let phrase2 = | <4> <4> <3> <3> <2> <2> <1> - |
 
-; Combine into full melody
-let twinkle = phrase1 ++ phrase2
-
-twinkle
+phrase1 ++ phrase2
 ```
 
-## Adding Expression
+Switch the scale to `Minor` and the same lines play *Twinkle in a minor
+key*. That's the win: the *shape* of the melody and its key are
+independent variables.
 
-Use articulations to add character:
+## Expression
+
+Articulations attach to individual notes:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; With accents and staccato
-let expressive = | <1>^ <1> <5>^ <5> <6>^ <6> <5>~ - |
-
-expressive
+; ^ = accent, * = staccato, ~ = portamento
+let phrase = | <1>^ <1> <5>^ <5> <6>^ <6> <5>~ - |
 ```
 
-## Exercise
+## Your turn
 
-Try creating your own melody:
-
-1. Choose a scale (Major, Minor, Pentatonic)
-2. Write a short phrase using scale degrees
-3. Experiment with the number of slots for different rhythms
-4. Add rests for breathing room
-5. Use articulations for expression
+Write a short phrase. Pick a scale, pick a block density, pick a few
+rests. Try transposing it by an interval and concatenating the
+transposed copy back onto the original — that's a one-line two-voice
+imitation.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Your turn! Create a melody
-let myMelody = | <1> <3> <5> - <5> <3> <1> - |
-
-myMelody
+let phrase = | <1> <3> <5> - <5> <3> <1> - |
+phrase ++ (phrase |> transpose P5)
 ```
 
-## Next Steps
-
-Now that you can create melodies, let's learn about [Building Chords](/tutorial/building-chords).
+When you're done, head into [Building chords](/tutorial/building-chords).
