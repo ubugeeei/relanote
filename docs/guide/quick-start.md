@@ -1,97 +1,97 @@
-# Quick Start
+# Quick start
 
-Get up and running with Relanote in 5 minutes.
+Five minutes from zero to a melody you can render.
 
-## Hello, Music!
-
-Create a file called `hello.rela`:
+## Write `hello.rela`
 
 ```rela
-; Set the key and tempo
 set key = C4
 set tempo = 120
 
-; Define a major scale
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Create a simple melody using scale degrees
 let melody = | <1> <3> <5> <3> <1> |
-
-; Play it!
 melody
 ```
 
-Run it:
+Run it locally:
 
 ```bash
 relanote run hello.rela
 ```
 
-Or try it in the [Web Playground](https://ubugeeei.github.io/relanote/).
+Or skip the install and open the
+[Playground](https://ubugeeei.github.io/relanote/playground/).
 
-## Understanding the Code
+## What each line is doing
 
 ### Intervals
 
-`R, M2, M3, P4, P5, M6, M7` are **intervals**:
-- `R` = Root (unison)
-- `P` = Perfect (4th, 5th, octave)
-- `M` = Major (2nd, 3rd, 6th, 7th)
-- `m` = Minor
-- `A` = Augmented
-- `d` = Diminished
+`R, M2, M3, P4, P5, M6, M7` are **intervals** — relationships between
+two pitches, not pitches themselves. Quality first, degree second:
 
-The number indicates the scale degree.
+| Quality | Letter |
+| --- | --- |
+| Root / unison | `R` |
+| Perfect | `P` |
+| Major | `M` |
+| Minor | `m` |
+| Augmented | `A` |
+| Diminished | `d` |
+
+So `P5` is a perfect fifth, `m7` is a minor seventh, `M3` is a major
+third.
 
 ### Scales
+
+A `scale` declaration is a *set of intervals over an unspecified root*:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 ```
 
-A `scale` defines a set of intervals from a root note using curly braces.
+`Major` doesn't know what key it's in. That's the point.
 
-### Scale Degrees
+### Scale degrees
+
+`<n>` is the *n*th degree of whatever scale is in scope. The same line
+plays a different melody under a different scale:
 
 ```rela
 | <1> <2> <3> <4> <5> |
 ```
 
-`<n>` refers to the nth degree of the current scale. The `| |` delimiters create a block of notes.
+### Relative rhythm
 
-### Relative Rhythm
-
-The number of slots in a block determines the rhythm:
+The number of slots in a block sets the rhythm. The block doesn't carry
+durations — it carries *how the slot is divided*:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-| <1> <2> <3> <4> |    ; 4 notes in 1 beat = each is 0.25 beats
-| <1> <5> |            ; 2 notes in 1 beat = each is 0.5 beats
-| <1> |                ; 1 note fills the whole beat
+| <1> <2> <3> <4> |    ; 4 notes share the slot equally
+| <1> <5> |            ; 2 notes share the same slot at half density
+| <1> |                ; 1 note fills it
 ```
 
-Use `:n` to set the block's total duration:
+Pin the slot's length in beats with `:n`:
 
 ```rela
-| <1> <2> <3> <4> |:4  ; 4 notes in 4 beats = quarter notes
+| <1> <2> <3> <4> |:4  ; 4 notes over 4 beats → quarter notes
 ```
 
-### Block Concatenation
+### Concatenation
 
-Combine blocks with `++`. Each block keeps its own rhythm:
+`++` glues blocks of any density together. Each block keeps its own
+shape:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let fast = | <1> <2> <3> <4> |      ; 4 notes = fast
-let slow = | <1> <5> |              ; 2 notes = slower
-let melody = fast ++ slow           ; Both rhythms preserved!
-
-melody
+let fast = | <1> <2> <3> <4> |
+let slow = | <1> <5> |
+fast ++ slow
 ```
 
 ### Pipes
+
+`|>` chains transformations from left to right:
 
 ```rela
 melody |> repeat 2
@@ -99,7 +99,8 @@ melody |> transpose P5
 melody |> reverse
 ```
 
-The pipe `|>` applies a transformation to a value, reading left-to-right.
+Read it as "the value on the left, then this transformation, then this
+one". Same shape as a Unix pipeline.
 
 ## Render to MIDI
 
@@ -107,39 +108,41 @@ The pipe `|>` applies a transformation to a value, reading left-to-right.
 relanote render hello.rela -o hello.mid
 ```
 
-Open `hello.mid` in any music software to hear your composition!
+Open the resulting `.mid` in any DAW or playback tool.
 
-## Setting the Key
+## Key and tempo
 
-By default, the root note is C4 (middle C). You can specify a different key:
+`set` binds the runtime context. The default key is `C4`; the default
+tempo is `120`:
 
 ```rela
-set key = Bb3   ; B-flat below middle C
-set tempo = 140 ; 140 BPM
+set key = Bb3
+set tempo = 140
 
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 | <1> <3> <5> |
 ```
 
-## Quick Reference
+## Cheat sheet
 
 | Syntax | Meaning |
-|--------|---------|
-| `R, M3, P5` | Intervals |
-| `C4, Bb3, F#4` | Absolute pitches |
-| `scale Name = { ... }` | Define a scale |
-| `<n>` | nth scale degree |
-| `\| ... \|` | Block (sequence) |
-| `\| ... \|:n` | Block with n beats |
-| `-` | Rest |
-| `++` | Concatenate |
-| `\|>` | Pipe |
-| `[ ... ]` | Chord |
-| `set key = C4` | Set root note |
-| `set tempo = 120` | Set tempo |
+| --- | --- |
+| `R, M3, P5` | intervals |
+| `C4, Bb3, F#4` | absolute pitches |
+| `scale Name = { … }` | scale definition |
+| `<n>` | nth scale degree of the active scale |
+| `\| … \|` | block (one slot, equally divided) |
+| `\| … \|:n` | block pinned to *n* beats |
+| `-` | rest (still takes a share of the slot) |
+| `++` | concatenate blocks |
+| `\|>` | pipe |
+| `[ … ]` | chord (intervals played together) |
+| `set key = C4` | runtime root |
+| `set tempo = 120` | runtime tempo |
 
-## Next Steps
+## Where to go next
 
-- Learn about [Intervals](/guide/intervals) in depth
-- Explore [Blocks](/guide/blocks) and rhythm
-- Try the [Tutorial](/tutorial/getting-started)
+- [Intervals](/guide/intervals) — the full quality / degree story.
+- [Blocks](/guide/blocks) — rhythm and density in detail.
+- [Tutorial](/tutorial/getting-started) — a guided walk through a
+  finished piece.

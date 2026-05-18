@@ -1,180 +1,113 @@
-# Adding Synth Sounds
+# Synth sounds
 
-Learn how to use synthesizers to give your compositions unique timbres and textures.
+Every block you've written so far played through the default tone.
+relanote also ships a library of preset synths and lets you define your
+own. The same relative composition surface drives all of it — `voice` is
+just one more transformation in the pipe chain.
 
-## What are Synths?
-
-Synthesizers in Relanote let you control how notes sound. You can use:
-- **Preset synths** - Ready-to-use sounds like Lead, Pad, Bass
-- **Custom synths** - Define your own with oscillators, filters, and envelopes
-- **Parameter adjustments** - Tweak cutoff, resonance, and more
-
-## Using Preset Synths
-
-Apply a synth to your melody with the `voice` function:
+## Apply a preset with `voice`
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; A simple melody
 let melody = | <1> <3> <5> <3> |
-
-; Apply a lead synth sound
-let lead = melody |> voice Lead
-
-lead
+melody |> voice Lead
 ```
 
-## Available Presets
+`voice` is a function, so it composes with everything else:
 
-### Classic Synths
+```rela
+melody |> voice Lead |> reverb 0.3 |> volume 0.8
+```
 
-Try these different synth sounds:
+## A tour of the preset library
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <8> |
 
-; Bright sawtooth lead
-let bright = melody |> voice Lead
-
-; Warm sustained pad
-let warm = melody |> voice SoftPad
-
-; Thick bass sound
-let thick = melody |> voice FatBass
-
-; Short pluck
-let plucky = melody |> voice Pluck
-
-bright
+melody |> voice Lead      ; bright sawtooth
+melody |> voice SoftPad   ; warm sustained pad
+melody |> voice FatBass   ; thick low end
+melody |> voice Pluck     ; short percussive pluck
 ```
 
-### 8-bit Sounds
-
-Create retro video game music:
+8-bit and chiptune flavours:
 
 ```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <8> <5> <3> |
-
-; Classic chiptune
-let chip = melody |> voice Chiptune
-
-; NES-style sound
-let nes = melody |> voice NES
-
-; GameBoy style
-let gameboy = melody |> voice GameBoy
-
-chip
+melody |> voice Chiptune
+melody |> voice NES
+melody |> voice GameBoy
 ```
 
-### Drum Sounds
-
-Add rhythm with synthesized drums:
+Drums work the same way — the note is just a trigger, and the synth
+shapes the hit:
 
 ```rela
-; Kick drum pattern
-let kick = | R - - - | |> repeat 4 |> voice Kick
-
-; Snare on beats 2 and 4
+let kick  = | R - - - | |> repeat 4 |> voice Kick
 let snare = | - - R - | |> repeat 4 |> voice Snare
-
-; Hi-hat pattern
-let hat = | R R R R | |> repeat 4 |> voice HiHat |> volume 0.4
-
-kick
+let hat   = | R R R R | |> repeat 4 |> voice HiHat |> volume 0.4
 ```
 
-## Adjusting Synth Parameters
+## Shape the sound with parameters
 
-Fine-tune your sound with parameter functions:
+Each parameter is its own function. Stack them:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <8> |
 
-; Darker sound with low cutoff
-let dark = melody |> voice Lead |> cutoff 800
-
-; Bright and resonant
-let bright = melody |> voice Lead |> cutoff 3000 |> resonance 0.5
-
-; Detuned for thickness
-let fat = melody |> voice Lead |> detune 15
-
-; Custom envelope (attack, decay, sustain, release)
-let slow = melody |> voice Lead |> adsr 0.3 0.2 0.7 0.5
-
-dark
-```
-
-## Combining Synths with Effects
-
-Chain synth parameters with other effects:
-
-```rela
-scale Major = { R, M2, M3, P4, P5, M6, M7 }
-
-let melody = | <1> <3> <5> <8> <5> <3> <1> - |
-
-; Full processing chain
-let processed = melody
+melody
   |> voice Lead
-  |> cutoff 2000
-  |> resonance 0.3
-  |> reverb 0.4
-  |> volume 0.8
-
-processed
+  |> cutoff 800            ; darker
+melody
+  |> voice Lead
+  |> cutoff 3000
+  |> resonance 0.5         ; bright + resonant
+melody
+  |> voice Lead
+  |> detune 15             ; thickened by detuning voices
+melody
+  |> voice Lead
+  |> adsr 0.3 0.2 0.7 0.5  ; custom attack / decay / sustain / release
 ```
 
-## Creating a Synth Arrangement
+## A multi-part arrangement
 
-Put it all together in a multi-part piece:
+Parts pin a block to an instrument; sections group parts that play
+together:
 
 ```rela
 scale Minor = { R, M2, m3, P4, P5, m6, m7 }
 
 let main = section "Main" {
-  ; Lead melody
   part "Lead" {
     | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
   } |> voice Lead |> volume 0.8
 
-  ; Pad chords
   part "Pad" {
     | [<1> <3> <5>] | ++ | [<1> <3> <5>] |
   } |> voice SoftPad |> volume 0.5
 
-  ; Bass line
   part "Bass" {
     | <1> - <1> <5> | ++ | <4> - <4> <1> |
   } |> voice FatBass |> cutoff 300
 
-  ; Drums
-  part "Kick" {
-    | R - R - | ++ | R - R R |
-  } |> voice Kick
-
-  part "Hat" {
-    | R R R R | ++ | R R R R |
-  } |> voice HiHat |> volume 0.3
+  part "Kick" { | R - R - | ++ | R - R R | } |> voice Kick
+  part "Hat"  { | R R R R | ++ | R R R R | } |> voice HiHat |> volume 0.3
 }
 
 compose([main])
 ```
 
-## Custom Synth Definitions
+## Custom synths
 
-For ultimate control, define your own synth:
+When the presets don't have what you want, declare your own. A synth is
+a record of oscillator, envelope and filter:
 
 ```rela
-; Define a custom synth
 synth MyLead = {
   osc: Saw,
   env: { A: 0.02, D: 0.15, S: 0.7, R: 0.2 },
@@ -190,38 +123,28 @@ synth PunchyBass = {
 
 scale Minor = { R, M2, m3, P4, P5, m6, m7 }
 
-let melody = | <1> <3> <5> <8> |
-let bass = | <1> - <1> <5> |
+let lead = | <1> <3> <5> <8> | |> voice MyLead
+let bass = | <1> - <1> <5> |   |> voice PunchyBass
 
-let song = section "Custom" {
-  part "Lead" { melody } |> voice MyLead
-  part "Bass" { bass } |> voice PunchyBass
-}
-
-compose([song])
+section "Custom" { part "L" { lead } ; part "B" { bass } }
 ```
 
-## Exercise
+## A chiptune sketch
 
-Create a chiptune-style song:
-
-1. Use 8-bit synth presets (Chiptune, NES, GameBoy)
-2. Add a bass line with low cutoff
-3. Include simple drum sounds
+Three preset calls and the whole piece reads like a chiptune:
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Your chiptune here!
-let lead = | <1> <3> <5> <8> | |> voice Chiptune
-let bass = | <1> - <1> <5> | |> voice Chiptune |> cutoff 400
-let drums = | R - R - | |> voice Kick
+let lead  = | <1> <3> <5> <8> | |> voice Chiptune
+let bass  = | <1> - <1> <5> |   |> voice Chiptune |> cutoff 400
+let drums = | R - R - |          |> voice Kick
 
 lead
 ```
 
-## Next Steps
+## Where to go next
 
-- Explore the [Synthesizers Guide](/guide/synth) for complete documentation
-- Check out the [examples/10_chiptune.rela](https://github.com/ubugeeei/relanote/blob/main/examples/10_chiptune.rela) for more 8-bit ideas
-- Try [examples/11_synth_advanced.rela](https://github.com/ubugeeei/relanote/blob/main/examples/11_synth_advanced.rela) for advanced sound design
+- [Synthesizers guide](/guide/synth) for full preset and parameter docs.
+- [`examples/10_chiptune.rela`](https://github.com/ubugeeei/relanote/blob/main/examples/10_chiptune.rela) — a complete 8-bit piece.
+- [`examples/11_synth_advanced.rela`](https://github.com/ubugeeei/relanote/blob/main/examples/11_synth_advanced.rela) — custom synth design.
