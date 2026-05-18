@@ -1,0 +1,48 @@
+{
+  "name": "relanote-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "relanote — a pure functional, statically-typed language for music. Workspace root.",
+  "scripts": {
+    "build": "cargo build",
+    "release": "cargo build --release",
+    "check": "cargo check",
+    "lint": "cargo clippy -- -D warnings",
+    "fmt": "cargo fmt",
+    "fmt:check": "cargo fmt -- --check",
+    "clean": "cargo clean",
+    "doc": "cargo doc --no-deps --open",
+    "run": "cargo run -p relanote_cli --",
+    "lsp": "cargo run -p relanote_cli -- lsp",
+    "moon:check": "cd moonbit && moon check",
+    "moon:test": "cd moonbit && moon test",
+    "stdlib:regen": "bash moonbit/scripts/gen_stdlib.sh",
+    "wasm:build": "wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg",
+    "wasm:release": "wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg --release",
+    "web:install": "cd web && pnpm install",
+    "web:build": "cd web && pnpm build",
+    "web:prepare": "cd web && pnpm exec nuxt prepare",
+    "web:preview": "cd web && pnpm preview",
+    "docs:install": "cd docs && pnpm install",
+    "docs:dev": "cd docs && pnpm dev",
+    "docs:build": "cd docs && pnpm build",
+    "test:rust": "cargo test",
+    "test": "vite-node tasks/test.ts",
+    "ci": "vite-node tasks/ci.ts",
+    "setup": "vite-node tasks/setup.ts",
+    "dev": "vite-node tasks/dev.ts",
+    "og:png": "vite-node tasks/og-png.ts",
+    "tasks": "vite-node tasks/list.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0",
+    "vite-node": "^2.1.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=22"
+  }
+}
