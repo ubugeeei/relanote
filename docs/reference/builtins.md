@@ -668,3 +668,146 @@ let bass = | <1>:2 <5>:2 |
 
 layer [chords, bass]
 ```
+
+## Tunings and microtones
+
+### in_tuning
+
+Resolve every pitch in a passage through the given tuning. Inverse
+of `set tuning` for ad-hoc passages.
+
+```rela
+in_tuning : Tuning -> Block -> Block
+
+melody |> in_tuning JustIntonation
+chorus |> in_tuning WerckmeisterIII
+```
+
+### cents
+
+Cents fine-tune wrapper around a pitch. Usually written inline as
+`P5 +Nc` / `M3 -Nc`, but the function form lets you compute the
+offset:
+
+```rela
+cents : Float -> Interval -> Interval
+
+let small_just_third = cents (-13.7) M3
+let chromatic_step   = cents 100.0 P1     ; equivalent to m2
+```
+
+### tuning constructors
+
+```rela
+equal           : { steps: Int } -> Tuning
+ratios          : Array[(Int, Int)] -> Tuning
+ratios_per_period : { period: (Int, Int), steps: Int } -> Tuning
+cents_table     : Array[Float] -> Tuning
+```
+
+## Grooves and polyrhythm
+
+### groove
+
+Apply a `groove` template to a block. Per-track variant of
+`set groove = ...`.
+
+```rela
+groove : Groove -> Block -> Block
+
+drums |> groove Dilla
+melody |> groove Swing67
+```
+
+### over
+
+Polyrhythm: `a over b` plays both lines simultaneously at their own
+periods. The combined figure repeats every `lcm(slots(a), slots(b))`
+slots.
+
+```rela
+over : Block -> Block -> Block
+
+| <1> <5> <8> |:3 over | [<1> m3 P5] [<4> m6 R] [<5> m7 P9] [<1> m3 P5] |:4
+```
+
+### swing / double_time / half_time
+
+```rela
+swing       : Block -> Block      ; classic 8th-note swing
+double_time : Block -> Block      ; halve every duration
+half_time   : Block -> Block      ; double every duration
+```
+
+## Modal interchange
+
+### in_scale
+
+Reinterpret scale-degree references against a different scale for
+the duration of one expression. Useful for borrowed chords and modal
+mixture.
+
+```rela
+in_scale : Scale -> Block -> Block
+
+let chorus = verse |> in_scale Minor   ; same shape, parallel minor
+```
+
+## Mixing
+
+These are the functions available inside a `mix { ... }` block (and
+sometimes outside as part of a pipe chain).
+
+### track
+
+Address a named part from inside the mix.
+
+```rela
+track : String -> Track
+```
+
+### bus / send
+
+Define a shared effect chain and route a fraction of a track's signal
+into it.
+
+```rela
+bus      : Name -> Effect -> Bus
+send     : Bus -> Float -> Track -> Track
+
+bus Verb = effect PlateLarge
+track "lead" |> send Verb 0.35
+```
+
+### sidechain
+
+Source ducks target's amplitude every time the source triggers.
+
+```rela
+sidechain : Track -> Track -> Float -> SidechainLink
+
+sidechain track "kick" -> track "bass" 0.6
+```
+
+### master
+
+Apply a final effect chain to the summed mix.
+
+```rela
+master : Effect
+
+master = effect MasterChain
+```
+
+### compress / saturate / limit
+
+Convenience wrappers around the corresponding `effect` types for
+quick per-track use:
+
+```rela
+compress : Float -> Float -> Block -> Block          ; threshold dB, ratio
+saturate : Float -> Block -> Block                   ; 0..1 drive
+limit    : Float -> Block -> Block                   ; ceiling dB
+
+track "lead" |> compress -12 3 |> limit -1
+```
