@@ -1,159 +1,144 @@
 # Intervals
 
-Intervals are the heart of Relanote. They describe the distance between two notes without specifying absolute pitch.
+An interval is **the distance between two notes**, written without
+committing to either of them. Intervals are the smallest "relative"
+unit in the language; scales are sets of intervals, chords are sets of
+intervals, melodies are sequences of scale-degree references that
+resolve through intervals.
 
-## Interval Notation
+## Notation
 
-An interval consists of:
-1. **Quality**: P (Perfect), M (Major), m (minor), A (Augmented), d (diminished)
-2. **Number**: 1-13 (scale degree)
-3. **Modifier**: + (up semitone), - (down semitone)
+Every interval is `<quality><degree>` with optional semitone modifiers:
 
-```rela
-P1    ; Perfect unison (0 semitones)
-m2    ; Minor second (1 semitone)
-M2    ; Major second (2 semitones)
-m3    ; Minor third (3 semitones)
-M3    ; Major third (4 semitones)
-P4    ; Perfect fourth (5 semitones)
-A4    ; Augmented fourth / Tritone (6 semitones)
-d5    ; Diminished fifth / Tritone (6 semitones)
-P5    ; Perfect fifth (7 semitones)
-m6    ; Minor sixth (8 semitones)
-M6    ; Major sixth (9 semitones)
-m7    ; Minor seventh (10 semitones)
-M7    ; Major seventh (11 semitones)
-P8    ; Perfect octave (12 semitones)
+```
+P1   m2   M2   m3   M3   P4   A4   d5   P5   m6   M6   m7   M7   P8
 ```
 
-## Semitone Modifiers
+| Quality | Letter |
+| --- | --- |
+| Root / unison | `R` (equivalent to `P1`) |
+| Perfect | `P` (1, 4, 5, 8…) |
+| Major | `M` (2, 3, 6, 7…) |
+| Minor | `m` |
+| Augmented | `A` |
+| Diminished | `d` |
 
-Add `+` or `-` to shift by semitones:
+The number is the scale degree.
 
 ```rela
-P5+   ; Perfect fifth + 1 semitone (8 semitones, enharmonic to m6)
-M3-   ; Major third - 1 semitone (3 semitones, enharmonic to m3)
-P1++  ; Two semitones up (= M2)
-P4--  ; Perfect fourth - 2 semitones (3 semitones)
+P1   ; perfect unison (0 semitones)
+m2   ; minor second   (1)
+M2   ; major second   (2)
+m3   ; minor third    (3)
+M3   ; major third    (4)
+P4   ; perfect fourth (5)
+A4   ; augmented 4th, a.k.a. tritone (6)
+d5   ; diminished 5th, also 6 — enharmonic to A4
+P5   ; perfect fifth  (7)
+m6   ; minor sixth    (8)
+M6   ; major sixth    (9)
+m7   ; minor seventh  (10)
+M7   ; major seventh  (11)
+P8   ; perfect octave (12)
 ```
 
-## Microtones
+## Semitone modifiers
 
-Relanote internally uses **cents** (100 cents = 1 semitone) for precise pitch representation.
-This enables microtonal music and alternative tuning systems.
+Append `+` to raise by a semitone, `-` to lower. Stack them for larger
+shifts:
 
-When using MIDI output, microtones are rendered using pitch bend messages.
+```rela
+P5+   ; perfect fifth + 1 = 8 semitones (enharmonic to m6)
+M3-   ; major third - 1 = 3 (enharmonic to m3)
+P1++  ; +2 semitones = M2
+P4--  ; -2 semitones = 3
+```
 
-### Chromatic Passages
+## Cents and microtones
 
-Use `+` and `-` modifiers for chromatic movement:
+Internally relanote works in **cents** (100 cents per semitone), so
+microtones and alternative tunings are first-class. MIDI output emits
+pitch-bend messages for any fractional semitone.
+
+### Chromatic passages
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Chromatic ascending
-let chromatic = | P1 P1+ M2 M2+ M3 P4 |
-
-; Descending with flats
-let descending = | P5 P5- P4 P4- M3 M3- M2 |
+let up   = | P1 P1+ M2 M2+ M3 P4 |
+let down = | P5 P5- P4 P4- M3 M3- M2 |
 ```
 
-### Chromatic Scale
-
-Build a full chromatic scale using semitone modifiers:
+### A full chromatic scale
 
 ```rela
-let chromatic_scale = |
+let chromatic = |
   P1 P1+ M2 M2+ M3 P4
   P4+ P5 P5+ M6 M6+ M7
   P8
 |
 ```
 
-### Blue Notes
-
-Blues idiom uses "bent" notes - slightly flat 3rd and 7th:
+### Blue notes
 
 ```rela
-; Classic blues phrase with blue notes
-let blues_phrase = | P1 m3 P4 P4+ P5 m7 P1 - |
+let blues = | P1 m3 P4 P4+ P5 m7 P1 - |
 ```
 
-### Neighbor Tones
+### Neighbour tones
 
-Create tension with semitone movements around a target note:
+A common ornament — step away by a semitone, return:
 
 ```rela
-; Upper neighbor
-let upper_neighbor = | P5 P5+ P5 - |
-
-; Lower neighbor
-let lower_neighbor = | P5 P5- P5 - |
-
-; Combined approach
-let neighbors = | P5 P5+ P5 - P5 P5- P5 - |
+let upper = | P5 P5+ P5 - |
+let lower = | P5 P5- P5 - |
+let both  = | P5 P5+ P5 - P5 P5- P5 - |
 ```
 
-### Whole Tone Scale
+### Whole-tone
 
-The whole tone scale uses only major seconds:
+Only major seconds:
 
 ```rela
-let wholetone = | P1 M2 M3 A4 m6+ M7 |
+let whole_tone = | P1 M2 M3 A4 m6+ M7 |
 ```
 
-## Interval Arithmetic
+## Arithmetic
 
-Intervals can be added and subtracted:
+Intervals add and subtract:
 
 ```rela
-M3 + m3    ; = P5 (4 + 3 = 7 semitones)
-P8 - P5    ; = P4 (12 - 7 = 5 semitones)
-M2 + M2    ; = M3 (2 + 2 = 4 semitones)
+M3 + m3    ; = P5     (4 + 3)
+P8 - P5    ; = P4     (12 - 7)
+M2 + M2    ; = M3     (2 + 2)
 ```
 
-## Common Interval Patterns
+## Common shapes built from intervals
 
-### Major Triad
 ```rela
-[P1, M3, P5]    ; Root, major third, perfect fifth
+[P1, M3, P5]            ; major triad
+[P1, m3, P5]            ; minor triad
+[P1, M3, P5, m7]        ; dominant 7th
+[P1, M2, M3, P4, P5, M6, M7]    ; major scale
+[P1, M2, m3, P4, P5, m6, m7]    ; natural minor
 ```
 
-### Minor Triad
+## Intervals as functions
+
+Because intervals are values, you can build transformations out of
+them:
+
 ```rela
-[P1, m3, P5]    ; Root, minor third, perfect fifth
+let up_a_fifth = \i -> i + P5
+
+P1 |> up_a_fifth    ; P5
+M3 |> up_a_fifth    ; M7
 ```
 
-### Dominant 7th
-```rela
-[P1, M3, P5, m7]
-```
+## Enharmonic equality
 
-### Major Scale
-```rela
-[P1, M2, M3, P4, P5, M6, M7]
-```
-
-### Minor Scale (Natural)
-```rela
-[P1, M2, m3, P4, P5, m6, m7]
-```
-
-## Intervals as Functions
-
-Intervals can transform other intervals:
+Two intervals with the same semitone distance compare equal:
 
 ```rela
-let transpose_up_fifth = \i -> i + P5
-
-P1 |> transpose_up_fifth    ; P5
-M3 |> transpose_up_fifth    ; M7
-```
-
-## Enharmonic Equivalents
-
-Relanote treats enharmonically equivalent intervals as identical:
-
-```rela
-A4 == d5    ; Both are 6 semitones (tritone)
+A4 == d5    ; both six semitones (tritone)
 ```
