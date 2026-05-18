@@ -1,0 +1,100 @@
+name: Deploy to Void
+
+# Replacement candidate for `deploy.yml` (GitHub Pages). For safety the
+# trigger is `workflow_dispatch` only — the owner runs this manually
+# from the Actions tab. Once a manual run proves itself green end-to-end
+# and the `VOID_TOKEN` secret is wired up, a follow-up flips the trigger
+# to `push: branches: [main]` and removes the GitHub Pages workflow.
+#
+# Tracked in #16.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: void-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-void-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-void-
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-void-${{ hashFiles('docs/pnpm-lock.yaml', 'web/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-void-
+
+      # Until #15 lands (drop the Rust WASM crate), Void's build still
+      # needs `wasm-pack` available. After #15 this step goes away.
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: Build WASM
+        run: wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg --release
+
+      - name: Install docs dependencies
+        run: cd docs && pnpm install
+
+      - name: Build docs
+        run: cd docs && pnpm build
+
+      - name: Install web dependencies
+        run: cd web && pnpm install
+
+      - name: Build web (playground)
+        run: cd web && pnpm generate
+        env:
+          NUXT_APP_BASE_URL: /playground/
+
+      - name: Combine outputs into dist/
+        run: |
+          mkdir -p dist
+          cp -r docs/.vitepress/dist/* dist/
+          mkdir -p dist/playground
+          cp -r web/.output/public/* dist/playground/
+
+      # `npx void deploy` reads `void.config.{js,ts,json}` if present and
+      # otherwise defaults to publishing the working tree to Void's edge.
+      # The token comes from a repository secret called `VOID_TOKEN`.
+      - name: Deploy to Void
+        run: npx -y void deploy --dir dist
+        env:
+          VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
