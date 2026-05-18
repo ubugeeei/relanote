@@ -1,0 +1,27 @@
+; ===========================================
+; Scales
+; ===========================================
+
+; Basic Scales
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+scale Dorian = { R, M2, m3, P4, P5, M6, m7 }
+scale Phrygian = { R, m2, m3, P4, P5, m6, m7 }
+scale Lydian = { R, M2, M3, A4, P5, M6, M7 }
+scale Mixolydian = { R, M2, M3, P4, P5, M6, m7 }
+scale Locrian = { R, m2, m3, P4, d5, m6, m7 }
+
+; Pentatonic scales
+scale MajorPentatonic = { R, M2, M3, P5, M6 }
+scale MinorPentatonic = { R, m3, P4, P5, m7 }
+
+; Blues scale
+scale Blues = { R, m3, P4, A4, P5, m7 }
+
+; Harmonic and melodic minor
+scale HarmonicMinor = { R, M2, m3, P4, P5, m6, M7 }
+scale MelodicMinor = { R, M2, m3, P4, P5, M6, M7 }
+
+; Bebop scales
+scale BebopDominant = { R, M2, M3, P4, P5, M6, m7, M7 }
+scale BebopMajor = { R, M2, M3, P4, P5, A5, M6, M7 }

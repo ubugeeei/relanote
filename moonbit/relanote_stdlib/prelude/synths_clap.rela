@@ -1,0 +1,73 @@
+; ===========================================
+; Clap & Hand Percussion Presets
+; ===========================================
+
+; Basic hand clap
+synth HandClap = {
+  osc: Noise,
+  env: envelope 0.001 0.02 0.0 0.15,
+  filter: BandPass 1800 0.7
+}
+
+; Tight snappy clap
+synth TightClap = {
+  osc: Noise,
+  env: envelope 0.001 0.015 0.0 0.1,
+  filter: BandPass 2500 0.75
+}
+
+; Room clap with ambience
+synth RoomClap = {
+  osc: Noise,
+  env: envelope 0.001 0.04 0.05 0.25,
+  filter: BandPass 1600 0.5
+}
+
+; 808-style clap
+synth Clap808 = {
+  osc: Noise,
+  env: envelope 0.001 0.025 0.0 0.18,
+  filter: BandPass 2200 0.65
+}
+
+; 909-style clap
+synth Clap909 = {
+  osc: Noise,
+  env: envelope 0.001 0.03 0.02 0.12,
+  filter: BandPass 1900 0.7
+}
+
+; Vintage analog clap
+synth VintageClap = {
+  osc: Noise,
+  env: envelope 0.002 0.035 0.0 0.2,
+  filter: BandPass 1500 0.6
+}
+
+; Sharp attack clap
+synth SharpClap = {
+  osc: Noise,
+  env: envelope 0.0005 0.01 0.0 0.08,
+  filter: BandPass 3000 0.8
+}
+
+; Soft clap
+synth SoftClap = {
+  osc: Noise,
+  env: envelope 0.005 0.05 0.05 0.3,
+  filter: BandPass 1400 0.45
+}
+
+; Stadium clap - big reverberant
+synth StadiumClap = {
+  osc: Noise,
+  env: envelope 0.001 0.06 0.1 0.4,
+  filter: BandPass 1700 0.55
+}
+
+; Finger snap
+synth FingerSnap = {
+  osc: Noise,
+  env: envelope 0.0005 0.008 0.0 0.05,
+  filter: BandPass 4000 0.85
+}
