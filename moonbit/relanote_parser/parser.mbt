@@ -493,29 +493,67 @@ fn Parser::parse_postfix(
     None => None
     Some(first) => {
       let mut head = first
-      while self.peek_kind() == @lexer.LParen {
-        let _ = self.advance() // `(`
-        let args : Array[@core.Spanned[@ast.Expr]] = []
-        if self.peek_kind() != @lexer.RParen {
-          while true {
-            match self.parse_expr() {
-              None => return None
-              Some(arg) => args.push(arg)
+      while true {
+        match self.peek_kind() {
+          @lexer.LParen => {
+            let _ = self.advance() // `(`
+            let args : Array[@core.Spanned[@ast.Expr]] = []
+            if self.peek_kind() != @lexer.RParen {
+              while true {
+                match self.parse_expr() {
+                  None => return None
+                  Some(arg) => args.push(arg)
+                }
+                if !self.eat(@lexer.Comma) {
+                  break
+                }
+              }
             }
-            if !self.eat(@lexer.Comma) {
-              break
+            if !self.eat(@lexer.RParen) {
+              self.error("expected `)` to close call arguments")
+              return None
+            }
+            let span = head.span()
+            head = @core.Spanned::new(
+              @ast.Application(@ast.Application::new(head, args)),
+              span,
+            )
+          }
+          @lexer.Dot => {
+            let _ = self.advance() // `.`
+            match self.parse_ident_token() {
+              None => {
+                self.error("expected an identifier after `.`")
+                return None
+              }
+              Some(field_name) => {
+                let span = head.span()
+                head = @core.Spanned::new(
+                  @ast.Field(@ast.Field::new(head, field_name)),
+                  span,
+                )
+              }
             }
           }
+          @lexer.LBracket => {
+            let _ = self.advance() // `[`
+            match self.parse_expr() {
+              None => return None
+              Some(index) => {
+                if !self.eat(@lexer.RBracket) {
+                  self.error("expected `]` to close index expression")
+                  return None
+                }
+                let span = head.span()
+                head = @core.Spanned::new(
+                  @ast.Index(@ast.Index::new(head, index)),
+                  span,
+                )
+              }
+            }
+          }
+          _ => break
         }
-        if !self.eat(@lexer.RParen) {
-          self.error("expected `)` to close call arguments")
-          return None
-        }
-        let span = head.span()
-        head = @core.Spanned::new(
-          @ast.Application(@ast.Application::new(head, args)),
-          span,
-        )
       }
       Some(head)
     }
