@@ -152,3 +152,94 @@ test "multiple items separated by newlines" {
   assert_false(diags.has_errors())
   assert_eq(prog.items().length(), 3)
 }
+
+test "import single name from module" {
+  let (prog, diags) = parse("import foo from \"bar\"")
+  assert_false(diags.has_errors())
+  assert_eq(prog.items().length(), 1)
+  match prog.items()[0].node() {
+    @ast.Import(decl) => {
+      assert_eq(decl.from(), "bar")
+      assert_eq(decl.items().length(), 1)
+      match decl.items()[0] {
+        @ast.Named(id) => assert_eq(id.name(), "foo")
+        _ => abort("expected Named import item")
+      }
+    }
+    _ => abort("expected Import")
+  }
+}
+
+test "import aliased name from module" {
+  let (prog, diags) = parse("import foo as f from \"bar\"")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.Import(decl) => {
+      assert_eq(decl.from(), "bar")
+      match decl.items()[0] {
+        @ast.Aliased(name~, as_name~) => {
+          assert_eq(name.name(), "foo")
+          assert_eq(as_name.name(), "f")
+        }
+        _ => abort("expected Aliased import item")
+      }
+    }
+    _ => abort("expected Import")
+  }
+}
+
+test "import group from module" {
+  let (prog, diags) = parse("import { a, b as bb } from \"x\"")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.Import(decl) => {
+      assert_eq(decl.from(), "x")
+      assert_eq(decl.items().length(), 2)
+      match decl.items()[0] {
+        @ast.Named(id) => assert_eq(id.name(), "a")
+        _ => abort("expected Named for first item")
+      }
+      match decl.items()[1] {
+        @ast.Aliased(name~, as_name~) => {
+          assert_eq(name.name(), "b")
+          assert_eq(as_name.name(), "bb")
+        }
+        _ => abort("expected Aliased for second item")
+      }
+    }
+    _ => abort("expected Import")
+  }
+}
+
+test "import wildcard from module" {
+  let (prog, diags) = parse("import * from \"m\"")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.Import(decl) => {
+      assert_eq(decl.from(), "m")
+      match decl.items()[0] {
+        @ast.All => ()
+        _ => abort("expected All import item")
+      }
+    }
+    _ => abort("expected Import")
+  }
+}
+
+test "import wildcard with alias" {
+  let (prog, diags) = parse("import * as M from \"m\"")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.Import(decl) =>
+      match decl.items()[0] {
+        @ast.AllAliased(id) => assert_eq(id.name(), "M")
+        _ => abort("expected AllAliased import item")
+      }
+    _ => abort("expected Import")
+  }
+}
+
+test "missing from after import raises a diagnostic" {
+  let (_, diags) = parse("import foo \"bar\"")
+  assert_true(diags.has_errors())
+}
