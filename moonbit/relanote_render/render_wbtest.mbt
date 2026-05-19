@@ -12,25 +12,51 @@ test "default MidiConfig matches Rust" {
 
 test "write_var_len matches the SMF spec examples" {
   // The canonical examples in section A.1.1 of the SMF 1.0 spec.
-  fn case_(value : Int, expected : Array[Int]) -> Unit {
-    let out : Array[Byte] = []
-    write_var_len(out, value)
-    assert_eq(out.length(), expected.length())
-    let mut i = 0
-    while i < expected.length() {
-      assert_eq(out[i].to_int(), expected[i])
-      i += 1
-    }
-  }
-  case_(0x00000000, [0x00])
-  case_(0x00000040, [0x40])
-  case_(0x0000007F, [0x7F])
-  case_(0x00000080, [0x81, 0x00])
-  case_(0x00002000, [0xC0, 0x00])
-  case_(0x00003FFF, [0xFF, 0x7F])
-  case_(0x00004000, [0x81, 0x80, 0x00])
-  case_(0x001FFFFF, [0xFF, 0xFF, 0x7F])
-  case_(0x0FFFFFFF, [0xFF, 0xFF, 0xFF, 0x7F])
+  // `assert_eq` can't be called from a local closure (it raises an
+  // implicit error that escapes the closure's signature), so each
+  // case is inlined.
+  let a : Array[Byte] = []
+  write_var_len(a, 0x00000000)
+  assert_eq(a.length(), 1)
+  assert_eq(a[0].to_int(), 0x00)
+  let b : Array[Byte] = []
+  write_var_len(b, 0x0000007F)
+  assert_eq(b.length(), 1)
+  assert_eq(b[0].to_int(), 0x7F)
+  let c : Array[Byte] = []
+  write_var_len(c, 0x00000080)
+  assert_eq(c.length(), 2)
+  assert_eq(c[0].to_int(), 0x81)
+  assert_eq(c[1].to_int(), 0x00)
+  let d : Array[Byte] = []
+  write_var_len(d, 0x00002000)
+  assert_eq(d.length(), 2)
+  assert_eq(d[0].to_int(), 0xC0)
+  assert_eq(d[1].to_int(), 0x00)
+  let e : Array[Byte] = []
+  write_var_len(e, 0x00003FFF)
+  assert_eq(e.length(), 2)
+  assert_eq(e[0].to_int(), 0xFF)
+  assert_eq(e[1].to_int(), 0x7F)
+  let f : Array[Byte] = []
+  write_var_len(f, 0x00004000)
+  assert_eq(f.length(), 3)
+  assert_eq(f[0].to_int(), 0x81)
+  assert_eq(f[1].to_int(), 0x80)
+  assert_eq(f[2].to_int(), 0x00)
+  let g : Array[Byte] = []
+  write_var_len(g, 0x001FFFFF)
+  assert_eq(g.length(), 3)
+  assert_eq(g[0].to_int(), 0xFF)
+  assert_eq(g[1].to_int(), 0xFF)
+  assert_eq(g[2].to_int(), 0x7F)
+  let h : Array[Byte] = []
+  write_var_len(h, 0x0FFFFFFF)
+  assert_eq(h.length(), 4)
+  assert_eq(h[0].to_int(), 0xFF)
+  assert_eq(h[1].to_int(), 0xFF)
+  assert_eq(h[2].to_int(), 0xFF)
+  assert_eq(h[3].to_int(), 0x7F)
 }
 
 test "write_u16_be / write_u32_be" {

@@ -13,7 +13,7 @@
 pub struct RelanoteLanguageServer {
   // Holds nothing today — the eventual server will own a document
   // workspace, a diagnostic cache and a request dispatcher.
-  mut version : Int
+  version : Int
 }
 
 ///|

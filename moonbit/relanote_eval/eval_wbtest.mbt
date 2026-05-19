@@ -29,9 +29,9 @@ test "Evaluator::eval_program returns UnitV in the skeleton" {
 }
 
 test "EvalError::span is None for module-level errors" {
-  let mn = ModuleNotFound(module="m", path="p", reason="r")
+  let mn = ModuleNotFound(module_name="m", path="p", reason="r")
   assert_true(mn.span() == None)
-  let cd = CircularModuleDependency(module="m")
+  let cd = CircularModuleDependency(module_name="m")
   assert_true(cd.span() == None)
 }
 

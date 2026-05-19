@@ -9,8 +9,8 @@ pub(all) enum EvalError {
   IndexOutOfBounds(index~ : Int64, len~ : Int, span~ : @core.Span)
   NotAFunction(span~ : @core.Span)
   WrongArity(expected~ : Int, got~ : Int, span~ : @core.Span)
-  ModuleNotFound(module~ : String, path~ : String, reason~ : String)
-  CircularModuleDependency(module~ : String)
+  ModuleNotFound(module_name~ : String, path~ : String, reason~ : String)
+  CircularModuleDependency(module_name~ : String)
   Custom(message~ : String, span~ : @core.Span)
 }
 
@@ -47,10 +47,10 @@ pub fn EvalError::message(self : EvalError) -> String {
       expected.to_string() +
       ", got " +
       got.to_string()
-    ModuleNotFound(module~, path~, reason~) =>
-      "module not found: " + module + " at " + path + ": " + reason
-    CircularModuleDependency(module~) =>
-      "circular module dependency: " + module
+    ModuleNotFound(module_name~, path~, reason~) =>
+      "module not found: " + module_name + " at " + path + ": " + reason
+    CircularModuleDependency(module_name~) =>
+      "circular module dependency: " + module_name
     Custom(message~, ..) => message
   }
 }
