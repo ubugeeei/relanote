@@ -72,7 +72,10 @@ pub fn ModuleResolver::resolve(
     Some(p) => p
     None => return Err(ModuleNotFound(path=module_path))
   }
-  let source = self.loader.load(path)?
+  let source = match self.loader.load(path) {
+    Ok(s) => s
+    Err(err) => return Err(err)
+  }
   let (program, diagnostics) = @parser.parse_source(source)
   self.resolving.add(module_path)
   let dependencies : Array[String] = []
@@ -83,7 +86,10 @@ pub fn ModuleResolver::resolve(
     }
   }
   for dep in dependencies {
-    let _ = self.resolve(dep)?
+    match self.resolve(dep) {
+      Ok(_) => ()
+      Err(err) => return Err(err)
+    }
   }
   self.resolving.remove(module_path)
   let resolved = ResolvedModule::{ source, program, diagnostics, dependencies }
