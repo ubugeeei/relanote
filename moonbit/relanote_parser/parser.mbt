@@ -587,11 +587,49 @@ fn Parser::parse_primary(
     @lexer.Pipe => self.parse_block_expr(span)
     @lexer.Lambda => self.parse_lambda_expr(span)
     @lexer.If => self.parse_if_expr(span)
+    @lexer.Let => self.parse_let_expr(span)
     _ => {
       self.error("expected an expression")
       None
     }
   }
+}
+
+///|
+/// Parse `let pat = value in body` — the expression form, distinct
+/// from the top-level `let pat = value` binding (which doesn't have
+/// an `in` body).
+fn Parser::parse_let_expr(
+  self : Parser,
+  start : @core.Span,
+) -> (@core.Spanned[@ast.Expr])? {
+  let _ = self.advance() // `let`
+  let pattern = match self.parse_pattern() {
+    None => return None
+    Some(p) => p
+  }
+  if !self.eat(@lexer.Equals) {
+    self.error("expected `=` in let expression")
+    return None
+  }
+  let value = match self.parse_expr() {
+    None => return None
+    Some(v) => v
+  }
+  if !self.eat(@lexer.In) {
+    self.error("expected `in` in let expression")
+    return None
+  }
+  let body = match self.parse_expr() {
+    None => return None
+    Some(b) => b
+  }
+  Some(
+    @core.Spanned::new(
+      @ast.Let(@ast.LetExpr::new(pattern, None, value, body)),
+      start,
+    ),
+  )
 }
 
 ///|

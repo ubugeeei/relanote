@@ -403,3 +403,25 @@ test "if missing `then` raises a diagnostic" {
   let (_, diags) = parse("let r = if cond 1")
   assert_true(diags.has_errors())
 }
+
+test "let-in expression parses to a Let expr" {
+  let (program, diags) = parse("let r = let x = 1 in x")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Let(let_expr) =>
+          match let_expr.body().node() {
+            Ident(id) => assert_eq(id.name(), "x")
+            _ => abort("expected ident body")
+          }
+        _ => abort("expected Let")
+      }
+    _ => abort("expected outer LetBinding")
+  }
+}
+
+test "let-in missing `in` raises a diagnostic" {
+  let (_, diags) = parse("let r = let x = 1 x")
+  assert_true(diags.has_errors())
+}
