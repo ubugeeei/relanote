@@ -236,6 +236,13 @@ export default defineConfig({
       { text: "Cookbook", link: "/cookbook" },
       { text: "Reference", link: "/reference/syntax" },
       { text: "Deep Dive", link: "/deep-dive/architecture" },
+      {
+        text: "More",
+        items: [
+          { text: "Glossary", link: "/glossary" },
+          { text: "FAQ", link: "/faq" },
+        ],
+      },
       { text: "Playground", link: "https://ubugeeei.github.io/relanote/playground/" },
     ],
 
