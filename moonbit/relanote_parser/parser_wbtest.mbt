@@ -514,3 +514,52 @@ test "parenthesised single expression stays Paren, not Tuple" {
     _ => abort("expected LetBinding")
   }
 }
+
+test "field access x.y parses to Field" {
+  let (program, diags) = parse("let r = x.y")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Field(f) => assert_eq(f.field().name(), "y")
+        _ => abort("expected Field")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "chained field access x.y.z parses left-associatively" {
+  let (program, diags) = parse("let r = x.y.z")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Field(outer) => {
+          assert_eq(outer.field().name(), "z")
+          match outer.base().node() {
+            Field(inner) => assert_eq(inner.field().name(), "y")
+            _ => abort("inner should also be a Field")
+          }
+        }
+        _ => abort("expected outer Field")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "indexing arr[0] parses to Index" {
+  let (program, diags) = parse("let r = arr[0]")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Index(idx) =>
+          match idx.index().node() {
+            Integer(0L) => ()
+            _ => abort("expected Integer(0) index")
+          }
+        _ => abort("expected Index")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
