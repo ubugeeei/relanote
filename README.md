@@ -222,15 +222,15 @@ truth while the rewrite lands.
 | `relanote_core`         | `moonbit/relanote_core`                 | ✅     |
 | `relanote_lexer`        | `moonbit/relanote_lexer`                | ✅     |
 | `relanote_ast`          | `moonbit/relanote_ast`                  | ✅     |
-| `relanote_parser`       | `moonbit/relanote_parser`               | 🟡     |
+| `relanote_parser`       | `moonbit/relanote_parser`               | ✅     |
 | `relanote_hir`          | `moonbit/relanote_hir`                  | ✅     |
 | `relanote_resolver`     | `moonbit/relanote_resolver`             | ✅     |
 | `relanote_types`        | `moonbit/relanote_types`                | ✅     |
-| `relanote_eval`         | `moonbit/relanote_eval`                 | 🟡     |
+| `relanote_eval`         | `moonbit/relanote_eval`                 | ✅     |
 | `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ✅     |
 | `relanote_format`       | `moonbit/relanote_format`               | 🟡     |
 | `relanote_lsp`          | `moonbit/relanote_lsp`                  | 🟡     |
-| `relanote_render`       | `moonbit/relanote_render`               | 🟡     |
+| `relanote_render`       | `moonbit/relanote_render`               | ✅     |
 | `relanote_cli`           | `moonbit/cmd/relanote`                  | 🟡     |
 | `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | 🟡     |
 
