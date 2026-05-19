@@ -282,3 +282,85 @@ test "lambda without an arrow surfaces a diagnostic" {
   let (_, diags) = parse("let bad = \\x x")
   assert_true(diags.has_errors())
 }
+
+test "function call f(x) parses to Application" {
+  let (program, diags) = parse("let r = f(x)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Application(app) => {
+          match app.func().node() {
+            Ident(id) => assert_eq(id.name(), "f")
+            _ => abort("expected callee to be f")
+          }
+          assert_eq(app.args().length(), 1)
+        }
+        _ => abort("expected Application")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "function call with multiple args parses correctly" {
+  let (program, diags) = parse("let r = f(1, 2, 3)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Application(app) => assert_eq(app.args().length(), 3)
+        _ => abort("expected Application")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "function call with no args parses to Application of 0 args" {
+  let (program, diags) = parse("let r = f()")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Application(app) => assert_eq(app.args().length(), 0)
+        _ => abort("expected Application")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "chained calls f(x)(y) parse left-associatively" {
+  let (program, diags) = parse("let r = f(x)(y)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Application(outer) =>
+          match outer.func().node() {
+            Application(inner) => {
+              assert_eq(inner.args().length(), 1)
+              assert_eq(outer.args().length(), 1)
+            }
+            _ => abort("outer callee should itself be an Application")
+          }
+        _ => abort("expected outer Application")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "pipe operates on a call result" {
+  let (program, diags) = parse("let r = x |> f(2)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Pipe(pipe) =>
+          match pipe.right().node() {
+            Application(_) => ()
+            _ => abort("pipe's RHS should be the Application f(2)")
+          }
+        _ => abort("expected Pipe")
+      }
+    _ => abort("expected LetBinding")
+  }
+}

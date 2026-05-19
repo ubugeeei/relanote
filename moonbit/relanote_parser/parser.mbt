@@ -456,17 +456,17 @@ fn Parser::parse_ident_token(self : Parser) -> @ast.Ident? {
 
 ///|
 fn Parser::parse_expr(self : Parser) -> (@core.Spanned[@ast.Expr])? {
-  // Pipe is the only operator the foundational pass handles —
-  // arithmetic / comparison / `++` land alongside the operator
-  // tokenisation refresh in a follow-up.
-  let initial = self.parse_primary()
+  // Pipe (`|>`) is the lowest-precedence operator wired today. Each
+  // pipe segment is `parse_postfix`, which handles `expr(args)`
+  // application calls so `arg |> f(x)` parses naturally.
+  let initial = self.parse_postfix()
   match initial {
     None => None
     Some(first) => {
       let mut left = first
       while self.peek_kind() == @lexer.PipeOp {
         let _ = self.advance()
-        match self.parse_primary() {
+        match self.parse_postfix() {
           None => return None
           Some(right) => {
             let span = left.span()
@@ -476,6 +476,48 @@ fn Parser::parse_expr(self : Parser) -> (@core.Spanned[@ast.Expr])? {
         }
       }
       Some(left)
+    }
+  }
+}
+
+///|
+/// Parse a primary expression followed by zero or more postfix call
+/// applications `expr(args, ...)`. Mirrors `parse_postfix_expr` in the
+/// Rust crate — the Haskell-style space-separated form lands in a
+/// follow-up because it needs the full `can_start_argument` analysis.
+fn Parser::parse_postfix(
+  self : Parser,
+) -> (@core.Spanned[@ast.Expr])? {
+  let initial = self.parse_primary()
+  match initial {
+    None => None
+    Some(first) => {
+      let mut head = first
+      while self.peek_kind() == @lexer.LParen {
+        let _ = self.advance() // `(`
+        let args : Array[@core.Spanned[@ast.Expr]] = []
+        if self.peek_kind() != @lexer.RParen {
+          while true {
+            match self.parse_expr() {
+              None => return None
+              Some(arg) => args.push(arg)
+            }
+            if !self.eat(@lexer.Comma) {
+              break
+            }
+          }
+        }
+        if !self.eat(@lexer.RParen) {
+          self.error("expected `)` to close call arguments")
+          return None
+        }
+        let span = head.span()
+        head = @core.Spanned::new(
+          @ast.Application(@ast.Application::new(head, args)),
+          span,
+        )
+      }
+      Some(head)
     }
   }
 }
