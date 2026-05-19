@@ -29,13 +29,13 @@ test "Evaluator::eval_program returns UnitV in the skeleton" {
 }
 
 test "EvalError::span is None for module-level errors" {
-  let mn = ModuleNotFound(module~="m", path~="p", reason~="r")
+  let mn = ModuleNotFound(module="m", path="p", reason="r")
   assert_true(mn.span() == None)
-  let cd = CircularModuleDependency(module~="m")
+  let cd = CircularModuleDependency(module="m")
   assert_true(cd.span() == None)
 }
 
 test "EvalError::message renders WrongArity verbatim" {
-  let err = WrongArity(expected~=2, got~=3, span~=@core.Span::dummy())
+  let err = WrongArity(expected=2, got=3, span=@core.Span::dummy())
   assert_eq(err.message(), "wrong number of arguments: expected 2, got 3")
 }

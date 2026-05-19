@@ -62,7 +62,7 @@ pub fn ModuleResolver::resolve(
   module_path : String,
 ) -> Result[ResolvedModule, ResolveError] {
   if self.resolving.contains(module_path) {
-    return Err(CircularDependency(path~=module_path))
+    return Err(CircularDependency(path=module_path))
   }
   match self.modules.get(module_path) {
     Some(m) => return Ok(m)
@@ -70,7 +70,7 @@ pub fn ModuleResolver::resolve(
   }
   let path = match self.loader.resolve_path(module_path) {
     Some(p) => p
-    None => return Err(ModuleNotFound(path~=module_path))
+    None => return Err(ModuleNotFound(path=module_path))
   }
   let source = self.loader.load(path)?
   let (program, diagnostics) = @parser.parse_source(source)

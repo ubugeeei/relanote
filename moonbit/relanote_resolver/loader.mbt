@@ -71,6 +71,6 @@ pub fn ModuleLoader::load(
 ) -> Result[@core.Source, ResolveError] {
   match self.sources.get(path) {
     Some(s) => Ok(s)
-    None => Err(IoError(path~=path, message~="filesystem IO not yet wired"))
+    None => Err(IoError(path=path, message="filesystem IO not yet wired"))
   }
 }
