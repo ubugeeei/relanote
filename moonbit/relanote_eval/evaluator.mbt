@@ -115,6 +115,11 @@ pub fn Evaluator::eval_expr(
         None =>
           Err(UndefinedVariable(name=ident.name(), span=expr.span()))
       }
+    Interval(lit) => Ok(IntervalV(lit.semitones()))
+    AbsolutePitch(lit) => Ok(AbsolutePitchV(absolute_pitch_to_midi(lit)))
+    Root => Ok(RootV)
+    Block(block) => Ok(BlockV(block))
+    Tuplet(t) => Ok(TupletV(t))
     Paren(inner) => self.eval_expr(inner)
     Annotated(inner, _) => self.eval_expr(inner)
     _ => {
@@ -122,6 +127,25 @@ pub fn Evaluator::eval_expr(
       Ok(Placeholder)
     }
   }
+}
+
+///|
+/// Convert an `AbsolutePitchLit` into a MIDI note number. Middle C is
+/// 60; A4 is 69. Letters are A..G, accidentals are signed semitone
+/// offsets (sharps positive, flats negative).
+fn absolute_pitch_to_midi(lit : @ast.AbsolutePitchLit) -> Int {
+  let letter = match lit.note() {
+    'C' => 0
+    'D' => 2
+    'E' => 4
+    'F' => 5
+    'G' => 7
+    'A' => 9
+    'B' => 11
+    _ => 0
+  }
+  // Octave 0 is MIDI 12 (so C4 = 60).
+  (lit.octave() + 1) * 12 + letter + lit.accidental()
 }
 
 ///|

@@ -129,3 +129,73 @@ test "EvalError::message renders WrongArity verbatim" {
   let err = WrongArity(expected=2, got=3, span=@core.Span::dummy())
   assert_eq(err.message(), "wrong number of arguments: expected 2, got 3")
 }
+
+test "Interval expr evaluates to a semitone offset" {
+  let ev = Evaluator::new()
+  let m3 = @ast.IntervalLit::new(@lexer.Major, 3)
+  let expr = @core.Spanned::new(
+    @ast.Expr::Interval(m3),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(IntervalV(4)) => ()
+    Ok(IntervalV(n)) =>
+      abort("expected M3 = 4 semitones, got " + n.to_string())
+    _ => abort("expected an IntervalV from M3")
+  }
+}
+
+test "Absolute pitch C4 lifts to MIDI 60" {
+  let ev = Evaluator::new()
+  let c4 = @ast.AbsolutePitchLit::new('C', 0, 4)
+  let expr = @core.Spanned::new(
+    @ast.Expr::AbsolutePitch(c4),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(AbsolutePitchV(60)) => ()
+    Ok(AbsolutePitchV(n)) =>
+      abort("expected C4 = 60, got " + n.to_string())
+    _ => abort("expected an AbsolutePitchV from C4")
+  }
+}
+
+test "Absolute pitch A4 lifts to MIDI 69" {
+  let ev = Evaluator::new()
+  let a4 = @ast.AbsolutePitchLit::new('A', 0, 4)
+  let expr = @core.Spanned::new(
+    @ast.Expr::AbsolutePitch(a4),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(AbsolutePitchV(69)) => ()
+    Ok(AbsolutePitchV(n)) =>
+      abort("expected A4 = 69, got " + n.to_string())
+    _ => abort("expected an AbsolutePitchV from A4")
+  }
+}
+
+test "Block expr surfaces the AST block" {
+  let ev = Evaluator::new()
+  let block = @ast.Block::new([])
+  let expr = @core.Spanned::new(
+    @ast.Expr::Block(block),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(BlockV(_)) => ()
+    _ => abort("expected a BlockV")
+  }
+}
+
+test "Root expr produces RootV" {
+  let ev = Evaluator::new()
+  let expr = @core.Spanned::new(
+    @ast.Expr::Root,
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(RootV) => ()
+    _ => abort("expected RootV")
+  }
+}
