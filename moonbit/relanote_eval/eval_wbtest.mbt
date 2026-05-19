@@ -536,6 +536,87 @@ test "Prelude binds rotate and double_time as BuiltinV" {
   }
 }
 
+test "Builtin octave_up shifts every ScaleIndex by 7" {
+  let ev = Evaluator::new()
+  let one = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(1), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let block = @ast.Block::new([one])
+  let call = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("octave_up")),
+          @core.Span::dummy(),
+        ),
+        [@core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy())],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call) {
+    Ok(BlockV(b)) =>
+      match b.slots()[0].node() {
+        Note(pitch~, ..) =>
+          match pitch.node() {
+            ScaleIndex(8) => ()
+            ScaleIndex(n) =>
+              abort("expected ScaleIndex(8), got " + n.to_string())
+            _ => abort("expected ScaleIndex pitch")
+          }
+        _ => abort("expected Note slot")
+      }
+    _ => abort("expected octave_up to return BlockV")
+  }
+}
+
+test "Builtin octave_down shifts Microtone by -1200 cents" {
+  let ev = Evaluator::new()
+  let slot = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(
+        @ast.Pitch::Microtone(550.0),
+        @core.Span::dummy(),
+      ),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let block = @ast.Block::new([slot])
+  let call = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("octave_down")),
+          @core.Span::dummy(),
+        ),
+        [@core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy())],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call) {
+    Ok(BlockV(b)) =>
+      match b.slots()[0].node() {
+        Note(pitch~, ..) =>
+          match pitch.node() {
+            Microtone(-650.0) => ()
+            Microtone(c) =>
+              abort("expected -650.0 cents, got " + c.to_string())
+            _ => abort("expected Microtone pitch")
+          }
+        _ => abort("expected Note slot")
+      }
+    _ => abort("expected octave_down to return BlockV")
+  }
+}
+
 test "Array literal evaluates element-wise" {
   let ev = Evaluator::new()
   let elements : Array[@core.Spanned[@ast.Expr]] = [
