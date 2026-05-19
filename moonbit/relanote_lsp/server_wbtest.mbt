@@ -1,15 +1,18 @@
 test "diagnose feeds the parser and reports its diagnostics" {
   let s = RelanoteLanguageServer::new()
-  let diags = s.diagnose("file.rela", "let x = 1")
-  // Parser is a skeleton — it always reports one placeholder error.
-  assert_true(diags.has_errors())
-  assert_eq(diags.error_count(), 1)
+  // Clean source produces no diagnostics now that the parser is real.
+  let clean = s.diagnose("file.rela", "let x = 1")
+  assert_false(clean.has_errors())
+  assert_eq(clean.error_count(), 0)
+  // Malformed source is surfaced as diagnostics on the same channel.
+  let broken = s.diagnose("file.rela", "let x 1")
+  assert_true(broken.has_errors())
 }
 
-test "format returns the empty string today" {
+test "format runs the printer on the parsed program" {
   let s = RelanoteLanguageServer::new()
   let out = s.format("file.rela", "let x = 1")
-  assert_eq(out, "")
+  assert_eq(out, "let x = 1\n")
 }
 
 test "run_server is a no-op for now" {

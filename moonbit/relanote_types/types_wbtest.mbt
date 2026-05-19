@@ -152,7 +152,15 @@ test "TypeScheme::poly retains its quantifiers" {
 
 test "instantiate replaces quantifiers with fresh vars" {
   let ctx = TypeContext::new()
-  let v0 = TyVar::new(0)
+  // Build the quantifier through `fresh_var` so the context's counter
+  // advances past it; otherwise the next `fresh_var` call inside
+  // `instantiate` would hand out the same id and the substitution
+  // would be indistinguishable from the original.
+  let quantifier_ty = ctx.fresh_var()
+  let v0 = match quantifier_ty {
+    Var(x) => x
+    _ => abort("fresh_var should return a Var")
+  }
   let scheme = TypeScheme::poly([v0], Function(Var(v0), Var(v0)))
   let inst = ctx.instantiate(scheme)
   match inst {
