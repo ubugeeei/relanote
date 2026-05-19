@@ -25,6 +25,10 @@ pub(all) enum Value {
   /// Anonymous lambda value — built from a `\x -> ...` expression.
   /// Carries the parameter patterns and body alongside the captured env.
   LambdaV(Array[@core.Spanned[@ast.Pattern]], @core.Spanned[@ast.Expr], Env)
+  /// Built-in function value — dispatch by name so the evaluator
+  /// can call host-implemented combinators (reverse, transpose,
+  /// repeat, …) without reflecting them through closures.
+  BuiltinV(String)
   /// Interval value, stored as a signed semitone offset from the root.
   /// Mirrors the Rust crate's `IntervalValue` flattening.
   IntervalV(Int)
