@@ -569,6 +569,117 @@ test "Array indexing returns the element" {
   }
 }
 
+test "Binary Add on two ints yields IntV" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.Add,
+    @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(3L), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(IntV(5L)) => ()
+    _ => abort("expected IntV(5)")
+  }
+}
+
+test "Binary Mul on two floats yields FloatV" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.Mul,
+    @core.Spanned::new(@ast.Expr::Float(2.5), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Float(4.0), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(FloatV(10.0)) => ()
+    _ => abort("expected FloatV(10.0)")
+  }
+}
+
+test "Binary Div by zero surfaces DivisionByZero" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.Div,
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(0L), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(_) => abort("expected DivisionByZero")
+    Err(DivisionByZero(_)) => ()
+    Err(other) => abort("expected DivisionByZero, got " + other.message())
+  }
+}
+
+test "Binary EqOp returns BoolV for equal ints" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.EqOp,
+    @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(BoolV(true)) => ()
+    _ => abort("expected BoolV(true)")
+  }
+}
+
+test "Binary Lt compares correctly" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.Lt,
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(BoolV(true)) => ()
+    _ => abort("expected BoolV(true)")
+  }
+}
+
+test "Binary And on two booleans" {
+  let ev = Evaluator::new()
+  let bin = @ast.Binary::new(
+    @ast.And,
+    @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::BoolLit(false), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Binary(bin), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(BoolV(false)) => ()
+    _ => abort("expected BoolV(false)")
+  }
+}
+
+test "Unary Neg negates an integer" {
+  let ev = Evaluator::new()
+  let u = @ast.Unary::new(
+    @ast.Neg,
+    @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Unary(u), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(IntV(-7L)) => ()
+    _ => abort("expected IntV(-7)")
+  }
+}
+
+test "Unary Not on a Bool" {
+  let ev = Evaluator::new()
+  let u = @ast.Unary::new(
+    @ast.Not,
+    @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Unary(u), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(BoolV(false)) => ()
+    _ => abort("expected BoolV(false)")
+  }
+}
+
 test "Out-of-bounds index surfaces IndexOutOfBounds" {
   let ev = Evaluator::new()
   let arr = @core.Spanned::new(
