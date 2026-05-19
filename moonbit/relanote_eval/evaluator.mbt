@@ -7,7 +7,7 @@
 ///
 /// Tracked in #8.
 pub struct Evaluator {
-  env : Env
+  mut env : Env
 }
 
 ///|
@@ -20,6 +20,11 @@ pub fn Evaluator::new() -> Evaluator {
 ///|
 pub fn Evaluator::env(self : Evaluator) -> Env {
   self.env
+}
+
+///|
+fn Evaluator::set_env(self : Evaluator, env : Env) -> Unit {
+  self.env = env
 }
 
 ///|
@@ -120,6 +125,20 @@ pub fn Evaluator::eval_expr(
     Root => Ok(RootV)
     Block(block) => Ok(BlockV(block))
     Tuplet(t) => Ok(TupletV(t))
+    Lambda(lambda) => Ok(LambdaV(lambda.params(), lambda.body(), self.env))
+    Application(app) => self.eval_application(app, expr.span())
+    Pipe(pipe) => {
+      // `x |> f` is sugar for `f(x)`.
+      let arg = match self.eval_expr(pipe.left()) {
+        Ok(v) => v
+        Err(e) => return Err(e)
+      }
+      let f = match self.eval_expr(pipe.right()) {
+        Ok(v) => v
+        Err(e) => return Err(e)
+      }
+      self.call(f, [arg], expr.span())
+    }
     Paren(inner) => self.eval_expr(inner)
     Annotated(inner, _) => self.eval_expr(inner)
     _ => {
@@ -127,6 +146,80 @@ pub fn Evaluator::eval_expr(
       Ok(Placeholder)
     }
   }
+}
+
+///|
+/// Evaluate `f(args...)`.
+fn Evaluator::eval_application(
+  self : Evaluator,
+  app : @ast.Application,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  let func = match self.eval_expr(app.func()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  let arg_values : Array[Value] = []
+  for arg in app.args() {
+    match self.eval_expr(arg) {
+      Ok(v) => arg_values.push(v)
+      Err(e) => return Err(e)
+    }
+  }
+  self.call(func, arg_values, span)
+}
+
+///|
+/// Apply a callable value to a list of evaluated arguments. Handles
+/// user lambdas and user-defined functions (named `let f x = …`).
+/// Builtins land in a later sub-PR of #56 — calling one today produces
+/// a `NotAFunction` error.
+fn Evaluator::call(
+  self : Evaluator,
+  func : Value,
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  match func {
+    LambdaV(params, body, captured) =>
+      self.run_function(params, body, captured, args, span)
+    ClosureV(def, captured) =>
+      self.run_function(def.params(), def.body(), captured, args, span)
+    _ => Err(NotAFunction(span=span))
+  }
+}
+
+///|
+/// Bind `args` against `params` inside a fresh child of `captured`,
+/// then evaluate `body`. Currently supports plain identifier
+/// parameters — destructuring patterns land alongside the inference
+/// walker's full pattern story.
+fn Evaluator::run_function(
+  self : Evaluator,
+  params : Array[@core.Spanned[@ast.Pattern]],
+  body : @core.Spanned[@ast.Expr],
+  captured : Env,
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != params.length() {
+    return Err(WrongArity(expected=params.length(), got=args.length(), span=span))
+  }
+  let call_env = Env::with_parent(captured)
+  let mut i = 0
+  while i < params.length() {
+    match params[i].node() {
+      Ident(ident) => call_env.bind(ident.name(), args[i])
+      _ => () // wildcards / tuples land with the pattern matcher
+    }
+    i += 1
+  }
+  // Swap the active env so the body sees the call frame.
+  let outer = self.env
+  self.set_env(call_env)
+  let result = self.eval_expr(body)
+  self.set_env(outer)
+  result
 }
 
 ///|

@@ -22,6 +22,9 @@ pub(all) enum Value {
   /// User-defined function — kept as the AST + a captured environment.
   /// Sub-PRs in #56 will replace this with a real closure record.
   ClosureV(@ast.FunctionDef, Env)
+  /// Anonymous lambda value — built from a `\x -> ...` expression.
+  /// Carries the parameter patterns and body alongside the captured env.
+  LambdaV(Array[@core.Spanned[@ast.Pattern]], @core.Spanned[@ast.Expr], Env)
   /// Interval value, stored as a signed semitone offset from the root.
   /// Mirrors the Rust crate's `IntervalValue` flattening.
   IntervalV(Int)
