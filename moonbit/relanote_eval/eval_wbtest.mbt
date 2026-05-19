@@ -441,6 +441,158 @@ test "Unknown builtin name surfaces a clear error" {
   }
 }
 
+test "Array literal evaluates element-wise" {
+  let ev = Evaluator::new()
+  let elements : Array[@core.Spanned[@ast.Expr]] = [
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(3L), @core.Span::dummy()),
+  ]
+  let expr = @core.Spanned::new(
+    @ast.Expr::Array(elements),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(ArrayV(vs)) => {
+      assert_eq(vs.length(), 3)
+      match vs[0] {
+        IntV(1L) => ()
+        _ => abort("expected IntV(1) at index 0")
+      }
+    }
+    _ => abort("expected ArrayV")
+  }
+}
+
+test "Tuple literal evaluates element-wise" {
+  let ev = Evaluator::new()
+  let elements : Array[@core.Spanned[@ast.Expr]] = [
+    @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
+  ]
+  let expr = @core.Spanned::new(
+    @ast.Expr::Tuple(elements),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(TupleV(vs)) => assert_eq(vs.length(), 2)
+    _ => abort("expected TupleV")
+  }
+}
+
+test "If true selects the then branch" {
+  let ev = Evaluator::new()
+  let if_expr = @ast.IfExpr::new(
+    @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    Some(@core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy())),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::If(if_expr), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(IntV(1L)) => ()
+    _ => abort("expected then branch (1)")
+  }
+}
+
+test "If false with no else returns Unit" {
+  let ev = Evaluator::new()
+  let if_expr = @ast.IfExpr::new(
+    @core.Spanned::new(@ast.Expr::BoolLit(false), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    None,
+  )
+  let expr = @core.Spanned::new(@ast.Expr::If(if_expr), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(UnitV) => ()
+    _ => abort("expected UnitV from a no-else falsy if")
+  }
+}
+
+test "If non-Bool condition is a TypeError" {
+  let ev = Evaluator::new()
+  let if_expr = @ast.IfExpr::new(
+    @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
+    @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+    None,
+  )
+  let expr = @core.Spanned::new(@ast.Expr::If(if_expr), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(_) => abort("expected a TypeError for non-Bool condition")
+    Err(TypeError(_)) => ()
+    Err(other) => abort("expected TypeError, got " + other.message())
+  }
+}
+
+test "Let-in binds and evaluates body in the new scope" {
+  let ev = Evaluator::new()
+  let let_expr = @ast.LetExpr::new(
+    @core.Spanned::new(
+      @ast.Pattern::Ident(@ast.Ident::new("x")),
+      @core.Span::dummy(),
+    ),
+    None,
+    @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
+    @core.Spanned::new(
+      @ast.Expr::Ident(@ast.Ident::new("x")),
+      @core.Span::dummy(),
+    ),
+  )
+  let expr = @core.Spanned::new(@ast.Expr::Let(let_expr), @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(IntV(42L)) => ()
+    _ => abort("expected let body to evaluate to 42")
+  }
+}
+
+test "Array indexing returns the element" {
+  let ev = Evaluator::new()
+  let arr = @core.Spanned::new(
+    @ast.Expr::Array([
+      @core.Spanned::new(@ast.Expr::Integer(10L), @core.Span::dummy()),
+      @core.Spanned::new(@ast.Expr::Integer(20L), @core.Span::dummy()),
+      @core.Spanned::new(@ast.Expr::Integer(30L), @core.Span::dummy()),
+    ]),
+    @core.Span::dummy(),
+  )
+  let idx = @core.Spanned::new(
+    @ast.Expr::Index(
+      @ast.Index::new(
+        arr,
+        @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(idx) {
+    Ok(IntV(20L)) => ()
+    _ => abort("expected arr[1] = 20")
+  }
+}
+
+test "Out-of-bounds index surfaces IndexOutOfBounds" {
+  let ev = Evaluator::new()
+  let arr = @core.Spanned::new(
+    @ast.Expr::Array([
+      @core.Spanned::new(@ast.Expr::Integer(10L), @core.Span::dummy()),
+    ]),
+    @core.Span::dummy(),
+  )
+  let idx = @core.Spanned::new(
+    @ast.Expr::Index(
+      @ast.Index::new(
+        arr,
+        @core.Spanned::new(@ast.Expr::Integer(99L), @core.Span::dummy()),
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(idx) {
+    Ok(_) => abort("expected an IndexOutOfBounds error")
+    Err(IndexOutOfBounds(index~, ..)) => assert_eq(index, 99L)
+    Err(other) => abort("expected IndexOutOfBounds, got " + other.message())
+  }
+}
+
 test "Wrong arity reports WrongArity" {
   let ev = Evaluator::new()
   let x_pat = @core.Spanned::new(

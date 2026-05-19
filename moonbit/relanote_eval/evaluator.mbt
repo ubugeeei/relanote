@@ -141,10 +141,124 @@ pub fn Evaluator::eval_expr(
     }
     Paren(inner) => self.eval_expr(inner)
     Annotated(inner, _) => self.eval_expr(inner)
+    Array(elements) => {
+      let values : Array[Value] = []
+      for elem in elements {
+        match self.eval_expr(elem) {
+          Ok(v) => values.push(v)
+          Err(e) => return Err(e)
+        }
+      }
+      Ok(ArrayV(values))
+    }
+    Tuple(elements) => {
+      let values : Array[Value] = []
+      for elem in elements {
+        match self.eval_expr(elem) {
+          Ok(v) => values.push(v)
+          Err(e) => return Err(e)
+        }
+      }
+      Ok(TupleV(values))
+    }
+    If(if_expr) => self.eval_if(if_expr, expr.span())
+    Let(let_expr) => self.eval_let(let_expr)
+    Index(idx) => self.eval_index(idx, expr.span())
     _ => {
       let _ = self
       Ok(Placeholder)
     }
+  }
+}
+
+///|
+/// Evaluate `if cond then a else b`.
+fn Evaluator::eval_if(
+  self : Evaluator,
+  if_expr : @ast.IfExpr,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  let cond_val = match self.eval_expr(if_expr.condition()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  match cond_val {
+    BoolV(true) => self.eval_expr(if_expr.then_branch())
+    BoolV(false) =>
+      match if_expr.else_branch() {
+        Some(else_b) => self.eval_expr(else_b)
+        // `if c then a` with no else returns Unit, matching the Rust crate.
+        None => Ok(UnitV)
+      }
+    _ =>
+      Err(
+        TypeError(expected="Bool", found="other", span=span),
+      )
+  }
+}
+
+///|
+/// Evaluate `let pat = value in body`. Only ident patterns bind for
+/// now; destructuring patterns land when the full pattern matcher
+/// arrives.
+fn Evaluator::eval_let(
+  self : Evaluator,
+  let_expr : @ast.LetExpr,
+) -> Result[Value, EvalError] {
+  let value = match self.eval_expr(let_expr.value()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  let scope_env = Env::with_parent(self.env)
+  match let_expr.pattern().node() {
+    Ident(ident) => scope_env.bind(ident.name(), value)
+    _ => ()
+  }
+  let outer = self.env
+  self.set_env(scope_env)
+  let result = self.eval_expr(let_expr.body())
+  self.set_env(outer)
+  result
+}
+
+///|
+/// Evaluate `base[index]`. Supports arrays and tuples (with integer
+/// indices); scale / chord indexing is deferred until the structured
+/// values land.
+fn Evaluator::eval_index(
+  self : Evaluator,
+  idx : @ast.Index,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  let base = match self.eval_expr(idx.base()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  let index_v = match self.eval_expr(idx.index()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  match (base, index_v) {
+    (ArrayV(elems), IntV(i)) => {
+      let n = elems.length()
+      if i < 0L || i.to_int() >= n {
+        Err(IndexOutOfBounds(index=i, len=n, span=span))
+      } else {
+        Ok(elems[i.to_int()])
+      }
+    }
+    (TupleV(elems), IntV(i)) => {
+      let n = elems.length()
+      if i < 0L || i.to_int() >= n {
+        Err(IndexOutOfBounds(index=i, len=n, span=span))
+      } else {
+        Ok(elems[i.to_int()])
+      }
+    }
+    _ =>
+      Err(
+        TypeError(expected="Array or Tuple with Int index", found="other", span=span),
+      )
   }
 }
 
