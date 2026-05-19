@@ -543,10 +543,45 @@ fn Parser::parse_primary(
       }
     }
     @lexer.Pipe => self.parse_block_expr(span)
+    @lexer.Lambda => self.parse_lambda_expr(span)
     _ => {
       self.error("expected an expression")
       None
     }
+  }
+}
+
+///|
+/// Parse a lambda literal — `\pat -> expr` or `\p1 p2 -> expr`.
+fn Parser::parse_lambda_expr(
+  self : Parser,
+  start : @core.Span,
+) -> (@core.Spanned[@ast.Expr])? {
+  let _ = self.advance() // `\`
+  let params : Array[@core.Spanned[@ast.Pattern]] = []
+  while self.peek_kind() != @lexer.Arrow && !self.at_eof() {
+    match self.parse_pattern() {
+      None => return None
+      Some(p) => params.push(p)
+    }
+  }
+  if !self.eat(@lexer.Arrow) {
+    self.error("expected `->` in lambda")
+    return None
+  }
+  if params.length() == 0 {
+    self.error("lambda needs at least one parameter")
+    return None
+  }
+  match self.parse_expr() {
+    None => None
+    Some(body) =>
+      Some(
+        @core.Spanned::new(
+          @ast.Lambda(@ast.Lambda::new(params, body)),
+          start,
+        ),
+      )
   }
 }
 

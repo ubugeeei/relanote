@@ -243,3 +243,42 @@ test "missing from after import raises a diagnostic" {
   let (_, diags) = parse("import foo \"bar\"")
   assert_true(diags.has_errors())
 }
+
+test "lambda with one parameter parses to Lambda expr" {
+  let (program, diags) = parse("let id = \\x -> x")
+  assert_false(diags.has_errors())
+  let items = program.items()
+  assert_eq(items.length(), 1)
+  match items[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Lambda(lambda) => {
+          assert_eq(lambda.params().length(), 1)
+          match lambda.body().node() {
+            Ident(id) => assert_eq(id.name(), "x")
+            _ => abort("expected lambda body to be an identifier")
+          }
+        }
+        _ => abort("expected let value to be a Lambda")
+      }
+    _ => abort("expected the only item to be a LetBinding")
+  }
+}
+
+test "lambda with two parameters parses to Lambda expr with 2 params" {
+  let (program, diags) = parse("let k = \\x y -> x")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Lambda(lambda) => assert_eq(lambda.params().length(), 2)
+        _ => abort("expected Lambda value")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "lambda without an arrow surfaces a diagnostic" {
+  let (_, diags) = parse("let bad = \\x x")
+  assert_true(diags.has_errors())
+}
