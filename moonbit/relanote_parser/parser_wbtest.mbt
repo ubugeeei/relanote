@@ -128,6 +128,89 @@ test "block with a rest" {
   }
 }
 
+test "block slot picks up an accent articulation" {
+  let (prog, diags) = parse("| <1>^ |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(articulations~, ..) => {
+              assert_eq(articulations.length(), 1)
+              match articulations[0] {
+                @ast.Accent => ()
+                _ => abort("expected Accent")
+              }
+            }
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+test "block slot accepts multiple articulations in order" {
+  let (prog, diags) = parse("| <3>^*~ |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(articulations~, ..) =>
+              assert_eq(articulations.length(), 3)
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+test "block slot picks up a duration suffix" {
+  let (prog, diags) = parse("| <1>:2 |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(duration~, ..) =>
+              match duration {
+                Some(2) => ()
+                _ => abort("expected duration=2")
+              }
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+test "rest also accepts a duration suffix" {
+  let (prog, diags) = parse("| <1> -:3 |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[1].node() {
+            @ast.Rest(duration~) =>
+              match duration {
+                Some(3) => ()
+                _ => abort("expected rest duration=3")
+              }
+            _ => abort("expected Rest slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
 test "pipe expression" {
   let (prog, diags) = parse("melody |> transpose")
   assert_false(diags.has_errors())
