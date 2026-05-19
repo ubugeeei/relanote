@@ -364,3 +364,42 @@ test "pipe operates on a call result" {
     _ => abort("expected LetBinding")
   }
 }
+
+test "if expression parses with then and else" {
+  let (program, diags) = parse("let r = if cond then 1 else 2")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        If(if_expr) =>
+          match if_expr.else_branch() {
+            Some(_) => ()
+            None => abort("expected an else branch")
+          }
+        _ => abort("expected If")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "if expression without else is allowed" {
+  let (program, diags) = parse("let r = if cond then 1")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        If(if_expr) =>
+          match if_expr.else_branch() {
+            None => ()
+            Some(_) => abort("expected no else branch")
+          }
+        _ => abort("expected If")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "if missing `then` raises a diagnostic" {
+  let (_, diags) = parse("let r = if cond 1")
+  assert_true(diags.has_errors())
+}

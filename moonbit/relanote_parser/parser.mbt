@@ -586,11 +586,50 @@ fn Parser::parse_primary(
     }
     @lexer.Pipe => self.parse_block_expr(span)
     @lexer.Lambda => self.parse_lambda_expr(span)
+    @lexer.If => self.parse_if_expr(span)
     _ => {
       self.error("expected an expression")
       None
     }
   }
+}
+
+///|
+/// Parse `if cond then a` or `if cond then a else b`.
+/// `else` is optional in the AST so the parser also accepts the
+/// bare form (matching the Rust crate).
+fn Parser::parse_if_expr(
+  self : Parser,
+  start : @core.Span,
+) -> (@core.Spanned[@ast.Expr])? {
+  let _ = self.advance() // `if`
+  let cond = match self.parse_expr() {
+    None => return None
+    Some(c) => c
+  }
+  if !self.eat(@lexer.Then) {
+    self.error("expected `then` after if condition")
+    return None
+  }
+  let then_branch = match self.parse_expr() {
+    None => return None
+    Some(t) => t
+  }
+  let else_branch = if self.peek_kind() == @lexer.Else {
+    let _ = self.advance()
+    match self.parse_expr() {
+      None => return None
+      Some(e) => Some(e)
+    }
+  } else {
+    None
+  }
+  Some(
+    @core.Spanned::new(
+      @ast.If(@ast.IfExpr::new(cond, then_branch, else_branch)),
+      start,
+    ),
+  )
 }
 
 ///|
