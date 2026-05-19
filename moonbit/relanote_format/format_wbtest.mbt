@@ -191,3 +191,52 @@ test "Multi-item program separates with a blank line" {
   let prog = @ast.Program::new([spanned(scale_def), spanned(melody_stmt)])
   assert_eq(format(prog, cfg), "scale Major = { M3 }\n\nmelody\n")
 }
+
+test "import single name" {
+  let decl = @ast.ImportDecl::new([@ast.Named(@ast.Ident::new("foo"))], "bar")
+  let item : @ast.Item = @ast.Import(decl)
+  let prog = @ast.Program::new([spanned(item)])
+  assert_eq(format(prog, cfg), "import foo from \"bar\"\n")
+}
+
+test "import single aliased name" {
+  let decl = @ast.ImportDecl::new(
+    [
+      @ast.Aliased(name=@ast.Ident::new("foo"), as_name=@ast.Ident::new("f")),
+    ],
+    "bar",
+  )
+  let item : @ast.Item = @ast.Import(decl)
+  let prog = @ast.Program::new([spanned(item)])
+  assert_eq(format(prog, cfg), "import foo as f from \"bar\"\n")
+}
+
+test "import group renders with braces" {
+  let decl = @ast.ImportDecl::new(
+    [
+      @ast.Named(@ast.Ident::new("a")),
+      @ast.Aliased(name=@ast.Ident::new("b"), as_name=@ast.Ident::new("bb")),
+    ],
+    "x",
+  )
+  let item : @ast.Item = @ast.Import(decl)
+  let prog = @ast.Program::new([spanned(item)])
+  assert_eq(format(prog, cfg), "import { a, b as bb } from \"x\"\n")
+}
+
+test "import wildcard" {
+  let decl = @ast.ImportDecl::new([@ast.All], "m")
+  let item : @ast.Item = @ast.Import(decl)
+  let prog = @ast.Program::new([spanned(item)])
+  assert_eq(format(prog, cfg), "import * from \"m\"\n")
+}
+
+test "import wildcard with alias" {
+  let decl = @ast.ImportDecl::new(
+    [@ast.AllAliased(@ast.Ident::new("M"))],
+    "m",
+  )
+  let item : @ast.Item = @ast.Import(decl)
+  let prog = @ast.Program::new([spanned(item)])
+  assert_eq(format(prog, cfg), "import * as M from \"m\"\n")
+}
