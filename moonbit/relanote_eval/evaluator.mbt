@@ -476,6 +476,8 @@ fn call_builtin(
     "repeat" => builtin_repeat(args, span)
     "rotate" => builtin_rotate(args, span)
     "double_time" => builtin_double_time(args, span)
+    "octave_up" => builtin_shift_octaves(args, span, 1)
+    "octave_down" => builtin_shift_octaves(args, span, -1)
     other =>
       Err(
         Custom(
@@ -483,6 +485,89 @@ fn call_builtin(
           span=span,
         ),
       )
+  }
+}
+
+///|
+/// `octave_up` / `octave_down` — shift every note in a block by
+/// `delta` octaves (positive for up, negative for down). Mirrors the
+/// `builtin_octave_up` / `builtin_octave_down` helpers in the Rust
+/// crate, which both delegate to a `transpose_slot` walker.
+fn builtin_shift_octaves(
+  args : Array[Value],
+  span : @core.Span,
+  delta : Int,
+) -> Result[Value, EvalError] {
+  if args.length() != 1 {
+    return Err(WrongArity(expected=1, got=args.length(), span=span))
+  }
+  match args[0] {
+    BlockV(block) => Ok(BlockV(shift_block_octaves(block, delta)))
+    _ => Err(TypeError(expected="Block", found="other", span=span))
+  }
+}
+
+///|
+fn shift_block_octaves(block : @ast.Block, delta : Int) -> @ast.Block {
+  let new_slots : Array[@core.Spanned[@ast.Slot]] = []
+  for spanned in block.slots() {
+    new_slots.push(@core.Spanned::new(
+      shift_slot_octaves(spanned.node(), delta),
+      spanned.span(),
+    ))
+  }
+  match block.beats() {
+    Some(b) => @ast.Block::with_beats(new_slots, b)
+    None => @ast.Block::new(new_slots)
+  }
+}
+
+///|
+fn shift_slot_octaves(slot : @ast.Slot, delta : Int) -> @ast.Slot {
+  match slot {
+    @ast.Note(pitch~, articulations~, duration~) => {
+      let new_pitch = @core.Spanned::new(
+        shift_pitch_octaves(pitch.node(), delta),
+        pitch.span(),
+      )
+      @ast.Note(pitch=new_pitch, articulations~, duration~)
+    }
+    @ast.Chord(pitches~, articulations~, duration~) => {
+      let new_pitches : Array[@core.Spanned[@ast.Pitch]] = []
+      for p in pitches {
+        new_pitches.push(@core.Spanned::new(
+          shift_pitch_octaves(p.node(), delta),
+          p.span(),
+        ))
+      }
+      @ast.Chord(pitches=new_pitches, articulations~, duration~)
+    }
+    other => other
+  }
+}
+
+///|
+/// Shift a pitch by `delta` octaves. Scale-degree references gain
+/// `7 * delta` degrees; intervals gain `7 * delta` (one octave per 7
+/// scale-degree steps); microtones add `1200 * delta` cents.
+fn shift_pitch_octaves(pitch : @ast.Pitch, delta : Int) -> @ast.Pitch {
+  let degree_step = 7 * delta
+  let cents_step = (1200 * delta).to_double()
+  match pitch {
+    @ast.ScaleIndex(n) => @ast.ScaleIndex(n + degree_step)
+    @ast.ScaleIndexMod(n, accs) =>
+      @ast.ScaleIndexMod(n + degree_step, accs)
+    @ast.Interval(lit) =>
+      @ast.Interval(
+        @ast.IntervalLit::new(lit.quality(), lit.degree() + degree_step)
+          .with_accidentals(lit.accidentals()),
+      )
+    @ast.Microtone(c) => @ast.Microtone(c + cents_step)
+    @ast.MicrotonalInterval(lit, c) =>
+      @ast.MicrotonalInterval(lit, c + cents_step)
+    @ast.ScaleIndexCents(n, c) =>
+      @ast.ScaleIndexCents(n + degree_step, c)
+    @ast.Root => @ast.Root
   }
 }
 
@@ -684,6 +769,8 @@ fn install_prelude(env : Env) -> Unit {
   env.bind("repeat", BuiltinV("repeat"))
   env.bind("rotate", BuiltinV("rotate"))
   env.bind("double_time", BuiltinV("double_time"))
+  env.bind("octave_up", BuiltinV("octave_up"))
+  env.bind("octave_down", BuiltinV("octave_down"))
   // TODO(#8): parse + evaluate `@stdlib.PRELUDE` once block resolution
   // is in place, to bind the scale / chord / synth presets.
   let _ = @stdlib.PRELUDE
