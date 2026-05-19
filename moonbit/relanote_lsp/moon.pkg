@@ -2,4 +2,6 @@ import {
   "ubugeeei/relanote/relanote_core" @core,
   "ubugeeei/relanote/relanote_parser" @parser,
   "ubugeeei/relanote/relanote_format" @format,
+  "ubugeeei/relanote/relanote_types" @types,
+  "moonbitlang/core/json",
 }
