@@ -75,12 +75,12 @@ fn Formatter::format_item(self : Formatter, item : @ast.Item) -> Unit {
     @ast.SetBinding(s) => self.format_set_binding(s)
     @ast.FunctionDef(f) => self.format_function_def(f)
     @ast.Import(decl) => self.format_import(decl)
-    @ast.Export(_) => self.write("; <export omitted by formatter>\n")
+    @ast.Export(decl) => self.format_export(decl)
     @ast.Mod(m) => {
       self.write("mod ")
       self.write(m.name().name())
     }
-    @ast.Use(_) => self.write("; <use omitted by formatter>\n")
+    @ast.Use(decl) => self.format_use(decl)
     @ast.ExprStmt(e) => self.format_expr(e.node())
     @ast.TuningDef(_) => self.write("; <tuning declaration — see guide/microtones>")
     @ast.GrooveDef(_) => self.write("; <groove declaration — see guide/rhythm>")
@@ -243,6 +243,90 @@ fn Formatter::format_import(
   self.write(" from \"")
   self.write(decl.from())
   self.write("\"")
+}
+
+///|
+/// Format an `export` declaration. Three shapes:
+/// - `export name1, name2` (a `Named` list).
+/// - `export <inner-item>` (an inline definition).
+/// - `export { name1, name2 } from "module"` (a re-export).
+fn Formatter::format_export(
+  self : Formatter,
+  decl : @ast.ExportDecl,
+) -> Unit {
+  self.write("export ")
+  match decl {
+    @ast.Named(items) => {
+      let mut i = 0
+      while i < items.length() {
+        if i > 0 {
+          self.write(", ")
+        }
+        self.write(items[i].name())
+        i += 1
+      }
+    }
+    @ast.Definition(item) => self.format_item(item)
+    @ast.ReExport(items~, from~) => {
+      self.write("{ ")
+      let mut i = 0
+      while i < items.length() {
+        if i > 0 {
+          self.write(", ")
+        }
+        self.write(items[i].name())
+        i += 1
+      }
+      self.write(" } from \"")
+      self.write(from)
+      self.write("\"")
+    }
+  }
+}
+
+///|
+/// Format a `use` declaration. Three shapes per the AST's `UseKind`:
+/// - `use a::b::c` (Simple).
+/// - `use a::b::*` (Glob).
+/// - `use a::b::{ c, d as e }` (Group).
+fn Formatter::format_use(
+  self : Formatter,
+  decl : @ast.UseDecl,
+) -> Unit {
+  let path = decl.path()
+  self.write("use ")
+  let segments = path.segments()
+  let mut i = 0
+  while i < segments.length() {
+    if i > 0 {
+      self.write("::")
+    }
+    self.write(segments[i].name())
+    i += 1
+  }
+  match path.kind() {
+    @ast.Simple => ()
+    @ast.Glob => self.write("::*")
+    @ast.Group(items) => {
+      self.write("::{ ")
+      let mut k = 0
+      while k < items.length() {
+        if k > 0 {
+          self.write(", ")
+        }
+        self.write(items[k].name().name())
+        match items[k].as_name() {
+          Some(alias) => {
+            self.write(" as ")
+            self.write(alias.name())
+          }
+          None => ()
+        }
+        k += 1
+      }
+      self.write(" }")
+    }
+  }
 }
 
 ///|
