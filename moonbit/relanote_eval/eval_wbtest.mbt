@@ -319,6 +319,128 @@ test "Calling a non-function reports NotAFunction" {
   }
 }
 
+test "Prelude binds reverse as a BuiltinV" {
+  let ev = Evaluator::new()
+  match ev.env().lookup("reverse") {
+    Some(BuiltinV("reverse")) => ()
+    _ => abort("expected reverse to be a BuiltinV")
+  }
+}
+
+test "Builtin reverse on a 3-note block reverses the slots" {
+  let ev = Evaluator::new()
+  let one = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(
+        @ast.Pitch::ScaleIndex(1),
+        @core.Span::dummy(),
+      ),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let two = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(
+        @ast.Pitch::ScaleIndex(2),
+        @core.Span::dummy(),
+      ),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let three = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(
+        @ast.Pitch::ScaleIndex(3),
+        @core.Span::dummy(),
+      ),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let block_expr = @core.Spanned::new(
+    @ast.Expr::Block(@ast.Block::new([one, two, three])),
+    @core.Span::dummy(),
+  )
+  let call_expr = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("reverse")),
+          @core.Span::dummy(),
+        ),
+        [block_expr],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call_expr) {
+    Ok(BlockV(b)) => {
+      let slots = b.slots()
+      assert_eq(slots.length(), 3)
+      // The first slot now holds the pitch that was originally last.
+      match slots[0].node() {
+        Note(pitch~, ..) =>
+          match pitch.node() {
+            ScaleIndex(3) => ()
+            _ => abort("expected ScaleIndex(3) at slot 0 after reverse")
+          }
+        _ => abort("expected a Note at slot 0")
+      }
+    }
+    Ok(_) => abort("reverse should return a BlockV")
+    Err(e) => abort("reverse should not fail: " + e.message())
+  }
+}
+
+test "Builtin repeat doubles a 2-slot block to 4 slots" {
+  let ev = Evaluator::new()
+  let rest = @core.Spanned::new(
+    @ast.Slot::Rest(duration=None),
+    @core.Span::dummy(),
+  )
+  let block = @ast.Block::new([rest, rest])
+  let block_expr = @core.Spanned::new(
+    @ast.Expr::Block(block),
+    @core.Span::dummy(),
+  )
+  let two = @core.Spanned::new(
+    @ast.Expr::Integer(2L),
+    @core.Span::dummy(),
+  )
+  let call_expr = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("repeat")),
+          @core.Span::dummy(),
+        ),
+        [two, block_expr],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call_expr) {
+    Ok(BlockV(b)) => assert_eq(b.slots().length(), 4)
+    Ok(_) => abort("repeat should return a BlockV")
+    Err(e) => abort("repeat should not fail: " + e.message())
+  }
+}
+
+test "Unknown builtin name surfaces a clear error" {
+  let span = @core.Span::dummy()
+  match call_builtin("not_a_builtin", [], span) {
+    Ok(_) => abort("expected an error for an unknown builtin")
+    Err(Custom(message~, ..)) =>
+      assert_true(message.has_prefix("unknown builtin"))
+    Err(other) => abort("expected Custom error, got " + other.message())
+  }
+}
+
 test "Wrong arity reports WrongArity" {
   let ev = Evaluator::new()
   let x_pat = @core.Spanned::new(

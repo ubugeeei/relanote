@@ -185,8 +185,98 @@ fn Evaluator::call(
       self.run_function(params, body, captured, args, span)
     ClosureV(def, captured) =>
       self.run_function(def.params(), def.body(), captured, args, span)
+    BuiltinV(name) => call_builtin(name, args, span)
     _ => Err(NotAFunction(span=span))
   }
+}
+
+///|
+/// Dispatch a built-in by name. New builtins are added to this match;
+/// unknown names land in the catch-all and surface a clear error so
+/// the missing-binding bug is easy to track down.
+fn call_builtin(
+  name : String,
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  match name {
+    "reverse" => builtin_reverse(args, span)
+    "repeat" => builtin_repeat(args, span)
+    other =>
+      Err(
+        Custom(
+          message="unknown builtin: " + other,
+          span=span,
+        ),
+      )
+  }
+}
+
+///|
+/// `reverse : Block -> Block` — return a block with its slots reversed
+/// in source order. The Rust crate matches the same shape; see
+/// `crates/relanote_eval/src/builtins/block.rs::builtin_reverse`.
+fn builtin_reverse(
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != 1 {
+    return Err(WrongArity(expected=1, got=args.length(), span=span))
+  }
+  match args[0] {
+    BlockV(block) => {
+      let reversed_slots : Array[@core.Spanned[@ast.Slot]] = []
+      let mut i = block.slots().length() - 1
+      while i >= 0 {
+        reversed_slots.push(block.slots()[i])
+        i -= 1
+      }
+      let new_block = match block.beats() {
+        Some(b) => @ast.Block::with_beats(reversed_slots, b)
+        None => @ast.Block::new(reversed_slots)
+      }
+      Ok(BlockV(new_block))
+    }
+    _ =>
+      Err(
+        TypeError(expected="Block", found="other", span=span),
+      )
+  }
+}
+
+///|
+/// `repeat : Int -> Block -> Block` — repeat the slots `n` times. The
+/// resulting block's beats scale by `n`.
+fn builtin_repeat(
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != 2 {
+    return Err(WrongArity(expected=2, got=args.length(), span=span))
+  }
+  // Support both argument orders: (Int, Block) and (Block, Int) so
+  // pipe and direct application both feel natural.
+  let (n, block) = match (args[0], args[1]) {
+    (IntV(n), BlockV(b)) => (n.to_int(), b)
+    (BlockV(b), IntV(n)) => (n.to_int(), b)
+    _ =>
+      return Err(
+        TypeError(expected="Int and Block", found="other", span=span),
+      )
+  }
+  let new_slots : Array[@core.Spanned[@ast.Slot]] = []
+  let mut k = 0
+  while k < n {
+    for slot in block.slots() {
+      new_slots.push(slot)
+    }
+    k += 1
+  }
+  let new_block = match block.beats() {
+    Some(b) => @ast.Block::with_beats(new_slots, b * n.to_double())
+    None => @ast.Block::new(new_slots)
+  }
+  Ok(BlockV(new_block))
 }
 
 ///|
@@ -242,15 +332,16 @@ fn absolute_pitch_to_midi(lit : @ast.AbsolutePitchLit) -> Int {
 }
 
 ///|
-/// Seed builtin bindings (scales, chords, synths, effects). The Rust
-/// crate evaluates the relanote-source prelude returned by
-/// `relanote_stdlib::prelude::PRELUDE`. The MoonBit port has access to
-/// the same prelude text via `@stdlib.PRELUDE` so the eventual walker
-/// can drive the same boot sequence.
+/// Seed builtin bindings into the runtime environment. The Rust crate
+/// evaluates the relanote-source prelude (`@stdlib.PRELUDE`) for scale
+/// / chord / synth definitions; this port seeds the host-implemented
+/// combinators directly as `BuiltinV` values. Future sub-PRs will
+/// expand the set; the long-tail scale / chord / synth presets land
+/// once the parser / evaluator can drive the stdlib text.
 fn install_prelude(env : Env) -> Unit {
-  let _ = env
+  env.bind("reverse", BuiltinV("reverse"))
+  env.bind("repeat", BuiltinV("repeat"))
+  // TODO(#8): parse + evaluate `@stdlib.PRELUDE` once block resolution
+  // is in place, to bind the scale / chord / synth presets.
   let _ = @stdlib.PRELUDE
-  // TODO(#8): parse + evaluate the embedded prelude once the parser /
-  // evaluator are both real.
-  ()
 }
