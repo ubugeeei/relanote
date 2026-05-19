@@ -14,7 +14,7 @@ test "run_type_check reports undefined identifier" {
       @core.Span::dummy(),
     ),
   ])
-  let errors = run_type_check(program)
+  let errors = run_type_check_for_test(program)
   assert_eq(errors.length(), 1)
 }
 
@@ -43,6 +43,6 @@ test "run_type_check is silent on a well-typed builtin call" {
       @core.Span::dummy(),
     ),
   ])
-  let errors = run_type_check(program)
+  let errors = run_type_check_for_test(program)
   assert_eq(errors.length(), 0)
 }

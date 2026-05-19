@@ -39,6 +39,16 @@ pub fn Location::new(line : Int, column : Int) -> Location {
 }
 
 ///|
+pub fn Location::line(self : Location) -> Int {
+  self.line
+}
+
+///|
+pub fn Location::column(self : Location) -> Int {
+  self.column
+}
+
+///|
 /// A span in source code as a half-open `[start, end)` byte range together
 /// with the source it points into.
 pub struct Span {
