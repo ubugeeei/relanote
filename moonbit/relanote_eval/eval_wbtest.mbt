@@ -441,6 +441,101 @@ test "Unknown builtin name surfaces a clear error" {
   }
 }
 
+test "Builtin rotate(1) shifts a 3-slot block left by one" {
+  let ev = Evaluator::new()
+  let a = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(1), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let b = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(2), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let c = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(3), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let block = @ast.Block::new([a, b, c])
+  let call = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("rotate")),
+          @core.Span::dummy(),
+        ),
+        [
+          @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+          @core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy()),
+        ],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call) {
+    Ok(BlockV(b)) =>
+      match b.slots()[0].node() {
+        Note(pitch~, ..) =>
+          match pitch.node() {
+            ScaleIndex(2) => ()
+            _ => abort("expected ScaleIndex(2) at slot 0 after rotate(1)")
+          }
+        _ => abort("expected a Note at slot 0")
+      }
+    _ => abort("expected rotate to return BlockV")
+  }
+}
+
+test "Builtin double_time halves the block beats" {
+  let ev = Evaluator::new()
+  let block = @ast.Block::with_beats([], 4.0)
+  let call = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("double_time")),
+          @core.Span::dummy(),
+        ),
+        [
+          @core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy()),
+        ],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(call) {
+    Ok(BlockV(b)) =>
+      match b.beats() {
+        Some(2.0) => ()
+        _ => abort("expected beats halved to 2.0")
+      }
+    _ => abort("expected double_time to return BlockV")
+  }
+}
+
+test "Prelude binds rotate and double_time as BuiltinV" {
+  let ev = Evaluator::new()
+  match ev.env().lookup("rotate") {
+    Some(BuiltinV("rotate")) => ()
+    _ => abort("expected rotate BuiltinV")
+  }
+  match ev.env().lookup("double_time") {
+    Some(BuiltinV("double_time")) => ()
+    _ => abort("expected double_time BuiltinV")
+  }
+}
+
 test "Array literal evaluates element-wise" {
   let ev = Evaluator::new()
   let elements : Array[@core.Spanned[@ast.Expr]] = [

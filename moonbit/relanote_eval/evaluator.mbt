@@ -452,6 +452,8 @@ fn call_builtin(
   match name {
     "reverse" => builtin_reverse(args, span)
     "repeat" => builtin_repeat(args, span)
+    "rotate" => builtin_rotate(args, span)
+    "double_time" => builtin_double_time(args, span)
     other =>
       Err(
         Custom(
@@ -459,6 +461,73 @@ fn call_builtin(
           span=span,
         ),
       )
+  }
+}
+
+///|
+/// `rotate : Int -> Block -> Block` — shift slots left by `n` positions.
+/// Negative `n` rotates right. Mirrors the Rust crate's
+/// `builtin_rotate` which accepts either argument order.
+fn builtin_rotate(
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != 2 {
+    return Err(WrongArity(expected=2, got=args.length(), span=span))
+  }
+  let (n_raw, block) = match (args[0], args[1]) {
+    (IntV(n), BlockV(b)) => (n.to_int(), b)
+    (BlockV(b), IntV(n)) => (n.to_int(), b)
+    _ =>
+      return Err(
+        TypeError(expected="Int and Block", found="other", span=span),
+      )
+  }
+  let len = block.slots().length()
+  if len == 0 {
+    return Ok(BlockV(block))
+  }
+  // Normalise n to [0, len) — Moonbit `%` keeps the sign of the dividend.
+  let n = ((n_raw % len) + len) % len
+  let rotated_slots : Array[@core.Spanned[@ast.Slot]] = []
+  let mut i = n
+  while i < len {
+    rotated_slots.push(block.slots()[i])
+    i += 1
+  }
+  i = 0
+  while i < n {
+    rotated_slots.push(block.slots()[i])
+    i += 1
+  }
+  let new_block = match block.beats() {
+    Some(b) => @ast.Block::with_beats(rotated_slots, b)
+    None => @ast.Block::new(rotated_slots)
+  }
+  Ok(BlockV(new_block))
+}
+
+///|
+/// `double_time : Block -> Block` — halve the block's beats, keeping
+/// the slot list intact. Mirrors `builtin_double_time` in the Rust
+/// crate's `block.rs` builtins module.
+fn builtin_double_time(
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != 1 {
+    return Err(WrongArity(expected=1, got=args.length(), span=span))
+  }
+  match args[0] {
+    BlockV(block) => {
+      let new_beats = match block.beats() {
+        Some(b) => b / 2.0
+        None => 0.5
+      }
+      Ok(BlockV(@ast.Block::with_beats(block.slots(), new_beats)))
+    }
+    _ =>
+      Err(TypeError(expected="Block", found="other", span=span))
   }
 }
 
@@ -591,6 +660,8 @@ fn absolute_pitch_to_midi(lit : @ast.AbsolutePitchLit) -> Int {
 fn install_prelude(env : Env) -> Unit {
   env.bind("reverse", BuiltinV("reverse"))
   env.bind("repeat", BuiltinV("repeat"))
+  env.bind("rotate", BuiltinV("rotate"))
+  env.bind("double_time", BuiltinV("double_time"))
   // TODO(#8): parse + evaluate `@stdlib.PRELUDE` once block resolution
   // is in place, to bind the scale / chord / synth presets.
   let _ = @stdlib.PRELUDE
