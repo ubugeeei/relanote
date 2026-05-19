@@ -199,3 +199,158 @@ test "Root expr produces RootV" {
     _ => abort("expected RootV")
   }
 }
+
+test "Identity lambda applied to an int returns the int" {
+  let ev = Evaluator::new()
+  let pat = @core.Spanned::new(
+    @ast.Pattern::Ident(@ast.Ident::new("x")),
+    @core.Span::dummy(),
+  )
+  let body = @core.Spanned::new(
+    @ast.Expr::Ident(@ast.Ident::new("x")),
+    @core.Span::dummy(),
+  )
+  let lambda = @core.Spanned::new(
+    @ast.Expr::Lambda(@ast.Lambda::new([pat], body)),
+    @core.Span::dummy(),
+  )
+  let arg = @core.Spanned::new(
+    @ast.Expr::Integer(99L),
+    @core.Span::dummy(),
+  )
+  let app = @core.Spanned::new(
+    @ast.Expr::Application(@ast.Application::new(lambda, [arg])),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(app) {
+    Ok(IntV(99L)) => ()
+    Ok(_) => abort("expected IntV(99), got something else")
+    Err(e) => abort("identity application should not fail: " + e.message())
+  }
+}
+
+test "Pipe `x |> f` desugars to f(x)" {
+  let ev = Evaluator::new()
+  // f = \v -> v
+  let v_pat = @core.Spanned::new(
+    @ast.Pattern::Ident(@ast.Ident::new("v")),
+    @core.Span::dummy(),
+  )
+  let v_body = @core.Spanned::new(
+    @ast.Expr::Ident(@ast.Ident::new("v")),
+    @core.Span::dummy(),
+  )
+  let f_pat = @core.Spanned::new(
+    @ast.Pattern::Ident(@ast.Ident::new("f")),
+    @core.Span::dummy(),
+  )
+  let f_value = @core.Spanned::new(
+    @ast.Expr::Lambda(@ast.Lambda::new([v_pat], v_body)),
+    @core.Span::dummy(),
+  )
+  let let_f : @ast.Item = @ast.LetBinding(
+    @ast.LetBinding::new(f_pat, None, f_value),
+  )
+  // x = 7
+  let x_pat = @core.Spanned::new(
+    @ast.Pattern::Ident(@ast.Ident::new("x")),
+    @core.Span::dummy(),
+  )
+  let x_value = @core.Spanned::new(
+    @ast.Expr::Integer(7L),
+    @core.Span::dummy(),
+  )
+  let let_x : @ast.Item = @ast.LetBinding(
+    @ast.LetBinding::new(x_pat, None, x_value),
+  )
+  // x |> f
+  let pipe_expr = @core.Spanned::new(
+    @ast.Expr::Pipe(
+      @ast.Pipe::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("x")),
+          @core.Span::dummy(),
+        ),
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("f")),
+          @core.Span::dummy(),
+        ),
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  let pipe_stmt : @ast.Item = @ast.ExprStmt(pipe_expr)
+  let prog = @ast.Program::new([
+    @core.Spanned::new(let_f, @core.Span::dummy()),
+    @core.Spanned::new(let_x, @core.Span::dummy()),
+    @core.Spanned::new(pipe_stmt, @core.Span::dummy()),
+  ])
+  match ev.eval_program(prog) {
+    Ok(IntV(7L)) => ()
+    Ok(_) => abort("expected the pipe to surface 7")
+    Err(e) => abort("pipe should not fail: " + e.message())
+  }
+}
+
+test "Calling a non-function reports NotAFunction" {
+  let ev = Evaluator::new()
+  let app = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Integer(5L),
+          @core.Span::dummy(),
+        ),
+        [
+          @core.Spanned::new(
+            @ast.Expr::Integer(1L),
+            @core.Span::dummy(),
+          ),
+        ],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(app) {
+    Ok(_) => abort("calling 5 should not succeed")
+    Err(NotAFunction(_)) => ()
+    Err(other) =>
+      abort("expected NotAFunction, got " + other.message())
+  }
+}
+
+test "Wrong arity reports WrongArity" {
+  let ev = Evaluator::new()
+  let x_pat = @core.Spanned::new(
+    @ast.Pattern::Ident(@ast.Ident::new("x")),
+    @core.Span::dummy(),
+  )
+  let body = @core.Spanned::new(
+    @ast.Expr::Ident(@ast.Ident::new("x")),
+    @core.Span::dummy(),
+  )
+  let lambda = @core.Spanned::new(
+    @ast.Expr::Lambda(@ast.Lambda::new([x_pat], body)),
+    @core.Span::dummy(),
+  )
+  let app = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        lambda,
+        [
+          @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+          @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
+        ],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(app) {
+    Ok(_) => abort("two args to a 1-arg lambda should fail")
+    Err(WrongArity(expected~, got~, ..)) => {
+      assert_eq(expected, 1)
+      assert_eq(got, 2)
+    }
+    Err(other) => abort("expected WrongArity, got " + other.message())
+  }
+}
