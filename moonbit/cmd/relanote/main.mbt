@@ -69,15 +69,48 @@ fn read_source(path : String) -> String {
 }
 
 ///|
+/// Build a `@core.Source` from the on-disk file and print every
+/// diagnostic against that source through the ariadne-style reporter.
+fn print_diagnostics(
+  source : @core.Source,
+  diagnostics : @core.Diagnostics,
+) -> Unit {
+  for d in diagnostics.items() {
+    println(@core.render_diagnostic(d, source))
+  }
+}
+
+///|
+/// Same shape as `print_diagnostics`, but for the type checker which
+/// hands back a plain `Array[TypeError]` rather than a `Diagnostics`.
+fn print_type_errors(
+  source : @core.Source,
+  errors : Array[@types.TypeError],
+) -> Unit {
+  for err in errors {
+    let d = @core.Diagnostic::error(err.message(), err.span())
+    println(@core.render_diagnostic(d, source))
+  }
+}
+
+///|
+/// Test-only helper that builds an empty source and runs the type
+/// checker, returning the error array. Kept here so the wbtest
+/// suite can keep its old signature.
+fn run_type_check_for_test(program : @ast.Program) -> Array[@types.TypeError] {
+  let source = @core.Source::from_string("<test>", "")
+  run_type_check(source, program)
+}
+
+///|
 fn run_parse(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, diagnostics) = @parser.parse_string(path, read_source(path))
+      let source = @core.Source::from_string(path, read_source(path))
+      let (program, diagnostics) = @parser.parse_source(source)
       let _ = program
-      for d in diagnostics.items() {
-        println("[" + d.kind().to_display_string() + "] " + d.message())
-      }
+      print_diagnostics(source, diagnostics)
     }
   }
 }
@@ -87,15 +120,14 @@ fn run_check(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      let source = @core.Source::from_string(path, read_source(path))
+      let (program, parse_diags) = @parser.parse_source(source)
       let had_parse_errors = parse_diags.has_errors()
-      for d in parse_diags.items() {
-        println("[" + d.kind().to_display_string() + "] " + d.message())
-      }
+      print_diagnostics(source, parse_diags)
       if had_parse_errors {
         return
       }
-      let type_errors = run_type_check(program)
+      let type_errors = run_type_check(source, program)
       if type_errors.length() == 0 && !had_parse_errors {
         println("No errors found.")
       }
@@ -104,15 +136,16 @@ fn run_check(args : Array[String]) -> Unit {
 }
 
 ///|
-/// Run the type checker over `program` and print any errors to stdout.
-/// Returns the error list so callers can decide whether to short-circuit
-/// downstream phases.
-fn run_type_check(program : @ast.Program) -> Array[@types.TypeError] {
+/// Run the type checker over `program` and print any errors using
+/// the ariadne-style reporter. Returns the error list so callers can
+/// decide whether to short-circuit downstream phases.
+fn run_type_check(
+  source : @core.Source,
+  program : @ast.Program,
+) -> Array[@types.TypeError] {
   let checker = @types.TypeChecker::new()
   let errors = checker.check_program(program)
-  for err in errors {
-    println("[error] " + err.message())
-  }
+  print_type_errors(source, errors)
   errors
 }
 
@@ -121,7 +154,8 @@ fn run_fmt(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, _) = @parser.parse_string(path, read_source(path))
+      let source = @core.Source::from_string(path, read_source(path))
+      let (program, _) = @parser.parse_source(source)
       println(@format.format(program, @format.FormatConfig::default()))
     }
   }
@@ -132,14 +166,13 @@ fn run_run(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      let source = @core.Source::from_string(path, read_source(path))
+      let (program, parse_diags) = @parser.parse_source(source)
       if parse_diags.has_errors() {
-        for d in parse_diags.items() {
-          println("[" + d.kind().to_display_string() + "] " + d.message())
-        }
+        print_diagnostics(source, parse_diags)
         return
       }
-      let type_errors = run_type_check(program)
+      let type_errors = run_type_check(source, program)
       if type_errors.length() > 0 {
         return
       }
@@ -157,14 +190,13 @@ fn run_render(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      let source = @core.Source::from_string(path, read_source(path))
+      let (program, parse_diags) = @parser.parse_source(source)
       if parse_diags.has_errors() {
-        for d in parse_diags.items() {
-          println("[" + d.kind().to_display_string() + "] " + d.message())
-        }
+        print_diagnostics(source, parse_diags)
         return
       }
-      let type_errors = run_type_check(program)
+      let type_errors = run_type_check(source, program)
       if type_errors.length() > 0 {
         return
       }

@@ -1,4 +1,5 @@
 import {
+  "ubugeeei/relanote/relanote_core" @core,
   "ubugeeei/relanote/relanote_ast" @ast,
   "ubugeeei/relanote/relanote_parser" @parser,
   "ubugeeei/relanote/relanote_format" @format,
@@ -8,10 +9,6 @@ import {
   "ubugeeei/relanote/relanote_lsp" @lsp,
   "moonbitlang/core/env",
 }
-
-import {
-  "ubugeeei/relanote/relanote_core" @core,
-} for "wbtest"
 
 options(
   "is-main": true,
