@@ -74,7 +74,7 @@ fn Formatter::format_item(self : Formatter, item : @ast.Item) -> Unit {
     @ast.LetBinding(b) => self.format_let_binding(b)
     @ast.SetBinding(s) => self.format_set_binding(s)
     @ast.FunctionDef(f) => self.format_function_def(f)
-    @ast.Import(_) => self.write("; <import omitted by formatter>\n")
+    @ast.Import(decl) => self.format_import(decl)
     @ast.Export(_) => self.write("; <export omitted by formatter>\n")
     @ast.Mod(m) => {
       self.write("mod ")
@@ -192,6 +192,57 @@ fn Formatter::format_set_binding(
   self.write(s.name().name())
   self.write(" = ")
   self.format_expr(s.value().node())
+}
+
+///|
+/// Format an `import` declaration so it round-trips through the parser.
+///
+/// - A single named/aliased item or wildcard renders bare:
+///   `import foo from "m"`, `import foo as f from "m"`,
+///   `import * from "m"`, `import * as M from "m"`.
+/// - Multiple named/aliased items render as a brace-group:
+///   `import { a, b as bb } from "m"`. This differs from the Rust
+///   crate's implementation, which emits `a, b` without braces — that
+///   form is rejected by both parsers, so we use the brace shape that
+///   actually round-trips.
+fn Formatter::format_import(
+  self : Formatter,
+  decl : @ast.ImportDecl,
+) -> Unit {
+  let items = decl.items()
+  self.write("import ")
+  let write_item = fn (item : @ast.ImportItem) {
+    match item {
+      @ast.Named(id) => self.write(id.name())
+      @ast.Aliased(name~, as_name~) => {
+        self.write(name.name())
+        self.write(" as ")
+        self.write(as_name.name())
+      }
+      @ast.All => self.write("*")
+      @ast.AllAliased(alias) => {
+        self.write("* as ")
+        self.write(alias.name())
+      }
+    }
+  }
+  if items.length() == 1 {
+    write_item(items[0])
+  } else {
+    self.write("{ ")
+    let mut i = 0
+    while i < items.length() {
+      if i > 0 {
+        self.write(", ")
+      }
+      write_item(items[i])
+      i += 1
+    }
+    self.write(" }")
+  }
+  self.write(" from \"")
+  self.write(decl.from())
+  self.write("\"")
 }
 
 ///|
