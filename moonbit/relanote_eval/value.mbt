@@ -47,6 +47,10 @@ pub(all) enum Value {
   /// Tuplet of slots — like `BlockV` but with an explicit target-beat
   /// expression that has already been evaluated to a number.
   TupletV(@ast.Tuplet)
+  /// Array of evaluated values — `[a, b, c]`.
+  ArrayV(Array[Value])
+  /// Tuple of evaluated values — `(a, b, c)`.
+  TupleV(Array[Value])
   /// Placeholder retained for round-tripping through call sites that
   /// don't care about the variant yet; new code should produce a more
   /// specific variant instead of returning this.
