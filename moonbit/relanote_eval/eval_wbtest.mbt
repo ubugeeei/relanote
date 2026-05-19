@@ -800,6 +800,52 @@ test "Layer expression evaluates to LayerV" {
   }
 }
 
+test "With expression returns the base" {
+  let ev = Evaluator::new()
+  let base = @core.Spanned::new(
+    @ast.Expr::Integer(42L),
+    @core.Span::dummy(),
+  )
+  let with_expr = @ast.WithExpr::new(base, [])
+  let expr = @core.Spanned::new(
+    @ast.Expr::With(with_expr),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(IntV(42L)) => ()
+    _ => abort("expected with-expr to return the base IntV(42)")
+  }
+}
+
+test "Over expression returns the left value" {
+  let ev = Evaluator::new()
+  let three = @core.Spanned::new(
+    @ast.Expr::Integer(3L),
+    @core.Span::dummy(),
+  )
+  let four = @core.Spanned::new(
+    @ast.Expr::Integer(4L),
+    @core.Span::dummy(),
+  )
+  let expr = @core.Spanned::new(
+    @ast.Expr::Over(three, four),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(IntV(3L)) => ()
+    _ => abort("expected over to surface the left side")
+  }
+}
+
+test "Error expression evaluates to Placeholder" {
+  let ev = Evaluator::new()
+  let expr = @core.Spanned::new(@ast.Expr::Error, @core.Span::dummy())
+  match ev.eval_expr(expr) {
+    Ok(Placeholder) => ()
+    _ => abort("expected Placeholder for error-recovery node")
+  }
+}
+
 test "Out-of-bounds index surfaces IndexOutOfBounds" {
   let ev = Evaluator::new()
   let arr = @core.Spanned::new(

@@ -171,6 +171,23 @@ pub fn Evaluator::eval_expr(
     Index(idx) => self.eval_index(idx, expr.span())
     Binary(b) => self.eval_binary(b, expr.span())
     Unary(u) => self.eval_unary(u, expr.span())
+    With(with_expr) =>
+      // `e with { ... }` evaluates to the base; the modifications are
+      // taken care of by the resolver / type checker in the Rust crate.
+      // Matches the Rust evaluator's behaviour.
+      self.eval_expr(with_expr.base())
+    Over(left, right) => {
+      // `a over b` is a polyrhythm — both sides play simultaneously.
+      // The renderer is the only place that interprets the relationship
+      // meaningfully; here we just evaluate both sides and return the
+      // left side so a `let m = a over b` still binds a usable value.
+      let _ = match self.eval_expr(right) {
+        Ok(_) => ()
+        Err(e) => return Err(e)
+      }
+      self.eval_expr(left)
+    }
+    Field(_) | InScale(_) | Error => Ok(Placeholder)
     _ => {
       let _ = self
       Ok(Placeholder)
