@@ -36,6 +36,10 @@ pub fn ResolvedModule::dependencies(self : ResolvedModule) -> Array[String] {
 pub struct ModuleResolver {
   loader : ModuleLoader
   modules : @hashmap.HashMap[String, ResolvedModule]
+  // Insertion order of `modules`. The Rust crate uses `IndexMap` so
+  // `modules()` iterates in dependency-discovery order; `@hashmap.HashMap`
+  // does not preserve insertion order, so we track it separately.
+  order : Array[String]
   resolving : @hashset.HashSet[String]
 }
 
@@ -44,6 +48,7 @@ pub fn ModuleResolver::new(root : String) -> ModuleResolver {
   {
     loader: ModuleLoader::new(root),
     modules: @hashmap.HashMap::new(),
+    order: [],
     resolving: @hashset.HashSet::new(),
   }
 }
@@ -94,17 +99,22 @@ pub fn ModuleResolver::resolve(
   self.resolving.remove(module_path)
   let resolved = ResolvedModule::{ source, program, diagnostics, dependencies }
   self.modules.set(module_path, resolved)
+  self.order.push(module_path)
   Ok(resolved)
 }
 
 ///|
-/// Iterate all resolved modules in dependency-discovery order.
+/// Iterate all resolved modules in dependency-discovery order. Mirrors
+/// `IndexMap`-backed iteration on the Rust side.
 pub fn ModuleResolver::modules(
   self : ModuleResolver,
 ) -> Array[ResolvedModule] {
   let out : Array[ResolvedModule] = []
-  for _, m in self.modules {
-    out.push(m)
+  for path in self.order {
+    match self.modules.get(path) {
+      Some(m) => out.push(m)
+      None => ()
+    }
   }
   out
 }

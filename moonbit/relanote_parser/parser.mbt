@@ -169,6 +169,7 @@ fn Parser::parse_item(
     @lexer.Set => self.parse_set_item(start)
     @lexer.Scale => self.parse_scale_item(start)
     @lexer.Chord => self.parse_chord_item(start)
+    @lexer.Import => self.parse_import_item(start)
     _ =>
       match self.parse_expr() {
         Some(e) => Some(@core.Spanned::new(@ast.ExprStmt(e), e.span()))
@@ -282,6 +283,87 @@ fn Parser::parse_chord_item(
         }
       }
   }
+}
+
+///|
+/// Parse an `import` declaration. Mirrors `parse_import` in the Rust
+/// crate: the head is either a `*` wildcard (optionally `as Alias`), a
+/// `{ name [as alias], ... }` group, or a single `name [as alias]`,
+/// followed by `from "module-path"`.
+fn Parser::parse_import_item(
+  self : Parser,
+  start : @core.Span,
+) -> (@core.Spanned[@ast.Item])? {
+  let _ = self.advance() // `import`
+  let items : Array[@ast.ImportItem] = []
+  match self.peek_kind() {
+    @lexer.Staccato => {
+      let _ = self.advance()
+      if self.eat(@lexer.As) {
+        match self.parse_ident_token() {
+          None => return None
+          Some(alias) => items.push(@ast.AllAliased(alias))
+        }
+      } else {
+        items.push(@ast.All)
+      }
+    }
+    @lexer.LBrace => {
+      let _ = self.advance()
+      while true {
+        match self.parse_ident_token() {
+          None => return None
+          Some(name) =>
+            if self.eat(@lexer.As) {
+              match self.parse_ident_token() {
+                None => return None
+                Some(alias) =>
+                  items.push(@ast.Aliased(name=name, as_name=alias))
+              }
+            } else {
+              items.push(@ast.Named(name))
+            }
+        }
+        if !self.eat(@lexer.Comma) {
+          break
+        }
+      }
+      if !self.eat(@lexer.RBrace) {
+        self.error("expected `}` to close import list")
+        return None
+      }
+    }
+    _ =>
+      match self.parse_ident_token() {
+        None => return None
+        Some(name) =>
+          if self.eat(@lexer.As) {
+            match self.parse_ident_token() {
+              None => return None
+              Some(alias) =>
+                items.push(@ast.Aliased(name=name, as_name=alias))
+            }
+          } else {
+            items.push(@ast.Named(name))
+          }
+      }
+  }
+  if !self.eat(@lexer.From) {
+    self.error("expected `from` in import declaration")
+    return None
+  }
+  let from = match self.peek_kind() {
+    @lexer.StringLit(s) => {
+      let _ = self.advance()
+      s
+    }
+    _ => {
+      self.error("expected module path string after `from`")
+      return None
+    }
+  }
+  let decl = @ast.ImportDecl::new(items, from)
+  Some(@core.Spanned::new(@ast.Import(decl), start))
 }
 
 ///|
