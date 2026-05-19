@@ -425,3 +425,40 @@ test "let-in missing `in` raises a diagnostic" {
   let (_, diags) = parse("let r = let x = 1 x")
   assert_true(diags.has_errors())
 }
+
+test "match expression with two arms parses correctly" {
+  let (program, diags) = parse("let r = match x { 1 -> a, 2 -> b }")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Match(m) => assert_eq(m.arms().length(), 2)
+        _ => abort("expected Match")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "match arm with guard parses with guard_expr" {
+  let (program, diags) = parse("let r = match x { y if y -> a }")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Match(m) => {
+          assert_eq(m.arms().length(), 1)
+          match m.arms()[0].guard_expr() {
+            Some(_) => ()
+            None => abort("expected guard expression")
+          }
+        }
+        _ => abort("expected Match")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "match missing `->` raises a diagnostic" {
+  let (_, diags) = parse("let r = match x { 1 a }")
+  assert_true(diags.has_errors())
+}
