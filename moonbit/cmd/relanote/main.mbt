@@ -36,7 +36,7 @@ fn main {
 }
 
 ///|
-let USAGE : String =
+const USAGE : String =
   #|relanote — A pure functional music notation language
   #|
   #|USAGE:
@@ -102,7 +102,7 @@ fn run_fmt(args : Array[String]) -> Unit {
     None => ()
     Some(path) => {
       let (program, _) = @parser.parse_string(path, read_source(path))
-      print(@format.format(program, @format.FormatConfig::default()))
+      println(@format.format(program, @format.FormatConfig::default()))
     }
   }
 }

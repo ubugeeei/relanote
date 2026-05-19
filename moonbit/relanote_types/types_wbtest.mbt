@@ -67,7 +67,13 @@ test "TypeContext bind / lookup / pop_scope" {
     None => abort("expected binding for x")
   }
   ctx.pop_scope()
-  assert_true(ctx.lookup("x") == None)
+  // `TypeScheme` doesn't derive `Eq`, so `Option[TypeScheme] == None`
+  // can't reuse the prelude's Option Eq instance — use an explicit
+  // match.
+  match ctx.lookup("x") {
+    None => ()
+    Some(_) => abort("expected the binding to be popped")
+  }
 }
 
 test "TypeContext fresh_var hands out fresh ids" {

@@ -37,20 +37,31 @@ pub fn TypeContext::unify(
         self.add_substitution(v, other)
         Ok(())
       }
-    (Function(a1, r1), Function(a2, r2)) => {
-      self.unify(a1, a2, span)?
-      self.unify(r1, r2, span)
-    }
+    (Function(a1, r1), Function(a2, r2)) =>
+      match self.unify(a1, a2, span) {
+        Err(e) => Err(e)
+        Ok(_) => self.unify(r1, r2, span)
+      }
     (Tuple(e1), Tuple(e2)) =>
       if e1.length() != e2.length() {
         Err(UnificationError(Tuple(e1), Tuple(e2), span))
       } else {
         let mut i = 0
+        let mut err : TypeError? = None
         while i < e1.length() {
-          self.unify(e1[i], e2[i], span)?
-          i += 1
+          match err {
+            Some(_) => break
+            None =>
+              match self.unify(e1[i], e2[i], span) {
+                Err(e) => err = Some(e)
+                Ok(_) => i += 1
+              }
+          }
         }
-        Ok(())
+        match err {
+          Some(e) => Err(e)
+          None => Ok(())
+        }
       }
     (ArrayTy(e1), ArrayTy(e2)) => self.unify(e1, e2, span)
     (a, b) =>
