@@ -47,9 +47,9 @@ pub struct ModuleResolver {
 pub fn ModuleResolver::new(root : String) -> ModuleResolver {
   {
     loader: ModuleLoader::new(root),
-    modules: @hashmap.HashMap::new(),
+    modules: @hashmap.HashMap([]),
     order: [],
-    resolving: @hashset.HashSet::new(),
+    resolving: @hashset.HashSet([]),
   }
 }
 

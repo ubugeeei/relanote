@@ -302,7 +302,7 @@ fn Parser::parse_import_item(
       if self.eat(@lexer.As) {
         match self.parse_ident_token() {
           None => return None
-          Some(alias) => items.push(@ast.AllAliased(alias))
+          Some(as_ident) => items.push(@ast.AllAliased(as_ident))
         }
       } else {
         items.push(@ast.All)
@@ -317,8 +317,8 @@ fn Parser::parse_import_item(
             if self.eat(@lexer.As) {
               match self.parse_ident_token() {
                 None => return None
-                Some(alias) =>
-                  items.push(@ast.Aliased(name=name, as_name=alias))
+                Some(as_ident) =>
+                  items.push(@ast.Aliased(name=name, as_name=as_ident))
               }
             } else {
               items.push(@ast.Named(name))
@@ -340,8 +340,8 @@ fn Parser::parse_import_item(
           if self.eat(@lexer.As) {
             match self.parse_ident_token() {
               None => return None
-              Some(alias) =>
-                items.push(@ast.Aliased(name=name, as_name=alias))
+              Some(as_ident) =>
+                items.push(@ast.Aliased(name=name, as_name=as_ident))
             }
           } else {
             items.push(@ast.Named(name))

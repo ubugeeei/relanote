@@ -15,7 +15,7 @@ pub struct ModuleLoader {
 
 ///|
 pub fn ModuleLoader::new(root : String) -> ModuleLoader {
-  { root, search_paths: [root], sources: @hashmap.HashMap::new() }
+  { root, search_paths: [root], sources: @hashmap.HashMap([]) }
 }
 
 ///|

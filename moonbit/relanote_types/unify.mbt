@@ -74,26 +74,27 @@ pub fn TypeContext::unify(
 }
 
 ///|
-/// Occurs check — does `var` appear inside `ty` after substitution? Used
-/// to reject infinite types like `t0 = t0 -> t0`.
+/// Occurs check — does `needle` appear inside `ty` after substitution?
+/// Used to reject infinite types like `t0 = t0 -> t0`.
 pub fn TypeContext::occurs_in(
   self : TypeContext,
-  var : TyVar,
+  needle : TyVar,
   ty : Type,
 ) -> Bool {
   let ty = self.apply(ty)
   match ty {
-    Var(v) => v == var
-    Function(a, b) => self.occurs_in(var, a) || self.occurs_in(var, b)
+    Var(v) => v == needle
+    Function(a, b) =>
+      self.occurs_in(needle, a) || self.occurs_in(needle, b)
     Tuple(elems) => {
       for e in elems {
-        if self.occurs_in(var, e) {
+        if self.occurs_in(needle, e) {
           return true
         }
       }
       false
     }
-    ArrayTy(elem) => self.occurs_in(var, elem)
+    ArrayTy(elem) => self.occurs_in(needle, elem)
     _ => false
   }
 }

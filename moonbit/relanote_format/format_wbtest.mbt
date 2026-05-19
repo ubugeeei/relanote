@@ -6,7 +6,7 @@
 
 let cfg : FormatConfig = FormatConfig::default()
 
-fn spanned[T](node : T) -> @core.Spanned[T] {
+fn[T] spanned(node : T) -> @core.Spanned[T] {
   @core.Spanned::dummy(node)
 }
 
