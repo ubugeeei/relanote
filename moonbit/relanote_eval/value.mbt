@@ -51,6 +51,17 @@ pub(all) enum Value {
   ArrayV(Array[Value])
   /// Tuple of evaluated values — `(a, b, c)`.
   TupleV(Array[Value])
+  /// Articulation marker (Staccato / Accent / Portamento).
+  ArticulationV(@ast.Articulation)
+  /// Envelope literal — kept verbatim until the renderer resolves
+  /// `from`, `to`, `duration`.
+  EnvelopeV(@ast.EnvelopeLit)
+  /// Part expression value — instrument + optional body.
+  PartV(@ast.PartExpr)
+  /// Section expression value — name + context + body.
+  SectionV(@ast.SectionExpr)
+  /// Layer expression value — multiple parts in parallel.
+  LayerV(@ast.LayerExpr)
   /// Placeholder retained for round-tripping through call sites that
   /// don't care about the variant yet; new code should produce a more
   /// specific variant instead of returning this.
