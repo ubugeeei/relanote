@@ -87,13 +87,33 @@ fn run_check(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      // Type-check skeleton: just parse and report parser diagnostics.
-      let (_, diagnostics) = @parser.parse_string(path, read_source(path))
-      for d in diagnostics.items() {
+      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      let had_parse_errors = parse_diags.has_errors()
+      for d in parse_diags.items() {
         println("[" + d.kind().to_display_string() + "] " + d.message())
+      }
+      if had_parse_errors {
+        return
+      }
+      let type_errors = run_type_check(program)
+      if type_errors.length() == 0 && !had_parse_errors {
+        println("No errors found.")
       }
     }
   }
+}
+
+///|
+/// Run the type checker over `program` and print any errors to stdout.
+/// Returns the error list so callers can decide whether to short-circuit
+/// downstream phases.
+fn run_type_check(program : @ast.Program) -> Array[@types.TypeError] {
+  let checker = @types.TypeChecker::new()
+  let errors = checker.check_program(program)
+  for err in errors {
+    println("[error] " + err.message())
+  }
+  errors
 }
 
 ///|
@@ -112,7 +132,17 @@ fn run_run(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, _) = @parser.parse_string(path, read_source(path))
+      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      if parse_diags.has_errors() {
+        for d in parse_diags.items() {
+          println("[" + d.kind().to_display_string() + "] " + d.message())
+        }
+        return
+      }
+      let type_errors = run_type_check(program)
+      if type_errors.length() > 0 {
+        return
+      }
       let evaluator = @eval.Evaluator::new()
       match evaluator.eval_program(program) {
         Ok(_) => ()
@@ -127,7 +157,17 @@ fn run_render(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
     Some(path) => {
-      let (program, _) = @parser.parse_string(path, read_source(path))
+      let (program, parse_diags) = @parser.parse_string(path, read_source(path))
+      if parse_diags.has_errors() {
+        for d in parse_diags.items() {
+          println("[" + d.kind().to_display_string() + "] " + d.message())
+        }
+        return
+      }
+      let type_errors = run_type_check(program)
+      if type_errors.length() > 0 {
+        return
+      }
       let evaluator = @eval.Evaluator::new()
       match evaluator.eval_program(program) {
         Ok(value) => {
