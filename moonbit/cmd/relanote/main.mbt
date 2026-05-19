@@ -103,6 +103,28 @@ fn run_type_check_for_test(program : @ast.Program) -> Array[@types.TypeError] {
 }
 
 ///|
+/// Run a relanote source string through the parse → type-check →
+/// evaluate pipeline and return its final value. Returns
+/// `Err(message)` when any phase fails, so integration tests can
+/// assert on either side of the pipeline.
+fn pipeline_for_test(source : String) -> Result[@eval.Value, String] {
+  let src = @core.Source::from_string("<test>", source)
+  let (program, parse_diags) = @parser.parse_source(src)
+  if parse_diags.has_errors() {
+    return Err("parse error")
+  }
+  let checker = @types.TypeChecker::new()
+  if checker.check_program(program).length() > 0 {
+    return Err("type error")
+  }
+  let evaluator = @eval.Evaluator::new()
+  match evaluator.eval_program(program) {
+    Ok(v) => Ok(v)
+    Err(e) => Err("runtime error: " + e.message())
+  }
+}
+
+///|
 fn run_parse(args : Array[String]) -> Unit {
   match require_file(args) {
     None => ()
