@@ -904,3 +904,16 @@ fn Formatter::format_type(
 pub fn format(program : @ast.Program, config : FormatConfig) -> String {
   Formatter::new(config).format_program(program)
 }
+
+///|
+/// Format a single spanned top-level item — useful for incremental
+/// printing in the LSP. The item's own span is discarded; only its
+/// inner node is rendered.
+pub fn format_spanned_item(
+  item : @core.Spanned[@ast.Item],
+  config : FormatConfig,
+) -> String {
+  let f = Formatter::new(config)
+  f.format_item(item.node())
+  f.output.to_string()
+}
