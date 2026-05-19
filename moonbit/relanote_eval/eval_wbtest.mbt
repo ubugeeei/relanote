@@ -680,6 +680,31 @@ test "Unary Not on a Bool" {
   }
 }
 
+test "Articulation expression evaluates to ArticulationV" {
+  let ev = Evaluator::new()
+  let expr = @core.Spanned::new(
+    @ast.Expr::Articulation(@ast.Articulation::Accent),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(ArticulationV(@ast.Articulation::Accent)) => ()
+    _ => abort("expected ArticulationV(Accent)")
+  }
+}
+
+test "Layer expression evaluates to LayerV" {
+  let ev = Evaluator::new()
+  let layer = @ast.LayerExpr::new([])
+  let expr = @core.Spanned::new(
+    @ast.Expr::Layer(layer),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(LayerV(_)) => ()
+    _ => abort("expected LayerV")
+  }
+}
+
 test "Out-of-bounds index surfaces IndexOutOfBounds" {
   let ev = Evaluator::new()
   let arr = @core.Spanned::new(

@@ -125,6 +125,11 @@ pub fn Evaluator::eval_expr(
     Root => Ok(RootV)
     Block(block) => Ok(BlockV(block))
     Tuplet(t) => Ok(TupletV(t))
+    Articulation(a) => Ok(ArticulationV(a))
+    Envelope(e) => Ok(EnvelopeV(e))
+    Part(p) => Ok(PartV(p))
+    Section(s) => Ok(SectionV(s))
+    Layer(l) => Ok(LayerV(l))
     Lambda(lambda) => Ok(LambdaV(lambda.params(), lambda.body(), self.env))
     Application(app) => self.eval_application(app, expr.span())
     Pipe(pipe) => {
