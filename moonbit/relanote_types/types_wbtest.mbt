@@ -178,3 +178,59 @@ test "TypeError::span returns the right span variant" {
   let err = OccursCheck(span=span)
   assert_true(err.span() == span)
 }
+
+// `install_prelude` is called from `TypeChecker::new()`, so we drive these
+// tests through the public entry point and look up bindings in the
+// checker's context.
+
+test "install_prelude seeds reverse : Block -> Block" {
+  let checker = TypeChecker::new()
+  match checker.context().lookup("reverse") {
+    Some(scheme) =>
+      match scheme.ty() {
+        Function(Block, Block) => ()
+        other =>
+          abort("expected Block -> Block, got " + other.to_display_string())
+      }
+    None => abort("expected reverse to be in scope")
+  }
+}
+
+test "install_prelude seeds a monomorphic synth preset" {
+  let checker = TypeChecker::new()
+  match checker.context().lookup("Chiptune") {
+    Some(scheme) => {
+      assert_eq(scheme.quantifiers().length(), 0)
+      match scheme.ty() {
+        Synth => ()
+        other =>
+          abort("expected Synth, got " + other.to_display_string())
+      }
+    }
+    None => abort("expected Chiptune to be in scope")
+  }
+}
+
+test "install_prelude seeds polymorphic map with two quantifiers" {
+  let checker = TypeChecker::new()
+  match checker.context().lookup("map") {
+    Some(scheme) => {
+      // `map : forall a b. (a -> b) -> [a] -> [b]` — two quantifiers.
+      assert_eq(scheme.quantifiers().length(), 2)
+    }
+    None => abort("expected map to be in scope")
+  }
+}
+
+test "install_prelude seeds compose : [Section] -> Song" {
+  let checker = TypeChecker::new()
+  match checker.context().lookup("compose") {
+    Some(scheme) =>
+      match scheme.ty() {
+        Function(ArrayTy(Section), Song) => ()
+        other =>
+          abort("expected [Section] -> Song, got " + other.to_display_string())
+      }
+    None => abort("expected compose to be in scope")
+  }
+}
