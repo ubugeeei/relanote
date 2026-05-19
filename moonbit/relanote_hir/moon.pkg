@@ -1,4 +1,5 @@
 import {
+  "ubugeeei/relanote/relanote_core" @core,
   "ubugeeei/relanote/relanote_ast" @ast,
   "ubugeeei/relanote/relanote_types" @types,
 }
