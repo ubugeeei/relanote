@@ -220,9 +220,9 @@ fn Formatter::format_import(
         self.write(as_name.name())
       }
       @ast.All => self.write("*")
-      @ast.AllAliased(alias) => {
+      @ast.AllAliased(as_ident) => {
         self.write("* as ")
-        self.write(alias.name())
+        self.write(as_ident.name())
       }
     }
   }

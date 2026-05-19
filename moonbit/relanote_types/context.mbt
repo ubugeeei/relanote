@@ -13,8 +13,8 @@ pub struct TypeContext {
 pub fn TypeContext::new() -> TypeContext {
   {
     next_var: 0,
-    env: @hashmap.HashMap::new(),
-    substitutions: @hashmap.HashMap::new(),
+    env: @hashmap.HashMap([]),
+    substitutions: @hashmap.HashMap([]),
     scopes: [],
   }
 }
@@ -22,16 +22,16 @@ pub fn TypeContext::new() -> TypeContext {
 ///|
 /// Hand out a fresh type variable for inference.
 pub fn TypeContext::fresh_var(self : TypeContext) -> Type {
-  let var = TyVar::new(self.next_var)
+  let tv = TyVar::new(self.next_var)
   self.next_var += 1
-  Var(var)
+  Var(tv)
 }
 
 ///|
 /// Enter a new scope so subsequent bindings can be unwound by
 /// `pop_scope`.
 pub fn TypeContext::push_scope(self : TypeContext) -> Unit {
-  self.scopes.push(@hashmap.HashMap::new())
+  self.scopes.push(@hashmap.HashMap([]))
 }
 
 ///|
@@ -81,13 +81,13 @@ pub fn TypeContext::lookup(
 }
 
 ///|
-/// Record `var := ty` in the substitution table.
+/// Record `tv := ty` in the substitution table.
 pub fn TypeContext::add_substitution(
   self : TypeContext,
-  var : TyVar,
+  tv : TyVar,
   ty : Type,
 ) -> Unit {
-  self.substitutions.set(var, ty)
+  self.substitutions.set(tv, ty)
 }
 
 ///|
@@ -119,7 +119,7 @@ pub fn TypeContext::instantiate(
   self : TypeContext,
   scheme : TypeScheme,
 ) -> Type {
-  let subst : @hashmap.HashMap[TyVar, Type] = @hashmap.HashMap::new()
+  let subst : @hashmap.HashMap[TyVar, Type] = @hashmap.HashMap([])
   for v in scheme.quantifiers() {
     let fresh = self.fresh_var()
     subst.set(v, fresh)
@@ -153,7 +153,7 @@ fn substitute(ty : Type, subst : @hashmap.HashMap[TyVar, Type]) -> Type {
 /// is not also free in the surrounding environment.
 pub fn TypeContext::generalize(self : TypeContext, ty : Type) -> TypeScheme {
   let applied = self.apply(ty)
-  let free_in_env : @hashset.HashSet[TyVar] = @hashset.HashSet::new()
+  let free_in_env : @hashset.HashSet[TyVar] = @hashset.HashSet([])
   for _, scheme in self.env {
     for v in scheme.ty().free_vars() {
       free_in_env.add(v)

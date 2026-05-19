@@ -126,12 +126,12 @@ test "occurs check rejects infinite types" {
   let ctx = TypeContext::new()
   let span = @core.Span::dummy()
   let v = ctx.fresh_var()
-  let var = match v {
+  let tv = match v {
     Var(x) => x
     _ => abort("fresh_var should return Var")
   }
   // t0 = t0 -> t0 would be infinite — must fail occurs check.
-  match ctx.unify(Var(var), Function(Var(var), Var(var)), span) {
+  match ctx.unify(Var(tv), Function(Var(tv), Var(tv)), span) {
     Ok(_) => abort("occurs check should have failed")
     Err(OccursCheck(_)) => ()
     Err(_) => abort("expected OccursCheck error")

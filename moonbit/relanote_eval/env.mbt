@@ -9,12 +9,12 @@ pub struct Env {
 
 ///|
 pub fn Env::new() -> Env {
-  { bindings: @hashmap.HashMap::new(), parent: None }
+  { bindings: @hashmap.HashMap([]), parent: None }
 }
 
 ///|
 pub fn Env::with_parent(parent : Env) -> Env {
-  { bindings: @hashmap.HashMap::new(), parent: Some(parent) }
+  { bindings: @hashmap.HashMap([]), parent: Some(parent) }
 }
 
 ///|

@@ -174,7 +174,7 @@ fn Lexer::lex_line_comment(self : Lexer) -> TokenKind {
     self.charcode_at(self.offset) != '\n'.to_int() {
     self.offset += 1
   }
-  let text = self.content.substring(start=start, end=self.offset)
+  let text = self.content[start:self.offset].to_owned()
   LineComment(text)
 }
 
@@ -186,7 +186,7 @@ fn Lexer::lex_string(self : Lexer) -> TokenKind {
     self.charcode_at(self.offset) != '"'.to_int() {
     self.offset += 1
   }
-  let s = self.content.substring(start=content_start, end=self.offset)
+  let s = self.content[content_start:self.offset].to_owned()
   if self.offset < self.content.length() {
     // Consume the closing quote.
     self.offset += 1
@@ -226,15 +226,15 @@ fn Lexer::lex_number(self : Lexer) -> TokenKind {
       is_ascii_digit(self.charcode_at(self.offset)) {
       self.offset += 1
     }
-    let text = self.content.substring(start=start, end=self.offset)
-    let parsed = try? @strconv.parse_double(text)
+    let text = self.content[start:self.offset].to_owned()
+    let parsed = try? @string.parse_double(text)
     match parsed {
       Ok(f) => return Float(f)
       Err(_) => return Integer(0)
     }
   }
-  let text = self.content.substring(start=start, end=self.offset)
-  let parsed = try? @strconv.parse_int(text)
+  let text = self.content[start:self.offset].to_owned()
+  let parsed = try? @string.parse_int(text)
   match parsed {
     Ok(n) => Integer(n)
     Err(_) => Integer(0)
@@ -349,7 +349,7 @@ fn Lexer::lex_word(self : Lexer) -> TokenKind {
   }
   // Ident or keyword.
   self.offset = start + ident_len
-  let text = self.content.substring(start=start, end=start + ident_len)
+  let text = self.content[start:start + ident_len].to_owned()
   keyword_or_ident(text)
 }
 
