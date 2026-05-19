@@ -588,11 +588,70 @@ fn Parser::parse_primary(
     @lexer.Lambda => self.parse_lambda_expr(span)
     @lexer.If => self.parse_if_expr(span)
     @lexer.Let => self.parse_let_expr(span)
+    @lexer.Match => self.parse_match_expr(span)
     _ => {
       self.error("expected an expression")
       None
     }
   }
+}
+
+///|
+/// Parse `match scrutinee { pat -> body, pat -> body }`. Each arm
+/// supports an optional guard: `pat if cond -> body`. The body
+/// expression is parsed via the top-level `parse_expr`, so a body
+/// containing commas needs to be parenthesised.
+fn Parser::parse_match_expr(
+  self : Parser,
+  start : @core.Span,
+) -> (@core.Spanned[@ast.Expr])? {
+  let _ = self.advance() // `match`
+  let scrutinee = match self.parse_expr() {
+    None => return None
+    Some(s) => s
+  }
+  if !self.eat(@lexer.LBrace) {
+    self.error("expected `{` after match scrutinee")
+    return None
+  }
+  let arms : Array[@ast.MatchArm] = []
+  while self.peek_kind() != @lexer.RBrace && !self.at_eof() {
+    let pattern = match self.parse_pattern() {
+      None => return None
+      Some(p) => p
+    }
+    let guard_expr = if self.peek_kind() == @lexer.If {
+      let _ = self.advance()
+      match self.parse_expr() {
+        None => return None
+        Some(g) => Some(g)
+      }
+    } else {
+      None
+    }
+    if !self.eat(@lexer.Arrow) {
+      self.error("expected `->` in match arm")
+      return None
+    }
+    let body = match self.parse_expr() {
+      None => return None
+      Some(b) => b
+    }
+    arms.push(@ast.MatchArm::new(pattern, guard_expr, body))
+    if !self.eat(@lexer.Comma) {
+      break
+    }
+  }
+  if !self.eat(@lexer.RBrace) {
+    self.error("expected `}` to close match")
+    return None
+  }
+  Some(
+    @core.Spanned::new(
+      @ast.Match(@ast.MatchExpr::new(scrutinee, arms)),
+      start,
+    ),
+  )
 }
 
 ///|
