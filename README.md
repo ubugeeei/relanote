@@ -228,8 +228,8 @@ truth while the rewrite lands.
 | `relanote_types`        | `moonbit/relanote_types`                | ✅     |
 | `relanote_eval`         | `moonbit/relanote_eval`                 | ✅     |
 | `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ✅     |
-| `relanote_format`       | `moonbit/relanote_format`               | 🟡     |
-| `relanote_lsp`          | `moonbit/relanote_lsp`                  | 🟡     |
+| `relanote_format`       | `moonbit/relanote_format`               | ✅     |
+| `relanote_lsp`          | `moonbit/relanote_lsp`                  | ✅     |
 | `relanote_render`       | `moonbit/relanote_render`               | ✅     |
 | `relanote_cli`           | `moonbit/cmd/relanote`                  | 🟡     |
 | `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | 🟡     |
