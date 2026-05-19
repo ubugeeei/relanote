@@ -164,10 +164,146 @@ pub fn Evaluator::eval_expr(
     If(if_expr) => self.eval_if(if_expr, expr.span())
     Let(let_expr) => self.eval_let(let_expr)
     Index(idx) => self.eval_index(idx, expr.span())
+    Binary(b) => self.eval_binary(b, expr.span())
+    Unary(u) => self.eval_unary(u, expr.span())
     _ => {
       let _ = self
       Ok(Placeholder)
     }
+  }
+}
+
+///|
+/// Evaluate a binary operator. Mirrors the dispatch in
+/// `crates/relanote_eval/src/eval.rs` for the basic arithmetic /
+/// logical / comparison cases. Block-level operators
+/// (`++` for Concat, `>>` for Compose) are deferred until the
+/// renderer-driving block operations land.
+fn Evaluator::eval_binary(
+  self : Evaluator,
+  binary : @ast.Binary,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  let left = match self.eval_expr(binary.left()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  let right = match self.eval_expr(binary.right()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  match binary.op() {
+    Add => arithmetic(left, right, fn(a, b) { a + b }, fn(a, b) { a + b }, span)
+    Sub => arithmetic(left, right, fn(a, b) { a - b }, fn(a, b) { a - b }, span)
+    Mul => arithmetic(left, right, fn(a, b) { a * b }, fn(a, b) { a * b }, span)
+    Div =>
+      match (left, right) {
+        (IntV(_), IntV(0L)) => Err(DivisionByZero(span=span))
+        (IntV(a), IntV(b)) => Ok(IntV(a / b))
+        (FloatV(a), FloatV(b)) => Ok(FloatV(a / b))
+        _ =>
+          Err(TypeError(expected="numeric", found="other", span=span))
+      }
+    Mod =>
+      match (left, right) {
+        (IntV(_), IntV(0L)) => Err(DivisionByZero(span=span))
+        (IntV(a), IntV(b)) => Ok(IntV(a % b))
+        _ =>
+          Err(TypeError(expected="Int", found="other", span=span))
+      }
+    EqOp => Ok(BoolV(values_equal(left, right)))
+    NeOp => Ok(BoolV(!values_equal(left, right)))
+    Lt => compare(left, right, fn(a, b) { a < b }, fn(a, b) { a < b }, span)
+    Le => compare(left, right, fn(a, b) { a <= b }, fn(a, b) { a <= b }, span)
+    Gt => compare(left, right, fn(a, b) { a > b }, fn(a, b) { a > b }, span)
+    Ge => compare(left, right, fn(a, b) { a >= b }, fn(a, b) { a >= b }, span)
+    And =>
+      match (left, right) {
+        (BoolV(a), BoolV(b)) => Ok(BoolV(a && b))
+        _ => Err(TypeError(expected="Bool", found="other", span=span))
+      }
+    Or =>
+      match (left, right) {
+        (BoolV(a), BoolV(b)) => Ok(BoolV(a || b))
+        _ => Err(TypeError(expected="Bool", found="other", span=span))
+      }
+    // Block-level operators land alongside the renderer port.
+    Concat | Compose => Ok(Placeholder)
+  }
+}
+
+///|
+fn arithmetic(
+  left : Value,
+  right : Value,
+  int_op : (Int64, Int64) -> Int64,
+  float_op : (Double, Double) -> Double,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  match (left, right) {
+    (IntV(a), IntV(b)) => Ok(IntV(int_op(a, b)))
+    (FloatV(a), FloatV(b)) => Ok(FloatV(float_op(a, b)))
+    _ => Err(TypeError(expected="numeric", found="other", span=span))
+  }
+}
+
+///|
+fn compare(
+  left : Value,
+  right : Value,
+  int_op : (Int64, Int64) -> Bool,
+  float_op : (Double, Double) -> Bool,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  match (left, right) {
+    (IntV(a), IntV(b)) => Ok(BoolV(int_op(a, b)))
+    (FloatV(a), FloatV(b)) => Ok(BoolV(float_op(a, b)))
+    _ => Err(TypeError(expected="numeric", found="other", span=span))
+  }
+}
+
+///|
+/// Structural equality for the value variants the evaluator can
+/// produce today. Variants carrying AST nodes compare reference-
+/// equal by structure (i.e. not equal between separately
+/// constructed values).
+fn values_equal(a : Value, b : Value) -> Bool {
+  match (a, b) {
+    (UnitV, UnitV) => true
+    (BoolV(x), BoolV(y)) => x == y
+    (IntV(x), IntV(y)) => x == y
+    (FloatV(x), FloatV(y)) => x == y
+    (StringV(x), StringV(y)) => x == y
+    (IntervalV(x), IntervalV(y)) => x == y
+    (AbsolutePitchV(x), AbsolutePitchV(y)) => x == y
+    (RootV, RootV) => true
+    _ => false
+  }
+}
+
+///|
+/// Evaluate `-x` / `!x`.
+fn Evaluator::eval_unary(
+  self : Evaluator,
+  unary : @ast.Unary,
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  let operand = match self.eval_expr(unary.operand()) {
+    Ok(v) => v
+    Err(e) => return Err(e)
+  }
+  match unary.op() {
+    Neg =>
+      match operand {
+        IntV(n) => Ok(IntV(-n))
+        FloatV(f) => Ok(FloatV(-f))
+        _ => Err(TypeError(expected="numeric", found="other", span=span))
+      }
+    Not =>
+      match operand {
+        BoolV(b) => Ok(BoolV(!b))
+        _ => Err(TypeError(expected="Bool", found="other", span=span))
+      }
   }
 }
 
