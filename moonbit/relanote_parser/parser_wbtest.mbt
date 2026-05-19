@@ -462,3 +462,55 @@ test "match missing `->` raises a diagnostic" {
   let (_, diags) = parse("let r = match x { 1 a }")
   assert_true(diags.has_errors())
 }
+
+test "array literal parses to Array" {
+  let (program, diags) = parse("let r = [1, 2, 3]")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Array(elems) => assert_eq(elems.length(), 3)
+        _ => abort("expected Array")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "empty array literal parses to Array of 0 elements" {
+  let (program, diags) = parse("let r = []")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Array(elems) => assert_eq(elems.length(), 0)
+        _ => abort("expected Array")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "tuple with two elements parses to Tuple" {
+  let (program, diags) = parse("let r = (1, 2)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Tuple(elems) => assert_eq(elems.length(), 2)
+        _ => abort("expected Tuple")
+      }
+    _ => abort("expected LetBinding")
+  }
+}
+
+test "parenthesised single expression stays Paren, not Tuple" {
+  let (program, diags) = parse("let r = (1)")
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    LetBinding(b) =>
+      match b.value().node() {
+        Paren(_) => ()
+        _ => abort("expected Paren")
+      }
+    _ => abort("expected LetBinding")
+  }
+}

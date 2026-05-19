@@ -575,14 +575,51 @@ fn Parser::parse_primary(
       } else {
         match self.parse_expr() {
           None => None
-          Some(inner) => {
-            if !self.eat(@lexer.RParen) {
-              self.error("expected `)`")
+          Some(first) =>
+            if self.eat(@lexer.Comma) {
+              // `(a, b, ...)` → tuple literal.
+              let elements : Array[@core.Spanned[@ast.Expr]] = [first]
+              while self.peek_kind() != @lexer.RParen && !self.at_eof() {
+                match self.parse_expr() {
+                  None => return None
+                  Some(elem) => elements.push(elem)
+                }
+                if !self.eat(@lexer.Comma) {
+                  break
+                }
+              }
+              if !self.eat(@lexer.RParen) {
+                self.error("expected `)` to close tuple")
+              }
+              Some(@core.Spanned::new(@ast.Tuple(elements), span))
+            } else {
+              if !self.eat(@lexer.RParen) {
+                self.error("expected `)`")
+              }
+              Some(@core.Spanned::new(@ast.Paren(first), span))
             }
-            Some(@core.Spanned::new(@ast.Paren(inner), span))
+        }
+      }
+    }
+    @lexer.LBracket => {
+      let _ = self.advance()
+      let elements : Array[@core.Spanned[@ast.Expr]] = []
+      if self.peek_kind() != @lexer.RBracket {
+        while true {
+          match self.parse_expr() {
+            None => return None
+            Some(elem) => elements.push(elem)
+          }
+          if !self.eat(@lexer.Comma) {
+            break
           }
         }
       }
+      if !self.eat(@lexer.RBracket) {
+        self.error("expected `]` to close array literal")
+        return None
+      }
+      Some(@core.Spanned::new(@ast.Array(elements), span))
     }
     @lexer.Pipe => self.parse_block_expr(span)
     @lexer.Lambda => self.parse_lambda_expr(span)
