@@ -223,7 +223,12 @@ test "MixDef::empty has no tracks or buses" {
   let m = MixDef::empty()
   assert_eq(m.tracks().length(), 0)
   assert_eq(m.buses().length(), 0)
-  assert_true(m.master() == None)
+  // `Spanned[T]` doesn't derive `Eq`, so `Option[Spanned[Expr]] == None`
+  // needs an explicit match instead of a `==` comparison.
+  match m.master() {
+    None => ()
+    Some(_) => abort("expected MixDef::empty to have no master")
+  }
 }
 
 test "MixDef::new threads tracks / buses / sends / sidechains" {

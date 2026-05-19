@@ -34,12 +34,12 @@ pub fn ParseError::unexpected_token(
   found : @lexer.TokenKind,
   span : @core.Span,
 ) -> ParseError {
-  UnexpectedToken(expected~=expected, found~=found, span~=span)
+  UnexpectedToken(expected=expected, found=found, span=span)
 }
 
 ///|
 pub fn ParseError::custom(message : String, span : @core.Span) -> ParseError {
-  Custom(message~=message, span~=span)
+  Custom(message=message, span=span)
 }
 
 ///|

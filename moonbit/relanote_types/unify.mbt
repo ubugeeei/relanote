@@ -18,21 +18,21 @@ pub fn TypeContext::unify(
       if v1 == v2 {
         Ok(())
       } else if self.occurs_in(v1, Var(v2)) {
-        Err(OccursCheck(span~=span))
+        Err(OccursCheck(span=span))
       } else {
         self.add_substitution(v1, Var(v2))
         Ok(())
       }
     (Var(v), other) =>
       if self.occurs_in(v, other) {
-        Err(OccursCheck(span~=span))
+        Err(OccursCheck(span=span))
       } else {
         self.add_substitution(v, other)
         Ok(())
       }
     (other, Var(v)) =>
       if self.occurs_in(v, other) {
-        Err(OccursCheck(span~=span))
+        Err(OccursCheck(span=span))
       } else {
         self.add_substitution(v, other)
         Ok(())

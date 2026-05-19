@@ -161,6 +161,6 @@ test "instantiate replaces quantifiers with fresh vars" {
 
 test "TypeError::span returns the right span variant" {
   let span = @core.Span::dummy()
-  let err = OccursCheck(span~=span)
+  let err = OccursCheck(span=span)
   assert_true(err.span() == span)
 }
