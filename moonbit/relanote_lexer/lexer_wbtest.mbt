@@ -193,6 +193,37 @@ test "concat operator ++" {
   assert_true(toks[2] == Ident("b"))
 }
 
+test "arithmetic operators" {
+  let toks = lex("* / %")
+  assert_true(toks[0] == Star)
+  assert_true(toks[1] == Slash)
+  assert_true(toks[2] == Percent)
+}
+
+test "comparison operators" {
+  let toks = lex("a == b != c <= d >= e < f > g")
+  assert_true(toks[1] == EqEq)
+  assert_true(toks[3] == NotEq)
+  assert_true(toks[5] == LtEq)
+  assert_true(toks[7] == GtEq)
+  assert_true(toks[9] == LAngle)
+  assert_true(toks[11] == RAngle)
+}
+
+test "logical operators" {
+  let toks = lex("!a && b || c")
+  assert_true(toks[0] == Bang)
+  assert_true(toks[2] == AndAnd)
+  assert_true(toks[4] == OrOr)
+}
+
+test "star keeps staccato suffix behaviour" {
+  let toks = lex("| R* <3>* |")
+  assert_true(toks[0] == Pipe)
+  assert_true(toks[2] == Staccato)
+  assert_true(toks[6] == Staccato)
+}
+
 test "angle brackets around scale degree" {
   let toks = lex("| <1> <3> <5> |")
   assert_true(toks[0] == Pipe)

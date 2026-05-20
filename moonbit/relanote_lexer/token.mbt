@@ -174,6 +174,13 @@ pub(all) enum TokenKind {
   Arrow
   Lambda
   Equals
+  EqEq
+  NotEq
+  LtEq
+  GtEq
+  AndAnd
+  OrOr
+  Bang
   ColonColon
   Colon
   Comma
@@ -181,6 +188,9 @@ pub(all) enum TokenKind {
   Minus
   PlusPlus
   Plus
+  Star
+  Slash
+  Percent
 
   // Literals
   Integer(Int)
@@ -215,8 +225,9 @@ pub fn TokenKind::is_keyword(self : TokenKind) -> Bool {
 /// `true` if `self` is an operator token.
 pub fn TokenKind::is_operator(self : TokenKind) -> Bool {
   match self {
-    PipeOp | Arrow | Lambda | Equals | ColonColon | Colon | Comma | Dot
-    | Minus | Plus => true
+    PipeOp | Compose | Arrow | Lambda | Equals | EqEq | NotEq | LtEq | GtEq
+    | AndAnd | OrOr | Bang | ColonColon | Colon | Comma | Dot | Minus
+    | PlusPlus | Plus | Star | Slash | Percent => true
     _ => false
   }
 }

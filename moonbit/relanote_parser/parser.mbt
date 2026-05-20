@@ -297,7 +297,7 @@ fn Parser::parse_import_item(
   let _ = self.advance() // `import`
   let items : Array[@ast.ImportItem] = []
   match self.peek_kind() {
-    @lexer.Staccato => {
+    @lexer.Staccato | @lexer.Star => {
       let _ = self.advance()
       if self.eat(@lexer.As) {
         match self.parse_ident_token() {
@@ -957,7 +957,8 @@ fn Parser::complete_note(
 
 ///|
 /// Read zero-or-more articulation markers in source order.
-/// `^` is `Accent`, `*` is `Staccato`, `~` is `Portamento`.
+/// `^` is `Accent`, `*` is `Staccato` (or `Star` when the lexer cannot
+/// prove suffix context), `~` is `Portamento`.
 fn Parser::parse_optional_articulations(
   self : Parser,
 ) -> Array[@ast.Articulation] {
@@ -969,6 +970,10 @@ fn Parser::parse_optional_articulations(
         acc.push(@ast.Accent)
       }
       @lexer.Staccato => {
+        let _ = self.advance()
+        acc.push(@ast.Staccato)
+      }
+      @lexer.Star => {
         let _ = self.advance()
         acc.push(@ast.Staccato)
       }

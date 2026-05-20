@@ -73,7 +73,7 @@ pub fn Lexer::next_token(self : Lexer) -> Token? {
 // ============================================================
 
 fn Lexer::charcode_at(self : Lexer, idx : Int) -> Int {
-  if idx >= self.content.length() {
+  if idx < 0 || idx >= self.content.length() {
     -1
   } else {
     self.content.unsafe_get(idx).to_int()
@@ -110,6 +110,14 @@ fn is_ident_start(c : Int) -> Bool {
 
 fn is_ident_cont(c : Int) -> Bool {
   is_ident_start(c) || is_ascii_digit(c)
+}
+
+fn is_ascii_space(c : Int) -> Bool {
+  c == ' '.to_int() ||
+  c == '\t'.to_int() ||
+  c == '\r'.to_int() ||
+  c == '\n'.to_int() ||
+  c == -1
 }
 
 fn is_pitch_letter(c : Int) -> Bool {
@@ -457,9 +465,33 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
     self.offset += 2
     return Some(PipeOp)
   }
+  if c == '|'.to_int() && c2 == '|'.to_int() {
+    self.offset += 2
+    return Some(OrOr)
+  }
   if c == '>'.to_int() && c2 == '>'.to_int() {
     self.offset += 2
     return Some(Compose)
+  }
+  if c == '>'.to_int() && c2 == '='.to_int() {
+    self.offset += 2
+    return Some(GtEq)
+  }
+  if c == '<'.to_int() && c2 == '='.to_int() {
+    self.offset += 2
+    return Some(LtEq)
+  }
+  if c == '='.to_int() && c2 == '='.to_int() {
+    self.offset += 2
+    return Some(EqEq)
+  }
+  if c == '!'.to_int() && c2 == '='.to_int() {
+    self.offset += 2
+    return Some(NotEq)
+  }
+  if c == '&'.to_int() && c2 == '&'.to_int() {
+    self.offset += 2
+    return Some(AndAnd)
   }
   if c == '-'.to_int() && c2 == '>'.to_int() {
     self.offset += 2
@@ -475,7 +507,11 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
   }
   // Single-character tokens.
   let single : TokenKind? = if c == '*'.to_int() {
-    Some(Staccato)
+    if self.star_is_articulation_suffix() {
+      Some(Staccato)
+    } else {
+      Some(Star)
+    }
   } else if c == '^'.to_int() {
     Some(Accent)
   } else if c == '~'.to_int() {
@@ -502,6 +538,8 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
     Some(Lambda)
   } else if c == '='.to_int() {
     Some(Equals)
+  } else if c == '!'.to_int() {
+    Some(Bang)
   } else if c == ':'.to_int() {
     Some(Colon)
   } else if c == ','.to_int() {
@@ -512,6 +550,10 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
     Some(Minus)
   } else if c == '+'.to_int() {
     Some(Plus)
+  } else if c == '/'.to_int() {
+    Some(Slash)
+  } else if c == '%'.to_int() {
+    Some(Percent)
   } else {
     None
   }
@@ -520,4 +562,21 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
   // loop to retry.
   self.offset += 1
   single
+}
+
+fn Lexer::star_is_articulation_suffix(self : Lexer) -> Bool {
+  let prev = self.charcode_at(self.offset - 1)
+  let next = self.charcode_at(self.offset + 1)
+  let prev_can_end_slot =
+    is_ident_cont(prev) ||
+    prev == '>'.to_int() ||
+    prev == '^'.to_int() ||
+    prev == '~'.to_int()
+  let next_can_follow_suffix =
+    is_ascii_space(next) ||
+    next == '|'.to_int() ||
+    next == ':'.to_int() ||
+    next == '^'.to_int() ||
+    next == '~'.to_int()
+  prev_can_end_slot && next_can_follow_suffix
 }
