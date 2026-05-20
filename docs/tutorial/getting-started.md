@@ -12,8 +12,7 @@ By the end you'll have written:
 
 If you don't have relanote installed locally, follow the
 [Installation guide](/guide/installation), or just open the
-[Playground](https://ubugeeei.github.io/relanote/playground/) and
-follow along in the browser.
+[Studio](/playground/) and follow along in the browser.
 
 ## Your first program
 

@@ -61,7 +61,7 @@ editor to launch it as the language server for `.rela` files to get
 diagnostics, hover docs, formatting, and completion as the MoonBit server
 surface grows.
 
-## Web Playground
+## Studio
 
 The view lives in `src/studio/App.mbtv` and is built with Vapor Moon:
 

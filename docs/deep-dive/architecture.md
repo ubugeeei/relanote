@@ -154,9 +154,9 @@ This is equivalent to nested function calls:
 volume(voice(transpose(melody, M3), Lead), 0.8)
 ```
 
-### Browser Playground
+### Studio
 
-The Vapor Moon playground calls the same MoonBit bridge functions as the
+The Vapor Moon studio calls the same MoonBit bridge functions as the
 CLI pipeline:
 - Diagnostics and formatting share parser output
 - Playback and export share evaluator and MIDI rendering

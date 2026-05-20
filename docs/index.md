@@ -14,7 +14,7 @@ hero:
       text: Read the guide
       link: /guide/introduction
     - theme: alt
-      text: Open playground
+      text: Open studio
       link: /playground/
     - theme: alt
       text: GitHub

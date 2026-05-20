@@ -20,8 +20,7 @@ Run it locally:
 relanote run hello.rela
 ```
 
-Or skip the install and open the
-[Playground](https://ubugeeei.github.io/relanote/playground/).
+Or skip the install and open the [Studio](/playground/).
 
 ## What each line is doing
 
