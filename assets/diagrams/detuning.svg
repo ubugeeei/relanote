@@ -1,61 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180">
-  <style>
-    .bg { fill: #ffffff; }
-    .main-title { font: bold 16px sans-serif; fill: #1f2937; }
-    .title { font: bold 12px sans-serif; fill: #374151; }
-    .label { font: 10px sans-serif; fill: #6b7280; }
-    .axis { stroke: #d1d5db; stroke-width: 1; }
-    .card { fill: #f9fafb; stroke: #e5e7eb; stroke-width: 1; }
-    .wave-static { stroke: #6b7280; stroke-width: 2; fill: none; }
-    .wave-beating { stroke: #8b5cf6; stroke-width: 2; fill: none; }
-
-    @media (prefers-color-scheme: dark) {
-      .bg { fill: #1f2937; }
-      .main-title { fill: #f3f4f6; }
-      .title { fill: #e5e7eb; }
-      .label { fill: #9ca3af; }
-      .axis { stroke: #4b5563; }
-      .card { fill: #374151; stroke: #4b5563; }
-    }
-  </style>
-
-  <rect width="600" height="180" class="bg"/>
-
-  <text x="300" y="25" text-anchor="middle" class="main-title">Oscillator Detuning Effect</text>
-
-  <!-- Without Detune -->
-  <g transform="translate(30, 50)">
-    <rect width="250" height="110" rx="8" class="card"/>
-    <text x="125" y="25" text-anchor="middle" class="title">Without Detune</text>
-
-    <!-- Axis -->
-    <line x1="20" y1="65" x2="230" y2="65" class="axis"/>
-
-    <!-- Static flat line (single frequency) -->
-    <path d="M 20,45 L 230,45" class="wave-static"/>
-    <path d="M 20,85 L 230,85" class="wave-static"/>
-
-    <text x="125" y="100" text-anchor="middle" class="label">Static, single frequency</text>
-  </g>
-
-  <!-- With Detune -->
-  <g transform="translate(320, 50)">
-    <rect width="250" height="110" rx="8" class="card"/>
-    <text x="125" y="25" text-anchor="middle" class="title">With Detune (+7 cents)</text>
-
-    <!-- Axis -->
-    <line x1="20" y1="65" x2="230" y2="65" class="axis"/>
-
-    <!-- Beating/chorusing wave pattern -->
-    <path d="M 20,45
-             Q 35,40 50,50 Q 65,60 80,45 Q 95,30 110,50
-             Q 125,70 140,45 Q 155,20 170,50
-             Q 185,80 200,45 Q 215,10 230,50" class="wave-beating"/>
-    <path d="M 20,85
-             Q 35,90 50,80 Q 65,70 80,85 Q 95,100 110,80
-             Q 125,60 140,85 Q 155,110 170,80
-             Q 185,50 200,85 Q 215,120 230,80" class="wave-beating"/>
-
-    <text x="125" y="100" text-anchor="middle" class="label">Movement, beating, thick sound</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Detuning</title>
+<desc id="desc">Two close oscillators create a moving beat.</desc>
+<style>
+  :root{color-scheme:light dark}.bg{fill:#fff8ed}.grid{stroke:#0c0b0d;stroke-opacity:.06}.ink{fill:#0c0b0d}.muted{fill:#756c62}.rail{fill:none;stroke-linecap:square;stroke-width:18;mix-blend-mode:multiply}.r0{stroke:#ff4f7a}.r1{stroke:#caff55}.r2{stroke:#ffd05a}.tick{fill:#0c0b0d}.node rect{filter:url(#soft)}.node text{fill:#0c0b0d;font:700 18px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-anchor:middle}.mono{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}@media(prefers-color-scheme:dark){.bg{fill:#08070a}.grid{stroke:#fff8ed;stroke-opacity:.07}.ink{fill:#fff8ed}.muted{fill:#b5aca1}.rail{mix-blend-mode:screen;opacity:.88}.tick{fill:#fff8ed}.node text{fill:#08070a}}
+</style>
+<defs><filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
+<rect class="bg" width="960" height="540"/>
+<path class="grid" d="M0 98H960M0 178H960M0 258H960M0 338H960M0 418H960M118 0V540M238 0V540M358 0V540M478 0V540M598 0V540M718 0V540M838 0V540"/>
+<rect class="tick" x="99" y="92" width="2" height="346" opacity="0.16"/>
+  <rect class="tick" x="352.33333333333337" y="92" width="2" height="346" opacity="0.24"/>
+  <rect class="tick" x="605.6666666666667" y="92" width="2" height="346" opacity="0.32"/>
+  <rect class="tick" x="859" y="92" width="2" height="346" opacity="0.16"/>
+<text class="ink" x="72" y="74" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="42" font-weight="760">Detuning</text>
+<text class="muted" x="74" y="108" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="17">Two close oscillators create a moving beat.</text>
+<text class="muted mono" x="74" y="482">relative structure -> signal -> render</text>
+<path class="rail r0" d="M 100.0 296.0 L 353.3 354.6 L 606.7 346.7 L 860.0 260.1"/>
+  <path class="rail r1" d="M 100.0 330.0 L 353.3 396.6 L 606.7 380.7 L 860.0 302.1"/>
+  <path class="rail r2" d="M 100.0 364.0 L 353.3 438.6 L 606.7 414.7 L 860.0 344.1"/>
+<g class="node" transform="translate(42 292)"><rect fill="#a970ff" width="116" height="76"/><text x="58" y="45">Osc A</text></g>
+  <g class="node" transform="translate(295.33333333333337 358.57163289337745)"><rect fill="#ff4f7a" width="116" height="76"/><text x="58" y="45">Osc B</text></g>
+  <g class="node" transform="translate(548.6666666666667 342.7175751354527)"><rect fill="#caff55" width="116" height="76"/><text x="58" y="45">Drift</text></g>
+  <g class="node" transform="translate(802 264.0675339081954)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Beating</text></g>
 </svg>

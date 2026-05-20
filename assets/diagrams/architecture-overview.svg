@@ -1,119 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
-    </marker>
-    <linearGradient id="rustGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:0.3"/>
-    </linearGradient>
-    <linearGradient id="wasmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.3"/>
-    </linearGradient>
-    <linearGradient id="webGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:0.3"/>
-    </linearGradient>
-  </defs>
-
-  <style>
-    .bg { fill: #ffffff; }
-    .title { font: bold 16px sans-serif; fill: #1f2937; }
-    .subtitle { font: 12px sans-serif; fill: #6b7280; }
-    .label { font: 11px sans-serif; fill: #374151; }
-    .small { font: 10px sans-serif; fill: #6b7280; }
-    .box { stroke: #d1d5db; stroke-width: 1.5; rx: 6; }
-    .arrow { stroke: #9ca3af; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
-    .white-box { fill: #fff; }
-
-    @media (prefers-color-scheme: dark) {
-      .bg { fill: #1f2937; }
-      .title { fill: #f3f4f6; }
-      .subtitle { fill: #9ca3af; }
-      .label { fill: #e5e7eb; }
-      .small { fill: #9ca3af; }
-      .box { stroke: #4b5563; }
-      .arrow { stroke: #6b7280; }
-      .white-box { fill: #374151; }
-    }
-  </style>
-
-  <!-- Background -->
-  <rect width="800" height="600" class="bg"/>
-
-  <!-- Title -->
-  <text x="400" y="30" text-anchor="middle" class="title">Relanote System Architecture</text>
-
-  <!-- User File -->
-  <rect x="280" y="50" width="240" height="40" fill="#fef3c7" class="box"/>
-  <text x="400" y="75" text-anchor="middle" style="font: 11px sans-serif; fill: #92400e;">User's .rela File</text>
-
-  <!-- Arrow -->
-  <line x1="400" y1="90" x2="400" y2="120" class="arrow"/>
-
-  <!-- Rust Backend Section -->
-  <rect x="50" y="130" width="700" height="180" fill="url(#rustGrad)" class="box"/>
-  <text x="400" y="155" text-anchor="middle" class="title">Rust Backend</text>
-
-  <!-- Lexer -->
-  <rect x="80" y="175" width="130" height="60" class="box white-box"/>
-  <text x="145" y="200" text-anchor="middle" class="label">Lexer</text>
-  <text x="145" y="218" text-anchor="middle" class="small">(lexer)</text>
-
-  <!-- Parser -->
-  <rect x="240" y="175" width="130" height="60" class="box white-box"/>
-  <text x="305" y="200" text-anchor="middle" class="label">Parser</text>
-  <text x="305" y="218" text-anchor="middle" class="small">(parser)</text>
-
-  <!-- Evaluator -->
-  <rect x="400" y="175" width="130" height="60" class="box white-box"/>
-  <text x="465" y="200" text-anchor="middle" class="label">Evaluator</text>
-  <text x="465" y="218" text-anchor="middle" class="small">(eval)</text>
-
-  <!-- Renderer -->
-  <rect x="560" y="175" width="130" height="60" class="box white-box"/>
-  <text x="625" y="200" text-anchor="middle" class="label">Renderer</text>
-  <text x="625" y="218" text-anchor="middle" class="small">(render)</text>
-
-  <!-- Arrows between components -->
-  <line x1="210" y1="205" x2="240" y2="205" class="arrow"/>
-  <line x1="370" y1="205" x2="400" y2="205" class="arrow"/>
-  <line x1="530" y1="205" x2="560" y2="205" class="arrow"/>
-
-  <!-- Output labels -->
-  <text x="145" y="260" text-anchor="middle" class="small">Tokens</text>
-  <text x="305" y="260" text-anchor="middle" class="small">AST</text>
-  <text x="465" y="260" text-anchor="middle" class="small">Values</text>
-  <text x="625" y="260" text-anchor="middle" class="small">MIDI/JSON</text>
-
-  <!-- Arrow to WASM -->
-  <line x1="400" y1="310" x2="400" y2="340" class="arrow"/>
-
-  <!-- MoonBit browser bridge -->
-  <rect x="150" y="350" width="500" height="70" fill="url(#wasmGrad)" class="box"/>
-  <text x="400" y="375" text-anchor="middle" class="title">MoonBit Browser Bridge (studio)</text>
-  <text x="400" y="395" text-anchor="middle" class="small">Diagnostics, formatting, playback, and MIDI export APIs</text>
-
-  <!-- Arrow to Web -->
-  <line x1="400" y1="420" x2="400" y2="450" class="arrow"/>
-
-  <!-- Studio Frontend -->
-  <rect x="50" y="460" width="700" height="120" fill="url(#webGrad)" class="box"/>
-  <text x="400" y="485" text-anchor="middle" class="title">Studio Frontend (Vapor Moon)</text>
-
-  <!-- Source Editor -->
-  <rect x="80" y="500" width="180" height="50" class="box white-box"/>
-  <text x="170" y="525" text-anchor="middle" class="label">Source Editor</text>
-  <text x="170" y="540" text-anchor="middle" class="small">Code Editing</text>
-
-  <!-- WebAudio -->
-  <rect x="310" y="500" width="180" height="50" class="box white-box"/>
-  <text x="400" y="525" text-anchor="middle" class="label">WebAudio API</text>
-  <text x="400" y="540" text-anchor="middle" class="small">Sound Playback</text>
-
-  <!-- Vapor Moon UI -->
-  <rect x="540" y="500" width="180" height="50" class="box white-box"/>
-  <text x="630" y="525" text-anchor="middle" class="label">Vapor Moon UI</text>
-  <text x="630" y="540" text-anchor="middle" class="small">User Interface</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">System Architecture</title>
+<desc id="desc">One MoonBit source graph feeds every surface.</desc>
+<style>
+  :root{color-scheme:light dark}.bg{fill:#fff8ed}.grid{stroke:#0c0b0d;stroke-opacity:.06}.ink{fill:#0c0b0d}.muted{fill:#756c62}.rail{fill:none;stroke-linecap:square;stroke-width:18;mix-blend-mode:multiply}.r0{stroke:#ff4f7a}.r1{stroke:#caff55}.r2{stroke:#ffd05a}.tick{fill:#0c0b0d}.node rect{filter:url(#soft)}.node text{fill:#0c0b0d;font:700 18px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-anchor:middle}.mono{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}@media(prefers-color-scheme:dark){.bg{fill:#08070a}.grid{stroke:#fff8ed;stroke-opacity:.07}.ink{fill:#fff8ed}.muted{fill:#b5aca1}.rail{mix-blend-mode:screen;opacity:.88}.tick{fill:#fff8ed}.node text{fill:#08070a}}
+</style>
+<defs><filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
+<rect class="bg" width="960" height="540"/>
+<path class="grid" d="M0 98H960M0 178H960M0 258H960M0 338H960M0 418H960M118 0V540M238 0V540M358 0V540M478 0V540M598 0V540M718 0V540M838 0V540"/>
+<rect class="tick" x="99" y="92" width="2" height="346" opacity="0.16"/>
+  <rect class="tick" x="251" y="92" width="2" height="346" opacity="0.24"/>
+  <rect class="tick" x="403" y="92" width="2" height="346" opacity="0.32"/>
+  <rect class="tick" x="555" y="92" width="2" height="346" opacity="0.16"/>
+  <rect class="tick" x="707" y="92" width="2" height="346" opacity="0.24"/>
+  <rect class="tick" x="859" y="92" width="2" height="346" opacity="0.32"/>
+<text class="ink" x="72" y="74" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="42" font-weight="760">System Architecture</text>
+<text class="muted" x="74" y="108" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="17">One MoonBit source graph feeds every surface.</text>
+<text class="muted mono" x="74" y="482">relative structure -> signal -> render</text>
+<path class="rail r0" d="M 100.0 296.0 L 252.0 354.6 L 404.0 346.7 L 556.0 260.1 L 708.0 224.0 L 860.0 261.1"/>
+  <path class="rail r1" d="M 100.0 330.0 L 252.0 396.6 L 404.0 380.7 L 556.0 302.1 L 708.0 258.0 L 860.0 303.1"/>
+  <path class="rail r2" d="M 100.0 364.0 L 252.0 438.6 L 404.0 414.7 L 556.0 344.1 L 708.0 292.0 L 860.0 345.1"/>
+<g class="node" transform="translate(42 292)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Source</text></g>
+  <g class="node" transform="translate(194 358.57163289337745)"><rect fill="#00d29e" width="116" height="76"/><text x="58" y="45">Parser</text></g>
+  <g class="node" transform="translate(346 342.7175751354527)"><rect fill="#a970ff" width="116" height="76"/><text x="58" y="45">Types</text></g>
+  <g class="node" transform="translate(498 264.0675339081954)"><rect fill="#ff4f7a" width="116" height="76"/><text x="58" y="45">Eval</text></g>
+  <g class="node" transform="translate(650 220.00208538423823)"><rect fill="#caff55" width="116" height="76"/><text x="58" y="45">Render</text></g>
+  <g class="node" transform="translate(802 265.08088013222294)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Studio</text></g>
 </svg>

@@ -1,71 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 150">
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
-    </marker>
-    <linearGradient id="oscGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1"/>
-    </linearGradient>
-    <linearGradient id="envGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1"/>
-    </linearGradient>
-    <linearGradient id="filterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:#059669;stop-opacity:1"/>
-    </linearGradient>
-    <linearGradient id="outGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1"/>
-    </linearGradient>
-  </defs>
-
-  <style>
-    .bg { fill: #ffffff; }
-    .title { font: bold 14px sans-serif; fill: white; }
-    .subtitle { font: 10px sans-serif; fill: rgba(255,255,255,0.8); }
-    .box { stroke: none; rx: 8; }
-    .main-title { font-size: 16px; font-weight: bold; fill: #1f2937; }
-
-    @media (prefers-color-scheme: dark) {
-      .bg { fill: #1f2937; }
-      .main-title { fill: #f3f4f6; }
-    }
-  </style>
-
-  <!-- Background -->
-  <rect width="700" height="150" class="bg"/>
-
-  <!-- Title -->
-  <text x="350" y="25" text-anchor="middle" class="main-title">Subtractive Synthesis Signal Chain</text>
-
-  <!-- Oscillator -->
-  <rect x="30" y="50" width="130" height="80" fill="url(#oscGrad)" class="box"/>
-  <text x="95" y="85" text-anchor="middle" class="title">Oscillator</text>
-  <text x="95" y="105" text-anchor="middle" class="subtitle">(waveform)</text>
-
-  <!-- Arrow -->
-  <line x1="160" y1="90" x2="195" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <!-- Envelope -->
-  <rect x="200" y="50" width="130" height="80" fill="url(#envGrad)" class="box"/>
-  <text x="265" y="85" text-anchor="middle" class="title">Envelope</text>
-  <text x="265" y="105" text-anchor="middle" class="subtitle">(ADSR)</text>
-
-  <!-- Arrow -->
-  <line x1="330" y1="90" x2="365" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <!-- Filter -->
-  <rect x="370" y="50" width="130" height="80" fill="url(#filterGrad)" class="box"/>
-  <text x="435" y="85" text-anchor="middle" class="title">Filter</text>
-  <text x="435" y="105" text-anchor="middle" class="subtitle">(LPF/HPF/BPF)</text>
-
-  <!-- Arrow -->
-  <line x1="500" y1="90" x2="535" y2="90" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <!-- Output -->
-  <rect x="540" y="50" width="130" height="80" fill="url(#outGrad)" class="box"/>
-  <text x="605" y="85" text-anchor="middle" class="title">Output</text>
-  <text x="605" y="105" text-anchor="middle" class="subtitle">(speaker)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Synthesis Chain</title>
+<desc id="desc">Subtractive sound as ordered transforms.</desc>
+<style>
+  :root{color-scheme:light dark}.bg{fill:#fff8ed}.grid{stroke:#0c0b0d;stroke-opacity:.06}.ink{fill:#0c0b0d}.muted{fill:#756c62}.rail{fill:none;stroke-linecap:square;stroke-width:18;mix-blend-mode:multiply}.r0{stroke:#ff4f7a}.r1{stroke:#caff55}.r2{stroke:#ffd05a}.tick{fill:#0c0b0d}.node rect{filter:url(#soft)}.node text{fill:#0c0b0d;font:700 18px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-anchor:middle}.mono{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}@media(prefers-color-scheme:dark){.bg{fill:#08070a}.grid{stroke:#fff8ed;stroke-opacity:.07}.ink{fill:#fff8ed}.muted{fill:#b5aca1}.rail{mix-blend-mode:screen;opacity:.88}.tick{fill:#fff8ed}.node text{fill:#08070a}}
+</style>
+<defs><filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
+<rect class="bg" width="960" height="540"/>
+<path class="grid" d="M0 98H960M0 178H960M0 258H960M0 338H960M0 418H960M118 0V540M238 0V540M358 0V540M478 0V540M598 0V540M718 0V540M838 0V540"/>
+<rect class="tick" x="99" y="92" width="2" height="346" opacity="0.16"/>
+  <rect class="tick" x="352.33333333333337" y="92" width="2" height="346" opacity="0.24"/>
+  <rect class="tick" x="605.6666666666667" y="92" width="2" height="346" opacity="0.32"/>
+  <rect class="tick" x="859" y="92" width="2" height="346" opacity="0.16"/>
+<text class="ink" x="72" y="74" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="42" font-weight="760">Synthesis Chain</text>
+<text class="muted" x="74" y="108" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="17">Subtractive sound as ordered transforms.</text>
+<text class="muted mono" x="74" y="482">relative structure -> signal -> render</text>
+<path class="rail r0" d="M 100.0 296.0 L 353.3 354.6 L 606.7 346.7 L 860.0 260.1"/>
+  <path class="rail r1" d="M 100.0 330.0 L 353.3 396.6 L 606.7 380.7 L 860.0 302.1"/>
+  <path class="rail r2" d="M 100.0 364.0 L 353.3 438.6 L 606.7 414.7 L 860.0 344.1"/>
+<g class="node" transform="translate(42 292)"><rect fill="#caff55" width="116" height="76"/><text x="58" y="45">Oscillator</text></g>
+  <g class="node" transform="translate(295.33333333333337 358.57163289337745)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Envelope</text></g>
+  <g class="node" transform="translate(548.6666666666667 342.7175751354527)"><rect fill="#00d29e" width="116" height="76"/><text x="58" y="45">Filter</text></g>
+  <g class="node" transform="translate(802 264.0675339081954)"><rect fill="#a970ff" width="116" height="76"/><text x="58" y="45">Output</text></g>
 </svg>

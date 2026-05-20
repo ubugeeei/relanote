@@ -112,6 +112,7 @@ function renderMarkdown(src, fromFile) {
   let codeLang = "";
   let inUl = false;
   let inOl = false;
+  let inTable = false;
   let para = [];
   const closePara = () => {
     if (para.length) html.push(`<p>${inline(para.join(" "), fromFile)}</p>`);
@@ -120,8 +121,10 @@ function renderMarkdown(src, fromFile) {
   const closeLists = () => {
     if (inUl) html.push("</ul>");
     if (inOl) html.push("</ol>");
-    inUl = inOl = false;
+    if (inTable) html.push("</tbody></table>");
+    inUl = inOl = inTable = false;
   };
+  const attr = (text) => escapeHtml(text).replaceAll('"', "&quot;");
   for (const line of lines) {
     if (line.startsWith("```")) {
       closePara();
@@ -136,6 +139,26 @@ function renderMarkdown(src, fromFile) {
     if (!line.trim()) {
       closePara();
       closeLists();
+      continue;
+    }
+    const image = line.trim().match(/^<img\s+[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[^>]*\/?>$/);
+    if (image) {
+      closePara();
+      closeLists();
+      html.push(`<figure class="doc-figure"><img src="${attr(href(image[1], fromFile))}" alt="${attr(image[2])}"></figure>`);
+      continue;
+    }
+    const table = line.trim();
+    if (/^\|.*\|$/.test(table)) {
+      closePara();
+      const cells = table.slice(1, -1).split("|").map((cell) => cell.trim());
+      if (cells.every((cell) => /^:?-{3,}:?$/.test(cell))) continue;
+      if (!inTable) {
+        closeLists();
+        html.push("<table><tbody>");
+        inTable = true;
+      }
+      html.push(`<tr>${cells.map((cell) => `<td>${inline(cell, fromFile)}</td>`).join("")}</tr>`);
       continue;
     }
     const h = line.match(/^(#{1,4})\s+(.*)$/);
@@ -194,6 +217,8 @@ function nav(files, activeFile = null) {
 
 function writeCss() {
   fs.copyFileSync(path.join(site, "site.css"), path.join(dist, "site.css"));
+  fs.copyFileSync(path.join(site, "chromatic.css"), path.join(dist, "chromatic.css"));
+  fs.copyFileSync(path.join(site, "site.js"), path.join(dist, "site.js"));
 }
 
 function build() {
@@ -210,6 +235,7 @@ function build() {
   fs.copyFileSync(path.join(dist, "docs", "index.html"), path.join(dist, "index.html"));
   writeCss();
   copyIfExists(path.join(root, "assets"), path.join(dist, "assets"));
+  copyIfExists(path.join(root, "assets", "diagrams"), path.join(dist, "diagrams"));
   copyIfExists(path.join(root, "examples"), path.join(dist, "examples"));
   fs.mkdirSync(path.join(dist, "playground"), { recursive: true });
   fs.copyFileSync(path.join(root, "src", "studio", "App.mbtv"), path.join(dist, "playground", "App.mbtv"));
