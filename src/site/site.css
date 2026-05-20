@@ -189,20 +189,20 @@ p code, li code { background: rgba(120,120,128,.14); border: 1px solid var(--lin
   box-shadow: var(--shadow);
   display: grid;
   gap: 1px;
-  grid-template-columns: 170px minmax(320px, 1fr) 260px;
+  grid-template-columns: 196px minmax(320px, 1fr) 260px;
   grid-template-rows: 52px 430px 60px;
   overflow: hidden;
 }
 .studio-frame header, .studio-frame footer { align-items: center; background: rgba(255,255,255,.68); display: flex; gap: .5rem; justify-content: space-between; padding: 0 1rem; }
 .studio-frame header { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
 .studio-frame header nav, .studio-frame footer { gap: .5rem; }
-.studio-frame header span, .studio-frame footer span, .studio-files span, .studio-files button { border: 1px solid var(--line); border-radius: 999px; padding: .35rem .6rem; }
-.studio-files { border-right: 1px solid var(--line); display: grid; gap: .55rem; grid-auto-rows: max-content; padding: .9rem; }
+.studio-frame header span, .studio-frame footer span, .studio-files span, .studio-files button { border: 1px solid var(--line); border-radius: 999px; padding: .48rem .72rem; }
+.studio-files { border-right: 1px solid var(--line); display: grid; gap: .68rem; grid-auto-rows: max-content; padding: 1rem; }
 .studio-files .active { background: var(--blue); color: white; }
 .studio-files button { background: transparent; color: var(--ink); }
 .studio-editor { background: #080a0f; color: white; display: grid; grid-template-rows: 50px 34px 1fr; min-width: 0; }
-.transport { align-items: center; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; gap: .7rem; padding: 0 1rem; }
-.transport button { background: var(--blue); border: 0; color: white; }
+.transport { align-items: center; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; gap: .95rem; padding: 0 1.15rem; }
+.transport button { background: var(--blue); border: 0; color: white; min-height: 2rem; padding: 0 .82rem; }
 .transport i { background: linear-gradient(90deg, var(--mint), var(--rose), var(--gold)); border-radius: 999px; flex: 1; height: 5px; }
 .ruler { border-bottom: 1px solid rgba(255,255,255,.1); display: grid; grid-template-columns: repeat(8,1fr); padding: 0 1rem; }
 .ruler i { border-left: 1px solid rgba(255,255,255,.2); }
