@@ -1,0 +1,21 @@
+import {
+  "ubugeeei/relanote/src/preview" @preview,
+}
+
+supported_targets = "wasm-gc"
+
+options(
+  "is-main": true,
+  link: {
+    "wasm-gc": {
+      "exports": [
+        "main",
+        "events_json",
+        "playground_summary",
+        "staff_html",
+        "piano_html",
+      ],
+      "use-js-builtin-string": true,
+    },
+  },
+)

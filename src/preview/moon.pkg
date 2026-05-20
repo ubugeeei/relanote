@@ -1,0 +1,9 @@
+import {
+  "ubugeeei/relanote/src/core" @core,
+  "ubugeeei/relanote/src/parser" @parser,
+  "ubugeeei/relanote/src/ast" @ast,
+  "ubugeeei/relanote/src/types" @types,
+  "ubugeeei/relanote/src/eval" @eval,
+}
+
+supported_targets = "all"

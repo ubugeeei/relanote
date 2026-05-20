@@ -23,9 +23,9 @@ pub fn staff_html(source : String, beat : Double) -> String {
       (width - 20).to_string() +
       "' y2='" +
       y.to_string() +
-      "' stroke='#62707d'/>"
+      "' stroke='#55616d'/>"
   }
-  out = out + "<text x='8' y='82' fill='#d6dee8' font-size='42'>G</text>"
+  out = out + "<text x='8' y='82' fill='#f6f0e6' font-size='42'>G</text>"
   for n in notes {
     out = out + note_svg(n, beat)
   }
@@ -40,7 +40,7 @@ pub fn piano_html(source : String, beat : Double) -> String {
     " 168' role='img' aria-label='Piano roll preview'>"
   for p = 48; p <= 72; p = p + 1 {
     let y = piano_y(p)
-    let fill = if is_black_key(p) { "#26313d" } else { "#1f2933" }
+    let fill = if is_black_key(p) { "#22242c" } else { "#151820" }
     out = out +
       "<rect x='0' y='" +
       y.to_string() +
@@ -70,7 +70,7 @@ fn html_width(source : String) -> Int {
 fn note_svg(n : NoteEvent, beat : Double) -> String {
   let x = 58 + (n.start() * 56.0).to_int()
   let y = staff_y(n.pitch())
-  let color = if playing(n, beat) { "#f59e0b" } else { "#e5edf5" }
+  let color = if playing(n, beat) { "#ffd05a" } else { "#fff8ed" }
   "<ellipse cx='" +
   x.to_string() +
   "' cy='" +
@@ -100,7 +100,7 @@ fn roll_rect(n : NoteEvent, beat : Double) -> String {
   let x = 56 + (n.start() * 56.0).to_int()
   let y = piano_y(n.pitch())
   let w = max_int(12, (n.duration() * 56.0).to_int())
-  let color = if playing(n, beat) { "#14b8a6" } else { "#60a5fa" }
+  let color = if playing(n, beat) { "#caff55" } else { "#ff4f7a" }
   "<rect x='" +
   x.to_string() +
   "' y='" +

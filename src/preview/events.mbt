@@ -39,6 +39,20 @@ pub fn note_events(source : String) -> Array[NoteEvent] {
 }
 
 ///|
+fn eval_source(source : String) -> Result[@eval.Value, String] {
+  let src = @core.Source::from_string("<preview>", source)
+  let (program, parse_diags) = @parser.parse_source(src)
+  if parse_diags.has_errors() {
+    return Err("parse error")
+  }
+  let checker = @types.TypeChecker::new()
+  if checker.check_program(program).length() > 0 {
+    return Err("type error")
+  }
+  @eval.Evaluator::new().eval_program(program).map_err(fn(e) { e.message() })
+}
+
+///|
 fn collect_value(
   value : @eval.Value,
   out : Array[NoteEvent],

@@ -18,6 +18,7 @@ let active = signal(active0)
 let source = signal(source0)
 let result = signal("Ready")
 let beat = signal(0.0)
+let bpm = signal(124)
 
 let diagnostics = computed(fn() {
   let lines = @playground.diagnose(source.get())
@@ -123,7 +124,7 @@ fn share_source() -> Unit {
 }
 
 fn play() -> Unit {
-  @playground.play_sequence(@playground.events_json(source.get()), 120)
+  @playground.play_sequence(@playground.events_json(source.get()), bpm.get())
   result.set("Playing preview")
 }
 
@@ -135,48 +136,66 @@ fn stop() -> Unit {
 fn file_class(name : String) -> String {
   if name == active.get() { "file active" } else { "file" }
 }
+
+fn tempo_down() -> Unit {
+  bpm.set(bpm.get() - 2)
+}
+
+fn tempo_up() -> Unit {
+  bpm.set(bpm.get() + 2)
+}
 </script>
 
 <template>
   <main class='studio-app'>
     <header class='topbar'>
-      <div class='brand'><strong>relanote</strong><span>Studio</span></div>
+      <div class='brand'><strong>relanote</strong><span>relative + note studio</span></div>
+      <div class='transport top'>
+        <button class='play' @click='play()'><i class='mdi play-icon'></i>Play</button>
+        <button @click='stop()'><i class='mdi stop-icon'></i>Stop</button>
+        <button @click='tempo_down()'><i class='mdi down'></i></button><b>{{ bpm.get() }}</b><button @click='tempo_up()'><i class='mdi up'></i></button>
+      </div>
       <nav>
-        <button @click='save_current()'><i class='ico save'></i>Save</button>
-        <button @click='share_source()'><i class='ico share'></i>Share</button>
-        <button @click='export_source()'><i class='ico file'></i>Source</button>
-        <button @click='export_project()'><i class='ico stack-icon'></i>Project</button>
-        <button @click='export_midi()'><i class='ico midi'></i>MIDI</button>
+        <button @click='save_current()'><i class='mdi save'></i>Save</button>
+        <button @click='share_source()'><i class='mdi share'></i>Share</button>
+        <button @click='export_source()'><i class='mdi file'></i>Source</button>
+        <button @click='export_project()'><i class='mdi stack-icon'></i>Project</button>
+        <button @click='export_midi()'><i class='mdi midi'></i>MIDI</button>
       </nav>
     </header>
     <section class='workbench'>
-      <aside class='library'>
-        <div class='panel-title'><span>Files</span><button @click='new_file()'><i class='ico add'></i>New</button></div>
+      <aside class='library surface'>
+        <div class='panel-title'><span>Project</span><button @click='new_file()'><i class='mdi add'></i>New</button></div>
         <button v-for='name in files.get()' :class='file_class(name)' @click='select_file(name)'>{{ name }}</button>
         <div class='stack'>
-          <button @click='rename_file()'><i class='ico edit'></i>Rename</button>
-          <button @click='delete_file()'><i class='ico trash'></i>Delete</button>
-          <button @click='import_file()'><i class='ico import'></i>Import</button>
+          <button @click='rename_file()'><i class='mdi edit'></i></button>
+          <button @click='delete_file()'><i class='mdi trash'></i></button>
+          <button @click='import_file()'><i class='mdi import'></i>Import</button>
         </div>
-        <div class='track-card'><b>Melody</b><span>Lead</span><i></i></div>
-        <div class='track-card alt'><b>Harmony</b><span>Pad</span><i></i></div>
+        <h2>Tracks</h2>
+        <div class='track-card'><b><i class='mdi wave'></i>Melody</b><span>Lead / relative</span><i></i></div>
+        <div class='track-card alt'><b><i class='mdi layers'></i>Harmony</b><span>Pad / layer</span><i></i></div>
+        <div class='track-card bus'><b><i class='mdi bus'></i>Render bus</b><span>Master</span><i></i></div>
       </aside>
-      <section class='composer'>
-        <div class='transport'>
-          <button class='play' @click='play()'><i class='ico play-icon'></i>Play</button>
-          <button @click='stop()'><i class='ico stop-icon'></i>Stop</button>
+      <section class='composer surface'>
+        <div class='arrange'>
+          <div class='arr-head'><span>Arrangement</span><b>{{ summary() }}</b></div>
+          <div class='lane melody'><b>Melody</b><i></i><i></i><i></i><i></i></div>
+          <div class='lane harmony'><b>Harmony</b><i></i><i></i><i></i></div>
+          <div class='lane bus'><b>Bus</b><i></i></div>
+        </div>
+        <div class='editor-head'>
+          <span>{{ active.get() }}</span>
+          <div><button @click='format_source()'><i class='mdi format'></i>Format</button><button @click='run_source()'><i class='mdi run'></i>Run</button></div>
+        </div>
+        <textarea :value='source.get()' @input='source.set(_event._get("target")._get("value").cast())' spellcheck='false'></textarea>
+        <div class='status'>
           <span>{{ summary() }}</span>
           <span class='time'>1.1.000</span>
         </div>
-        <div class='timeline'><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class='editor-head'>
-          <span>{{ active.get() }}</span>
-          <div><button @click='format_source()'><i class='ico format'></i>Format</button><button @click='run_source()'><i class='ico run'></i>Run</button></div>
-        </div>
-        <textarea :value='source.get()' @input='source.set(_event._get("target")._get("value").cast())' spellcheck='false'></textarea>
-        <div class='status'><span>{{ result.get() }}</span><span>MoonBit pipeline</span></div>
       </section>
-      <aside class='inspector'>
+      <aside class='inspector surface'>
+        <section class='synth'><h2>Synthesizer</h2><div class='knobs'><span>OSC<b>Saw</b></span><span>Cutoff<b>2.7k</b></span><span>Env<b>Pluck</b></span></div><div class='faders'><i></i><i></i><i></i></div></section>
         <section><h2>Staff</h2><div class='viz' v-unsafe-html='@playground.staff_html(source.get(), beat.get())'></div></section>
         <section><h2>Piano Roll</h2><div class='viz roll' v-unsafe-html='@playground.piano_html(source.get(), beat.get())'></div></section>
         <section><h2>Diagnostics</h2><pre>{{ diagnostics() }}</pre></section>
@@ -187,32 +206,27 @@ fn file_class(name : String) -> String {
 </template>
 
 <style>
-.studio-app { --bg:#f7f2e8; --ink:#0c0b0d; --muted:#6d6864; --panel:rgba(255,251,243,.82); --signal:#ff4f7a; --pulse:#caff55; --amber:#ffd05a; --mint:#00d29e; --violet:#a970ff; min-height:100vh; background:linear-gradient(118deg,rgba(255,79,122,.12),transparent 32rem),linear-gradient(292deg,rgba(202,255,85,.1),transparent 34rem),linear-gradient(180deg,#fffaf0,#f7f2e8 42rem,#eee8dc); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; }
-.topbar { align-items:center; backdrop-filter:saturate(180%) blur(24px); background:rgba(255,251,243,.76); box-shadow:0 1px 0 rgba(255,255,255,.34),0 10px 34px rgba(44,23,5,.08); display:flex; gap:1rem; justify-content:space-between; min-height:64px; padding:0 18px; position:sticky; top:0; z-index:3; }
-.brand { display:flex; align-items:baseline; gap:.55rem; } .brand strong { font-size:1.08rem; letter-spacing:.01em; } .brand span,.time,.status { color:var(--muted); font-size:.82rem; }
-nav,.transport,.editor-head div,.stack,.panel-title { align-items:center; display:flex; flex-wrap:wrap; gap:.45rem; }
-button { align-items:center; background:rgba(255,255,255,.58); border:0; border-radius:999px; box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 20px rgba(44,23,5,.06); color:var(--ink); cursor:pointer; display:inline-flex; font:inherit; font-size:.82rem; gap:.34rem; min-height:2.1rem; padding:0 .72rem; }
-button:hover,.play { background:var(--signal); color:white; text-decoration:none; }
-.workbench { display:grid; gap:12px; grid-template-columns:210px minmax(420px,1fr) minmax(360px,.72fr); height:calc(100vh - 64px); min-height:680px; padding:12px; }
-.library,.composer,.inspector { background:var(--panel); box-shadow:0 30px 90px rgba(44,23,5,.14),inset 0 1px 0 rgba(255,255,255,.32); overflow:hidden; }
+.studio-app { --ink:#0c0b0d; --muted:#6d6864; --panel:rgba(255,251,243,.84); --signal:#ff4f7a; --pulse:#caff55; --amber:#ffd05a; --mint:#00d29e; --violet:#a970ff; min-height:100vh; background:linear-gradient(116deg,rgba(255,79,122,.14),transparent 30rem),linear-gradient(294deg,rgba(202,255,85,.12),transparent 34rem),linear-gradient(180deg,#fffaf0,#f3ede1 42rem,#e7dfd1); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; }
+.topbar { align-items:center; backdrop-filter:saturate(180%) blur(24px); background:rgba(255,251,243,.76); box-shadow:0 1px 0 rgba(255,255,255,.34),0 10px 34px rgba(44,23,5,.08); display:grid; gap:.8rem; grid-template-columns:1fr auto 1fr; min-height:64px; padding:0 18px; position:sticky; top:0; z-index:3; }
+.brand { align-items:baseline; display:flex; gap:.55rem; } .brand strong { font-size:1.08rem; } .brand span,.time,.status,.arr-head b { color:var(--muted); font-size:.82rem; }
+nav,.transport,.editor-head div,.stack,.panel-title { align-items:center; display:flex; flex-wrap:wrap; gap:.45rem; } nav { justify-content:flex-end; }
+button { align-items:center; background:rgba(255,255,255,.58); border:0; border-radius:999px; box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 20px rgba(44,23,5,.06); color:var(--ink); cursor:pointer; display:inline-flex; font:inherit; font-size:.82rem; gap:.34rem; min-height:2.1rem; padding:0 .72rem; } button:hover,.play { background:var(--signal); color:white; text-decoration:none; }
+.workbench { display:grid; gap:10px; grid-template-columns:220px minmax(480px,1fr) minmax(360px,.68fr); height:calc(100vh - 64px); min-height:720px; padding:10px; }
+.surface { background:var(--panel); box-shadow:0 30px 90px rgba(44,23,5,.14),inset 0 1px 0 rgba(255,255,255,.32); overflow:hidden; }
 .library,.inspector { overflow:auto; padding:12px; } .library { display:flex; flex-direction:column; gap:8px; }
 .panel-title { justify-content:space-between; color:var(--muted); font-size:.76rem; font-weight:700; text-transform:uppercase; }
-.file { background:transparent; border-radius:0; box-shadow:inset 0 -1px rgba(12,11,13,.1); justify-content:flex-start; overflow:hidden; padding-left:1.75rem; position:relative; text-align:left; text-overflow:ellipsis; white-space:nowrap; }
+.file { background:transparent; border-radius:0; box-shadow:inset 0 -1px rgba(12,11,13,.1); justify-content:flex-start; overflow:hidden; padding-left:1.75rem; position:relative; text-overflow:ellipsis; white-space:nowrap; }
 .file::before { background:currentColor; clip-path:polygon(16% 0,68% 0,88% 20%,88% 100%,16% 100%); content:""; height:.9rem; left:.4rem; opacity:.58; position:absolute; width:.72rem; }
 .file.active { background:linear-gradient(90deg,rgba(255,79,122,.18),transparent); box-shadow:inset 3px 0 var(--signal),inset 0 -1px rgba(12,11,13,.1); color:var(--ink); }
-.stack { box-shadow:inset 0 1px rgba(255,255,255,.34); margin-top:4px; padding-top:10px; }
-.track-card { background:#0d0b12; color:white; display:grid; gap:.25rem; margin-top:4px; padding:14px; position:relative; }
-.track-card span { color:#c8bdaf; font-size:.8rem; } .track-card i { background:linear-gradient(90deg,var(--pulse),var(--signal)); height:5px; margin-top:.45rem; width:72%; } .track-card.alt i { background:linear-gradient(90deg,var(--amber),var(--mint)); width:54%; }
-.composer { display:grid; grid-template-rows:52px 38px 44px 1fr 38px; min-width:0; }
-.transport,.editor-head,.status { box-shadow:inset 0 -1px rgba(255,255,255,.26); display:flex; justify-content:space-between; padding:0 12px; }
-.transport { background:rgba(255,255,255,.42); } .timeline { align-items:center; background:#0d0b12; display:grid; gap:1px; grid-template-columns:repeat(8,1fr); padding:0 10px; } .timeline i { background:rgba(255,248,237,.18); height:18px; width:1px; }
-.editor-head { align-items:center; } textarea { background:#090b10; border:0; color:#f7fbff; font:.94rem/1.58 "SF Mono",ui-monospace,Menlo,monospace; outline:0; padding:18px; resize:none; width:100%; }
-.status { align-items:center; box-shadow:inset 0 1px rgba(255,255,255,.26); }
-.inspector { display:grid; gap:12px; grid-auto-rows:max-content; } h2 { color:var(--muted); font-size:.78rem; margin:0 0 7px; text-transform:uppercase; }
-.viz,pre { background:#0d0b12; color:#fff8ed; overflow:auto; }
-.viz svg { display:block; height:174px; min-width:100%; } .roll svg { height:150px; }
-pre { margin:0; max-height:11rem; padding:10px; white-space:pre-wrap; }
-.ico { display:inline-block;height:.88rem;width:.88rem; } .ico::before { background:currentColor; content:""; display:block; height:100%; width:100%; } .ico.play-icon::before,.ico.run::before{clip-path:polygon(24% 12%,88% 50%,24% 88%)}.ico.stop-icon::before{clip-path:inset(18%)}.ico.save::before,.ico.file::before{clip-path:polygon(12% 8%,78% 8%,90% 22%,90% 92%,12% 92%)}.ico.share::before,.ico.import::before{clip-path:polygon(12% 44%,58% 44%,58% 20%,92% 50%,58% 80%,58% 56%,12% 56%)}.ico.add::before{clip-path:polygon(42% 8%,58% 8%,58% 42%,92% 42%,92% 58%,58% 58%,58% 92%,42% 92%,42% 58%,8% 58%,8% 42%,42% 42%)}.ico.trash::before{clip-path:polygon(24% 18%,76% 18%,76% 28%,84% 28%,76% 92%,24% 92%,16% 28%,24% 28%)}.ico.edit::before{clip-path:polygon(68% 8%,92% 32%,36% 88%,12% 92%,16% 68%)}.ico.midi::before,.ico.stack-icon::before,.ico.format::before{clip-path:polygon(10% 28%,92% 28%,92% 48%,74% 48%,74% 72%,56% 72%,56% 48%,40% 48%,40% 72%,22% 72%,22% 48%,10% 48%)}
-@media (prefers-color-scheme:dark){.studio-app{--bg:#08070a;--ink:#fff8ed;--muted:#b5aca1;--panel:rgba(24,22,27,.82);background:linear-gradient(118deg,rgba(255,79,122,.22),transparent 32rem),linear-gradient(292deg,rgba(202,255,85,.13),transparent 34rem),linear-gradient(180deg,#131016,#08070a 40rem,#030304)}.topbar,button{background:rgba(24,22,27,.78);color:var(--ink)}.transport{background:rgba(255,255,255,.045)}}
-@media (max-width:1040px){.workbench{grid-template-columns:1fr;height:auto}.library{flex-direction:row;flex-wrap:wrap}.composer{min-height:720px}}
+.track-card { background:#0d0b12; color:white; display:grid; gap:.28rem; padding:13px; } .track-card b { align-items:center; display:flex; gap:.4rem; } .track-card span { color:#c8bdaf; font-size:.8rem; } .track-card > i { background:linear-gradient(90deg,var(--pulse),var(--signal)); height:5px; width:72%; } .track-card.alt > i { background:linear-gradient(90deg,var(--amber),var(--mint)); width:54%; } .track-card.bus > i { background:linear-gradient(90deg,var(--violet),var(--signal)); width:86%; }
+.composer { display:grid; grid-template-rows:188px 44px 1fr 38px; min-width:0; }
+.arrange { background:#0d0b12; color:#fff8ed; display:grid; gap:7px; padding:12px; } .arr-head,.editor-head,.status { align-items:center; display:flex; justify-content:space-between; }
+.lane { align-items:center; background:rgba(255,255,255,.055); display:grid; gap:7px; grid-template-columns:72px repeat(4,1fr); min-height:34px; padding:0 9px; } .lane b { color:#c8bdaf; font-size:.74rem; } .lane i { background:var(--signal); height:16px; } .lane i:nth-child(3) { background:var(--pulse); } .lane i:nth-child(4) { background:var(--amber); } .lane.harmony i { background:var(--mint); } .lane.bus i { background:var(--violet); grid-column:2 / 6; }
+.editor-head,.status { box-shadow:inset 0 -1px rgba(255,255,255,.26); padding:0 12px; } textarea { background:#090b10; border:0; color:#f7fbff; font:.94rem/1.58 "SF Mono",ui-monospace,Menlo,monospace; outline:0; padding:18px; resize:none; width:100%; }
+.inspector { display:grid; gap:12px; grid-auto-rows:max-content; } h2 { color:var(--muted); font-size:.78rem; margin:0 0 7px; text-transform:uppercase; } .viz,pre,.synth { background:#0d0b12; color:#fff8ed; overflow:auto; }
+.viz svg { display:block; height:160px; min-width:100%; } .roll svg { height:136px; } pre { margin:0; max-height:10rem; padding:10px; white-space:pre-wrap; }
+.knobs { display:grid; gap:8px; grid-template-columns:repeat(3,1fr); } .knobs span { aspect-ratio:1; background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.03)); display:grid; place-content:center; text-align:center; } .knobs b { color:var(--pulse); display:block; font-size:.78rem; } .faders { display:grid; gap:8px; grid-template-columns:repeat(3,1fr); margin-top:8px; } .faders i { background:linear-gradient(0deg,var(--signal),var(--pulse)); height:46px; }
+.mdi { display:inline-block;height:.88rem;width:.88rem; } .mdi::before { background:currentColor; content:""; display:block; height:100%; width:100%; } .mdi.play-icon::before,.mdi.run::before{clip-path:polygon(24% 12%,88% 50%,24% 88%)}.mdi.stop-icon::before{clip-path:inset(18%)}.mdi.save::before,.mdi.file::before{clip-path:polygon(12% 8%,78% 8%,90% 22%,90% 92%,12% 92%)}.mdi.share::before,.mdi.import::before{clip-path:polygon(12% 44%,58% 44%,58% 20%,92% 50%,58% 80%,58% 56%,12% 56%)}.mdi.add::before{clip-path:polygon(42% 8%,58% 8%,58% 42%,92% 42%,92% 58%,58% 58%,58% 92%,42% 92%,42% 58%,8% 58%,8% 42%,42% 42%)}.mdi.trash::before{clip-path:polygon(24% 18%,76% 18%,76% 28%,84% 28%,76% 92%,24% 92%,16% 28%,24% 28%)}.mdi.edit::before{clip-path:polygon(68% 8%,92% 32%,36% 88%,12% 92%,16% 68%)}.mdi.midi::before,.mdi.stack-icon::before,.mdi.format::before,.mdi.layers::before{clip-path:polygon(10% 28%,92% 28%,92% 48%,74% 48%,74% 72%,56% 72%,56% 48%,40% 48%,40% 72%,22% 72%,22% 48%,10% 48%)}.mdi.down::before{clip-path:polygon(18% 35%,82% 35%,50% 76%)}.mdi.up::before{clip-path:polygon(18% 65%,82% 65%,50% 24%)}.mdi.wave::before{clip-path:polygon(0 58%,18% 30%,36% 58%,54% 30%,72% 58%,100% 30%,100% 48%,72% 76%,54% 48%,36% 76%,18% 48%,0 76%)}.mdi.bus::before{clip-path:polygon(8% 14%,92% 14%,92% 86%,8% 86%,8% 68%,74% 68%,74% 56%,8% 56%,8% 44%,74% 44%,74% 32%,8% 32%)}
+@media (prefers-color-scheme:dark){.studio-app{--ink:#fff8ed;--muted:#b5aca1;--panel:rgba(24,22,27,.82);background:linear-gradient(118deg,rgba(255,79,122,.22),transparent 32rem),linear-gradient(292deg,rgba(202,255,85,.13),transparent 34rem),linear-gradient(180deg,#131016,#08070a 40rem,#030304)}.topbar,button{background:rgba(24,22,27,.78);color:var(--ink)}}
+@media (max-width:1040px){.topbar,.workbench{grid-template-columns:1fr;height:auto}.library{flex-direction:row;flex-wrap:wrap}.composer{min-height:720px}nav{justify-content:flex-start}}
 </style>

@@ -31,20 +31,17 @@ body {
   margin: 0;
   color: var(--ink);
   background:
-    linear-gradient(rgba(22,22,23,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(22,22,23,.035) 1px, transparent 1px),
+    linear-gradient(112deg, transparent 0 34%, rgba(22,22,23,.04) 34% 34.35%, transparent 34.35%),
     linear-gradient(180deg, #fff 0, var(--bg) 36rem, #ededf0 100%);
-  background-size: 34px 34px, 34px 34px, auto;
   font: 16px/1.68 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 @media (prefers-color-scheme: dark) {
   body {
     background:
-      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(112deg, transparent 0 34%, rgba(255,255,255,.05) 34% 34.35%, transparent 34.35%),
       linear-gradient(180deg, #17171b 0, #050506 36rem, #000 100%);
-    background-size: 34px 34px, 34px 34px, auto;
   }
 }
 a { color: var(--blue); text-decoration: none; }
@@ -117,7 +114,7 @@ img { max-width: 100%; height: auto; }
   min-width: 0;
   padding: 2.6rem clamp(1.2rem, 4.2vw, 4.1rem) 4.8rem;
 }
-.doc { max-width: 880px; }
+.doc { max-width: 1040px; }
 .home, .playground { max-width: 1120px; }
 .eyebrow {
   color: var(--mint);
