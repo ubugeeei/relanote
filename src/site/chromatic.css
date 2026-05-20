@@ -171,6 +171,7 @@ tr:first-child td { color: var(--signal); font-weight: 760; }
   padding: 0 .72rem;
 }
 .code-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 230px; }
+.code-kit.no-preview .code-wrap { grid-template-columns: minmax(0, 1fr); }
 .code-block { box-shadow: none; margin: 0; } .language-rela code { display:block; min-height:100%; outline:0; }
 .code-preview { background: linear-gradient(150deg, rgba(255,79,122,.18), rgba(202,255,85,.12)); padding: 1rem; }
 .code-preview b { align-items:center; display:flex; font-size:.78rem; justify-content:space-between; } .code-preview span { display:block; font-size:.78rem; }

@@ -32,6 +32,11 @@ async function summary(source) {
 }
 
 function draw(preview, notes, text) {
+  const kit = preview.closest(".code-kit");
+  const empty = notes.length === 0;
+  preview.hidden = empty;
+  kit?.classList.toggle("no-preview", empty);
+  if (empty) return;
   const end = Math.max(1, ...notes.map((note) => note.start + note.duration));
   preview.querySelector(".preview-roll").innerHTML = notes.map((note) => {
     const x = 7 + note.start / end * 78;
