@@ -2,6 +2,11 @@ import {
   "ubugeeei/relanote/relanote_core" @core,
   "ubugeeei/relanote/relanote_parser" @parser,
   "ubugeeei/relanote/relanote_format" @format,
+  "moonbitlang/async/stdio" @stdio,
   "moonbitlang/core/json",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/hashmap",
   "moonbitlang/core/string",
 }
+
+supported_targets = "native"

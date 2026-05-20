@@ -41,8 +41,14 @@ jobs:
       - name: moon test
         run: moon test
 
+      - name: native LSP tests
+        run: moon test --target native -p ubugeeei/relanote/relanote_lsp -p ubugeeei/relanote/cmd/relanote
+
       - name: moon build
         run: moon build
+
+      - name: LSP stdio smoke
+        run: bash scripts/test_lsp_stdio.sh
 
       - name: Vapor Moon playground
         run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > /tmp/relanote-vapor-moon.snapshot

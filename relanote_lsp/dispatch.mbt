@@ -9,6 +9,7 @@
 /// Supported methods:
 ///   - `initialize` → returns minimal `ServerCapabilities`
 ///   - `initialized` (notification) → no-op
+///   - `textDocument/didOpen` / `didChange` → update document state
 ///   - `shutdown` → returns `null`
 ///   - `exit` (notification) → no-op
 ///   - `textDocument/diagnostic` → runs the parser, returns
@@ -33,6 +34,8 @@ pub fn RelanoteLanguageServer::handle_request(
   match method_name {
     Some("initialize") => Some(initialize_response(id))
     Some("initialized") => None
+    Some("textDocument/didOpen") => self.did_open(params)
+    Some("textDocument/didChange") => self.did_change(params)
     Some("shutdown") => Some(shutdown_response(id))
     Some("exit") => None
     Some("textDocument/diagnostic") =>
@@ -95,7 +98,7 @@ fn RelanoteLanguageServer::diagnostic_response(
   id : Json?,
   params : Json?,
 ) -> Json {
-  let uri_content = extract_uri_and_text(params)
+  let uri_content = self.resolve_uri_and_text(params)
   let diagnostics = match uri_content {
     Some((uri, text)) => self.diagnose(uri, text)
     None => @core.Diagnostics::new()
@@ -117,7 +120,7 @@ fn RelanoteLanguageServer::formatting_response(
   id : Json?,
   params : Json?,
 ) -> Json {
-  let uri_content = extract_uri_and_text(params)
+  let uri_content = self.resolve_uri_and_text(params)
   let formatted = match uri_content {
     Some((uri, text)) => self.format(uri, text)
     None => ""
