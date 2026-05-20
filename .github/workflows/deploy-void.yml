@@ -29,6 +29,7 @@ jobs:
       - name: Check MoonBit workspace
         working-directory: moonbit
         run: |
+          moon update
           moon check
           moon test
 

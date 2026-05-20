@@ -19,6 +19,10 @@ jobs:
       - name: moon version
         run: moon version --all
 
+      - name: moon update
+        working-directory: moonbit
+        run: moon update
+
       - name: moon check
         working-directory: moonbit
         run: moon check
