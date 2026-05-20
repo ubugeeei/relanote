@@ -27,15 +27,13 @@ jobs:
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
       - name: Check MoonBit workspace
-        working-directory: moonbit
         run: |
           moon update
           moon check
           moon test
 
       - name: Compile Vapor Moon playground
-        working-directory: moonbit
-        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > ../dist.playground.snapshot
+        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > dist.playground.snapshot
 
       - name: Assemble static site
         run: |
@@ -44,8 +42,8 @@ jobs:
           cp -R docs dist/docs
           cp -R examples dist/examples
           mkdir -p dist/playground
-          cp moonbit/web/README.md dist/playground/README.md
-          cp moonbit/web/App.mbtv dist/playground/App.mbtv
+          cp web/README.md dist/playground/README.md
+          cp web/App.mbtv dist/playground/App.mbtv
           cp dist.playground.snapshot dist/playground/compile.snapshot
           cat > dist/index.html <<'HTML'
           <!doctype html>

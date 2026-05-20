@@ -1,0 +1,70 @@
+// AUTO-GENERATED from prelude/*.rela by scripts/gen_stdlib.sh.
+// To regenerate after editing the .rela sources, run:
+//   bash scripts/gen_stdlib.sh
+// Manual edits will be lost.
+
+///|
+/// Embedded source of `prelude/synths_wavetable.rela`.
+pub const SYNTHS_WAVETABLE : String =
+  #|; ===========================================
+  #|; Wavetable synth presets
+  #|; ===========================================
+  #|;
+  #|; A wavetable is a sequence of single-cycle waves the oscillator scans
+  #|; through. `wave_pos` is the static index into the table (0.0 → 1.0);
+  #|; modulate it with an LFO or envelope for movement. The wavetable
+  #|; names below are conceptual presets — the evaluator picks the actual
+  #|; sample bank.
+  #|
+  #|; Classic vapor lead — bright at high wave_pos, mellow at low.
+  #|synth WaveVapor = {
+  #|  osc: Wavetable(table: "vapor"),
+  #|  wave_pos: 0.5,
+  #|  env: { A: 0.04, D: 0.25, S: 0.7, R: 0.3 },
+  #|  filter: LowPass(2800, 0.3)
+  #|}
+  #|
+  #|; Slow-evolving pad — wave_pos slowly drifts via LFO.
+  #|synth WaveDriftPad = {
+  #|  osc: Wavetable(table: "drift"),
+  #|  wave_pos: 0.3,
+  #|  env: { A: 1.5, D: 0.5, S: 1.0, R: 2.5 },
+  #|  filter: LowPass(3500, 0.2),
+  #|  mod: [ lfo(target: wave_pos, rate: 0.12, depth: 0.7, shape: Sine) ]
+  #|}
+  #|
+  #|; Talking / formant wavetable.
+  #|synth WaveFormant = {
+  #|  osc: Wavetable(table: "vowels"),
+  #|  wave_pos: 0.4,
+  #|  env: { A: 0.02, D: 0.4, S: 0.6, R: 0.6 },
+  #|  filter: BandPass(1800, 0.7),
+  #|  mod: [ lfo(target: wave_pos, rate: 4.0, depth: 0.2, shape: Triangle) ]
+  #|}
+  #|
+  #|; Bell-meets-pad — long sustain, swept brightness.
+  #|synth WaveBellPad = {
+  #|  osc: Wavetable(table: "metallic"),
+  #|  wave_pos: 0.6,
+  #|  env: { A: 0.05, D: 0.8, S: 0.9, R: 2.0 },
+  #|  filter: LowPass(5500, 0.25),
+  #|  mod: [ env(target: filter.cutoff, attack: 1.2, depth: 3500) ]
+  #|}
+  #|
+  #|; Acid lead — single cycle scanning fast for that resonant-square vibe.
+  #|synth WaveAcid = {
+  #|  osc: Wavetable(table: "acid"),
+  #|  wave_pos: 0.5,
+  #|  env: { A: 0.001, D: 0.15, S: 0.3, R: 0.2 },
+  #|  filter: LowPass(1800, 0.9),
+  #|  mod: [ env(target: filter.cutoff, attack: 0.0, depth: 4000) ]
+  #|}
+  #|
+  #|; Wide unison wavetable — seven detuned voices, ultra-thick.
+  #|synth WaveSupersaw = {
+  #|  osc: Wavetable(table: "supersaw", voices: 7),
+  #|  detune: 22,
+  #|  wave_pos: 0.5,
+  #|  env: { A: 0.02, D: 0.2, S: 0.7, R: 0.5 },
+  #|  filter: LowPass(6000, 0.25)
+  #|}

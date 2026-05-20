@@ -32,7 +32,6 @@ Then clone and check the workspace:
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
-cd moonbit
 moon check
 moon test
 ```
@@ -40,10 +39,10 @@ moon test
 ## Running the CLI
 
 ```bash
-cd moonbit
+moon check
 moon run cmd/relanote -- help
-moon run cmd/relanote -- check ../examples/tutorials/01_hello.rela
-moon run cmd/relanote -- render ../examples/tutorials/01_hello.rela output.mid
+moon run cmd/relanote -- check examples/tutorials/01_hello.rela
+moon run cmd/relanote -- render examples/tutorials/01_hello.rela output.mid
 ```
 
 From the repository root, the same commands are available through pnpm:
@@ -64,7 +63,7 @@ surface grows.
 
 ## Web Playground
 
-The view lives in `moonbit/web/App.mbtv` and is built with Vapor Moon:
+The view lives in `web/App.mbtv` and is built with Vapor Moon:
 
 ```bash
 pnpm web:build

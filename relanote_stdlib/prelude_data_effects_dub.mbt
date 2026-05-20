@@ -1,0 +1,88 @@
+// AUTO-GENERATED from prelude/*.rela by scripts/gen_stdlib.sh.
+// To regenerate after editing the .rela sources, run:
+//   bash scripts/gen_stdlib.sh
+// Manual edits will be lost.
+
+///|
+/// Embedded source of `prelude/effects_dub.rela`.
+pub const EFFECTS_DUB : String =
+  #|; ===========================================
+  #|; Dub / spacey effect presets
+  #|; ===========================================
+  #|;
+  #|; Effect presets, applied via the `effect` keyword:
+  #|;
+  #|;   track |> effect DubDelay
+  #|;
+  #|; Most of these chain inside themselves — a single named preset can
+  #|; cover a long delay → filter → reverb path.
+  #|
+  #|; Quarter-note tape delay with feedback and high-cut.
+  #|effect DubDelay = delay {
+  #|  time: "1/4",
+  #|  feedback: 0.55,
+  #|  mix: 0.35,
+  #|  filter: LowPass(3500, 0.2),
+  #|  saturate: 0.15
+  #|}
+  #|
+  #|; Dotted-eighth delay (the U2 / Edge sound).
+  #|effect DottedDelay = delay {
+  #|  time: "3/16",
+  #|  feedback: 0.4,
+  #|  mix: 0.3,
+  #|  filter: LowPass(5500, 0.15)
+  #|}
+  #|
+  #|; Tape echo with wow and flutter — pitch wobbles slowly.
+  #|effect TapeEcho = delay {
+  #|  time: "1/8.",
+  #|  feedback: 0.55,
+  #|  mix: 0.35,
+  #|  filter: LowPass(2800, 0.3),
+  #|  saturate: 0.25,
+  #|  wow: 0.3,
+  #|  flutter: 0.15
+  #|}
+  #|
+  #|; Long plate-style reverb — large room, dark tail.
+  #|effect PlateLarge = reverb {
+  #|  size: 0.85,
+  #|  decay: 4.5,
+  #|  damping: 0.6,
+  #|  mix: 0.35,
+  #|  pre_delay: 0.04
+  #|}
+  #|
+  #|; Bright spring reverb — short, metallic.
+  #|effect SpringBright = reverb {
+  #|  size: 0.25,
+  #|  decay: 1.2,
+  #|  damping: 0.15,
+  #|  mix: 0.25,
+  #|  pre_delay: 0.005
+  #|}
+  #|
+  #|; "Dub room" — short delay into long reverb, ducked by sidechain.
+  #|effect DubRoom = chain [
+  #|  delay { time: "1/4", feedback: 0.45, mix: 0.3, filter: LowPass(3000, 0.2) },
+  #|  reverb { size: 0.7, decay: 3.5, damping: 0.55, mix: 0.4 }
+  #|]
+  #|
+  #|; Phaser sweep — slow, deep, classic.
+  #|effect PhaserSlow = phaser {
+  #|  rate: 0.15,
+  #|  depth: 0.85,
+  #|  feedback: 0.65,
+  #|  stages: 6,
+  #|  mix: 0.4
+  #|}
+  #|
+  #|; Granular freeze — captures the last 0.5s and loops it.
+  #|effect Freeze = granular {
+  #|  buffer: "live",
+  #|  grain_size: 0.04,
+  #|  density: 80,
+  #|  spray: 0.5,
+  #|  mix: 0.6
+  #|}

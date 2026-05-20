@@ -2,12 +2,13 @@
 
 relanote ships a starter library of synths, effects, tunings and
 grooves under
-[`moonbit/relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/moonbit/relanote_stdlib/prelude).
+[`relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib/prelude).
 They're plain `.rela` source — exactly what you'd write yourself —
-embedded into the runtime via [`prelude_data.mbt`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude_data.mbt).
+embedded into the runtime via
+[`prelude_data_*.mbt`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib).
 
 That means every preset is a reference example *and* a working
-patch. Read [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/pads_floating.rela)
+patch. Read [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/pads_floating.rela)
 to see how a Floating Points-style lush pad is built; pull a copy into
 your project, change three numbers, get something new.
 
@@ -48,7 +49,7 @@ your project, change three numbers, get something new.
 
 ## Tunings
 
-[`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/tunings.rela)
+[`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/tunings.rela)
 ships seven systems:
 
 | Tuning | Description |
@@ -63,7 +64,7 @@ ships seven systems:
 
 ## Grooves
 
-[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/grooves.rela)
+[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/grooves.rela)
 ships eight feels:
 
 | Groove | Feel |
@@ -81,16 +82,16 @@ ships eight feels:
 
 Every preset above is a plain `.rela` declaration. To extend the
 library, drop a new file into
-`moonbit/relanote_stdlib/prelude/` and rerun the embed:
+`relanote_stdlib/prelude/` and rerun the embed:
 
 ```bash
 pnpm stdlib:regen
 ```
 
-The generator (`moonbit/scripts/gen_stdlib.sh`) reads every `.rela`
-under `prelude/`, emits a `pub const NAME : String = #|...` block per
-file into `prelude_data.mbt`, and `prelude.mbt` concatenates the lot
-into the combined `PRELUDE` string the runtime loads at startup.
+The generator (`scripts/gen_stdlib.sh`) reads every `.rela`
+under `prelude/`, emits one `prelude_data_*.mbt` file per source module,
+and `prelude.mbt` concatenates the lot into the combined `PRELUDE`
+string the runtime loads at startup.
 
 If you add a new category, also extend `PRELUDE`'s ordering in
 `prelude.mbt` so it ends up in the right place (theory before

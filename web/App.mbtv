@@ -1,0 +1,244 @@
+<script>
+import {
+  "mizchi/luna/js/resource" @reactivity,
+  "ubugeeei/relanote/web" @playground,
+  let signal = @reactivity.signal,
+  let computed = @reactivity.computed,
+}
+
+fn has_name(names : Array[String], name : String) -> Bool {
+  for n in names {
+    if n == name { return true }
+  }
+  false
+}
+
+fn ensure_name(names : Array[String], name : String) -> Array[String] {
+  let out : Array[String] = []
+  for n in names { out.push(n) }
+  if !has_name(out, name) { out.push(name) }
+  out
+}
+
+fn remove_name(names : Array[String], name : String) -> Array[String] {
+  let out : Array[String] = []
+  for n in names {
+    if n != name { out.push(n) }
+  }
+  out
+}
+
+fn first_name(names : Array[String]) -> String {
+  if names.length() == 0 { "main.rela" } else { names[0] }
+}
+
+fn join_lines(lines : Array[String]) -> String {
+  let mut out = ""
+  for line in lines {
+    out = if out.is_empty() { line } else { out + "\n" + line }
+  }
+  out
+}
+
+let active0 = @playground.load_active_name()
+let shared = @playground.read_shared_code()
+let source0 = match shared {
+  Some(code) => code
+  None => @playground.load_file(active0, @playground.default_source())
+}
+
+let files = signal(ensure_name(@playground.load_file_names(), active0))
+let active = signal(active0)
+let source = signal(source0)
+let result = signal("Ready")
+let beat = signal(0.0)
+
+let diagnostics = computed(fn() {
+  let lines = @playground.diagnose(source.get())
+  if lines.length() == 0 { "No diagnostics" } else { join_lines(lines) }
+})
+
+let summary = computed(fn() { @playground.playground_summary(source.get()) })
+
+fn save_current() -> Unit {
+  @playground.save_file(active.get(), source.get())
+  @playground.save_file_names(files.get())
+  @playground.save_active_name(active.get())
+  result.set("Saved " + active.get())
+}
+
+fn select_file(name : String) -> Unit {
+  save_current()
+  active.set(name)
+  source.set(@playground.load_file(name, @playground.default_source()))
+  @playground.save_active_name(name)
+  result.set("Loaded " + name)
+}
+
+fn new_file() -> Unit {
+  match @playground.prompt_text("New file name", "untitled.rela") {
+    Some(name) => {
+      save_current()
+      files.set(ensure_name(files.get(), name))
+      active.set(name)
+      source.set(@playground.default_source())
+      save_current()
+    }
+    None => ()
+  }
+}
+
+fn rename_file() -> Unit {
+  let old = active.get()
+  match @playground.prompt_text("Rename file", old) {
+    Some(name) => {
+      files.set(ensure_name(remove_name(files.get(), old), name))
+      @playground.delete_file(old)
+      active.set(name)
+      save_current()
+    }
+    None => ()
+  }
+}
+
+fn delete_file() -> Unit {
+  let old = active.get()
+  @playground.delete_file(old)
+  let next = remove_name(files.get(), old)
+  let fixed = if next.length() == 0 { ["main.rela"] } else { next }
+  files.set(fixed)
+  active.set(first_name(fixed))
+  source.set(@playground.load_file(active.get(), @playground.default_source()))
+  save_current()
+}
+
+fn import_file() -> Unit {
+  @playground.import_rela(fn(name, text) {
+    files.set(ensure_name(files.get(), name))
+    active.set(name)
+    source.set(text)
+    save_current()
+    result.set("Imported " + name)
+  })
+}
+
+fn format_source() -> Unit {
+  source.set(@playground.format(source.get()))
+  result.set("Formatted")
+}
+
+fn run_source() -> Unit {
+  result.set(@playground.run(source.get()))
+}
+
+fn export_source() -> Unit {
+  @playground.download_text(active.get(), source.get())
+  result.set("Exported " + active.get())
+}
+
+fn export_project() -> Unit {
+  @playground.download_project(files.get(), active.get(), source.get())
+  result.set("Exported project")
+}
+
+fn export_midi() -> Unit {
+  let bytes = @playground.render(source.get())
+  if bytes.length() > 0 {
+    @playground.download_bytes(active.get() + ".mid", bytes)
+    result.set("Exported " + bytes.length().to_string() + " MIDI bytes")
+  } else {
+    result.set("Nothing to export")
+  }
+}
+
+fn share_source() -> Unit {
+  let url = @playground.share_code(source.get())
+  result.set("Copied " + url)
+}
+
+fn play() -> Unit {
+  @playground.play_sequence(@playground.events_json(source.get()), 120)
+  result.set("Playing preview")
+}
+
+fn stop() -> Unit {
+  @playground.stop_audio()
+  result.set("Stopped")
+}
+
+fn file_class(name : String) -> String {
+  if name == active.get() { "file active" } else { "file" }
+}
+</script>
+
+<template>
+  <main class='app'>
+    <header class='topbar'>
+      <div>
+        <strong>Relanote</strong>
+        <span>MoonBit playground</span>
+      </div>
+      <nav>
+        <button @click='save_current()'>Save</button>
+        <button @click='share_source()'>Share</button>
+        <button @click='export_source()'>Export Source</button>
+        <button @click='export_project()'>Export Project</button>
+        <button @click='export_midi()'>Export MIDI</button>
+      </nav>
+    </header>
+    <section class='shell'>
+      <aside class='files'>
+        <button v-for='name in files.get()' :class='file_class(name)' @click='select_file(name)'>{{ name }}</button>
+        <button @click='new_file()'>New</button>
+        <button @click='rename_file()'>Rename</button>
+        <button @click='delete_file()'>Delete</button>
+        <button @click='import_file()'>Import</button>
+      </aside>
+      <section class='editor'>
+        <div class='editor-head'>
+          <span>{{ active.get() }}</span>
+          <div>
+            <button @click='format_source()'>Format</button>
+            <button @click='run_source()'>Run</button>
+          </div>
+        </div>
+        <textarea :value='source.get()' @input='source.set(_event._get("target")._get("value").cast())' spellcheck='false'></textarea>
+      </section>
+      <aside class='preview'>
+        <div class='transport'>
+          <button @click='play()'>Play</button>
+          <button @click='stop()'>Stop</button>
+          <span>{{ summary() }}</span>
+        </div>
+        <section><h2>Staff</h2><div class='viz' v-unsafe-html='@playground.staff_html(source.get(), beat.get())'></div></section>
+        <section><h2>Piano Roll</h2><div class='viz' v-unsafe-html='@playground.piano_html(source.get(), beat.get())'></div></section>
+        <section><h2>Diagnostics</h2><pre>{{ diagnostics() }}</pre></section>
+        <section><h2>Result</h2><pre>{{ result.get() }}</pre></section>
+      </aside>
+    </section>
+  </main>
+</template>
+
+<style>
+.app { min-height: 100vh; background: #111827; color: #e5edf5; font-family: ui-sans-serif, system-ui, sans-serif; }
+.topbar { align-items: center; background: #1f2937; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; min-height: 3.2rem; padding: 0 1rem; }
+.topbar div { display: flex; gap: .75rem; align-items: baseline; }
+.topbar span { color: #9ca3af; font-size: .85rem; }
+nav, .editor-head div, .transport { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+button { background: #243244; border: 1px solid #465568; border-radius: .35rem; color: #e5edf5; cursor: pointer; font: inherit; font-size: .82rem; min-height: 2rem; padding: 0 .65rem; }
+button:hover, .file.active { background: #0f766e; border-color: #14b8a6; color: white; }
+.shell { display: grid; grid-template-columns: 170px minmax(320px, 1fr) minmax(360px, .95fr); height: calc(100vh - 3.2rem); min-height: 640px; }
+.files, .preview { background: #17202d; overflow: auto; padding: .75rem; }
+.files { border-right: 1px solid #374151; display: flex; flex-direction: column; gap: .45rem; }
+.file { justify-content: flex-start; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.editor { display: grid; grid-template-rows: 2.75rem 1fr; min-width: 0; }
+.editor-head { align-items: center; background: #151f2c; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; padding: 0 .75rem; }
+textarea { background: #0b1020; border: 0; color: #f8fafc; font: .94rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; outline: 0; padding: 1rem; resize: none; width: 100%; }
+.preview { border-left: 1px solid #374151; display: grid; gap: .75rem; grid-auto-rows: max-content; }
+.transport { background: #111827; border: 1px solid #334155; border-radius: .45rem; padding: .55rem; }
+h2 { font-size: .82rem; margin: 0 0 .4rem; color: #cbd5e1; }
+.viz { background: #0b1020; border: 1px solid #334155; border-radius: .45rem; overflow-x: auto; }
+.viz svg { display: block; min-width: 100%; height: 170px; }
+pre { background: #0b1020; border: 1px solid #334155; border-radius: .45rem; color: #dbeafe; margin: 0; max-height: 12rem; overflow: auto; padding: .65rem; white-space: pre-wrap; }
+@media (max-width: 980px) { .shell { grid-template-columns: 1fr; height: auto; } .files { flex-direction: row; flex-wrap: wrap; } .preview { border-left: 0; } }
+</style>

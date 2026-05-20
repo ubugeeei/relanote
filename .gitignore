@@ -3,10 +3,12 @@
 dist/
 
 # MoonBit dependency cache
-moonbit/.mooncakes/
+.mooncakes/
+_build/
 
 # Local package manager cache
 node_modules/
+.void/
 
 # IDE
 .idea/

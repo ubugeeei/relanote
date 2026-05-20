@@ -1,0 +1,76 @@
+// AUTO-GENERATED from prelude/*.rela by scripts/gen_stdlib.sh.
+// To regenerate after editing the .rela sources, run:
+//   bash scripts/gen_stdlib.sh
+// Manual edits will be lost.
+
+///|
+/// Embedded source of `prelude/tunings.rela`.
+pub const TUNINGS : String =
+  #|; ===========================================
+  #|; Tuning presets
+  #|; ===========================================
+  #|;
+  #|; A tuning describes how a *step* in the scale maps to a frequency
+  #|; ratio (or cents offset from 12-EDO). Activate one with
+  #|;
+  #|;   set tuning = JustIntonation
+  #|;
+  #|; and every scale-degree reference resolves against it. The default
+  #|; tuning is 12-EDO.
+  #|
+  #|; 24-tone equal temperament (quarter-tone steps). Standard for a lot
+  #|; of Middle Eastern and contemporary microtonal work.
+  #|tuning EDO24 = equal { steps: 24 }
+  #|
+  #|; 31-tone equal temperament — Fokker's tuning, good meantone
+  #|; approximation with usable septimal ratios.
+  #|tuning EDO31 = equal { steps: 31 }
+  #|
+  #|; 53-tone equal temperament — near-pure Pythagorean.
+  #|tuning EDO53 = equal { steps: 53 }
+  #|
+  #|; 5-limit Just Intonation in C major.
+  #|; Ratios are written `numerator/denominator`.
+  #|tuning JustIntonation = ratios [
+  #|  1/1,   ; root
+  #|  9/8,   ; major 2nd
+  #|  5/4,   ; major 3rd
+  #|  4/3,   ; perfect 4th
+  #|  3/2,   ; perfect 5th
+  #|  5/3,   ; major 6th
+  #|  15/8   ; major 7th
+  #|]
+  #|
+  #|; Pythagorean tuning — every interval is a stack of perfect fifths.
+  #|tuning Pythagorean = ratios [
+  #|  1/1,
+  #|  9/8,
+  #|  81/64,
+  #|  4/3,
+  #|  3/2,
+  #|  27/16,
+  #|  243/128
+  #|]
+  #|
+  #|; Werckmeister III — Bach-era well temperament. Cents offsets from
+  #|; 12-EDO for each chromatic step.
+  #|tuning WerckmeisterIII = cents [
+  #|   0.0,   ;  C
+  #|  -3.91,  ;  C#
+  #|  -7.82,  ;  D
+  #|  -5.86,  ;  D#
+  #|  -9.77,  ;  E
+  #|  -1.96,  ;  F
+  #|  -5.86,  ;  F#
+  #|  -3.91,  ;  G
+  #|  -5.86,  ;  G#
+  #|  -7.82,  ;  A
+  #|  -3.91,  ;  A#
+  #|  -7.82   ;  B
+  #|]
+  #|
+  #|; Bohlen-Pierce — equal division of a 3:1 "tritave" into 13 steps.
+  #|tuning BohlenPierce = ratios_per_period {
+  #|  period: 3/1,
+  #|  steps: 13
+  #|}
