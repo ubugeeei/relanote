@@ -1,7 +1,7 @@
 ///|
 /// Type-checking context — runs a fresh-var counter, an environment of
 /// name→scheme bindings, a substitution map of TyVar→Type, and a scope
-/// stack so `push_scope`/`pop_scope` mirror the Rust crate's behaviour.
+/// stack so `push_scope`/`pop_scope` mirror the legacy implementation behaviour.
 pub struct TypeContext {
   mut next_var : UInt
   env : @hashmap.HashMap[@core.InternedStr, TypeScheme]

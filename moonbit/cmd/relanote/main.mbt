@@ -1,17 +1,15 @@
 ///|
-/// Entry point for the MoonBit port of `relanote_cli`. The Rust CLI is
-/// built on `clap`; this port hand-rolls argument parsing because clap
-/// has no MoonBit equivalent. The skeleton wires up each subcommand to
-/// its corresponding library entry point so the downstream library ports
-/// have a real consumer.
+/// Entry point for the Relanote CLI. The command keeps argument parsing
+/// small and explicit, then routes each subcommand to its package entry
+/// point.
 ///
-/// Subcommands match the Rust CLI:
+/// Subcommands:
 ///   parse <file>     — parse a `.rela` file and report diagnostics
-///   check <file>     — type-check a `.rela` file (currently no-op)
+///   check <file>     — type-check a `.rela` file
 ///   fmt   <file>     — format and print to stdout
-///   run   <file>     — evaluate the program (skeleton returns Unit)
-///   render <file>    — render to MIDI bytes (skeleton emits nothing)
-///   lsp              — start the LSP server (skeleton is a no-op)
+///   run   <file>     — evaluate the program
+///   render <file> [output.mid] — render to MIDI bytes
+///   lsp              — start the LSP server
 ///
 /// Tracked in #13.
 fn main {
@@ -47,7 +45,8 @@ const USAGE : String =
   #|    check <FILE>     Type-check a .rela file
   #|    fmt   <FILE>     Format the file and print to stdout
   #|    run   <FILE>     Evaluate the program
-  #|    render <FILE>    Render to MIDI on stdout
+  #|    render <FILE> [OUTPUT.mid]
+  #|                     Render to a MIDI file (defaults to FILE.mid)
   #|    lsp              Start the LSP server on stdio
   #|    help             Show this message
 
@@ -63,9 +62,35 @@ fn require_file(args : Array[String]) -> String? {
 
 ///|
 fn read_source(path : String) -> String {
-  // TODO(#13): platform-specific fs read once a uniform IO backend lands.
-  let _ = path
-  ""
+  let result : Result[String, @fs.IOError] = try? @fs.read_file_to_string(path)
+  match result {
+    Ok(source) => source
+    Err(_) => {
+      println("failed to read " + path)
+      ""
+    }
+  }
+}
+
+///|
+fn output_path(args : Array[String], input : String) -> String {
+  if args.length() >= 4 {
+    args[3]
+  } else {
+    input + ".mid"
+  }
+}
+
+///|
+fn write_midi(path : String, bytes : Array[Byte]) -> Unit {
+  let result : Result[Unit, @fs.IOError] = try? @fs.write_bytes_to_file(
+    path,
+    Bytes::from_array(bytes),
+  )
+  match result {
+    Ok(_) => println("wrote " + path)
+    Err(_) => println("failed to write " + path)
+  }
 }
 
 ///|
@@ -97,7 +122,9 @@ fn print_type_errors(
 /// Test-only helper that builds an empty source and runs the type
 /// checker, returning the error array. Kept here so the wbtest
 /// suite can keep its old signature.
-fn run_type_check_for_test(program : @ast.Program) -> Array[@types.TypeError] {
+pub fn run_type_check_for_test(
+  program : @ast.Program,
+) -> Array[@types.TypeError] {
   let source = @core.Source::from_string("<test>", "")
   run_type_check(source, program)
 }
@@ -107,7 +134,7 @@ fn run_type_check_for_test(program : @ast.Program) -> Array[@types.TypeError] {
 /// evaluate pipeline and return its final value. Returns
 /// `Err(message)` when any phase fails, so integration tests can
 /// assert on either side of the pipeline.
-fn pipeline_for_test(source : String) -> Result[@eval.Value, String] {
+pub fn pipeline_for_test(source : String) -> Result[@eval.Value, String] {
   let src = @core.Source::from_string("<test>", source)
   let (program, parse_diags) = @parser.parse_source(src)
   if parse_diags.has_errors() {
@@ -225,8 +252,8 @@ fn run_render(args : Array[String]) -> Unit {
       let evaluator = @eval.Evaluator::new()
       match evaluator.eval_program(program) {
         Ok(value) => {
-          let _ = @render.render_to_midi(value)
-          ()
+          let bytes = @render.render_to_midi(value)
+          write_midi(output_path(args, path), bytes)
         }
         Err(err) => println("eval error: " + err.message())
       }

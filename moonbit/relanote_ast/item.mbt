@@ -25,9 +25,9 @@ pub(all) enum Item {
   Import(ImportDecl)
   /// JavaScript-style `export` declaration.
   Export(ExportDecl)
-  /// Rust-style `mod foo`.
+  /// Module declaration — `mod foo`.
   Mod(ModDecl)
-  /// Rust-style `use foo::bar`.
+  /// Module import — `use foo::bar`.
   Use(UseDecl)
   /// Top-level expression statement (e.g. `render(...)`).
   ExprStmt(@core.Spanned[Expr])
@@ -73,10 +73,7 @@ pub struct SetBinding {
 }
 
 ///|
-pub fn SetBinding::new(
-  name : Ident,
-  value : @core.Spanned[Expr],
-) -> SetBinding {
+pub fn SetBinding::new(name : Ident, value : @core.Spanned[Expr]) -> SetBinding {
   { name, value }
 }
 
@@ -115,9 +112,7 @@ pub fn FunctionDef::name(self : FunctionDef) -> Ident {
 }
 
 ///|
-pub fn FunctionDef::params(
-  self : FunctionDef,
-) -> Array[@core.Spanned[Pattern]] {
+pub fn FunctionDef::params(self : FunctionDef) -> Array[@core.Spanned[Pattern]] {
   self.params
 }
 

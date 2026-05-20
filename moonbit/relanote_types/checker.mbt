@@ -1,5 +1,5 @@
 ///|
-/// Top-level type checker entry point. The Rust crate exposes
+/// Top-level type checker entry point. The legacy implementation exposes
 /// `TypeChecker` as a struct that walks a `Program` and accumulates
 /// `TypeError`s; the MoonBit port keeps the same public name and the
 /// same `new` / `check_program` signature so downstream code can be
@@ -26,7 +26,7 @@ pub fn TypeChecker::context(self : TypeChecker) -> TypeContext {
 
 ///|
 /// Walk a program and return the type errors discovered. Mirrors the
-/// dispatch in `crates/relanote_types/src/checker.rs::check_program`.
+/// dispatch in legacy source.
 pub fn TypeChecker::check_program(
   self : TypeChecker,
   program : @ast.Program,
@@ -105,15 +105,14 @@ fn TypeChecker::check_item(
       ctx.bind(def.name().name(), scheme)
       Ok(())
     }
-    ExprStmt(expr) => {
+    ExprStmt(expr) =>
       match ctx.infer_expr(expr) {
         Ok(_) => Ok(())
         Err(e) => Err(e)
       }
-    }
     // Top-level declarations the type checker doesn't analyse yet:
     // tuning / groove / effect / mix definitions and import / export /
-    // mod / use declarations. The Rust crate is just as quiet about
+    // mod / use declarations. The legacy implementation is just as quiet about
     // these — they don't introduce typed identifiers into the
     // environment.
     TuningDef(_) | GrooveDef(_) | EffectDef(_) | MixDef(_) => Ok(())
@@ -133,7 +132,7 @@ pub fn TypeChecker::lookup_type(self : TypeChecker, name : String) -> Type? {
 ///|
 /// Install built-in bindings (transformations, effect presets, synth
 /// presets, polymorphic combinators …) into the type environment.
-/// Mirrors `add_builtins` in `crates/relanote_types/src/checker.rs`.
+/// Mirrors `add_builtins` in legacy source.
 fn install_prelude(ctx : TypeContext) -> Unit {
   // reverse : Block -> Block
   ctx.bind_mono("reverse", Type::function(Block, Block))
@@ -168,10 +167,16 @@ fn install_prelude(ctx : TypeContext) -> Unit {
   ctx.bind_mono("volume", Type::function_n([FloatTy, Block], Part))
 
   // delay : Float -> Float -> Float -> Part -> Part
-  ctx.bind_mono("delay", Type::function_n([FloatTy, FloatTy, FloatTy, Part], Part))
+  ctx.bind_mono(
+    "delay",
+    Type::function_n([FloatTy, FloatTy, FloatTy, Part], Part),
+  )
 
   // phaser : Float -> Float -> Float -> Part -> Part
-  ctx.bind_mono("phaser", Type::function_n([FloatTy, FloatTy, FloatTy, Part], Part))
+  ctx.bind_mono(
+    "phaser",
+    Type::function_n([FloatTy, FloatTy, FloatTy, Part], Part),
+  )
 
   // distortion : Float -> DistortionType -> Float -> Part -> Part
   ctx.bind_mono(
@@ -185,37 +190,39 @@ fn install_prelude(ctx : TypeContext) -> Unit {
   }
 
   // Delay presets : Part -> Part
-  for name in [
-    "slapback", "short_delay", "stereo_delay", "dotted_eighth_delay",
-    "quarter_delay", "pingpong_delay", "tape_delay", "ambient_delay",
-    "dub_delay", "shimmer_delay",
-  ] {
+  for
+    name in [
+      "slapback", "short_delay", "stereo_delay", "dotted_eighth_delay", "quarter_delay",
+      "pingpong_delay", "tape_delay", "ambient_delay", "dub_delay", "shimmer_delay",
+    ] {
     ctx.bind_mono(name, Type::function(Part, Part))
   }
 
   // Phaser presets : Part -> Part
-  for name in [
-    "subtle_phaser", "slow_phaser", "classic_phaser", "fast_phaser",
-    "deep_phaser", "jet_phaser", "funk_phaser", "space_phaser",
-    "wobble_phaser", "liquid_phaser",
-  ] {
+  for
+    name in [
+      "subtle_phaser", "slow_phaser", "classic_phaser", "fast_phaser", "deep_phaser",
+      "jet_phaser", "funk_phaser", "space_phaser", "wobble_phaser", "liquid_phaser",
+    ] {
     ctx.bind_mono(name, Type::function(Part, Part))
   }
 
   // Distortion presets : Part -> Part
-  for name in [
-    "saturation", "light_overdrive", "warm_overdrive", "crunch",
-    "classic_dist", "heavy_dist", "light_fuzz", "heavy_fuzz",
-    "classic_fuzz", "lofi_crush", "bit8_crush", "extreme_crush",
-  ] {
+  for
+    name in [
+      "saturation", "light_overdrive", "warm_overdrive", "crunch", "classic_dist",
+      "heavy_dist", "light_fuzz", "heavy_fuzz", "classic_fuzz", "lofi_crush", "bit8_crush",
+      "extreme_crush",
+    ] {
     ctx.bind_mono(name, Type::function(Part, Part))
   }
 
   // Additional reverb presets : Part -> Part
-  for name in [
-    "studio_reverb", "spring_reverb", "chamber_reverb", "ambient_reverb",
-    "cathedral_reverb", "infinite_reverb",
-  ] {
+  for
+    name in [
+      "studio_reverb", "spring_reverb", "chamber_reverb", "ambient_reverb", "cathedral_reverb",
+      "infinite_reverb",
+    ] {
     ctx.bind_mono(name, Type::function(Part, Part))
   }
 
@@ -239,19 +246,20 @@ fn install_prelude(ctx : TypeContext) -> Unit {
   )
 
   // Synth presets : Synth
-  for name in [
-    // 8-bit
-    "Chiptune", "Chip8bit", "NES", "GameBoy",
-    // classic
-    "FatBass", "SoftPad", "Lead", "Pluck", "Strings", "Organ",
-    // drums
-    "Kick", "Snare", "HiHat", "OpenHat", "Tom", "Clap",
-    // clap variants
-    "HandClap", "TightClap", "RoomClap", "Clap808", "Clap909",
-    "VintageClap", "SharpClap", "SoftClap", "StadiumClap", "FingerSnap",
-    // additional
-    "Piano", "EPiano", "WarmPad", "AcidBass",
-  ] {
+  for
+    name in [
+      // 8-bit
+      "Chiptune", "Chip8bit", "NES", "GameBoy",
+      // classic
+       "FatBass", "SoftPad", "Lead", "Pluck", "Strings", "Organ",
+      // drums
+       "Kick", "Snare", "HiHat", "OpenHat", "Tom", "Clap",
+      // clap variants
+       "HandClap", "TightClap", "RoomClap", "Clap808", "Clap909", "VintageClap",
+      "SharpClap", "SoftClap", "StadiumClap", "FingerSnap",
+      // additional
+       "Piano", "EPiano", "WarmPad", "AcidBass",
+    ] {
     ctx.bind_mono(name, Synth)
   }
 

@@ -22,7 +22,7 @@
 /// remaining input still parses.
 ///
 /// Diagnostics accumulate on `self.diagnostics` rather than aborting,
-/// mirroring the Rust crate's best-effort recovery.
+/// mirroring the legacy implementation best-effort recovery.
 pub struct Parser {
   source : @core.Source
   tokens : Array[@lexer.Token]
@@ -136,9 +136,7 @@ pub fn Parser::parse_program(
 }
 
 ///|
-pub fn parse_source(
-  source : @core.Source,
-) -> (@ast.Program, @core.Diagnostics) {
+pub fn parse_source(source : @core.Source) -> (@ast.Program, @core.Diagnostics) {
   Parser::new(source).parse_program()
 }
 
@@ -160,9 +158,7 @@ pub fn parse(source : String) -> (@ast.Program, @core.Diagnostics) {
 // ----------------------------------------------------------------------
 
 ///|
-fn Parser::parse_item(
-  self : Parser,
-) -> (@core.Spanned[@ast.Item])? {
+fn Parser::parse_item(self : Parser) -> @core.Spanned[@ast.Item]? {
   let start = self.peek().span()
   match self.peek_kind() {
     @lexer.Let => self.parse_let_item(start)
@@ -185,7 +181,7 @@ fn Parser::parse_item(
 fn Parser::parse_let_item(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Item])? {
+) -> @core.Spanned[@ast.Item]? {
   let _ = self.advance() // `let`
   match self.parse_pattern() {
     None => None
@@ -209,7 +205,7 @@ fn Parser::parse_let_item(
 fn Parser::parse_set_item(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Item])? {
+) -> @core.Spanned[@ast.Item]? {
   let _ = self.advance() // `set`
   match self.parse_ident_token() {
     None => None
@@ -233,7 +229,7 @@ fn Parser::parse_set_item(
 fn Parser::parse_scale_item(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Item])? {
+) -> @core.Spanned[@ast.Item]? {
   let _ = self.advance() // `scale`
   match self.parse_ident_token() {
     None => None
@@ -261,7 +257,7 @@ fn Parser::parse_scale_item(
 fn Parser::parse_chord_item(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Item])? {
+) -> @core.Spanned[@ast.Item]? {
   let _ = self.advance() // `chord`
   match self.parse_ident_token() {
     None => None
@@ -286,14 +282,14 @@ fn Parser::parse_chord_item(
 }
 
 ///|
-/// Parse an `import` declaration. Mirrors `parse_import` in the Rust
+/// Parse an `import` declaration. Mirrors `parse_import` in the legacy
 /// crate: the head is either a `*` wildcard (optionally `as Alias`), a
 /// `{ name [as alias], ... }` group, or a single `name [as alias]`,
 /// followed by `from "module-path"`.
 fn Parser::parse_import_item(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Item])? {
+) -> @core.Spanned[@ast.Item]? {
   let _ = self.advance() // `import`
   let items : Array[@ast.ImportItem] = []
   match self.peek_kind() {
@@ -318,7 +314,7 @@ fn Parser::parse_import_item(
               match self.parse_ident_token() {
                 None => return None
                 Some(as_ident) =>
-                  items.push(@ast.Aliased(name=name, as_name=as_ident))
+                  items.push(@ast.Aliased(name~, as_name=as_ident))
               }
             } else {
               items.push(@ast.Named(name))
@@ -341,7 +337,7 @@ fn Parser::parse_import_item(
             match self.parse_ident_token() {
               None => return None
               Some(as_ident) =>
-                items.push(@ast.Aliased(name=name, as_name=as_ident))
+                items.push(@ast.Aliased(name~, as_name=as_ident))
             }
           } else {
             items.push(@ast.Named(name))
@@ -379,8 +375,9 @@ fn Parser::parse_interval_list(
     match self.peek_kind() {
       @lexer.Interval(data) => {
         let _ = self.advance()
-        let iv = @ast.IntervalLit::new(data.quality(), data.degree())
-          .with_accidentals(data.accidentals())
+        let iv = @ast.IntervalLit::new(data.quality(), data.degree()).with_accidentals(
+          data.accidentals(),
+        )
         out.push(@core.Spanned::new(iv, span))
       }
       @lexer.Root => {
@@ -404,7 +401,7 @@ fn Parser::parse_interval_list(
 // ----------------------------------------------------------------------
 
 ///|
-fn Parser::parse_pattern(self : Parser) -> (@core.Spanned[@ast.Pattern])? {
+fn Parser::parse_pattern(self : Parser) -> @core.Spanned[@ast.Pattern]? {
   let span = self.peek().span()
   match self.peek_kind() {
     @lexer.Ident(name) => {
@@ -455,7 +452,7 @@ fn Parser::parse_ident_token(self : Parser) -> @ast.Ident? {
 // ----------------------------------------------------------------------
 
 ///|
-fn Parser::parse_expr(self : Parser) -> (@core.Spanned[@ast.Expr])? {
+fn Parser::parse_expr(self : Parser) -> @core.Spanned[@ast.Expr]? {
   // Pipe (`|>`) is the lowest-precedence operator wired today. Each
   // pipe segment is `parse_postfix`, which handles `expr(args)`
   // application calls so `arg |> f(x)` parses naturally.
@@ -483,11 +480,9 @@ fn Parser::parse_expr(self : Parser) -> (@core.Spanned[@ast.Expr])? {
 ///|
 /// Parse a primary expression followed by zero or more postfix call
 /// applications `expr(args, ...)`. Mirrors `parse_postfix_expr` in the
-/// Rust crate — the Haskell-style space-separated form lands in a
+/// legacy implementation — the Haskell-style space-separated form lands in a
 /// follow-up because it needs the full `can_start_argument` analysis.
-fn Parser::parse_postfix(
-  self : Parser,
-) -> (@core.Spanned[@ast.Expr])? {
+fn Parser::parse_postfix(self : Parser) -> @core.Spanned[@ast.Expr]? {
   let initial = self.parse_primary()
   match initial {
     None => None
@@ -561,9 +556,7 @@ fn Parser::parse_postfix(
 }
 
 ///|
-fn Parser::parse_primary(
-  self : Parser,
-) -> (@core.Spanned[@ast.Expr])? {
+fn Parser::parse_primary(self : Parser) -> @core.Spanned[@ast.Expr]? {
   let span = self.peek().span()
   match self.peek_kind() {
     @lexer.Integer(n) => {
@@ -592,8 +585,9 @@ fn Parser::parse_primary(
     }
     @lexer.Interval(data) => {
       let _ = self.advance()
-      let iv = @ast.IntervalLit::new(data.quality(), data.degree())
-        .with_accidentals(data.accidentals())
+      let iv = @ast.IntervalLit::new(data.quality(), data.degree()).with_accidentals(
+        data.accidentals(),
+      )
       Some(@core.Spanned::new(@ast.Interval(iv), span))
     }
     @lexer.AbsolutePitch(data) => {
@@ -679,7 +673,7 @@ fn Parser::parse_primary(
 fn Parser::parse_match_expr(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Expr])? {
+) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // `match`
   let scrutinee = match self.parse_expr() {
     None => return None
@@ -722,10 +716,7 @@ fn Parser::parse_match_expr(
     return None
   }
   Some(
-    @core.Spanned::new(
-      @ast.Match(@ast.MatchExpr::new(scrutinee, arms)),
-      start,
-    ),
+    @core.Spanned::new(@ast.Match(@ast.MatchExpr::new(scrutinee, arms)), start),
   )
 }
 
@@ -736,7 +727,7 @@ fn Parser::parse_match_expr(
 fn Parser::parse_let_expr(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Expr])? {
+) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // `let`
   let pattern = match self.parse_pattern() {
     None => return None
@@ -769,11 +760,11 @@ fn Parser::parse_let_expr(
 ///|
 /// Parse `if cond then a` or `if cond then a else b`.
 /// `else` is optional in the AST so the parser also accepts the
-/// bare form (matching the Rust crate).
+/// bare form (matching the legacy implementation).
 fn Parser::parse_if_expr(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Expr])? {
+) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // `if`
   let cond = match self.parse_expr() {
     None => return None
@@ -809,7 +800,7 @@ fn Parser::parse_if_expr(
 fn Parser::parse_lambda_expr(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Expr])? {
+) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // `\`
   let params : Array[@core.Spanned[@ast.Pattern]] = []
   while self.peek_kind() != @lexer.Arrow && !self.at_eof() {
@@ -830,10 +821,7 @@ fn Parser::parse_lambda_expr(
     None => None
     Some(body) =>
       Some(
-        @core.Spanned::new(
-          @ast.Lambda(@ast.Lambda::new(params, body)),
-          start,
-        ),
+        @core.Spanned::new(@ast.Lambda(@ast.Lambda::new(params, body)), start),
       )
   }
 }
@@ -843,7 +831,7 @@ fn Parser::parse_lambda_expr(
 fn Parser::parse_block_expr(
   self : Parser,
   start : @core.Span,
-) -> (@core.Spanned[@ast.Expr])? {
+) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // opening `|`
   let slots : Array[@core.Spanned[@ast.Slot]] = []
   while self.peek_kind() != @lexer.Pipe && !self.at_eof() {
@@ -879,7 +867,7 @@ fn Parser::parse_block_expr(
 }
 
 ///|
-fn Parser::parse_slot(self : Parser) -> (@core.Spanned[@ast.Slot])? {
+fn Parser::parse_slot(self : Parser) -> @core.Spanned[@ast.Slot]? {
   let span = self.peek().span()
   // Rests carry an optional `:n` duration of their own; everything
   // else parses a pitch, then walks zero-or-more articulation /
@@ -911,8 +899,9 @@ fn Parser::parse_slot(self : Parser) -> (@core.Spanned[@ast.Slot])? {
     }
     @lexer.Interval(data) => {
       let _ = self.advance()
-      let iv = @ast.IntervalLit::new(data.quality(), data.degree())
-        .with_accidentals(data.accidentals())
+      let iv = @ast.IntervalLit::new(data.quality(), data.degree()).with_accidentals(
+        data.accidentals(),
+      )
       let pitch : @ast.Pitch = @ast.Interval(iv)
       Some(self.complete_note(@core.Spanned::new(pitch, span), span))
     }
@@ -922,9 +911,7 @@ fn Parser::parse_slot(self : Parser) -> (@core.Spanned[@ast.Slot])? {
       // Absolute pitches inside a block fold into an interval-shaped
       // slot — we don't yet model absolute pitches as a `Pitch`
       // variant, so map to the corresponding semitone offset.
-      let pitch : @ast.Pitch = @ast.Microtone(
-        absolute_pitch_to_cents(lit),
-      )
+      let pitch : @ast.Pitch = @ast.Microtone(absolute_pitch_to_cents(lit))
       Some(self.complete_note(@core.Spanned::new(pitch, span), span))
     }
     @lexer.Root => {
@@ -943,7 +930,7 @@ fn Parser::parse_slot(self : Parser) -> (@core.Spanned[@ast.Slot])? {
 ///|
 /// Finish a `Note` slot by reading any trailing articulations and an
 /// optional `:n` duration. Articulations come before the duration —
-/// `<1>^*:2` parses but `<1>:2^*` does not (matches the Rust crate).
+/// `<1>^*:2` parses but `<1>:2^*` does not (matches the legacy implementation).
 fn Parser::complete_note(
   self : Parser,
   pitch : @core.Spanned[@ast.Pitch],

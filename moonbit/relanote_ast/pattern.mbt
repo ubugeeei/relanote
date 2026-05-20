@@ -22,7 +22,7 @@ pub(all) enum Pattern {
 ///|
 /// Literal patterns. Variants are suffixed with `Lit` where the unsuffixed
 /// name would clash with a builtin type (`Bool`, `String`, `Unit`); the
-/// non-clashing `Integer` and `Float` keep the Rust naming.
+/// non-clashing `Integer` and `Float` keep the legacy naming.
 pub(all) enum LiteralPattern {
   Integer(Int64)
   Float(Double)
@@ -35,13 +35,13 @@ pub(all) enum LiteralPattern {
 /// Array pattern with an optional `...rest` tail.
 pub struct ArrayPattern {
   elements : Array[@core.Spanned[Pattern]]
-  rest : (@core.Spanned[Pattern])?
+  rest : @core.Spanned[Pattern]?
 }
 
 ///|
 pub fn ArrayPattern::new(
   elements : Array[@core.Spanned[Pattern]],
-  rest : (@core.Spanned[Pattern])?,
+  rest : @core.Spanned[Pattern]?,
 ) -> ArrayPattern {
   { elements, rest }
 }
@@ -54,7 +54,7 @@ pub fn ArrayPattern::elements(
 }
 
 ///|
-pub fn ArrayPattern::rest(self : ArrayPattern) -> (@core.Spanned[Pattern])? {
+pub fn ArrayPattern::rest(self : ArrayPattern) -> @core.Spanned[Pattern]? {
   self.rest
 }
 

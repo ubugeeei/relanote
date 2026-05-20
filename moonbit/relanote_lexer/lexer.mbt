@@ -1,13 +1,11 @@
 ///|
-/// Hand-written lexer mirroring `crates/relanote_lexer`. The Rust version is
-/// driven by `logos` regexes; this port replicates the same longest-match
-/// + priority disambiguation rules:
+/// Hand-written lexer with longest-match + priority disambiguation:
 ///
 ///   * Absolute pitches (priority 4) win same-length ties against
 ///     intervals, the `R` root marker and identifiers.
 ///   * Intervals and `R` (priority 3) win same-length ties against
 ///     identifiers.
-///   * Otherwise the longest match wins, exactly like `logos`.
+///   * Otherwise the longest match wins.
 pub struct Lexer {
   source : @core.SourceId
   content : String
@@ -26,7 +24,7 @@ pub fn Lexer::from_string(source : @core.SourceId, content : String) -> Lexer {
 
 ///|
 /// Tokenize the entire input, terminating with a single `Eof` token whose
-/// span sits at the end of input — matching the Rust API exactly.
+/// span sits at the end of input.
 pub fn Lexer::tokenize(self : Lexer) -> Array[Token] {
   let tokens : Array[Token] = []
   while true {
@@ -72,6 +70,7 @@ pub fn Lexer::next_token(self : Lexer) -> Token? {
 // Internal helpers
 // ============================================================
 
+///|
 fn Lexer::charcode_at(self : Lexer, idx : Int) -> Int {
   if idx < 0 || idx >= self.content.length() {
     -1
@@ -80,6 +79,7 @@ fn Lexer::charcode_at(self : Lexer, idx : Int) -> Int {
   }
 }
 
+///|
 fn Lexer::starts_with(self : Lexer, idx : Int, needle : String) -> Bool {
   let n = needle.length()
   if idx + n > self.content.length() {
@@ -95,23 +95,28 @@ fn Lexer::starts_with(self : Lexer, idx : Int, needle : String) -> Bool {
   true
 }
 
+///|
 fn is_ascii_digit(c : Int) -> Bool {
   c >= '0'.to_int() && c <= '9'.to_int()
 }
 
+///|
 fn is_alpha(c : Int) -> Bool {
   (c >= 'A'.to_int() && c <= 'Z'.to_int()) ||
   (c >= 'a'.to_int() && c <= 'z'.to_int())
 }
 
+///|
 fn is_ident_start(c : Int) -> Bool {
   is_alpha(c) || c == '_'.to_int()
 }
 
+///|
 fn is_ident_cont(c : Int) -> Bool {
   is_ident_start(c) || is_ascii_digit(c)
 }
 
+///|
 fn is_ascii_space(c : Int) -> Bool {
   c == ' '.to_int() ||
   c == '\t'.to_int() ||
@@ -120,6 +125,7 @@ fn is_ascii_space(c : Int) -> Bool {
   c == -1
 }
 
+///|
 fn is_pitch_letter(c : Int) -> Bool {
   c == 'C'.to_int() ||
   c == 'D'.to_int() ||
@@ -129,6 +135,7 @@ fn is_pitch_letter(c : Int) -> Bool {
   c == 'B'.to_int()
 }
 
+///|
 fn is_quality_letter(c : Int) -> Bool {
   c == 'M'.to_int() ||
   c == 'P'.to_int() ||
@@ -137,6 +144,7 @@ fn is_quality_letter(c : Int) -> Bool {
   c == 'd'.to_int()
 }
 
+///|
 fn quality_of(c : Int) -> IntervalQuality {
   if c == 'M'.to_int() {
     Major
@@ -155,6 +163,7 @@ fn quality_of(c : Int) -> IntervalQuality {
 // Per-position dispatch
 // ============================================================
 
+///|
 fn Lexer::lex_one(self : Lexer) -> TokenKind? {
   let c = self.charcode_at(self.offset)
   if c == '\n'.to_int() {
@@ -176,22 +185,24 @@ fn Lexer::lex_one(self : Lexer) -> TokenKind? {
   self.lex_symbol()
 }
 
+///|
 fn Lexer::lex_line_comment(self : Lexer) -> TokenKind {
   let start = self.offset
   while self.offset < self.content.length() &&
-    self.charcode_at(self.offset) != '\n'.to_int() {
+        self.charcode_at(self.offset) != '\n'.to_int() {
     self.offset += 1
   }
   let text = self.content[start:self.offset].to_owned()
   LineComment(text)
 }
 
+///|
 fn Lexer::lex_string(self : Lexer) -> TokenKind {
   // We arrive at the opening quote.
   self.offset += 1
   let content_start = self.offset
   while self.offset < self.content.length() &&
-    self.charcode_at(self.offset) != '"'.to_int() {
+        self.charcode_at(self.offset) != '"'.to_int() {
     self.offset += 1
   }
   let s = self.content[content_start:self.offset].to_owned()
@@ -202,10 +213,11 @@ fn Lexer::lex_string(self : Lexer) -> TokenKind {
   StringLit(s)
 }
 
+///|
 fn Lexer::lex_number(self : Lexer) -> TokenKind {
   let start = self.offset
   while self.offset < self.content.length() &&
-    is_ascii_digit(self.charcode_at(self.offset)) {
+        is_ascii_digit(self.charcode_at(self.offset)) {
     self.offset += 1
   }
   // `[0-9]+bears?` / `[0-9]+beats?` / `[0-9]+bars?` — match the longest
@@ -231,7 +243,7 @@ fn Lexer::lex_number(self : Lexer) -> TokenKind {
     is_ascii_digit(self.charcode_at(self.offset + 1)) {
     self.offset += 1
     while self.offset < self.content.length() &&
-      is_ascii_digit(self.charcode_at(self.offset)) {
+          is_ascii_digit(self.charcode_at(self.offset)) {
       self.offset += 1
     }
     let text = self.content[start:self.offset].to_owned()
@@ -251,6 +263,7 @@ fn Lexer::lex_number(self : Lexer) -> TokenKind {
 
 // Helpers that look ahead WITHOUT mutating `self.offset`.
 
+///|
 fn Lexer::ident_end(self : Lexer, from : Int) -> Int {
   let mut i = from
   while i < self.content.length() && is_ident_cont(self.charcode_at(i)) {
@@ -259,6 +272,7 @@ fn Lexer::ident_end(self : Lexer, from : Int) -> Int {
   i
 }
 
+///|
 fn Lexer::interval_end(self : Lexer, from : Int) -> Int {
   // [MPmAd][1-9][0-9]*[+-]*
   if !is_quality_letter(self.charcode_at(from)) {
@@ -283,6 +297,7 @@ fn Lexer::interval_end(self : Lexer, from : Int) -> Int {
   i
 }
 
+///|
 fn Lexer::absolute_pitch_end(self : Lexer, from : Int) -> Int {
   // ( [CDEFGB][#b]? | A[#b] ) [0-9]
   let c0 = self.charcode_at(from)
@@ -306,6 +321,7 @@ fn Lexer::absolute_pitch_end(self : Lexer, from : Int) -> Int {
   from
 }
 
+///|
 fn Lexer::lex_word(self : Lexer) -> TokenKind {
   let start = self.offset
   let ident_end = self.ident_end(start)
@@ -361,6 +377,7 @@ fn Lexer::lex_word(self : Lexer) -> TokenKind {
   keyword_or_ident(text)
 }
 
+///|
 fn Lexer::build_interval(self : Lexer, start : Int, len : Int) -> TokenKind {
   let quality = quality_of(self.charcode_at(start))
   let mut i = start + 1
@@ -387,6 +404,7 @@ fn Lexer::build_interval(self : Lexer, start : Int, len : Int) -> TokenKind {
   Interval(IntervalData::new(quality, degree, accidentals))
 }
 
+///|
 fn Lexer::build_absolute_pitch(
   self : Lexer,
   start : Int,
@@ -410,11 +428,7 @@ fn Lexer::build_absolute_pitch(
   }
   let (accidental, octave_idx) = if len == 3 {
     let c1 = self.charcode_at(start + 1)
-    let acc = if c1 == '#'.to_int() {
-      1
-    } else {
-      -1
-    }
+    let acc = if c1 == '#'.to_int() { 1 } else { -1 }
     (acc, start + 2)
   } else {
     (0, start + 1)
@@ -423,6 +437,7 @@ fn Lexer::build_absolute_pitch(
   AbsolutePitch(AbsolutePitchData::new(note, accidental, octave))
 }
 
+///|
 fn keyword_or_ident(text : String) -> TokenKind {
   match text {
     "let" => Let
@@ -457,6 +472,7 @@ fn keyword_or_ident(text : String) -> TokenKind {
   }
 }
 
+///|
 fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
   let c = self.charcode_at(self.offset)
   let c2 = self.charcode_at(self.offset + 1)
@@ -564,16 +580,15 @@ fn Lexer::lex_symbol(self : Lexer) -> TokenKind? {
   single
 }
 
+///|
 fn Lexer::star_is_articulation_suffix(self : Lexer) -> Bool {
   let prev = self.charcode_at(self.offset - 1)
   let next = self.charcode_at(self.offset + 1)
-  let prev_can_end_slot =
-    is_ident_cont(prev) ||
+  let prev_can_end_slot = is_ident_cont(prev) ||
     prev == '>'.to_int() ||
     prev == '^'.to_int() ||
     prev == '~'.to_int()
-  let next_can_follow_suffix =
-    is_ascii_space(next) ||
+  let next_can_follow_suffix = is_ascii_space(next) ||
     next == '|'.to_int() ||
     next == ':'.to_int() ||
     next == '^'.to_int() ||

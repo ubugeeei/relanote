@@ -1,6 +1,6 @@
 ///|
 /// Evaluation environment — a chained scope mapping names to runtime
-/// values. The Rust crate threads parents through `Rc<RefCell<…>>`;
+/// values. The legacy implementation threads parents through `Rc<RefCell<…>>`;
 /// MoonBit's shared mutability lets us just hold an `Env?` directly.
 pub struct Env {
   bindings : @hashmap.HashMap[@core.InternedStr, Value]
@@ -30,18 +30,12 @@ pub fn Env::lookup(self : Env, name : @core.InternedStr) -> Value? {
 }
 
 ///|
-pub fn Env::bind(
-  self : Env,
-  name : @core.InternedStr,
-  value : Value,
-) -> Unit {
+pub fn Env::bind(self : Env, name : @core.InternedStr, value : Value) -> Unit {
   self.bindings.set(name, value)
 }
 
 ///|
-pub fn Env::all_bindings(
-  self : Env,
-) -> Array[(@core.InternedStr, Value)] {
+pub fn Env::all_bindings(self : Env) -> Array[(@core.InternedStr, Value)] {
   let out : Array[(@core.InternedStr, Value)] = []
   for k, v in self.bindings {
     out.push((k, v))

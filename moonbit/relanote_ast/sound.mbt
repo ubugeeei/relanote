@@ -196,7 +196,7 @@ pub struct MixDef {
   buses : Array[BusDef]
   sends : Array[SendDef]
   sidechains : Array[SidechainDef]
-  master : (@core.Spanned[Expr])?
+  master : @core.Spanned[Expr]?
 }
 
 ///|
@@ -205,7 +205,7 @@ pub fn MixDef::new(
   buses : Array[BusDef],
   sends : Array[SendDef],
   sidechains : Array[SidechainDef],
-  master : (@core.Spanned[Expr])?,
+  master : @core.Spanned[Expr]?,
 ) -> MixDef {
   { tracks, buses, sends, sidechains, master }
 }
@@ -236,6 +236,6 @@ pub fn MixDef::sidechains(self : MixDef) -> Array[SidechainDef] {
 }
 
 ///|
-pub fn MixDef::master(self : MixDef) -> (@core.Spanned[Expr])? {
+pub fn MixDef::master(self : MixDef) -> @core.Spanned[Expr]? {
   self.master
 }

@@ -6,21 +6,26 @@ This document explains the internal architecture of Relanote, from source code t
 
 <img src="/diagrams/architecture-overview.svg" alt="Relanote System Architecture" style="width: 100%; max-width: 800px; margin: 1rem 0;" />
 
-## Crate Structure
+## Package Structure
 
-Relanote is organized as a Cargo workspace with the following crates:
+Relanote is organized as MoonBit packages:
 
-| Crate | Purpose |
-|-------|---------|
+| Package | Purpose |
+|---------|---------|
+| `relanote_core` | Source files, spans, diagnostics, reports |
 | `relanote_lexer` | Tokenizes source code into tokens |
 | `relanote_ast` | Defines AST (Abstract Syntax Tree) types |
 | `relanote_parser` | Parses tokens into AST |
+| `relanote_hir` | Holds the lowered representation |
+| `relanote_resolver` | Resolves modules and names |
+| `relanote_types` | Infers and checks types |
 | `relanote_eval` | Evaluates AST and produces music values |
-| `relanote_stdlib` | Standard library (prelude, scales, chords, synth presets) |
-| `relanote_render` | Renders music values to MIDI/JSON formats |
-| `relanote_format` | Code formatter (pretty printer) |
-| `relanote_wasm` | WebAssembly bindings for browser use |
-| `relanote_cli` | Command-line interface |
+| `relanote_stdlib` | Standard library prelude, scales, chords, synth presets |
+| `relanote_render` | Renders music values to MIDI bytes |
+| `relanote_format` | Code formatter |
+| `relanote_lsp` | Editor protocol framing and dispatch |
+| `cmd/relanote` | Command-line interface |
+| `web` | Vapor Moon playground view and bridge |
 
 ## Compilation Pipeline
 
@@ -75,7 +80,6 @@ Value:
 
 The renderer converts music values to playable formats:
 
-- **JSON** - For WebAudio playback in browser
 - **MIDI** - For DAW integration and hardware synths
 
 ## Data Flow Example
@@ -150,12 +154,13 @@ This is equivalent to nested function calls:
 volume(voice(transpose(melody, M3), Lead), 0.8)
 ```
 
-### WebAssembly for Browser
+### Browser Playground
 
-The entire Rust backend compiles to WebAssembly, enabling:
-- Full evaluation in the browser
-- No server required for playback
-- Consistent behavior across platforms
+The Vapor Moon playground calls the same MoonBit bridge functions as the
+CLI pipeline:
+- Diagnostics and formatting share parser output
+- Playback and export share evaluator and MIDI rendering
+- The UI stays thin around the language packages
 
 ## File Types
 

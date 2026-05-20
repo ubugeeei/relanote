@@ -82,7 +82,6 @@ pub(all) enum Expr {
   InScale(InScaleExpr)
   Annotated(@core.Spanned[Expr], TypeAnnotation)
   Paren(@core.Spanned[Expr])
-
   /// Polyrhythm — `a over b`. Both sides play simultaneously with
   /// independent periods; the resulting figure repeats every lcm
   /// of their slot counts.
@@ -97,8 +96,13 @@ pub(all) enum Expr {
 /// safely by the evaluator/optimiser.
 pub fn Expr::is_simple(self : Expr) -> Bool {
   match self {
-    Integer(_) | Float(_) | StringLit(_) | BoolLit(_) | UnitLit
-    | Ident(_) | Root => true
+    Integer(_)
+    | Float(_)
+    | StringLit(_)
+    | BoolLit(_)
+    | UnitLit
+    | Ident(_)
+    | Root => true
     _ => false
   }
 }
@@ -220,7 +224,7 @@ pub fn Binary::right(self : Binary) -> @core.Spanned[Expr] {
 }
 
 ///|
-/// Binary operators. The Rust variants `Eq`/`Ne` are renamed to
+/// Binary operators. The legacy variants `Eq`/`Ne` are renamed to
 /// `EqOp`/`NeOp` to avoid shadowing the `Eq` trait.
 pub(all) enum BinaryOp {
   // Arithmetic
@@ -320,14 +324,14 @@ pub fn Field::field(self : Field) -> Ident {
 pub struct IfExpr {
   condition : @core.Spanned[Expr]
   then_branch : @core.Spanned[Expr]
-  else_branch : (@core.Spanned[Expr])?
+  else_branch : @core.Spanned[Expr]?
 }
 
 ///|
 pub fn IfExpr::new(
   condition : @core.Spanned[Expr],
   then_branch : @core.Spanned[Expr],
-  else_branch : (@core.Spanned[Expr])?,
+  else_branch : @core.Spanned[Expr]?,
 ) -> IfExpr {
   { condition, then_branch, else_branch }
 }
@@ -343,7 +347,7 @@ pub fn IfExpr::then_branch(self : IfExpr) -> @core.Spanned[Expr] {
 }
 
 ///|
-pub fn IfExpr::else_branch(self : IfExpr) -> (@core.Spanned[Expr])? {
+pub fn IfExpr::else_branch(self : IfExpr) -> @core.Spanned[Expr]? {
   self.else_branch
 }
 
@@ -374,14 +378,14 @@ pub fn MatchExpr::arms(self : MatchExpr) -> Array[MatchArm] {
 ///|
 pub struct MatchArm {
   pattern : @core.Spanned[Pattern]
-  guard_expr : (@core.Spanned[Expr])?
+  guard_expr : @core.Spanned[Expr]?
   body : @core.Spanned[Expr]
 }
 
 ///|
 pub fn MatchArm::new(
   pattern : @core.Spanned[Pattern],
-  guard_expr : (@core.Spanned[Expr])?,
+  guard_expr : @core.Spanned[Expr]?,
   body : @core.Spanned[Expr],
 ) -> MatchArm {
   { pattern, guard_expr, body }
@@ -393,7 +397,7 @@ pub fn MatchArm::pattern(self : MatchArm) -> @core.Spanned[Pattern] {
 }
 
 ///|
-pub fn MatchArm::guard_expr(self : MatchArm) -> (@core.Spanned[Expr])? {
+pub fn MatchArm::guard_expr(self : MatchArm) -> @core.Spanned[Expr]? {
   self.guard_expr
 }
 
@@ -460,9 +464,7 @@ pub fn WithExpr::base(self : WithExpr) -> @core.Spanned[Expr] {
 }
 
 ///|
-pub fn WithExpr::modifications(
-  self : WithExpr,
-) -> Array[@core.Spanned[Expr]] {
+pub fn WithExpr::modifications(self : WithExpr) -> Array[@core.Spanned[Expr]] {
   self.modifications
 }
 

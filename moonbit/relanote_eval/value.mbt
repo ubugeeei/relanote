@@ -1,5 +1,5 @@
 ///|
-/// Runtime value produced by the evaluator. The Rust crate carries many
+/// Runtime value produced by the evaluator. The legacy implementation carries many
 /// specialised variants (closures, blocks, parts, sections, synth /
 /// envelope state, …); the MoonBit port grows these incrementally as
 /// each phase of the evaluator lands.
@@ -30,7 +30,7 @@ pub(all) enum Value {
   /// repeat, …) without reflecting them through closures.
   BuiltinV(String)
   /// Interval value, stored as a signed semitone offset from the root.
-  /// Mirrors the Rust crate's `IntervalValue` flattening.
+  /// Mirrors the legacy implementation `IntervalValue` flattening.
   IntervalV(Int)
   /// Absolute pitch literal as a MIDI note number (0..127, middle C =
   /// 60). The AST carries letter / accidental / octave; the evaluator

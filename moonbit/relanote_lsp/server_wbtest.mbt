@@ -1,3 +1,4 @@
+///|
 test "diagnose feeds the parser and reports its diagnostics" {
   let s = RelanoteLanguageServer::new()
   // Clean source produces no diagnostics now that the parser is real.
@@ -9,27 +10,49 @@ test "diagnose feeds the parser and reports its diagnostics" {
   assert_true(broken.has_errors())
 }
 
+///|
 test "format runs the printer on the parsed program" {
   let s = RelanoteLanguageServer::new()
   let out = s.format("file.rela", "let x = 1")
   assert_eq(out, "let x = 1\n")
 }
 
-test "run_server is a no-op for now" {
-  // Just confirm it can be invoked without crashing.
-  run_server()
+///|
+test "handle_body replies with an encoded initialize frame" {
+  let s = RelanoteLanguageServer::new()
+  let body = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}"
+  match s.handle_body(body) {
+    Some(frame) =>
+      match read_frame(frame) {
+        Some(decoded) => {
+          let response = @json.parse(decoded.body())
+          match json_value(response, "result") {
+            Some(result) =>
+              match json_value(result, "capabilities") {
+                Some(_) => ()
+                None => abort("expected capabilities in result")
+              }
+            None => abort("expected a result field")
+          }
+        }
+        None => abort("expected an encoded response frame")
+      }
+    None => abort("initialize should produce a response")
+  }
 }
 
 // ----------------------------------------------------------------------
 // JSON-RPC framing
 // ----------------------------------------------------------------------
 
+///|
 test "encode_frame prefixes the body with Content-Length" {
   let framed = encode_frame("{\"jsonrpc\":\"2.0\"}")
   assert_true(framed.has_prefix("Content-Length: 17\r\n\r\n"))
   assert_true(framed.contains("{\"jsonrpc\":\"2.0\"}"))
 }
 
+///|
 test "read_frame parses a complete frame" {
   let raw = encode_frame("{\"id\":1}")
   match read_frame(raw) {
@@ -41,6 +64,7 @@ test "read_frame parses a complete frame" {
   }
 }
 
+///|
 test "read_frame returns None when the buffer is incomplete" {
   // Header alone, no body yet.
   let partial = "Content-Length: 42\r\n\r\n"
@@ -54,6 +78,7 @@ test "read_frame returns None when the buffer is incomplete" {
 // JSON-RPC dispatch
 // ----------------------------------------------------------------------
 
+///|
 test "initialize returns ServerCapabilities" {
   let s = RelanoteLanguageServer::new()
   let request = @json.parse(
@@ -61,9 +86,9 @@ test "initialize returns ServerCapabilities" {
   )
   match s.handle_request(request) {
     Some(response) =>
-      match response.value("result") {
+      match json_value(response, "result") {
         Some(result) =>
-          match result.value("capabilities") {
+          match json_value(result, "capabilities") {
             Some(_) => ()
             None => abort("expected capabilities in result")
           }
@@ -73,6 +98,7 @@ test "initialize returns ServerCapabilities" {
   }
 }
 
+///|
 test "shutdown returns null result" {
   let s = RelanoteLanguageServer::new()
   let request = @json.parse(
@@ -80,7 +106,7 @@ test "shutdown returns null result" {
   )
   match s.handle_request(request) {
     Some(response) =>
-      match response.value("result") {
+      match json_value(response, "result") {
         Some(Null) => ()
         Some(_) => abort("expected null result")
         None => abort("expected a result field")
@@ -89,17 +115,17 @@ test "shutdown returns null result" {
   }
 }
 
+///|
 test "initialized is a notification (no response)" {
   let s = RelanoteLanguageServer::new()
-  let request = @json.parse(
-    "{\"jsonrpc\":\"2.0\",\"method\":\"initialized\"}",
-  )
+  let request = @json.parse("{\"jsonrpc\":\"2.0\",\"method\":\"initialized\"}")
   match s.handle_request(request) {
     None => ()
     Some(_) => abort("notifications should not produce a response")
   }
 }
 
+///|
 test "unknown method returns MethodNotFound (-32601)" {
   let s = RelanoteLanguageServer::new()
   let request = @json.parse(
@@ -107,9 +133,9 @@ test "unknown method returns MethodNotFound (-32601)" {
   )
   match s.handle_request(request) {
     Some(response) =>
-      match response.value("error") {
+      match json_value(response, "error") {
         Some(err) =>
-          match err.value("code") {
+          match json_value(err, "code") {
             Some(Number(-32601.0, ..)) => ()
             _ => abort("expected code -32601")
           }
@@ -119,6 +145,7 @@ test "unknown method returns MethodNotFound (-32601)" {
   }
 }
 
+///|
 test "textDocument/diagnostic returns full-kind report" {
   let s = RelanoteLanguageServer::new()
   let request = @json.parse(
@@ -126,9 +153,9 @@ test "textDocument/diagnostic returns full-kind report" {
   )
   match s.handle_request(request) {
     Some(response) =>
-      match response.value("result") {
+      match json_value(response, "result") {
         Some(result) =>
-          match result.value("kind") {
+          match json_value(result, "kind") {
             Some(String("full")) => ()
             _ => abort("expected kind=full")
           }

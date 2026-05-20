@@ -3,12 +3,14 @@
 // arithmetic, comparison, lambdas, match, sound-design declarations,
 // etc.) is tracked in #4 and lands alongside the evaluator port.
 
+///|
 test "empty source produces an empty program with no diagnostics" {
   let (prog, diags) = parse("")
   assert_eq(prog.items().length(), 0)
   assert_false(diags.has_errors())
 }
 
+///|
 test "literal integer expression at the top level" {
   let (prog, diags) = parse("42")
   assert_false(diags.has_errors())
@@ -23,6 +25,7 @@ test "literal integer expression at the top level" {
   }
 }
 
+///|
 test "let binding with an integer right-hand side" {
   let (prog, diags) = parse("let answer = 42")
   assert_false(diags.has_errors())
@@ -42,6 +45,7 @@ test "let binding with an integer right-hand side" {
   }
 }
 
+///|
 test "set binding for tempo" {
   let (prog, _) = parse("set tempo = 120")
   assert_eq(prog.items().length(), 1)
@@ -57,6 +61,7 @@ test "set binding for tempo" {
   }
 }
 
+///|
 test "scale declaration" {
   let (prog, diags) = parse("scale Major = { R, M2, M3 }")
   assert_false(diags.has_errors())
@@ -69,6 +74,7 @@ test "scale declaration" {
   }
 }
 
+///|
 test "chord declaration" {
   let (prog, diags) = parse("chord MajorTriad = [ R, M3, P5 ]")
   assert_false(diags.has_errors())
@@ -81,6 +87,7 @@ test "chord declaration" {
   }
 }
 
+///|
 test "block of scale-degree slots" {
   let (prog, diags) = parse("| <1> <3> <5> |")
   assert_false(diags.has_errors())
@@ -94,6 +101,7 @@ test "block of scale-degree slots" {
   }
 }
 
+///|
 test "block with explicit `:n` beats" {
   let (prog, _) = parse("| <1> <3> |:4")
   match prog.items()[0].node() {
@@ -110,6 +118,7 @@ test "block with explicit `:n` beats" {
   }
 }
 
+///|
 test "block with a rest" {
   let (prog, _) = parse("| <1> - <3> |")
   match prog.items()[0].node() {
@@ -128,6 +137,7 @@ test "block with a rest" {
   }
 }
 
+///|
 test "block slot picks up an accent articulation" {
   let (prog, diags) = parse("| <1>^ |")
   assert_false(diags.has_errors())
@@ -151,6 +161,7 @@ test "block slot picks up an accent articulation" {
   }
 }
 
+///|
 test "block slot accepts multiple articulations in order" {
   let (prog, diags) = parse("| <3>^*~ |")
   assert_false(diags.has_errors())
@@ -169,6 +180,7 @@ test "block slot accepts multiple articulations in order" {
   }
 }
 
+///|
 test "block slot picks up a duration suffix" {
   let (prog, diags) = parse("| <1>:2 |")
   assert_false(diags.has_errors())
@@ -190,6 +202,7 @@ test "block slot picks up a duration suffix" {
   }
 }
 
+///|
 test "rest also accepts a duration suffix" {
   let (prog, diags) = parse("| <1> -:3 |")
   assert_false(diags.has_errors())
@@ -211,6 +224,7 @@ test "rest also accepts a duration suffix" {
   }
 }
 
+///|
 test "pipe expression" {
   let (prog, diags) = parse("melody |> transpose")
   assert_false(diags.has_errors())
@@ -224,11 +238,13 @@ test "pipe expression" {
   }
 }
 
+///|
 test "missing `=` after let raises a diagnostic" {
   let (_, diags) = parse("let x 42")
   assert_true(diags.has_errors())
 }
 
+///|
 test "multiple items separated by newlines" {
   let src = "set tempo = 120\nscale Major = { R, M2, M3 }\nlet x = 1"
   let (prog, diags) = parse(src)
@@ -236,6 +252,7 @@ test "multiple items separated by newlines" {
   assert_eq(prog.items().length(), 3)
 }
 
+///|
 test "import single name from module" {
   let (prog, diags) = parse("import foo from \"bar\"")
   assert_false(diags.has_errors())
@@ -253,6 +270,7 @@ test "import single name from module" {
   }
 }
 
+///|
 test "import aliased name from module" {
   let (prog, diags) = parse("import foo as f from \"bar\"")
   assert_false(diags.has_errors())
@@ -271,6 +289,7 @@ test "import aliased name from module" {
   }
 }
 
+///|
 test "import group from module" {
   let (prog, diags) = parse("import { a, b as bb } from \"x\"")
   assert_false(diags.has_errors())
@@ -294,6 +313,7 @@ test "import group from module" {
   }
 }
 
+///|
 test "import wildcard from module" {
   let (prog, diags) = parse("import * from \"m\"")
   assert_false(diags.has_errors())
@@ -309,6 +329,7 @@ test "import wildcard from module" {
   }
 }
 
+///|
 test "import wildcard with alias" {
   let (prog, diags) = parse("import * as M from \"m\"")
   assert_false(diags.has_errors())
@@ -322,11 +343,13 @@ test "import wildcard with alias" {
   }
 }
 
+///|
 test "missing from after import raises a diagnostic" {
   let (_, diags) = parse("import foo \"bar\"")
   assert_true(diags.has_errors())
 }
 
+///|
 test "lambda with one parameter parses to Lambda expr" {
   let (program, diags) = parse("let id = \\x -> x")
   assert_false(diags.has_errors())
@@ -348,6 +371,7 @@ test "lambda with one parameter parses to Lambda expr" {
   }
 }
 
+///|
 test "lambda with two parameters parses to Lambda expr with 2 params" {
   let (program, diags) = parse("let k = \\x y -> x")
   assert_false(diags.has_errors())
@@ -361,11 +385,13 @@ test "lambda with two parameters parses to Lambda expr with 2 params" {
   }
 }
 
+///|
 test "lambda without an arrow surfaces a diagnostic" {
   let (_, diags) = parse("let bad = \\x x")
   assert_true(diags.has_errors())
 }
 
+///|
 test "function call f(x) parses to Application" {
   let (program, diags) = parse("let r = f(x)")
   assert_false(diags.has_errors())
@@ -385,6 +411,7 @@ test "function call f(x) parses to Application" {
   }
 }
 
+///|
 test "function call with multiple args parses correctly" {
   let (program, diags) = parse("let r = f(1, 2, 3)")
   assert_false(diags.has_errors())
@@ -398,6 +425,7 @@ test "function call with multiple args parses correctly" {
   }
 }
 
+///|
 test "function call with no args parses to Application of 0 args" {
   let (program, diags) = parse("let r = f()")
   assert_false(diags.has_errors())
@@ -411,6 +439,7 @@ test "function call with no args parses to Application of 0 args" {
   }
 }
 
+///|
 test "chained calls f(x)(y) parse left-associatively" {
   let (program, diags) = parse("let r = f(x)(y)")
   assert_false(diags.has_errors())
@@ -431,6 +460,7 @@ test "chained calls f(x)(y) parse left-associatively" {
   }
 }
 
+///|
 test "pipe operates on a call result" {
   let (program, diags) = parse("let r = x |> f(2)")
   assert_false(diags.has_errors())
@@ -448,6 +478,7 @@ test "pipe operates on a call result" {
   }
 }
 
+///|
 test "if expression parses with then and else" {
   let (program, diags) = parse("let r = if cond then 1 else 2")
   assert_false(diags.has_errors())
@@ -465,6 +496,7 @@ test "if expression parses with then and else" {
   }
 }
 
+///|
 test "if expression without else is allowed" {
   let (program, diags) = parse("let r = if cond then 1")
   assert_false(diags.has_errors())
@@ -482,11 +514,13 @@ test "if expression without else is allowed" {
   }
 }
 
+///|
 test "if missing `then` raises a diagnostic" {
   let (_, diags) = parse("let r = if cond 1")
   assert_true(diags.has_errors())
 }
 
+///|
 test "let-in expression parses to a Let expr" {
   let (program, diags) = parse("let r = let x = 1 in x")
   assert_false(diags.has_errors())
@@ -504,11 +538,13 @@ test "let-in expression parses to a Let expr" {
   }
 }
 
+///|
 test "let-in missing `in` raises a diagnostic" {
   let (_, diags) = parse("let r = let x = 1 x")
   assert_true(diags.has_errors())
 }
 
+///|
 test "match expression with two arms parses correctly" {
   let (program, diags) = parse("let r = match x { 1 -> a, 2 -> b }")
   assert_false(diags.has_errors())
@@ -522,6 +558,7 @@ test "match expression with two arms parses correctly" {
   }
 }
 
+///|
 test "match arm with guard parses with guard_expr" {
   let (program, diags) = parse("let r = match x { y if y -> a }")
   assert_false(diags.has_errors())
@@ -541,11 +578,13 @@ test "match arm with guard parses with guard_expr" {
   }
 }
 
+///|
 test "match missing `->` raises a diagnostic" {
   let (_, diags) = parse("let r = match x { 1 a }")
   assert_true(diags.has_errors())
 }
 
+///|
 test "array literal parses to Array" {
   let (program, diags) = parse("let r = [1, 2, 3]")
   assert_false(diags.has_errors())
@@ -559,6 +598,7 @@ test "array literal parses to Array" {
   }
 }
 
+///|
 test "empty array literal parses to Array of 0 elements" {
   let (program, diags) = parse("let r = []")
   assert_false(diags.has_errors())
@@ -572,6 +612,7 @@ test "empty array literal parses to Array of 0 elements" {
   }
 }
 
+///|
 test "tuple with two elements parses to Tuple" {
   let (program, diags) = parse("let r = (1, 2)")
   assert_false(diags.has_errors())
@@ -585,6 +626,7 @@ test "tuple with two elements parses to Tuple" {
   }
 }
 
+///|
 test "parenthesised single expression stays Paren, not Tuple" {
   let (program, diags) = parse("let r = (1)")
   assert_false(diags.has_errors())
@@ -598,6 +640,7 @@ test "parenthesised single expression stays Paren, not Tuple" {
   }
 }
 
+///|
 test "field access x.y parses to Field" {
   let (program, diags) = parse("let r = x.y")
   assert_false(diags.has_errors())
@@ -611,6 +654,7 @@ test "field access x.y parses to Field" {
   }
 }
 
+///|
 test "chained field access x.y.z parses left-associatively" {
   let (program, diags) = parse("let r = x.y.z")
   assert_false(diags.has_errors())
@@ -630,6 +674,7 @@ test "chained field access x.y.z parses left-associatively" {
   }
 }
 
+///|
 test "indexing arr[0] parses to Index" {
   let (program, diags) = parse("let r = arr[0]")
   assert_false(diags.has_errors())

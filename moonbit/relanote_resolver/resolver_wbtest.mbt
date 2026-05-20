@@ -5,6 +5,7 @@
 // and circular-dependency detection (the last one via the `resolving`
 // set since we cannot synthesise an `Item::Import` through the parser).
 
+///|
 test "load on an unknown path raises IoError" {
   let loader = ModuleLoader::new("/")
   match loader.load("/missing.rela") {
@@ -14,6 +15,7 @@ test "load on an unknown path raises IoError" {
   }
 }
 
+///|
 test "registered sources resolve and load" {
   let loader = ModuleLoader::new("/proj")
   let source = @core.Source::from_string("a", "")
@@ -25,6 +27,7 @@ test "registered sources resolve and load" {
   }
 }
 
+///|
 test "unknown module yields ModuleNotFound" {
   let r = ModuleResolver::new("/proj")
   match r.resolve("nope") {
@@ -34,6 +37,7 @@ test "unknown module yields ModuleNotFound" {
   }
 }
 
+///|
 test "resolve caches on the second call" {
   let r = ModuleResolver::new("/proj")
   r.loader.add_source("/proj/a.rela", @core.Source::from_string("a", ""))
@@ -48,6 +52,7 @@ test "resolve caches on the second call" {
   assert_eq(r.modules().length(), 1)
 }
 
+///|
 test "modules() returns modules in resolution order" {
   let r = ModuleResolver::new("/proj")
   r.loader.add_source("/proj/a.rela", @core.Source::from_string("a", ""))
@@ -60,6 +65,7 @@ test "modules() returns modules in resolution order" {
   assert_eq(mods[1].source().name(), "b")
 }
 
+///|
 test "currently-resolving paths are reported as circular" {
   // Synthesise the mid-traversal state directly so the test exercises
   // the resolver's `resolving` set without depending on parser output.
@@ -73,28 +79,27 @@ test "currently-resolving paths are reported as circular" {
   }
 }
 
+///|
 test "resolve follows imports to dependencies" {
   let r = ModuleResolver::new("/proj")
   r.loader.add_source(
     "/proj/main.rela",
     @core.Source::from_string("main", "import foo from \"dep\"\n"),
   )
-  r.loader.add_source(
-    "/proj/dep.rela",
-    @core.Source::from_string("dep", ""),
-  )
+  r.loader.add_source("/proj/dep.rela", @core.Source::from_string("dep", ""))
   match r.resolve("main") {
     Ok(_) => ()
     Err(_) => abort("resolution should succeed end-to-end")
   }
   let mods = r.modules()
   assert_eq(mods.length(), 2)
-  // The dependency is inserted before the importer, matching Rust's
+  // The dependency is inserted before the importer, matching legacy's
   // `IndexMap`-backed iteration order.
   assert_eq(mods[0].source().name(), "dep")
   assert_eq(mods[1].source().name(), "main")
 }
 
+///|
 test "two-module import cycle is reported as circular" {
   let r = ModuleResolver::new("/proj")
   r.loader.add_source(

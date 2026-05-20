@@ -1,6 +1,6 @@
 ///|
 /// Pretty-print a `Diagnostic` with source context. Mirrors the
-/// ariadne-style report used in `crates/relanote_core/src/lib.rs`.
+/// ariadne-style report used in legacy source.
 ///
 /// Layout:
 ///
@@ -19,10 +19,7 @@
 /// offending line and the location of the span within it. When the
 /// span doesn't belong to the supplied source (or is dummy) the
 /// fallback is a `[kind] message` one-liner.
-pub fn render_diagnostic(
-  diag : Diagnostic,
-  source : Source,
-) -> String {
+pub fn render_diagnostic(diag : Diagnostic, source : Source) -> String {
   let buf = StringBuilder::new()
   let kind = diag.kind().to_display_string()
   buf.write_string("[")
@@ -61,7 +58,12 @@ pub fn render_diagnostic(
   buf.write_string(line_text)
   buf.write_string("\n")
   // Underline.
-  let underline_len = compute_underline_len(span.start(), span.end(), source, start.line)
+  let underline_len = compute_underline_len(
+    span.start(),
+    span.end(),
+    source,
+    start.line,
+  )
   buf.write_string(repeat_char(' ', gutter_width))
   buf.write_string("│ ")
   buf.write_string(repeat_char(' ', start.column - 1))
@@ -76,10 +78,7 @@ pub fn render_diagnostic(
 ///|
 /// Render every diagnostic in `diagnostics` against `source`, joining
 /// the rendered chunks with a single blank line.
-pub fn render_diagnostics(
-  diagnostics : Diagnostics,
-  source : Source,
-) -> String {
+pub fn render_diagnostics(diagnostics : Diagnostics, source : Source) -> String {
   let buf = StringBuilder::new()
   let mut i = 0
   for d in diagnostics.items() {
@@ -113,7 +112,7 @@ fn compute_underline_len(
   line : Int,
 ) -> Int {
   let line_start = match source.line(line) {
-    Some(text) => source.location(start).column - 1
+    Some(_) => source.location(start).column - 1
     None => 0
   }
   let _ = line_start

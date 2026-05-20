@@ -1,4 +1,5 @@
-test "default MidiConfig matches Rust" {
+///|
+test "default MidiConfig matches legacy" {
   let c = MidiConfig::default()
   assert_eq(c.ticks_per_beat(), 480)
   assert_eq(c.tempo(), 120)
@@ -10,6 +11,7 @@ test "default MidiConfig matches Rust" {
 // SMF byte writer unit tests
 // ----------------------------------------------------------------------
 
+///|
 test "write_var_len matches the SMF spec examples" {
   // The canonical examples in section A.1.1 of the SMF 1.0 spec.
   // `assert_eq` can't be called from a local closure (it raises an
@@ -59,6 +61,7 @@ test "write_var_len matches the SMF spec examples" {
   assert_eq(h[3].to_int(), 0x7F)
 }
 
+///|
 test "write_u16_be / write_u32_be" {
   let buf : Array[Byte] = []
   write_u16_be(buf, 0x1234)
@@ -74,6 +77,7 @@ test "write_u16_be / write_u32_be" {
   assert_eq(buf2[3].to_int(), 0xEF)
 }
 
+///|
 test "SMF header is 14 bytes with the expected fields" {
   let out : Array[Byte] = []
   write_smf_header(out, format=1, num_tracks=3, division=480)
@@ -99,6 +103,7 @@ test "SMF header is 14 bytes with the expected fields" {
   assert_eq(out[13].to_int(), 0xE0)
 }
 
+///|
 test "tempo meta event encodes microseconds-per-quarter-note" {
   let out : Array[Byte] = []
   // 120 BPM → 500000 us/qn = 0x07A120
@@ -114,6 +119,7 @@ test "tempo meta event encodes microseconds-per-quarter-note" {
   assert_eq(out[6].to_int(), 0x20)
 }
 
+///|
 test "time signature meta event uses log2 of the denominator" {
   let out : Array[Byte] = []
   // 6/8 with 24 metronome clicks per beat and 8 notated-32nds per beat.
@@ -137,6 +143,7 @@ test "time signature meta event uses log2 of the denominator" {
   assert_eq(out[7].to_int(), 8)
 }
 
+///|
 test "end-of-track meta event" {
   let out : Array[Byte] = []
   write_meta_end_of_track(out, delta=0)
@@ -147,6 +154,7 @@ test "end-of-track meta event" {
   assert_eq(out[3].to_int(), 0x00)
 }
 
+///|
 test "note on / note off events for middle C on channel 0" {
   let out : Array[Byte] = []
   write_note_on(out, delta=0, channel=0, note=60, velocity=100)
@@ -166,6 +174,7 @@ test "note on / note off events for middle C on channel 0" {
   assert_eq(off[4].to_int(), 64)
 }
 
+///|
 test "pitch bend encodes both 7-bit halves" {
   let out : Array[Byte] = []
   // Centre is 8192 = 0x2000 — LSB 0x00, MSB 0x40.
@@ -177,6 +186,7 @@ test "pitch bend encodes both 7-bit halves" {
   assert_eq(out[3].to_int(), 0x40) // msb
 }
 
+///|
 test "CC and program change" {
   let cc : Array[Byte] = []
   write_cc(cc, delta=0, channel=0, cc=74, value=64)
@@ -193,6 +203,7 @@ test "CC and program change" {
 // End-to-end: render() produces a valid SMF file structure
 // ----------------------------------------------------------------------
 
+///|
 test "render() emits a well-formed SMF with tempo + time sig + EOT" {
   let bytes = render_to_midi(@eval.Placeholder)
   // Header (14) + MTrk magic (4) + length (4) + track contents.
@@ -214,6 +225,7 @@ test "render() emits a well-formed SMF with tempo + time sig + EOT" {
   assert_eq(bytes[len - 1].to_int(), 0x00)
 }
 
+///|
 test "render() of a 3-slot block emits 3 note-on events" {
   let one : @ast.Pitch = @ast.ScaleIndex(1)
   let three : @ast.Pitch = @ast.ScaleIndex(3)
@@ -251,6 +263,7 @@ test "render() of a 3-slot block emits 3 note-on events" {
   assert_eq(note_ons, 3)
 }
 
+///|
 test "render() of an AbsolutePitch value emits a single note" {
   let bytes = render_to_midi(@eval.AbsolutePitchV(60))
   let mut note_ons = 0

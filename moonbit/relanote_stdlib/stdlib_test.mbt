@@ -2,6 +2,7 @@
 // is actually embedded and the combined string contains the markers
 // downstream parsers expect.
 
+///|
 test "every prelude module is non-empty" {
   // Theory primitives.
   assert_true(TUNINGS.length() > 0)
@@ -37,6 +38,7 @@ test "every prelude module is non-empty" {
   assert_true(EFFECTS_MIX.length() > 0)
 }
 
+///|
 test "theory primitives carry their headline definitions" {
   assert_true(SCALES.contains("scale Major"))
   assert_true(CHORDS.contains("chord MajorTriad"))
@@ -46,6 +48,7 @@ test "theory primitives carry their headline definitions" {
   assert_true(GROOVES.contains("groove Dilla"))
 }
 
+///|
 test "synth presets carry their flagship patches" {
   assert_true(SYNTHS_FM.contains("synth FMBell"))
   assert_true(SYNTHS_WAVETABLE.contains("synth WaveVapor"))
@@ -57,6 +60,7 @@ test "synth presets carry their flagship patches" {
   assert_true(DRUMS_LOFI.contains("synth LofiKick"))
 }
 
+///|
 test "effects carry their dub and mix patches" {
   assert_true(EFFECTS_DUB.contains("effect DubDelay"))
   assert_true(EFFECTS_DUB.contains("effect TapeEcho"))
@@ -64,6 +68,7 @@ test "effects carry their dub and mix patches" {
   assert_true(EFFECTS_MIX.contains("effect MasterChain"))
 }
 
+///|
 test "PRELUDE concatenates every module" {
   // Theory.
   assert_true(PRELUDE.contains("tuning JustIntonation"))

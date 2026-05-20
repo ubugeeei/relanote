@@ -57,7 +57,7 @@ pub fn Source::line_count(self : Source) -> Int {
 }
 
 ///|
-/// Return the 1-based line and column for a byte offset, matching the Rust
+/// Return the 1-based line and column for a byte offset, matching the legacy
 /// implementation's behaviour.
 pub fn Source::location(self : Source, offset : Int) -> Location {
   // Binary search for the largest line index whose start <= offset.
@@ -91,7 +91,7 @@ pub fn Source::line(self : Source, line : Int) -> String? {
     self.content.length()
   }
   let slice = self.content[start:end].to_owned()
-  // Trim a single trailing '\n' if present, like the Rust version does.
+  // Trim a single trailing '\n' if present, like the previous version does.
   let n = slice.length()
   if n > 0 && slice.unsafe_get(n - 1) == '\n' {
     Some(slice[0:n - 1].to_owned())

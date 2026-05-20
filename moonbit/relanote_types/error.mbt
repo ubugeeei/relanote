@@ -1,5 +1,5 @@
 ///|
-/// Errors produced by the type checker. Mirrors `TypeError` in the Rust
+/// Errors produced by the type checker. Mirrors `TypeError` in the legacy
 /// crate; field names are kept identical so future ports of the inference
 /// engine can match patterns verbatim.
 pub(all) enum TypeError {
@@ -15,7 +15,7 @@ pub(all) enum TypeError {
     expected_duration~ : String,
     found_duration~ : String,
     part_index~ : Int,
-    span~ : @core.Span,
+    span~ : @core.Span
   )
 }
 
@@ -36,7 +36,7 @@ pub fn TypeError::span(self : TypeError) -> @core.Span {
 }
 
 ///|
-/// Human-readable summary, matching the format strings on the Rust
+/// Human-readable summary, matching the format strings on the legacy
 /// `#[derive(Error)]` attributes one-to-one.
 pub fn TypeError::message(self : TypeError) -> String {
   match self {
@@ -56,8 +56,7 @@ pub fn TypeError::message(self : TypeError) -> String {
     NotAFunction(t, _) => "not a function type: " + t.to_display_string()
     NotAScale(found~, ..) =>
       "not a scale type (found " + found.to_display_string() + ")"
-    InvalidScaleIndex(index~, ..) =>
-      "invalid scale index: " + index.to_string()
+    InvalidScaleIndex(index~, ..) => "invalid scale index: " + index.to_string()
     TimeAlignmentMismatch(_) => "time alignment mismatch in layer"
   }
 }

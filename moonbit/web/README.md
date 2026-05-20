@@ -1,19 +1,18 @@
-# Vapor Moon playground (skeleton)
+# Vapor Moon playground
 
-This directory will house the [Vapor Moon](https://github.com/moonbitlang/vapor-moon)
-rewrite of the relanote playground that currently lives in `../../web/`.
+`App.mbtv` is the playground view. It is authored as a Vapor Moon Single
+File Component and calls the MoonBit bridge functions in
+`playground.mbt`.
 
-For now the package exposes the JS-callable bridge functions Vapor Moon
-components will need to wire up:
+The bridge exposes the operations the UI needs:
 
-- `diagnose(source) -> Array[String]` — parser diagnostics
-- `format(source) -> String` — pretty-printed source
-- `render(source) -> Array[Byte]` — MIDI bytes from the evaluator + renderer
+- `diagnose(source) -> Array[String]`
+- `format(source) -> String`
+- `run(source) -> String`
+- `render(source) -> Array[Byte]`
 
-All three are wired against the MoonBit pipeline ports, which are
-themselves skeletons today. As each upstream package's walker / writer
-lands, these bridge functions get real behaviour without changes to the
-Vapor Moon component layer.
+Build the component snapshot from the workspace root:
 
-The actual UI components (Monaco wrapper, staff preview, transport
-controls) land alongside the upstream walker work — tracked in #14.
+```bash
+pnpm web:build
+```

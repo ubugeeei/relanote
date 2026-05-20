@@ -20,92 +20,67 @@
 ## What is relanote?
 
 **relanote** is a pure functional, statically-typed language for music
-where **everything is relative**. Pitch is relative — a melody is
-scale-degree references, not absolute pitches. Rhythm is relative — a
-block divides one slot equally among the notes inside it. Chords are
-intervals over a root, sections are blocks over a beat-grid, parts are
-sections over an instrument, layers are parts over time. Change the
-key, the scale or the tempo, and the *shape* doesn't change. That's the
-whole point.
+where **everything is relative**. Pitch is relative: a melody is made
+from scale-degree references, not absolute note names. Rhythm is
+relative: a block divides its slot among the notes inside it. Chords are
+intervals over a root, sections are blocks over a beat-grid, and parts
+are sections over instruments. Change the key, scale, or tempo, and the
+shape stays intact.
 
 ```rela
-; A scale is the seven intervals that define it.
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; A melody is scale-degree references. <1> is the root,
-; <3> is the third, <5> is the fifth — of whatever scale is in scope.
 let theme = | <1> <3> <5> <3> <1> |
 
-; Compose the same way you'd compose code.
 theme |> transpose P5 |> repeat 2
 ```
 
 ## Features
 
 - **Pitch is relative.** `<1> <3> <5>` works in every key, every mode,
-  every scale. Transpose, modulate or reshape without rewriting a single
-  pitch.
+  and every scale.
 - **Rhythm is relative.** `| a b c d |` shares its slot equally among
   four notes; `| a b |` gives two notes the same slot at half the
-  density. Tempo and meter don't change the shape.
-- **Pure, typed, total.** Immutable values, first-class functions, and
-  Hindley-Milner inference. No runtime surprises.
-- **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3` —
-  build pieces by composing small functions.
-- **MIDI out, web in.** Render to a standard MIDI file or drive the live
-  playground directly in the browser. No DAW round-trips.
+  density.
+- **Pure and typed.** Immutable values, first-class functions, and
+  Hindley-Milner inference keep musical transformations predictable.
+- **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3`
+  builds pieces by composing small functions.
+- **MoonBit end to end.** The compiler pipeline, CLI, MIDI renderer, LSP
+  entry point, and playground bridge live in `moonbit/`.
 
-## Quick start
+## Quick Start
 
-### Using Nix (recommended)
+Install MoonBit once:
 
-The repo ships a [flake](./flake.nix) that pins Rust, Node, pnpm and
-`wasm-pack` to the versions everything else was built against, and a
-root [`package.json`](./package.json) wiring every common task through
-[`vite-node`](https://github.com/vitest-dev/vitest/tree/main/packages/vite-node)
-(see [`tasks/`](./tasks)).
+```bash
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+export PATH="$HOME/.moon/bin:$PATH"
+```
+
+Then build and test the workspace:
 
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
+cd moonbit
 
-# Enter the dev shell (rust 1.83, node 22, pnpm, wasm-pack, …).
-nix develop
-
-# First time only — install root deps so vite-node is on PATH.
-pnpm install
-
-# Web + docs deps, build WASM, prepare Nuxt types.
-pnpm setup
-
-# Build WASM and start the live playground.
-pnpm dev
+moon check
+moon test
+moon run cmd/relanote -- help
 ```
 
-`pnpm tasks` lists every available task.
-
-If you have [direnv](https://direnv.net/), `direnv allow` reads
-[`.envrc`](./.envrc) so the dev shell is activated automatically when
-you `cd` into the repo.
-
-MoonBit isn't on nixpkgs yet — install it once with:
+The root `package.json` is a thin task alias layer around MoonBit:
 
 ```bash
-curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+pnpm check
+pnpm test
+pnpm cli -- run examples/tutorials/01_hello.rela
+pnpm web:build
 ```
 
-### Without Nix
-
-```bash
-# Build the CLI
-cargo build --release
-
-# Run a file
-./target/release/relanote run examples/hello.rela
-
-# Render to MIDI
-./target/release/relanote render examples/hello.rela -o output.mid
-```
+If you use Nix, `nix develop` provides Node, pnpm, and helper tools. The
+MoonBit installer above is still the source for the compiler toolchain.
 
 ## Example
 
@@ -114,7 +89,6 @@ cargo build --release
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Twinkle Twinkle Little Star
 let twinkle = | <1> <1> <5> <5> <6> <6> <5> - <4> <4> <3> <3> <2> <2> <1> - |
 
 twinkle
@@ -125,10 +99,8 @@ twinkle
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-; Major triad chord
 chord Tonic = [ R, M3, P5 ]
 
-; Simple progression
 let progression = | <1> <4> <5> <1> |
 
 progression
@@ -141,13 +113,8 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <2> <3> <4> |
 
-; Repeat the melody
 let repeated = melody |> repeat 2
-
-; Reverse the melody
 let reversed = melody |> reverse
-
-; Transpose up a fifth
 let higher = melody |> transpose P5
 
 repeated
@@ -155,109 +122,59 @@ repeated
 
 ## Documentation
 
-- [Introduction](docs/guide/introduction.md) - What is Relanote?
-- [Installation](docs/guide/installation.md) - Setup guide
-- [Quick Start](docs/guide/quick-start.md) - Your first program
-- [Tutorial](docs/tutorial/getting-started.md) - Step-by-step guide
-
-### Language Reference
-
-- [Intervals](docs/guide/intervals.md) - P1, M3, P5, m7...
-- [Scales & Chords](docs/guide/scales-and-chords.md)
-- [Blocks](docs/guide/blocks.md) - Note sequences
-- [Pipes & Composition](docs/guide/pipes.md)
+- [Introduction](docs/guide/introduction.md)
+- [Installation](docs/guide/installation.md)
+- [Quick Start](docs/guide/quick-start.md)
+- [Tutorial](docs/tutorial/getting-started.md)
+- [CLI Reference](docs/reference/cli.md)
 
 ## Playground
 
-Try Relanote in your browser at [ubugeeei.github.io/relanote/playground](https://ubugeeei.github.io/relanote/playground/).
+The playground view is authored with
+[Vapor Moon](https://github.com/ubugeeei/vapor-moon) as
+`moonbit/web/App.mbtv`. The callable bridge functions for diagnostics,
+formatting, evaluation, and MIDI rendering live in `moonbit/web/playground.mbt`.
 
-Deployment is migrating from GitHub Pages to [Void](https://void.cloud);
-once `deploy-void.yml` proves itself green on `main`, the GitHub Pages
-workflow will be removed and the URL will switch to the Void edge
-(tracked in #16).
+Build the component snapshot with:
 
-Features:
-- Monaco editor with syntax highlighting
-- Real-time error checking
-- Staff notation preview
-- Audio playback
-- MIDI export
+```bash
+pnpm web:build
+```
 
 ## Project Structure
 
-```
+```text
 relanote/
-├── crates/                  # Rust implementation (current source of truth)
-│   ├── relanote_core/       # Shared types, spans, diagnostics
-│   ├── relanote_lexer/      # Tokenizer (logos)
-│   ├── relanote_ast/        # AST definitions
-│   ├── relanote_parser/     # Parser (chumsky)
-│   ├── relanote_hir/        # High-level IR
-│   ├── relanote_resolver/   # Name resolution
-│   ├── relanote_types/      # Type system (Hindley-Milner)
-│   ├── relanote_eval/       # Evaluator
-│   ├── relanote_stdlib/     # Standard library
-│   ├── relanote_format/     # Code formatter
-│   ├── relanote_lsp/        # Language Server Protocol
+├── moonbit/
+│   ├── cmd/relanote/        # CLI entry point
+│   ├── relanote_core/       # source, spans, diagnostics
+│   ├── relanote_lexer/      # tokenizer
+│   ├── relanote_ast/        # AST data types
+│   ├── relanote_parser/     # parser
+│   ├── relanote_hir/        # high-level IR
+│   ├── relanote_resolver/   # module resolution
+│   ├── relanote_types/      # type system
+│   ├── relanote_eval/       # evaluator
+│   ├── relanote_stdlib/     # embedded prelude
+│   ├── relanote_format/     # formatter
+│   ├── relanote_lsp/        # LSP entry point
 │   ├── relanote_render/     # MIDI rendering
-│   ├── relanote_cli/        # CLI tool
-│   └── relanote_wasm/       # WebAssembly bindings
-├── moonbit/                 # MoonBit port (in progress)
-│   ├── relanote_core/       # ← mirrors crates/relanote_core
-│   └── relanote_lexer/      # ← mirrors crates/relanote_lexer
-├── web/                     # Nuxt web playground
-├── docs/                    # VitePress documentation
-└── examples/                # Example files
+│   └── web/                 # Vapor Moon view + playground bridge
+├── docs/                    # Markdown documentation
+├── editors/vscode/          # VS Code extension package
+└── examples/                # Example programs
 ```
-
-## Rewrite roadmap
-
-Relanote is being incrementally rewritten in [MoonBit](https://www.moonbitlang.com/),
-with [Vapor Moon](https://github.com/moonbitlang/vapor-moon) eventually
-replacing the Nuxt playground. The Rust + Nuxt stack stays the source of
-truth while the rewrite lands.
-
-| Crate                   | MoonBit package                         | Status |
-| ----------------------- | --------------------------------------- | :----: |
-| `relanote_core`         | `moonbit/relanote_core`                 | ✅     |
-| `relanote_lexer`        | `moonbit/relanote_lexer`                | ✅     |
-| `relanote_ast`          | `moonbit/relanote_ast`                  | ✅     |
-| `relanote_parser`       | `moonbit/relanote_parser`               | ✅     |
-| `relanote_hir`          | `moonbit/relanote_hir`                  | ✅     |
-| `relanote_resolver`     | `moonbit/relanote_resolver`             | ✅     |
-| `relanote_types`        | `moonbit/relanote_types`                | ✅     |
-| `relanote_eval`         | `moonbit/relanote_eval`                 | ✅     |
-| `relanote_stdlib`       | `moonbit/relanote_stdlib`               | ✅     |
-| `relanote_format`       | `moonbit/relanote_format`               | ✅     |
-| `relanote_lsp`          | `moonbit/relanote_lsp`                  | ✅     |
-| `relanote_render`       | `moonbit/relanote_render`               | ✅     |
-| `relanote_cli`           | `moonbit/cmd/relanote`                  | 🟡     |
-| `relanote_wasm` + `web` | `moonbit/web` (Vapor Moon)              | 🟡     |
 
 ## Development
 
 ```bash
-# Run tests (Rust + MoonBit)
+pnpm check
 pnpm test
-
-# Run lints
-pnpm lint
-
-# Format code
 pnpm fmt
-
-# Build WASM
-pnpm wasm:build
-
-# Start docs dev server
-pnpm docs:dev
+pnpm web:build
 ```
 
-`pnpm tasks` (with no argument) lists every available recipe.
-
-## Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+`pnpm tasks` lists every root task.
 
 ## License
 

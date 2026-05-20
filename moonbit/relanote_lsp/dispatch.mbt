@@ -1,7 +1,6 @@
 ///|
-/// LSP method dispatcher. The Rust crate threads requests through
-/// `tower-lsp`; this port hand-rolls dispatch over a `Json` body
-/// because MoonBit has no async runtime today.
+/// LSP method dispatcher. Dispatch is intentionally synchronous and
+/// operates over a parsed `Json` request body.
 ///
 /// `handle_request` takes a parsed JSON-RPC envelope and returns the
 /// JSON body of the response — or `None` for notifications, which
@@ -25,13 +24,13 @@ pub fn RelanoteLanguageServer::handle_request(
   self : RelanoteLanguageServer,
   request : Json,
 ) -> Json? {
-  let id = request.value("id")
-  let method = match request.value("method") {
-    Some(m) => m.as_string()
+  let id = json_value(request, "id")
+  let method_name = match json_value(request, "method") {
+    Some(m) => json_string(m)
     None => None
   }
-  let params = request.value("params")
-  match method {
+  let params = json_value(request, "params")
+  match method_name {
     Some("initialize") => Some(initialize_response(id))
     Some("initialized") => None
     Some("shutdown") => Some(shutdown_response(id))
@@ -70,6 +69,24 @@ fn initialize_response(id : Json?) -> Json {
 ///|
 fn shutdown_response(id : Json?) -> Json {
   wrap_response(id, Json::null())
+}
+
+///|
+fn json_value(json : Json, key : String) -> Json? {
+  if json is Object(obj) {
+    obj.get(key)
+  } else {
+    None
+  }
+}
+
+///|
+fn json_string(json : Json) -> String? {
+  if json is String(s) {
+    Some(s)
+  } else {
+    None
+  }
 }
 
 ///|
@@ -127,14 +144,14 @@ fn RelanoteLanguageServer::formatting_response(
 }
 
 ///|
-fn method_not_found_response(id : Json?, method : String) -> Json {
+fn method_not_found_response(id : Json?, method_name : String) -> Json {
   let error : Map[String, Json] = {
     "code": Json::number(-32601.0),
-    "message": Json::string("method not found: " + method),
+    "message": Json::string("method not found: " + method_name),
   }
   let envelope : Map[String, Json] = {
     "jsonrpc": Json::string("2.0"),
-    "id": id.or(Json::null()),
+    "id": id.unwrap_or(Json::null()),
     "error": Json::object(error),
   }
   Json::object(envelope)
@@ -144,7 +161,7 @@ fn method_not_found_response(id : Json?, method : String) -> Json {
 fn wrap_response(id : Json?, result : Json) -> Json {
   let envelope : Map[String, Json] = {
     "jsonrpc": Json::string("2.0"),
-    "id": id.or(Json::null()),
+    "id": id.unwrap_or(Json::null()),
     "result": result,
   }
   Json::object(envelope)
@@ -155,19 +172,19 @@ fn extract_uri_and_text(params : Json?) -> (String, String)? {
   match params {
     None => None
     Some(p) => {
-      let td = p.value("textDocument")
+      let td = json_value(p, "textDocument")
       let uri = match td {
         Some(d) =>
-          match d.value("uri") {
-            Some(u) => u.as_string()
+          match json_value(d, "uri") {
+            Some(u) => json_string(u)
             None => None
           }
         None => None
       }
       let text = match td {
         Some(d) =>
-          match d.value("text") {
-            Some(t) => t.as_string()
+          match json_value(d, "text") {
+            Some(t) => json_string(t)
             None => None
           }
         None => None

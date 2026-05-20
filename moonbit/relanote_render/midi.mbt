@@ -76,7 +76,12 @@ pub fn MidiRenderer::render(
   value : @eval.Value,
 ) -> Array[Byte] {
   let out : Array[Byte] = []
-  write_smf_header(out, format=1, num_tracks=1, division=self.config.ticks_per_beat())
+  write_smf_header(
+    out,
+    format=1,
+    num_tracks=1,
+    division=self.config.ticks_per_beat(),
+  )
   let track : Array[Byte] = []
   write_meta_tempo(track, delta=0, bpm=self.config.tempo())
   write_meta_time_signature(
@@ -95,8 +100,8 @@ pub fn MidiRenderer::render(
 
 ///|
 /// Walk a top-level evaluated value and emit its notes into `track`.
-/// Mirrors the Rust crate's `walk_value` dispatch in
-/// `crates/relanote_render/src/lib.rs`.
+/// Mirrors the legacy implementation `walk_value` dispatch in
+/// legacy source.
 fn MidiRenderer::write_value(
   self : MidiRenderer,
   track : Array[Byte],
@@ -107,12 +112,12 @@ fn MidiRenderer::write_value(
     @eval.IntervalV(semitones) => {
       // A bare interval — render as a single quarter-note at root + n.
       let note = self.config.base_note() + semitones
-      write_note_on(track, delta=0, channel=0, note=note, velocity=100)
+      write_note_on(track, delta=0, channel=0, note~, velocity=100)
       write_note_off(
         track,
         delta=self.config.ticks_per_beat(),
         channel=0,
-        note=note,
+        note~,
         velocity=0,
       )
     }
@@ -128,12 +133,12 @@ fn MidiRenderer::write_value(
     }
     @eval.RootV => {
       let note = self.config.base_note()
-      write_note_on(track, delta=0, channel=0, note=note, velocity=100)
+      write_note_on(track, delta=0, channel=0, note~, velocity=100)
       write_note_off(
         track,
         delta=self.config.ticks_per_beat(),
         channel=0,
-        note=note,
+        note~,
         velocity=0,
       )
     }
@@ -157,7 +162,8 @@ fn MidiRenderer::write_block(
   if slot_count == 0 {
     return
   }
-  let total_ticks = (block.duration_beats() * self.config.ticks_per_beat().to_double()).to_int()
+  let total_ticks = (block.duration_beats() *
+  self.config.ticks_per_beat().to_double()).to_int()
   let per_slot = total_ticks / slot_count
   for spanned in block.slots() {
     match spanned.node() {
@@ -203,11 +209,10 @@ fn MidiRenderer::write_block(
           j += 1
         }
       }
-      @ast.Tuplet(_) => {
+      @ast.Tuplet(_) =>
         // Tuplets get their own beat budget; for now treat them as
         // silence to keep the renderer well-formed.
         write_meta_tempo(track, delta=per_slot, bpm=self.config.tempo())
-      }
     }
   }
 }
@@ -245,9 +250,8 @@ fn scale_degree_to_semitones(n : Int) -> Int {
   }
 }
 
-
 ///|
-/// Convenience entry mirroring the Rust crate's `render_to_midi`.
+/// Convenience entry mirroring the legacy implementation `render_to_midi`.
 pub fn render_to_midi(value : @eval.Value) -> Array[Byte] {
   MidiRenderer::new(MidiConfig::default()).render(value)
 }
@@ -295,11 +299,7 @@ pub fn write_track_chunk(out : Array[Byte], events : Array[Byte]) -> Unit {
 ///|
 /// Tempo meta event. `bpm` is converted to microseconds-per-quarter-note
 /// internally (the unit SMF actually stores).
-pub fn write_meta_tempo(
-  out : Array[Byte],
-  delta~ : Int,
-  bpm~ : Int,
-) -> Unit {
+pub fn write_meta_tempo(out : Array[Byte], delta~ : Int, bpm~ : Int) -> Unit {
   write_var_len(out, delta)
   out.push(b'\xFF')
   out.push(b'\x51')

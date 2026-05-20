@@ -11,7 +11,7 @@ pub fn NodeId::new(raw : UInt) -> NodeId {
 
 ///|
 pub fn NodeId::dummy() -> NodeId {
-  { raw: 0xFFFFFFFF, }
+  { raw: 0xFFFFFFFF }
 }
 
 ///|

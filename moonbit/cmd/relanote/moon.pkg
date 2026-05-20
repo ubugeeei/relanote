@@ -8,6 +8,7 @@ import {
   "ubugeeei/relanote/relanote_render" @render,
   "ubugeeei/relanote/relanote_lsp" @lsp,
   "moonbitlang/core/env",
+  "moonbitlang/x/fs" @fs,
 }
 
 options(

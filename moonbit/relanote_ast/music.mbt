@@ -2,17 +2,17 @@
 /// Dynamic marking — `ppp` through `fff`.
 pub(all) enum Dynamic {
   Pianississimo // ppp
-  Pianissimo    // pp
-  Piano         // p
-  MezzoPiano    // mp
-  MezzoForte    // mf
-  Forte         // f
-  Fortissimo    // ff
+  Pianissimo // pp
+  Piano // p
+  MezzoPiano // mp
+  MezzoForte // mf
+  Forte // f
+  Fortissimo // ff
   Fortississimo // fff
 } derive(Eq)
 
 ///|
-/// Parse a dynamic marking. Mirrors `Dynamic::from_str` in the Rust crate;
+/// Parse a dynamic marking. Mirrors `Dynamic::from_str` in the legacy implementation;
 /// invalid input yields `None`.
 pub fn Dynamic::from_str(s : String) -> Dynamic? {
   match s {
@@ -63,9 +63,7 @@ pub fn IntervalLit::degree(self : IntervalLit) -> Int {
 }
 
 ///|
-pub fn IntervalLit::accidentals(
-  self : IntervalLit,
-) -> Array[@lexer.Accidental] {
+pub fn IntervalLit::accidentals(self : IntervalLit) -> Array[@lexer.Accidental] {
   self.accidentals
 }
 
@@ -138,15 +136,11 @@ pub fn AbsolutePitchLit::new(
 
 ///|
 /// Build an `AbsolutePitchLit` from the lexer's payload type — replaces
-/// the Rust `impl From<AbsolutePitchData> for AbsolutePitchLit`.
+/// the legacy `impl From<AbsolutePitchData> for AbsolutePitchLit`.
 pub fn AbsolutePitchLit::from_data(
   data : @lexer.AbsolutePitchData,
 ) -> AbsolutePitchLit {
-  {
-    note: data.note(),
-    accidental: data.accidental(),
-    octave: data.octave(),
-  }
+  { note: data.note(), accidental: data.accidental(), octave: data.octave() }
 }
 
 ///|
@@ -190,8 +184,8 @@ pub fn AbsolutePitchLit::to_midi_note(self : AbsolutePitchLit) -> Int {
 ///|
 /// Articulation marker on a note (or chord).
 pub(all) enum Articulation {
-  Staccato   // *
-  Accent     // ^
+  Staccato // *
+  Accent // ^
   Portamento // ~
 } derive(Eq)
 
@@ -220,14 +214,14 @@ pub(all) enum Pitch {
 
 ///|
 /// A slot in a `Block`. Slots use named-field enum variants to match the
-/// Rust struct-variant shape one-to-one.
+/// record variant shape one-to-one.
 pub(all) enum Slot {
   /// A single note with optional articulations and explicit slot
   /// duration.
   Note(
     pitch~ : @core.Spanned[Pitch],
     articulations~ : Array[Articulation],
-    duration~ : Int?,
+    duration~ : Int?
   )
   /// A rest with optional slot duration.
   Rest(duration~ : Int?)
@@ -235,7 +229,7 @@ pub(all) enum Slot {
   Chord(
     pitches~ : Array[@core.Spanned[Pitch]],
     articulations~ : Array[Articulation],
-    duration~ : Int?,
+    duration~ : Int?
   )
   /// Nested tuplet.
   Tuplet(Tuplet)
@@ -351,14 +345,14 @@ pub fn EnvelopeLit::duration(self : EnvelopeLit) -> @core.Spanned[Expr] {
 /// Scale definition: `scale Major = { R, M2, ... }`.
 pub struct ScaleDef {
   name : Ident
-  base : (@core.Spanned[Expr])?
+  base : @core.Spanned[Expr]?
   intervals : Array[@core.Spanned[IntervalLit]]
 }
 
 ///|
 pub fn ScaleDef::new(
   name : Ident,
-  base : (@core.Spanned[Expr])?,
+  base : @core.Spanned[Expr]?,
   intervals : Array[@core.Spanned[IntervalLit]],
 ) -> ScaleDef {
   { name, base, intervals }
@@ -370,7 +364,7 @@ pub fn ScaleDef::name(self : ScaleDef) -> Ident {
 }
 
 ///|
-pub fn ScaleDef::base(self : ScaleDef) -> (@core.Spanned[Expr])? {
+pub fn ScaleDef::base(self : ScaleDef) -> @core.Spanned[Expr]? {
   self.base
 }
 
@@ -437,7 +431,7 @@ pub fn SynthDef::properties(
 
 ///|
 /// One property line inside a `SynthDef`. Variants are renamed away from
-/// their builtin/keyword-adjacent Rust forms only where necessary.
+/// their builtin/keyword-adjacent legacy forms only where necessary.
 pub(all) enum SynthProperty {
   Oscillator(@core.Spanned[Expr])
   Envelope(@core.Spanned[Expr])
@@ -450,13 +444,13 @@ pub(all) enum SynthProperty {
 /// Part expression: `part "instrument" { body }`.
 pub struct PartExpr {
   instrument : @core.Spanned[Expr]
-  body : (@core.Spanned[Expr])?
+  body : @core.Spanned[Expr]?
 }
 
 ///|
 pub fn PartExpr::new(
   instrument : @core.Spanned[Expr],
-  body : (@core.Spanned[Expr])?,
+  body : @core.Spanned[Expr]?,
 ) -> PartExpr {
   { instrument, body }
 }
@@ -467,7 +461,7 @@ pub fn PartExpr::instrument(self : PartExpr) -> @core.Spanned[Expr] {
 }
 
 ///|
-pub fn PartExpr::body(self : PartExpr) -> (@core.Spanned[Expr])? {
+pub fn PartExpr::body(self : PartExpr) -> @core.Spanned[Expr]? {
   self.body
 }
 
@@ -506,36 +500,32 @@ pub fn SectionExpr::body(self : SectionExpr) -> @core.Spanned[Expr] {
 ///|
 /// Section context: `with key:G, scale:Lydian { ... }`.
 pub struct SectionContext {
-  key : (@core.Spanned[Expr])?
-  scale : (@core.Spanned[Expr])?
-  tempo : (@core.Spanned[Expr])?
+  key : @core.Spanned[Expr]?
+  scale : @core.Spanned[Expr]?
+  tempo : @core.Spanned[Expr]?
 }
 
 ///|
 pub fn SectionContext::new(
-  key : (@core.Spanned[Expr])?,
-  scale : (@core.Spanned[Expr])?,
-  tempo : (@core.Spanned[Expr])?,
+  key : @core.Spanned[Expr]?,
+  scale : @core.Spanned[Expr]?,
+  tempo : @core.Spanned[Expr]?,
 ) -> SectionContext {
   { key, scale, tempo }
 }
 
 ///|
-pub fn SectionContext::key(self : SectionContext) -> (@core.Spanned[Expr])? {
+pub fn SectionContext::key(self : SectionContext) -> @core.Spanned[Expr]? {
   self.key
 }
 
 ///|
-pub fn SectionContext::scale(
-  self : SectionContext,
-) -> (@core.Spanned[Expr])? {
+pub fn SectionContext::scale(self : SectionContext) -> @core.Spanned[Expr]? {
   self.scale
 }
 
 ///|
-pub fn SectionContext::tempo(
-  self : SectionContext,
-) -> (@core.Spanned[Expr])? {
+pub fn SectionContext::tempo(self : SectionContext) -> @core.Spanned[Expr]? {
   self.tempo
 }
 
@@ -546,9 +536,7 @@ pub struct LayerExpr {
 }
 
 ///|
-pub fn LayerExpr::new(
-  parts : Array[@core.Spanned[Expr]],
-) -> LayerExpr {
+pub fn LayerExpr::new(parts : Array[@core.Spanned[Expr]]) -> LayerExpr {
   { parts, }
 }
 

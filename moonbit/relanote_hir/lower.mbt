@@ -20,10 +20,7 @@ pub fn lower_program(program : @ast.Program) -> TypedProgram {
 }
 
 ///|
-fn lower_item(
-  item : @ast.Item,
-  ctx : @types.TypeContext,
-) -> TypedItem {
+fn lower_item(item : @ast.Item, ctx : @types.TypeContext) -> TypedItem {
   match item {
     ScaleDef(def) => TScaleDef(def.name().name(), @types.Type::Scale)
     ChordDef(def) => TChordDef(def.name().name(), @types.Type::Chord)
@@ -123,8 +120,7 @@ fn lower_expr(
       let then_b = lower_expr(if_expr.then_branch(), ctx)
       let else_b = match if_expr.else_branch() {
         Some(e) => lower_expr(e, ctx)
-        None =>
-          TypedExpr::with_span(TUnit, @types.Type::Unit, span)
+        None => TypedExpr::with_span(TUnit, @types.Type::Unit, span)
       }
       TypedExpr::with_span(TIf(cond, then_b, else_b), ty, span)
     }

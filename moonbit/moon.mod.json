@@ -1,6 +1,10 @@
 {
   "name": "ubugeeei/relanote",
   "version": "0.1.0",
+  "deps": {
+    "moonbitlang/x": "0.4.43",
+    "ubugeeei/vapor_moon": "0.1.1"
+  },
   "readme": "README.md",
   "repository": "https://github.com/ubugeeei/relanote",
   "license": "MIT",
@@ -9,5 +13,5 @@
     "dsl",
     "compiler"
   ],
-  "description": "Relanote — a music DSL. MoonBit port (work in progress)."
+  "description": "Relanote — a music DSL implemented in MoonBit."
 }
