@@ -5,6 +5,7 @@ import { execFileSync } from "node:child_process";
 const root = process.cwd();
 const dist = path.join(root, "dist");
 const docs = path.join(root, "docs");
+const site = path.join(root, "site");
 
 const groups = [
   ["Guide", "guide"],
@@ -13,6 +14,7 @@ const groups = [
   ["Deep Dive", "deep-dive"],
   ["More", ""],
 ];
+const orderedSlugs = "guide/introduction guide/installation guide/quick-start guide/blocks guide/intervals guide/scales-and-chords guide/rhythm guide/functions guide/control-flow guide/pipes guide/layers guide/parts-and-sections guide/mixing guide/synth guide/presets guide/microtones tutorial/getting-started tutorial/first-melody tutorial/building-chords tutorial/creating-a-song tutorial/synth-sounds reference/syntax reference/types reference/intervals reference/builtins reference/modules reference/cli deep-dive/architecture deep-dive/language-design deep-dive/moonbit-implementation deep-dive/music-theory deep-dive/advanced-harmony deep-dive/synthesizer-basics deep-dive/sound-synthesis deep-dive/preset-reference cookbook glossary faq".split(" ");
 
 function clean() {
   fs.rmSync(dist, { recursive: true, force: true });
@@ -34,6 +36,11 @@ function walk(dir) {
 
 function slug(file) {
   return path.relative(docs, file).replaceAll(path.sep, "/").replace(/\.md$/, "");
+}
+
+function rank(file) {
+  const i = orderedSlugs.indexOf(slug(file));
+  return i < 0 ? 999 : i;
 }
 
 function pageUrl(file) {
@@ -165,8 +172,9 @@ function renderMarkdown(src, fromFile) {
   return html.join("\n");
 }
 
-function nav(files) {
+function nav(files, activeFile = null) {
   const items = files.filter((file) => slug(file) !== "index");
+  const activeUrl = activeFile ? pageUrl(activeFile) : "";
   return groups.map(([label, prefix]) => {
     const groupFiles = items.filter((file) => {
       const s = slug(file);
@@ -174,13 +182,25 @@ function nav(files) {
     });
     if (!groupFiles.length) return "";
     const links = groupFiles.map((file) => {
-      return `<a href="${pageUrl(file)}">${escapeHtml(titleOf(file))}</a>`;
+      const current = pageUrl(file) === activeUrl ? ` class="active"` : "";
+      return `<a${current} href="${pageUrl(file)}">${escapeHtml(titleOf(file))}</a>`;
     }).join("");
     return `<section><h3>${label}</h3>${links}</section>`;
   }).join("");
 }
 
-function shell({ title, content, navHtml }) {
+function homeIntro() {
+  return `<section class="home-hero"><div><p class="eyebrow">MoonBit music language</p><h1>relanote</h1><p class="lede">A pure functional, statically typed language for music whose shapes survive transposition, tempo changes, and arrangement.</p><p><a class="pill primary" href="/docs/guide/introduction.html">Read the guide</a><a class="pill" href="/playground/">Open playground</a></p></div><pre class="hero-code"><code>scale Major = { R, M2, M3, P4, P5, M6, M7 }
+let theme = | &lt;1&gt; &lt;3&gt; &lt;5&gt; &lt;3&gt; &lt;1&gt; |
+theme |> transpose P5 |> repeat 2</code></pre></section>`;
+}
+
+function playgroundContent() {
+  return `<section class="play-hero"><p class="eyebrow">Vapor Moon playground</p><h1>Compose with relative structure.</h1><p class="lede">The playground surface is authored in MoonBit with Vapor Moon and deployed beside the documentation.</p><p><a class="pill primary" href="/playground/App.mbtv">View component</a><a class="pill" href="/playground/compile.snapshot">Compile snapshot</a></p></section><section class="play-grid"><div class="play-card editor-shot"><div class="shot-bar"><span>main.rela</span><span>Ready</span></div><pre><code>let motif = | &lt;1&gt; &lt;3&gt; &lt;5&gt; &lt;8&gt; |
+motif |> repeat 2 |> transpose P5</code></pre></div><div class="play-card"><h2>Staff</h2><div class="staff-lines"><i></i><i></i><i></i><i></i><b></b></div></div><div class="play-card"><h2>Piano Roll</h2><div class="piano-roll"><i></i><i></i><i></i><i></i></div></div></section>`;
+}
+
+function shell({ title, content, navHtml, pageClass = "doc" }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -190,42 +210,29 @@ function shell({ title, content, navHtml }) {
 <link rel="stylesheet" href="/site.css">
 </head>
 <body>
-<header><a class="brand" href="/docs/">relanote</a><a href="/playground/">Playground</a><a href="https://github.com/ubugeeei/relanote">GitHub</a></header>
-<div class="layout">
-<aside><details open><summary>Documentation</summary>${navHtml}</details></aside>
-<main>${content}</main>
+<header class="site-topbar"><a class="brand" href="/docs/"><img src="/assets/logo-icon.svg" alt="">relanote</a><nav><a href="/docs/">Docs</a><a href="/playground/">Playground</a><a href="https://github.com/ubugeeei/relanote">GitHub</a></nav></header>
+<div class="site-shell">
+<aside class="sidebar"><details open><summary>Documentation</summary>${navHtml}</details></aside>
+<main class="content ${pageClass}">${content}</main>
 </div>
 </body>
 </html>`;
 }
 
 function writeCss() {
-  fs.writeFileSync(path.join(dist, "site.css"), `
-:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#64748b;--line:#dbe3ee;--panel:#fff;--brand:#0f766e}
-@media(prefers-color-scheme:dark){:root{--bg:#0b1020;--fg:#e5edf5;--muted:#94a3b8;--line:#263246;--panel:#121a2a;--brand:#2dd4bf}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{position:sticky;top:0;z-index:2;display:flex;gap:1rem;align-items:center;height:3.25rem;padding:0 1rem;border-bottom:1px solid var(--line);background:var(--panel)}
-a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.brand{font-weight:800;color:var(--fg);margin-right:auto}
-.layout{display:grid;grid-template-columns:18rem minmax(0,1fr);max-width:1180px;margin:0 auto}
-aside{border-right:1px solid var(--line);min-height:calc(100vh - 3.25rem);padding:1rem;position:sticky;top:3.25rem;align-self:start;max-height:calc(100vh - 3.25rem);overflow:auto}
-summary{font-weight:700;cursor:pointer;margin-bottom:.75rem}aside h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:1rem 0 .35rem}
-aside a{display:block;padding:.28rem 0;color:var(--fg);font-size:.92rem}main{min-width:0;padding:2rem 1.5rem 4rem;max-width:820px}
-h1{font-size:2.4rem;line-height:1.1;margin:.2rem 0 1rem}h2{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}h3{margin-top:1.5rem}
-pre{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:.45rem;padding:1rem}code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-p code,li code{background:var(--panel);border:1px solid var(--line);border-radius:.25rem;padding:.05rem .25rem}img{max-width:100%}hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
-@media(max-width:860px){.layout{grid-template-columns:1fr}aside{position:relative;top:0;min-height:0;max-height:none;border-right:0;border-bottom:1px solid var(--line)}main{padding-top:1rem}}
-`);
+  fs.copyFileSync(path.join(site, "site.css"), path.join(dist, "site.css"));
 }
 
 function build() {
   clean();
-  const files = walk(docs).sort();
-  const navHtml = nav(files);
+  const files = walk(docs).sort((a, b) => rank(a) - rank(b) || slug(a).localeCompare(slug(b)));
   fs.mkdirSync(path.join(dist, "docs"), { recursive: true });
   for (const file of files) {
     fs.mkdirSync(path.dirname(outPath(file)), { recursive: true });
-    const content = renderMarkdown(fs.readFileSync(file, "utf8"), file);
-    fs.writeFileSync(outPath(file), shell({ title: titleOf(file), content, navHtml }));
+    const isHome = slug(file) === "index";
+    let content = renderMarkdown(fs.readFileSync(file, "utf8"), file);
+    if (isHome) content = homeIntro() + content;
+    fs.writeFileSync(outPath(file), shell({ title: titleOf(file), content, navHtml: nav(files, file), pageClass: isHome ? "home" : "doc" }));
   }
   fs.copyFileSync(path.join(dist, "docs", "index.html"), path.join(dist, "index.html"));
   writeCss();
@@ -234,11 +241,7 @@ function build() {
   fs.mkdirSync(path.join(dist, "playground"), { recursive: true });
   fs.copyFileSync(path.join(root, "web", "App.mbtv"), path.join(dist, "playground", "App.mbtv"));
   execFileSync("moon", ["run", ".mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon", "--", "compile", "web/App.mbtv"], { stdio: ["ignore", fs.openSync(path.join(dist, "playground", "compile.snapshot"), "w"), "inherit"] });
-  fs.writeFileSync(path.join(dist, "playground", "index.html"), shell({
-    title: "Playground",
-    navHtml,
-    content: `<h1>Playground</h1><p>The Vapor Moon source is available as <a href="/playground/App.mbtv">App.mbtv</a>.</p><p>The compile snapshot is available as <a href="/playground/compile.snapshot">compile.snapshot</a>.</p>`,
-  }));
+  fs.writeFileSync(path.join(dist, "playground", "index.html"), shell({ title: "Playground", navHtml: nav(files), pageClass: "playground", content: playgroundContent() }));
 }
 
 build();
