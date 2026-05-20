@@ -1,98 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
-  <defs>
-    <linearGradient id="envFill" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.3"/>
-      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.1"/>
-    </linearGradient>
-  </defs>
-
-  <style>
-    .bg { fill: #ffffff; }
-    .title { font: bold 16px sans-serif; fill: #1f2937; }
-    .label { font: 12px sans-serif; fill: #6b7280; }
-    .value { font: 11px sans-serif; fill: #f59e0b; }
-    .axis { stroke: #e5e7eb; stroke-width: 1; }
-    .grid { stroke: #f3f4f6; stroke-width: 1; stroke-dasharray: 4; }
-    .graph-bg { fill: #fafafa; stroke: #e5e7eb; }
-
-    @media (prefers-color-scheme: dark) {
-      .bg { fill: #1f2937; }
-      .title { fill: #f3f4f6; }
-      .label { fill: #9ca3af; }
-      .axis { stroke: #4b5563; }
-      .grid { stroke: #374151; }
-      .graph-bg { fill: #111827; stroke: #4b5563; }
-    }
-  </style>
-
-  <!-- Background -->
-  <rect width="600" height="300" class="bg"/>
-
-  <!-- Title -->
-  <text x="300" y="30" text-anchor="middle" class="title">ADSR Envelope</text>
-
-  <!-- Graph background -->
-  <rect x="60" y="50" width="500" height="180" class="graph-bg" rx="4"/>
-
-  <!-- Grid lines -->
-  <line x1="60" y1="95" x2="560" y2="95" class="grid"/>
-  <line x1="60" y1="140" x2="560" y2="140" class="grid"/>
-  <line x1="60" y1="185" x2="560" y2="185" class="grid"/>
-
-  <!-- Axes -->
-  <line x1="60" y1="230" x2="560" y2="230" class="axis" stroke="#9ca3af"/>
-  <line x1="60" y1="50" x2="60" y2="230" class="axis" stroke="#9ca3af"/>
-
-  <!-- Axis labels -->
-  <text x="560" y="250" text-anchor="end" class="label">Time</text>
-  <text x="45" y="55" text-anchor="end" class="label">Vol</text>
-
-  <!-- ADSR curve with fill -->
-  <path d="M 60,230
-           L 120,70
-           L 200,130
-           L 400,130
-           L 500,230
-           L 60,230 Z"
-        fill="url(#envFill)"/>
-
-  <!-- ADSR curve stroke -->
-  <path d="M 60,230
-           L 120,70
-           L 200,130
-           L 400,130
-           L 500,230"
-        stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <!-- Peak point -->
-  <circle cx="120" cy="70" r="5" fill="#f59e0b"/>
-  <text x="120" y="55" text-anchor="middle" class="value">Peak</text>
-
-  <!-- Sustain level -->
-  <line x1="200" y1="130" x2="400" y2="130" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6"/>
-
-  <!-- Phase markers -->
-  <!-- Attack -->
-  <line x1="60" y1="240" x2="120" y2="240" stroke="#3b82f6" stroke-width="3"/>
-  <text x="90" y="260" text-anchor="middle" class="label" fill="#3b82f6">Attack</text>
-
-  <!-- Decay -->
-  <line x1="120" y1="240" x2="200" y2="240" stroke="#10b981" stroke-width="3"/>
-  <text x="160" y="260" text-anchor="middle" class="label" fill="#10b981">Decay</text>
-
-  <!-- Sustain -->
-  <line x1="200" y1="240" x2="400" y2="240" stroke="#8b5cf6" stroke-width="3"/>
-  <text x="300" y="260" text-anchor="middle" class="label" fill="#8b5cf6">Sustain</text>
-  <text x="420" y="125" text-anchor="start" class="label" fill="#8b5cf6">(level)</text>
-
-  <!-- Release -->
-  <line x1="400" y1="240" x2="500" y2="240" stroke="#ef4444" stroke-width="3"/>
-  <text x="450" y="260" text-anchor="middle" class="label" fill="#ef4444">Release</text>
-
-  <!-- Key pressed/released markers -->
-  <line x1="60" y1="50" x2="60" y2="270" stroke="#22c55e" stroke-width="1" stroke-dasharray="4"/>
-  <text x="60" y="285" text-anchor="middle" class="label" fill="#22c55e">Key On</text>
-
-  <line x1="400" y1="50" x2="400" y2="270" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
-  <text x="400" y="285" text-anchor="middle" class="label" fill="#ef4444">Key Off</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">ADSR Envelope</title>
+<desc id="desc">Amplitude as four relative phases.</desc>
+<style>
+  :root{color-scheme:light dark}.bg{fill:#fff8ed}.grid{stroke:#0c0b0d;stroke-opacity:.06}.ink{fill:#0c0b0d}.muted{fill:#756c62}.rail{fill:none;stroke-linecap:square;stroke-width:18;mix-blend-mode:multiply}.r0{stroke:#ff4f7a}.r1{stroke:#caff55}.r2{stroke:#ffd05a}.tick{fill:#0c0b0d}.node rect{filter:url(#soft)}.node text{fill:#0c0b0d;font:700 18px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-anchor:middle}.mono{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}@media(prefers-color-scheme:dark){.bg{fill:#08070a}.grid{stroke:#fff8ed;stroke-opacity:.07}.ink{fill:#fff8ed}.muted{fill:#b5aca1}.rail{mix-blend-mode:screen;opacity:.88}.tick{fill:#fff8ed}.node text{fill:#08070a}}
+</style>
+<defs><filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
+<rect class="bg" width="960" height="540"/>
+<path class="grid" d="M0 98H960M0 178H960M0 258H960M0 338H960M0 418H960M118 0V540M238 0V540M358 0V540M478 0V540M598 0V540M718 0V540M838 0V540"/>
+<rect class="tick" x="99" y="92" width="2" height="346" opacity="0.16"/>
+  <rect class="tick" x="352.33333333333337" y="92" width="2" height="346" opacity="0.24"/>
+  <rect class="tick" x="605.6666666666667" y="92" width="2" height="346" opacity="0.32"/>
+  <rect class="tick" x="859" y="92" width="2" height="346" opacity="0.16"/>
+<text class="ink" x="72" y="74" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="42" font-weight="760">ADSR Envelope</text>
+<text class="muted" x="74" y="108" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="17">Amplitude as four relative phases.</text>
+<text class="muted mono" x="74" y="482">relative structure -> signal -> render</text>
+<path class="rail r0" d="M 100.0 296.0 L 353.3 354.6 L 606.7 346.7 L 860.0 260.1"/>
+  <path class="rail r1" d="M 100.0 330.0 L 353.3 396.6 L 606.7 380.7 L 860.0 302.1"/>
+  <path class="rail r2" d="M 100.0 364.0 L 353.3 438.6 L 606.7 414.7 L 860.0 344.1"/>
+<g class="node" transform="translate(42 292)"><rect fill="#ff4f7a" width="116" height="76"/><text x="58" y="45">Attack</text></g>
+  <g class="node" transform="translate(295.33333333333337 358.57163289337745)"><rect fill="#caff55" width="116" height="76"/><text x="58" y="45">Decay</text></g>
+  <g class="node" transform="translate(548.6666666666667 342.7175751354527)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Sustain</text></g>
+  <g class="node" transform="translate(802 264.0675339081954)"><rect fill="#00d29e" width="116" height="76"/><text x="58" y="45">Release</text></g>
 </svg>

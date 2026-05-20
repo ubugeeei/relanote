@@ -9,6 +9,19 @@ function escapeHtml(text) {
     .replaceAll(">", "&gt;");
 }
 
+function preview(source, name) {
+  if (name !== "rela") return "";
+  const notes = [...source.matchAll(/<(\d+)>|\b([A-G][#b]?\d|R|[PMmAd]\d)\b/g)].slice(0, 9);
+  if (!notes.length) return "";
+  const bars = notes.map((_, i) => {
+    const x = 8 + i * 9;
+    const y = 18 + (i % 5) * 13;
+    const w = 12 + (i % 3) * 5;
+    return `<i style="--x:${x}%;--y:${y}%;--w:${w}%"></i>`;
+  }).join("");
+  return `<aside class="code-preview" aria-label="Code preview"><b>Preview <button class="preview-play" type="button">Play</button></b><div class="preview-roll">${bars}</div><span>${notes.length} events</span></aside>`;
+}
+
 function tokenClass(token) {
   if (/^["'`]/.test(token)) return "str";
   if (/^(#|\/\/|;)/.test(token)) return "comment";
@@ -36,5 +49,5 @@ function highlightLine(line) {
 export function highlightCode(source, lang = "") {
   const name = lang.replace(/[^a-z0-9_-]/gi, "").toLowerCase() || "text";
   const code = source.split(/\r?\n/).map(highlightLine).join("\n");
-  return `<pre class="code-block language-${name}"><code>${code}</code></pre>`;
+  return `<figure class="code-kit language-${name}"><figcaption><span>${name}</span><button class="code-copy" type="button">Copy</button></figcaption><div class="code-wrap"><pre class="code-block language-${name}"><code>${code}</code></pre>${preview(source, name)}</div></figure>`;
 }
