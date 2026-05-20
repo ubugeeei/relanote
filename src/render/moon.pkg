@@ -1,0 +1,8 @@
+import {
+  "ubugeeei/relanote/src/ast" @ast,
+  "ubugeeei/relanote/src/eval" @eval,
+}
+
+import {
+  "ubugeeei/relanote/src/core" @core,
+} for "wbtest"

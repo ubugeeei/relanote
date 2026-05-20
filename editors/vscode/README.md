@@ -14,7 +14,7 @@ Language support for [Relanote](https://github.com/ubugeeei/relanote) - a pure f
 ## Requirements
 
 - Relanote CLI installed and available in PATH
-- From this repository, run `moon run cmd/relanote -- lsp` to check the language server entry point
+- From this repository, run `moon run src/cmd -- lsp` to check the language server entry point
 
 ## Extension Settings
 

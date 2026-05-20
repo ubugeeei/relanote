@@ -65,7 +65,7 @@ git clone https://github.com/ubugeeei/relanote.git
 cd relanote
 moon check
 moon test
-moon run cmd/relanote -- help
+moon run src/cmd -- help
 ```
 
 The root `package.json` is a thin task alias layer around MoonBit:
@@ -74,7 +74,7 @@ The root `package.json` is a thin task alias layer around MoonBit:
 pnpm check
 pnpm test
 pnpm cli -- run examples/tutorials/01_hello.rela
-pnpm web:build
+pnpm studio:build
 ```
 
 If you use Nix, `nix develop` provides Node, pnpm, and helper tools. The
@@ -130,33 +130,35 @@ repeated
 
 The playground view is authored with
 [Vapor Moon](https://github.com/ubugeeei/vapor-moon) as
-`web/App.mbtv`. The callable bridge functions for diagnostics,
-formatting, evaluation, and MIDI rendering live in `web/playground.mbt`.
+`src/studio/App.mbtv`. The callable bridge functions for diagnostics,
+formatting, evaluation, and MIDI rendering live in `src/studio/playground.mbt`.
 
 Build the component snapshot with:
 
 ```bash
-pnpm web:build
+pnpm studio:build
 ```
 
 ## Project Structure
 
 ```text
 relanote/
-├── cmd/relanote/            # CLI entry point
-├── relanote_core/           # source, spans, diagnostics
-├── relanote_lexer/          # tokenizer
-├── relanote_ast/            # AST data types
-├── relanote_parser/         # parser
-├── relanote_hir/            # high-level IR
-├── relanote_resolver/       # module resolution
-├── relanote_types/          # type system
-├── relanote_eval/           # evaluator
-├── relanote_stdlib/         # embedded prelude
-├── relanote_format/         # formatter
-├── relanote_lsp/            # LSP entry point
-├── relanote_render/         # MIDI rendering
-├── web/                     # Vapor Moon view + playground bridge
+├── src/
+│   ├── cmd/         # CLI entry point
+│   ├── core/        # source, spans, diagnostics
+│   ├── lexer/       # tokenizer
+│   ├── ast/         # AST data types
+│   ├── parser/      # parser
+│   ├── hir/         # high-level IR
+│   ├── resolver/    # module resolution
+│   ├── types/       # type system
+│   ├── eval/        # evaluator
+│   ├── stdlib/      # embedded prelude
+│   ├── format/      # formatter
+│   ├── lsp/         # LSP entry point
+│   ├── render/      # MIDI rendering
+│   ├── studio/      # Vapor Moon view + playground bridge
+│   └── site/        # docs/static-site build assets
 ├── docs/                    # Markdown documentation
 ├── editors/vscode/          # VS Code extension package
 └── examples/                # Example programs
@@ -168,7 +170,7 @@ relanote/
 pnpm check
 pnpm test
 pnpm fmt
-pnpm web:build
+pnpm studio:build
 ```
 
 `pnpm tasks` lists every root task.

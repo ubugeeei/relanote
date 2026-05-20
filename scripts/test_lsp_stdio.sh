@@ -25,7 +25,7 @@ out=$(
     frame "$fmt"
     frame "$shutdown"
     frame "$exit_note"
-  } | moon run cmd/relanote -- lsp
+  } | moon run src/cmd -- lsp
 )
 
 [[ "$out" == *'"id":1'*'"capabilities"'* ]]

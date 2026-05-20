@@ -1,0 +1,4 @@
+import {
+  "ubugeeei/relanote/src/core" @core,
+  "ubugeeei/relanote/src/lexer" @lexer,
+}

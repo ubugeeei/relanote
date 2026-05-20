@@ -6,20 +6,20 @@ The repository root is the Relanote implementation.
 
 | Package             | Responsibility                                      |
 | ------------------- | --------------------------------------------------- |
-| `relanote_core`     | source files, spans, diagnostics, reports           |
-| `relanote_lexer`    | token kinds and tokenizer                           |
-| `relanote_ast`      | program, item, expression, music, and sound nodes    |
-| `relanote_stdlib`   | embedded prelude `.rela` modules                    |
-| `relanote_types`    | type ADT, schemes, contexts, unification, checker    |
-| `relanote_hir`      | lowered representation                              |
-| `relanote_parser`   | parser API and parse diagnostics                    |
-| `relanote_resolver` | module loading and name resolution                  |
-| `relanote_eval`     | evaluator and runtime values                        |
-| `relanote_format`   | formatter                                           |
-| `relanote_render`   | MIDI renderer                                       |
-| `relanote_lsp`      | LSP framing, dispatch, and server entry point       |
-| `cmd/relanote`      | CLI entry point                                     |
-| `web`               | Vapor Moon view and playground bridge               |
+| `core`     | source files, spans, diagnostics, reports           |
+| `lexer`    | token kinds and tokenizer                           |
+| `ast`      | program, item, expression, music, and sound nodes    |
+| `stdlib`   | embedded prelude `.rela` modules                    |
+| `types`    | type ADT, schemes, contexts, unification, checker    |
+| `hir`      | lowered representation                              |
+| `parser`   | parser API and parse diagnostics                    |
+| `resolver` | module loading and name resolution                  |
+| `eval`     | evaluator and runtime values                        |
+| `format`   | formatter                                           |
+| `render`   | MIDI renderer                                       |
+| `lsp`      | LSP framing, dispatch, and server entry point       |
+| `cmd`      | CLI entry point                                     |
+| `studio`            | Vapor Moon view and playground bridge               |
 
 Regenerate the stdlib embedding after editing the `.rela` sources:
 
@@ -32,6 +32,6 @@ bash scripts/gen_stdlib.sh
 ```bash
 moon check
 moon test
-moon run cmd/relanote -- help
-moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv
+moon run src/cmd -- help
+moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile src/studio/App.mbtv
 ```

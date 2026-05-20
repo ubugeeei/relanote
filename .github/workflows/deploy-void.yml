@@ -33,7 +33,7 @@ jobs:
           moon test
 
       - name: Build static docs site
-        run: node scripts/build_site.mjs
+        run: node src/site/build.mjs
 
       # `npx void deploy` reads `void.config.json` and publishes `dist/`.
       # otherwise defaults to publishing the working tree to Void's edge.

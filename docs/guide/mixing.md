@@ -92,7 +92,7 @@ expression that evaluates to an effect.
 ## Effects out of the box
 
 The stdlib ships two effect modules in
-[`relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib/prelude):
+[`src/stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib/prelude):
 
 | Module | What's in it |
 | --- | --- |
@@ -149,7 +149,7 @@ mix {
 
 `MixDef`, `BusDef`, `SendDef`, `SidechainDef` and `EffectDef` are on
 the AST today
-([`relanote_ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/relanote_ast/sound.mbt)).
+([`src/ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/src/ast/sound.mbt)).
 The parser and evaluator skeletons accept the syntax but don't yet
 route audio through it — the routing graph is built and walked once
 the evaluator port lands.

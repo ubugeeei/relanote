@@ -40,7 +40,7 @@
               pnpm tasks     # list every task with its command
               pnpm check     # moon check
               pnpm test      # moon test
-              pnpm web:build # compile the Vapor Moon playground component
+              pnpm studio:build # compile the Vapor Moon playground component
 
             MoonBit toolchain is installed separately:
               curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash

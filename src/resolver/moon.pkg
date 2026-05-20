@@ -1,0 +1,7 @@
+import {
+  "ubugeeei/relanote/src/core" @core,
+  "ubugeeei/relanote/src/ast" @ast,
+  "ubugeeei/relanote/src/parser" @parser,
+  "moonbitlang/core/hashmap",
+  "moonbitlang/core/hashset",
+}
