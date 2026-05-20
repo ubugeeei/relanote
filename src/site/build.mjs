@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { highlightCode } from "./highlight.mjs";
+import { homeIntro, playgroundContent, shell } from "./views.mjs";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
@@ -189,36 +190,6 @@ function nav(files, activeFile = null) {
     }).join("");
     return `<section><h3>${label}</h3>${links}</section>`;
   }).join("");
-}
-
-function homeIntro() {
-  return `<section class="home-hero"><div><p class="eyebrow">MoonBit music language</p><h1>relanote</h1><p class="lede">A pure functional, statically typed language for music whose shapes survive transposition, tempo changes, and arrangement.</p><p><a class="pill primary" href="/docs/guide/introduction.html">Read the guide</a><a class="pill" href="/playground/">Open playground</a></p></div><pre class="hero-code"><code>scale Major = { R, M2, M3, P4, P5, M6, M7 }
-let theme = | &lt;1&gt; &lt;3&gt; &lt;5&gt; &lt;3&gt; &lt;1&gt; |
-theme |> transpose P5 |> repeat 2</code></pre></section>`;
-}
-
-function playgroundContent() {
-  return `<section class="play-hero"><p class="eyebrow">Vapor Moon playground</p><h1>Compose with relative structure.</h1><p class="lede">The playground surface is authored in MoonBit with Vapor Moon and deployed beside the documentation.</p><p><a class="pill primary" href="/playground/App.mbtv">View component</a><a class="pill" href="/playground/compile.snapshot">Compile snapshot</a></p></section><section class="play-grid"><div class="play-card editor-shot"><div class="shot-bar"><span>main.rela</span><span>Ready</span></div><pre><code>let motif = | &lt;1&gt; &lt;3&gt; &lt;5&gt; &lt;8&gt; |
-motif |> repeat 2 |> transpose P5</code></pre></div><div class="play-card"><h2>Staff</h2><div class="staff-lines"><i></i><i></i><i></i><i></i><b></b></div></div><div class="play-card"><h2>Piano Roll</h2><div class="piano-roll"><i></i><i></i><i></i><i></i></div></div></section>`;
-}
-
-function shell({ title, content, navHtml, pageClass = "doc" }) {
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(title)} | relanote</title>
-<link rel="stylesheet" href="/site.css">
-</head>
-<body>
-<header class="site-topbar"><a class="brand" href="/docs/"><img src="/assets/logo-icon.svg" alt="">relanote</a><nav><a href="/docs/">Docs</a><a href="/playground/">Playground</a><a href="https://github.com/ubugeeei/relanote">GitHub</a></nav></header>
-<div class="site-shell">
-<aside class="sidebar"><details open><summary>Documentation</summary>${navHtml}</details></aside>
-<main class="content ${pageClass}">${content}</main>
-</div>
-</body>
-</html>`;
 }
 
 function writeCss() {

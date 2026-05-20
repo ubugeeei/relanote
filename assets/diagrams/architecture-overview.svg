@@ -90,21 +90,21 @@
   <!-- Arrow to WASM -->
   <line x1="400" y1="310" x2="400" y2="340" class="arrow"/>
 
-  <!-- WASM Bridge -->
+  <!-- MoonBit browser bridge -->
   <rect x="150" y="350" width="500" height="70" fill="url(#wasmGrad)" class="box"/>
-  <text x="400" y="375" text-anchor="middle" class="title">WASM Bridge (wasm)</text>
-  <text x="400" y="395" text-anchor="middle" class="small">Rust &lt;--&gt; JavaScript Data Conversion (wasm-bindgen + serde)</text>
+  <text x="400" y="375" text-anchor="middle" class="title">MoonBit Browser Bridge (studio)</text>
+  <text x="400" y="395" text-anchor="middle" class="small">Diagnostics, formatting, playback, and MIDI export APIs</text>
 
   <!-- Arrow to Web -->
   <line x1="400" y1="420" x2="400" y2="450" class="arrow"/>
 
-  <!-- Web Frontend -->
+  <!-- Studio Frontend -->
   <rect x="50" y="460" width="700" height="120" fill="url(#webGrad)" class="box"/>
-  <text x="400" y="485" text-anchor="middle" class="title">Web Frontend (Nuxt.js)</text>
+  <text x="400" y="485" text-anchor="middle" class="title">Studio Frontend (Vapor Moon)</text>
 
-  <!-- Monaco Editor -->
+  <!-- Source Editor -->
   <rect x="80" y="500" width="180" height="50" class="box white-box"/>
-  <text x="170" y="525" text-anchor="middle" class="label">Monaco Editor</text>
+  <text x="170" y="525" text-anchor="middle" class="label">Source Editor</text>
   <text x="170" y="540" text-anchor="middle" class="small">Code Editing</text>
 
   <!-- WebAudio -->
@@ -112,8 +112,8 @@
   <text x="400" y="525" text-anchor="middle" class="label">WebAudio API</text>
   <text x="400" y="540" text-anchor="middle" class="small">Sound Playback</text>
 
-  <!-- Vue UI -->
+  <!-- Vapor Moon UI -->
   <rect x="540" y="500" width="180" height="50" class="box white-box"/>
-  <text x="630" y="525" text-anchor="middle" class="label">Vue.js UI</text>
+  <text x="630" y="525" text-anchor="middle" class="label">Vapor Moon UI</text>
   <text x="630" y="540" text-anchor="middle" class="small">User Interface</text>
 </svg>
