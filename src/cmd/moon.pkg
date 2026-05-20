@@ -1,0 +1,19 @@
+import {
+  "ubugeeei/relanote/src/core" @core,
+  "ubugeeei/relanote/src/ast" @ast,
+  "ubugeeei/relanote/src/parser" @parser,
+  "ubugeeei/relanote/src/format" @format,
+  "ubugeeei/relanote/src/types" @types,
+  "ubugeeei/relanote/src/eval" @eval,
+  "ubugeeei/relanote/src/render" @render,
+  "ubugeeei/relanote/src/lsp" @lsp,
+  "moonbitlang/async",
+  "moonbitlang/core/env",
+  "moonbitlang/x/fs" @fs,
+}
+
+supported_targets = "native"
+
+options(
+  "is-main": true,
+)

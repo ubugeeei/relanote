@@ -96,7 +96,7 @@ guide](/guide/installation) for the per-tool manual setup.
 
 ## Where does the implementation live?
 
-The implementation lives at the repository root. Each package owns one part of
+The implementation lives under `src/`. Each package owns one part of
 the language pipeline, from source handling and tokenization through
 type-checking, evaluation, formatting, rendering, and editor support.
 
@@ -104,7 +104,7 @@ Status:
 
 - `core`, `lexer`, `ast`, `stdlib` — foundational packages.
 - `types`, `parser`, `resolver`, `eval`, `format`, `render`, `lsp`,
-  `cli`, `web` — user-facing pipeline and tooling packages.
+  `cmd`, `studio` — user-facing pipeline and tooling packages.
 
 See the package map in the
 [main README](https://github.com/ubugeeei/relanote/blob/main/README.md).
@@ -123,7 +123,7 @@ Three reasons that compound:
 ## Can I contribute a preset?
 
 Yes — drop a new `.rela` file into
-[`relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib/prelude),
+[`src/stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib/prelude),
 run `pnpm stdlib:regen`, commit the regenerated `prelude_data_*.mbt`
 files.
 That's the whole flow.

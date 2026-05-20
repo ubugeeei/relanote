@@ -12,20 +12,20 @@ Relanote is organized as MoonBit packages:
 
 | Package | Purpose |
 |---------|---------|
-| `relanote_core` | Source files, spans, diagnostics, reports |
-| `relanote_lexer` | Tokenizes source code into tokens |
-| `relanote_ast` | Defines AST (Abstract Syntax Tree) types |
-| `relanote_parser` | Parses tokens into AST |
-| `relanote_hir` | Holds the lowered representation |
-| `relanote_resolver` | Resolves modules and names |
-| `relanote_types` | Infers and checks types |
-| `relanote_eval` | Evaluates AST and produces music values |
-| `relanote_stdlib` | Standard library prelude, scales, chords, synth presets |
-| `relanote_render` | Renders music values to MIDI bytes |
-| `relanote_format` | Code formatter |
-| `relanote_lsp` | Editor protocol framing and dispatch |
-| `cmd/relanote` | Command-line interface |
-| `web` | Vapor Moon playground view and bridge |
+| `core` | Source files, spans, diagnostics, reports |
+| `lexer` | Tokenizes source code into tokens |
+| `ast` | Defines AST (Abstract Syntax Tree) types |
+| `parser` | Parses tokens into AST |
+| `hir` | Holds the lowered representation |
+| `resolver` | Resolves modules and names |
+| `types` | Infers and checks types |
+| `eval` | Evaluates AST and produces music values |
+| `stdlib` | Standard library prelude, scales, chords, synth presets |
+| `render` | Renders music values to MIDI bytes |
+| `format` | Code formatter |
+| `lsp` | Editor protocol framing and dispatch |
+| `cmd` | Command-line interface |
+| `studio` | Vapor Moon playground view and bridge |
 
 ## Compilation Pipeline
 

@@ -24,7 +24,7 @@ scale Lydian         = { R, M2, M3, A4, P5, M6, M7 }
 ```
 
 The stdlib ships these (and more) — see
-[`scales.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/scales.rela).
+[`scales.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/scales.rela).
 
 ## Scale degrees
 

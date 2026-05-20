@@ -39,8 +39,8 @@ synth FatSaw = {
 }
 ```
 
-See [`synths_basic.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/synths_basic.rela)
-and [`synths_modular.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/synths_modular.rela)
+See [`synths_basic.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_basic.rela)
+and [`synths_modular.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_modular.rela)
 for ready-to-use shapes.
 
 ## FM — operators modulating operators
@@ -66,7 +66,7 @@ synth FMBell = {
 The combinatorics are wide: low `op2_ratio` + high `op2_level` is an
 electric piano, high `op2_ratio` + short envelope is a kalimba, saw
 carrier + sine modulator + feedback is brass. The
-[`synths_fm.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/synths_fm.rela)
+[`synths_fm.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_fm.rela)
 preset ships six.
 
 ## Wavetable — scan through single-cycle waves
@@ -87,7 +87,7 @@ synth WaveLead = {
 }
 ```
 
-[`synths_wavetable.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/synths_wavetable.rela)
+[`synths_wavetable.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_wavetable.rela)
 ships six — `WaveVapor`, `WaveDriftPad`, `WaveFormant`, `WaveBellPad`,
 `WaveAcid`, `WaveSupersaw`.
 
@@ -113,8 +113,8 @@ synth GrainDrift = {
 
 Floating Points-style pads, Flying Lotus-style vocal chops and
 shimmer reverbs all live here.
-See [`synths_granular.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/synths_granular.rela)
-and [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/pads_floating.rela).
+See [`synths_granular.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_granular.rela)
+and [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/pads_floating.rela).
 
 ## Modulation matrix
 
@@ -246,7 +246,7 @@ CC messages so a DAW or external synth can respond:
 
 The stdlib ships a starter pack across every chapter above. See
 [Presets](./presets) for the full catalogue, or grep
-[`relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib/prelude)
+[`src/stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib/prelude)
 directly. Every preset is plain `.rela` source — read one, copy it,
 change three numbers, ship a new sound.
 

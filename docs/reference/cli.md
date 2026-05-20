@@ -4,7 +4,7 @@
 it against a `.rela` file from the repository root:
 
 ```bash
-moon run cmd/relanote -- help
+moon run src/cmd -- help
 ```
 
 From the repository root you can also use the pnpm alias:
@@ -29,16 +29,16 @@ pnpm cli -- help
 
 ```bash
 # Run a file and print the result.
-moon run cmd/relanote -- run examples/tutorials/01_hello.rela
+moon run src/cmd -- run examples/tutorials/01_hello.rela
 
 # Render to MIDI.
-moon run cmd/relanote -- render examples/tutorials/01_hello.rela output.mid
+moon run src/cmd -- render examples/tutorials/01_hello.rela output.mid
 
 # Type-check before committing.
-moon run cmd/relanote -- check examples/tutorials/01_hello.rela
+moon run src/cmd -- check examples/tutorials/01_hello.rela
 
 # Format and write through a temporary file.
-moon run cmd/relanote -- fmt examples/tutorials/01_hello.rela > /tmp/hello.rela
+moon run src/cmd -- fmt examples/tutorials/01_hello.rela > /tmp/hello.rela
 ```
 
 ## Editor Integration

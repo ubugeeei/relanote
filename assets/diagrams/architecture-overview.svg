@@ -59,22 +59,22 @@
   <!-- Lexer -->
   <rect x="80" y="175" width="130" height="60" class="box white-box"/>
   <text x="145" y="200" text-anchor="middle" class="label">Lexer</text>
-  <text x="145" y="218" text-anchor="middle" class="small">(relanote_lexer)</text>
+  <text x="145" y="218" text-anchor="middle" class="small">(lexer)</text>
 
   <!-- Parser -->
   <rect x="240" y="175" width="130" height="60" class="box white-box"/>
   <text x="305" y="200" text-anchor="middle" class="label">Parser</text>
-  <text x="305" y="218" text-anchor="middle" class="small">(relanote_parser)</text>
+  <text x="305" y="218" text-anchor="middle" class="small">(parser)</text>
 
   <!-- Evaluator -->
   <rect x="400" y="175" width="130" height="60" class="box white-box"/>
   <text x="465" y="200" text-anchor="middle" class="label">Evaluator</text>
-  <text x="465" y="218" text-anchor="middle" class="small">(relanote_eval)</text>
+  <text x="465" y="218" text-anchor="middle" class="small">(eval)</text>
 
   <!-- Renderer -->
   <rect x="560" y="175" width="130" height="60" class="box white-box"/>
   <text x="625" y="200" text-anchor="middle" class="label">Renderer</text>
-  <text x="625" y="218" text-anchor="middle" class="small">(relanote_render)</text>
+  <text x="625" y="218" text-anchor="middle" class="small">(render)</text>
 
   <!-- Arrows between components -->
   <line x1="210" y1="205" x2="240" y2="205" class="arrow"/>
@@ -92,7 +92,7 @@
 
   <!-- WASM Bridge -->
   <rect x="150" y="350" width="500" height="70" fill="url(#wasmGrad)" class="box"/>
-  <text x="400" y="375" text-anchor="middle" class="title">WASM Bridge (relanote_wasm)</text>
+  <text x="400" y="375" text-anchor="middle" class="title">WASM Bridge (wasm)</text>
   <text x="400" y="395" text-anchor="middle" class="small">Rust &lt;--&gt; JavaScript Data Conversion (wasm-bindgen + serde)</text>
 
   <!-- Arrow to Web -->

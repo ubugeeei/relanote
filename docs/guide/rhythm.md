@@ -46,7 +46,7 @@ beat |> groove Swing67           ; only this passage swings
 
 The stdlib ships a starter pack — `Straight`, `Swing67`, `Swing75`,
 `Dilla`, `Bossa`, `Shuffle`, `HalfTimeLazy`, `Drunken` — in
-[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/grooves.rela).
+[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/grooves.rela).
 
 ## Polyrhythm with `over`
 
@@ -108,7 +108,7 @@ phrase                                ; grooved sixteenths around a triplet turn
 ## Status
 
 `Expr::Over`, `Item::GrooveDef` and the `groove` keyword are on the AST
-([`relanote_ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/relanote_ast/sound.mbt));
+([`src/ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/src/ast/sound.mbt));
 preset grooves are in the stdlib. The parser and evaluator skeletons
 recognise the shapes but don't yet apply them at render time — that
 lands alongside the parser / evaluator ports.

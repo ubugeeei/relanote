@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Regenerate relanote_stdlib/prelude_data_*.mbt from the prelude
+# Regenerate src/stdlib/prelude_data_*.mbt from the prelude
 # `.rela` files. Run from the repository root or from anywhere; the script
 # always resolves paths relative to its own location.
 
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-stdlib_dir="$(cd "$script_dir/../relanote_stdlib" && pwd)"
+stdlib_dir="$(cd "$script_dir/../src/stdlib" && pwd)"
 prelude_dir="$stdlib_dir/prelude"
 rm -f "$stdlib_dir"/prelude_data_*.mbt "$stdlib_dir/prelude_data.mbt"
 

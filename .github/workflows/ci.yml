@@ -42,7 +42,7 @@ jobs:
         run: moon test
 
       - name: native LSP tests
-        run: moon test --target native -p ubugeeei/relanote/relanote_lsp -p ubugeeei/relanote/cmd/relanote
+        run: moon test --target native -p ubugeeei/relanote/src/lsp -p ubugeeei/relanote/src/cmd
 
       - name: moon build
         run: moon build
@@ -54,7 +54,7 @@ jobs:
         run: moon coverage analyze -- -f summary
 
       - name: Vapor Moon playground
-        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > /tmp/relanote-vapor-moon.snapshot
+        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile src/studio/App.mbtv > /tmp/relanote-vapor-moon.snapshot
 
       - name: static docs site
-        run: node scripts/build_site.mjs
+        run: node src/site/build.mjs

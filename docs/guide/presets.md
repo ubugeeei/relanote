@@ -2,13 +2,13 @@
 
 relanote ships a starter library of synths, effects, tunings and
 grooves under
-[`relanote_stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib/prelude).
+[`src/stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib/prelude).
 They're plain `.rela` source — exactly what you'd write yourself —
 embedded into the runtime via
-[`prelude_data_*.mbt`](https://github.com/ubugeeei/relanote/tree/main/relanote_stdlib).
+[`prelude_data_*.mbt`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib).
 
 That means every preset is a reference example *and* a working
-patch. Read [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/pads_floating.rela)
+patch. Read [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/pads_floating.rela)
 to see how a Floating Points-style lush pad is built; pull a copy into
 your project, change three numbers, get something new.
 
@@ -49,7 +49,7 @@ your project, change three numbers, get something new.
 
 ## Tunings
 
-[`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/tunings.rela)
+[`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/tunings.rela)
 ships seven systems:
 
 | Tuning | Description |
@@ -64,7 +64,7 @@ ships seven systems:
 
 ## Grooves
 
-[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/grooves.rela)
+[`grooves.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/grooves.rela)
 ships eight feels:
 
 | Groove | Feel |
@@ -82,7 +82,7 @@ ships eight feels:
 
 Every preset above is a plain `.rela` declaration. To extend the
 library, drop a new file into
-`relanote_stdlib/prelude/` and rerun the embed:
+`src/stdlib/prelude/` and rerun the embed:
 
 ```bash
 pnpm stdlib:regen

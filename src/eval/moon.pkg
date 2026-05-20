@@ -1,0 +1,10 @@
+import {
+  "ubugeeei/relanote/src/core" @core,
+  "ubugeeei/relanote/src/ast" @ast,
+  "ubugeeei/relanote/src/stdlib" @stdlib,
+  "moonbitlang/core/hashmap",
+}
+
+import {
+  "ubugeeei/relanote/src/lexer" @lexer,
+} for "wbtest"

@@ -40,9 +40,9 @@ moon test
 
 ```bash
 moon check
-moon run cmd/relanote -- help
-moon run cmd/relanote -- check examples/tutorials/01_hello.rela
-moon run cmd/relanote -- render examples/tutorials/01_hello.rela output.mid
+moon run src/cmd -- help
+moon run src/cmd -- check examples/tutorials/01_hello.rela
+moon run src/cmd -- render examples/tutorials/01_hello.rela output.mid
 ```
 
 From the repository root, the same commands are available through pnpm:
@@ -63,8 +63,8 @@ surface grows.
 
 ## Web Playground
 
-The view lives in `web/App.mbtv` and is built with Vapor Moon:
+The view lives in `src/studio/App.mbtv` and is built with Vapor Moon:
 
 ```bash
-pnpm web:build
+pnpm studio:build
 ```
