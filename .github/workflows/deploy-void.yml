@@ -32,44 +32,14 @@ jobs:
           moon check
           moon test
 
-      - name: Compile Vapor Moon playground
-        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > dist.playground.snapshot
-
-      - name: Assemble static site
-        run: |
-          mkdir -p dist
-          cp README.md dist/README.md
-          cp -R docs dist/docs
-          cp -R examples dist/examples
-          mkdir -p dist/playground
-          cp web/README.md dist/playground/README.md
-          cp web/App.mbtv dist/playground/App.mbtv
-          cp dist.playground.snapshot dist/playground/compile.snapshot
-          cat > dist/index.html <<'HTML'
-          <!doctype html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>relanote</title>
-              <style>
-                body { font-family: system-ui, sans-serif; margin: 3rem auto; max-width: 760px; line-height: 1.6; padding: 0 1.5rem; }
-                code { background: #f3f4f6; padding: 0.15rem 0.3rem; border-radius: 0.25rem; }
-                a { color: #0f766e; }
-              </style>
-            </head>
-            <body>
-              <h1>relanote</h1>
-              <p>relanote is now built from the MoonBit workspace, with the playground view authored as a Vapor Moon component.</p>
-              <p><a href="/README.md">Read the project overview</a> or inspect <a href="/playground/App.mbtv">the playground component</a>.</p>
-            </body>
-          </html>
-          HTML
+      - name: Build static docs site
+        run: node scripts/build_site.mjs
 
       # `npx void deploy` reads `void.config.json` and publishes `dist/`.
       # otherwise defaults to publishing the working tree to Void's edge.
       # The token comes from a repository secret called `VOID_TOKEN`.
       - name: Deploy to Void
-        run: npx -y void deploy --dir dist
+        run: npx -y void deploy --project relanote --dir dist --spa
         env:
           VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
+          VOID_PROJECT: relanote
