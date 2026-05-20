@@ -45,7 +45,7 @@ when nothing maps cleanly into intervals:
 ## Tuning declarations
 
 A `tuning` describes how one octave is divided. The stdlib ships
-several common ones (see [`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/tunings.rela)):
+several common ones (see [`tunings.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/tunings.rela)):
 
 ```rela
 ; Equal divisions of the octave — 24 quarter-tone steps.
@@ -110,7 +110,7 @@ just_passage ++ temp_passage    ; both rooted in the same key, different feel
 
 The AST supports microtone literals, tuning declarations and the
 `set tuning` / `|> in_tuning` activation forms today
-([`moonbit/relanote_ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_ast/sound.mbt)).
+([`relanote_ast/sound.mbt`](https://github.com/ubugeeei/relanote/blob/main/relanote_ast/sound.mbt)).
 The parser and evaluator still treat them as forward-declarations —
 they parse and round-trip but don't yet shift MIDI pitch bend or change
 synthesis frequencies. The audible behaviour lands alongside the

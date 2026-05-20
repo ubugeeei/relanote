@@ -173,7 +173,7 @@ MasterChain`.
 ### Compressor / Saturator / Limiter
 Standard mix processors. The stdlib ships presets (`BusGlue`,
 `DrumBus`, `MasterChain`, `Drive`, …) in
-[`effects_mix.rela`](https://github.com/ubugeeei/relanote/blob/main/moonbit/relanote_stdlib/prelude/effects_mix.rela).
+[`effects_mix.rela`](https://github.com/ubugeeei/relanote/blob/main/relanote_stdlib/prelude/effects_mix.rela).
 
 ## Language
 

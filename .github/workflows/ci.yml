@@ -20,21 +20,29 @@ jobs:
         run: moon version --all
 
       - name: moon update
-        working-directory: moonbit
         run: moon update
 
       - name: moon check
-        working-directory: moonbit
         run: moon check
 
+      - name: implementation line limit
+        run: |
+          fail=0
+          for f in $(git ls-files '*.mbt' '*.mbtv' '*.sh' '*.json' '*.yml' '*.yaml'); do
+            [ -f "$f" ] || continue
+            n=$(wc -l < "$f")
+            if [ "$n" -gt 250 ]; then
+              echo "$n $f"
+              fail=1
+            fi
+          done
+          exit "$fail"
+
       - name: moon test
-        working-directory: moonbit
         run: moon test
 
       - name: moon build
-        working-directory: moonbit
         run: moon build
 
       - name: Vapor Moon playground
-        working-directory: moonbit
         run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > /tmp/relanote-vapor-moon.snapshot

@@ -47,7 +47,7 @@ theme |> transpose P5 |> repeat 2
 - **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3`
   builds pieces by composing small functions.
 - **MoonBit end to end.** The compiler pipeline, CLI, MIDI renderer, LSP
-  entry point, and playground bridge live in `moonbit/`.
+  entry point, and playground bridge live at the repository root.
 
 ## Quick Start
 
@@ -63,8 +63,6 @@ Then build and test the workspace:
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
-cd moonbit
-
 moon check
 moon test
 moon run cmd/relanote -- help
@@ -132,8 +130,8 @@ repeated
 
 The playground view is authored with
 [Vapor Moon](https://github.com/ubugeeei/vapor-moon) as
-`moonbit/web/App.mbtv`. The callable bridge functions for diagnostics,
-formatting, evaluation, and MIDI rendering live in `moonbit/web/playground.mbt`.
+`web/App.mbtv`. The callable bridge functions for diagnostics,
+formatting, evaluation, and MIDI rendering live in `web/playground.mbt`.
 
 Build the component snapshot with:
 
@@ -145,21 +143,20 @@ pnpm web:build
 
 ```text
 relanote/
-├── moonbit/
-│   ├── cmd/relanote/        # CLI entry point
-│   ├── relanote_core/       # source, spans, diagnostics
-│   ├── relanote_lexer/      # tokenizer
-│   ├── relanote_ast/        # AST data types
-│   ├── relanote_parser/     # parser
-│   ├── relanote_hir/        # high-level IR
-│   ├── relanote_resolver/   # module resolution
-│   ├── relanote_types/      # type system
-│   ├── relanote_eval/       # evaluator
-│   ├── relanote_stdlib/     # embedded prelude
-│   ├── relanote_format/     # formatter
-│   ├── relanote_lsp/        # LSP entry point
-│   ├── relanote_render/     # MIDI rendering
-│   └── web/                 # Vapor Moon view + playground bridge
+├── cmd/relanote/            # CLI entry point
+├── relanote_core/           # source, spans, diagnostics
+├── relanote_lexer/          # tokenizer
+├── relanote_ast/            # AST data types
+├── relanote_parser/         # parser
+├── relanote_hir/            # high-level IR
+├── relanote_resolver/       # module resolution
+├── relanote_types/          # type system
+├── relanote_eval/           # evaluator
+├── relanote_stdlib/         # embedded prelude
+├── relanote_format/         # formatter
+├── relanote_lsp/            # LSP entry point
+├── relanote_render/         # MIDI rendering
+├── web/                     # Vapor Moon view + playground bridge
 ├── docs/                    # Markdown documentation
 ├── editors/vscode/          # VS Code extension package
 └── examples/                # Example programs

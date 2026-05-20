@@ -1,0 +1,72 @@
+// AUTO-GENERATED from prelude/*.rela by scripts/gen_stdlib.sh.
+// To regenerate after editing the .rela sources, run:
+//   bash scripts/gen_stdlib.sh
+// Manual edits will be lost.
+
+///|
+/// Embedded source of `prelude/drums_lofi.rela`.
+pub const DRUMS_LOFI : String =
+  #|; ===========================================
+  #|; Lo-fi / Flying Lotus-style drums
+  #|; ===========================================
+  #|;
+  #|; Drum patches that sit slightly off-grid. Each one combines a short
+  #|; transient layer with a noise body, and most include a small amount
+  #|; of bit-crush or sample-rate reduction so they feel "broken".
+  #|
+  #|; Dusty kick — quick pitch envelope down, light bit-crush, soft tail.
+  #|synth LofiKick = {
+  #|  osc: Sine + Triangle(level: 0.35),
+  #|  pitch_env: { from: 220, to: 55, time: 0.06 },
+  #|  env: { A: 0.001, D: 0.18, S: 0.0, R: 0.18 },
+  #|  filter: LowPass(2200, 0.2),
+  #|  bitcrush: { bits: 9, rate: 0.7 }
+  #|}
+  #|
+  #|; Tape-saturated snare — noise body, short transient, gentle drive.
+  #|synth LofiSnare = {
+  #|  osc: Noise(color: Pink) + Triangle(level: 0.25, octave: 1),
+  #|  env: { A: 0.001, D: 0.12, S: 0.0, R: 0.15 },
+  #|  filter: BandPass(1800, 0.55),
+  #|  saturate: 0.35
+  #|}
+  #|
+  #|; Dust hat — short noise burst, high cut, lo-fi bit reduction.
+  #|synth LofiHat = {
+  #|  osc: Noise(color: White),
+  #|  env: { A: 0.001, D: 0.04, S: 0.0, R: 0.04 },
+  #|  filter: HighPass(6500, 0.2),
+  #|  bitcrush: { bits: 8, rate: 0.5 }
+  #|}
+  #|
+  #|; Open hat / shaker — longer noise tail, low resonance.
+  #|synth LofiOpenHat = {
+  #|  osc: Noise(color: White),
+  #|  env: { A: 0.001, D: 0.25, S: 0.1, R: 0.25 },
+  #|  filter: HighPass(5500, 0.15),
+  #|  bitcrush: { bits: 8, rate: 0.5 }
+  #|}
+  #|
+  #|; Cardboard rim — short, woody, mid-focused.
+  #|synth LofiRim = {
+  #|  osc: Triangle + Noise(color: White, level: 0.3),
+  #|  pitch_env: { from: 1400, to: 800, time: 0.01 },
+  #|  env: { A: 0.001, D: 0.06, S: 0.0, R: 0.08 },
+  #|  filter: BandPass(1500, 0.6)
+  #|}
+  #|
+  #|; Sample-chopped break — granular-style stutter.
+  #|synth LofiBreak = {
+  #|  osc: Granular(source: "drum_break", grain_size: 0.04, density: 50, spray: 0.4, pitch_jitter: 12),
+  #|  env: { A: 0.001, D: 0.3, S: 0.4, R: 0.3 },
+  #|  filter: LowPass(5000, 0.25),
+  #|  bitcrush: { bits: 10, rate: 0.75 }
+  #|}
+  #|
+  #|; Sub thump — pure sub-sine kick layer.
+  #|synth LofiSub = {
+  #|  osc: Sine,
+  #|  pitch_env: { from: 70, to: 40, time: 0.08 },
+  #|  env: { A: 0.001, D: 0.25, S: 0.0, R: 0.25 },
+  #|  filter: LowPass(180, 0.1)
+  #|}

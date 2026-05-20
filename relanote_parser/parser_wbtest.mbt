@@ -1,0 +1,239 @@
+// Smoke tests for the hand-rolled parser. Covers the foundational
+// subset implemented in `parser.mbt`. The richer grammar (binary
+// arithmetic, comparison, lambdas, match, sound-design declarations,
+// etc.) is tracked in #4 and lands alongside the evaluator port.
+
+///|
+test "empty source produces an empty program with no diagnostics" {
+  let (prog, diags) = parse("")
+  assert_eq(prog.items().length(), 0)
+  assert_false(diags.has_errors())
+}
+
+///|
+test "literal integer expression at the top level" {
+  let (prog, diags) = parse("42")
+  assert_false(diags.has_errors())
+  assert_eq(prog.items().length(), 1)
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Integer(n) => assert_eq(n, 42L)
+        _ => abort("expected Integer expression")
+      }
+    _ => abort("expected ExprStmt item")
+  }
+}
+
+///|
+test "let binding with an integer right-hand side" {
+  let (prog, diags) = parse("let answer = 42")
+  assert_false(diags.has_errors())
+  assert_eq(prog.items().length(), 1)
+  match prog.items()[0].node() {
+    @ast.LetBinding(b) => {
+      match b.pattern().node() {
+        @ast.Ident(id) => assert_eq(id.name(), "answer")
+        _ => abort("expected Ident pattern")
+      }
+      match b.value().node() {
+        @ast.Integer(n) => assert_eq(n, 42L)
+        _ => abort("expected Integer value")
+      }
+    }
+    _ => abort("expected LetBinding")
+  }
+}
+
+///|
+test "set binding for tempo" {
+  let (prog, _) = parse("set tempo = 120")
+  assert_eq(prog.items().length(), 1)
+  match prog.items()[0].node() {
+    @ast.SetBinding(s) => {
+      assert_eq(s.name().name(), "tempo")
+      match s.value().node() {
+        @ast.Integer(n) => assert_eq(n, 120L)
+        _ => abort("expected Integer")
+      }
+    }
+    _ => abort("expected SetBinding")
+  }
+}
+
+///|
+test "scale declaration" {
+  let (prog, diags) = parse("scale Major = { R, M2, M3 }")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ScaleDef(s) => {
+      assert_eq(s.name().name(), "Major")
+      assert_eq(s.intervals().length(), 3)
+    }
+    _ => abort("expected ScaleDef")
+  }
+}
+
+///|
+test "chord declaration" {
+  let (prog, diags) = parse("chord MajorTriad = [ R, M3, P5 ]")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ChordDef(c) => {
+      assert_eq(c.name().name(), "MajorTriad")
+      assert_eq(c.intervals().length(), 3)
+    }
+    _ => abort("expected ChordDef")
+  }
+}
+
+///|
+test "block of scale-degree slots" {
+  let (prog, diags) = parse("| <1> <3> <5> |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) => assert_eq(b.slots().length(), 3)
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "block with explicit `:n` beats" {
+  let (prog, _) = parse("| <1> <3> |:4")
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.beats() {
+            Some(n) => assert_eq(n, 4.0)
+            None => abort("expected explicit beats")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "block with a rest" {
+  let (prog, _) = parse("| <1> - <3> |")
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) => {
+          assert_eq(b.slots().length(), 3)
+          match b.slots()[1].node() {
+            @ast.Rest(_) => ()
+            _ => abort("middle slot should be a rest")
+          }
+        }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "block slot picks up an accent articulation" {
+  let (prog, diags) = parse("| <1>^ |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(articulations~, ..) => {
+              assert_eq(articulations.length(), 1)
+              match articulations[0] {
+                @ast.Accent => ()
+                _ => abort("expected Accent")
+              }
+            }
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "block slot accepts multiple articulations in order" {
+  let (prog, diags) = parse("| <3>^*~ |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(articulations~, ..) =>
+              assert_eq(articulations.length(), 3)
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "block slot picks up a duration suffix" {
+  let (prog, diags) = parse("| <1>:2 |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[0].node() {
+            @ast.Note(duration~, ..) =>
+              match duration {
+                Some(2) => ()
+                _ => abort("expected duration=2")
+              }
+            _ => abort("expected Note slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "rest also accepts a duration suffix" {
+  let (prog, diags) = parse("| <1> -:3 |")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Block(b) =>
+          match b.slots()[1].node() {
+            @ast.Rest(duration~) =>
+              match duration {
+                Some(3) => ()
+                _ => abort("expected rest duration=3")
+              }
+            _ => abort("expected Rest slot")
+          }
+        _ => abort("expected Block")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
+
+///|
+test "pipe expression" {
+  let (prog, diags) = parse("melody |> transpose")
+  assert_false(diags.has_errors())
+  match prog.items()[0].node() {
+    @ast.ExprStmt(e) =>
+      match e.node() {
+        @ast.Pipe(_) => ()
+        _ => abort("expected Pipe")
+      }
+    _ => abort("expected ExprStmt")
+  }
+}
