@@ -12,7 +12,7 @@
 ///   lsp              — start the LSP server
 ///
 /// Tracked in #13.
-fn main {
+async fn main {
   let args = @env.args()
   if args.length() < 2 {
     println(USAGE)

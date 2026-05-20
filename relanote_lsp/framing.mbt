@@ -85,7 +85,7 @@ pub fn encode_frame(body : String) -> String {
 /// Pick the `Content-Length: N` header out of the headers block.
 /// Returns 0 when the header is missing or malformed; callers can
 /// short-circuit those frames as invalid before parsing the body.
-fn parse_content_length(header : String) -> Int {
+pub fn parse_content_length(header : String) -> Int {
   // Headers are separated by `\r\n`; split manually so we don't pull
   // in the regex dependency.
   let lines : Array[String] = []

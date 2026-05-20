@@ -5,16 +5,34 @@
 /// Tracked in #12.
 pub struct RelanoteLanguageServer {
   version : Int
+  documents : @hashmap.HashMap[String, String]
 }
 
 ///|
 pub fn RelanoteLanguageServer::new() -> RelanoteLanguageServer {
-  { version: 0 }
+  { version: 0, documents: @hashmap.HashMap([]) }
 }
 
 ///|
 pub fn RelanoteLanguageServer::version(self : RelanoteLanguageServer) -> Int {
   self.version
+}
+
+///|
+pub fn RelanoteLanguageServer::open_document(
+  self : RelanoteLanguageServer,
+  uri : String,
+  content : String,
+) -> Unit {
+  self.documents.set(uri, content)
+}
+
+///|
+pub fn RelanoteLanguageServer::document(
+  self : RelanoteLanguageServer,
+  uri : String,
+) -> String? {
+  self.documents.get(uri)
 }
 
 ///|
@@ -74,7 +92,55 @@ fn parse_error_response() -> Json {
 }
 
 ///|
-/// Start the LSP server.
-pub fn run_server() -> Unit {
-  ()
+/// Start the native stdio LSP server.
+pub async fn run_server() -> Unit {
+  let server = RelanoteLanguageServer::new()
+  server_stdio(server)
+}
+
+///|
+async fn server_stdio(server : RelanoteLanguageServer) -> Unit {
+  match read_stdio_body() {
+    None => return
+    Some(body) => {
+      match server.handle_body(body) {
+        Some(frame) => @stdio.stdout.write(frame)
+        None => ()
+      }
+      if should_exit(body) {
+        return
+      }
+      server_stdio(server)
+    }
+  }
+}
+
+///|
+async fn read_stdio_body() -> String? {
+  match @stdio.stdin.read_until("\r\n\r\n") {
+    None => None
+    Some(header) => {
+      let len = parse_content_length(header)
+      if len <= 0 {
+        return Some("")
+      }
+      let bytes = @stdio.stdin.read_exactly(len) catch {
+        _ => return None
+      }
+      Some(@utf8.decode(bytes))
+    }
+  }
+}
+
+///|
+fn should_exit(body : String) -> Bool {
+  let parsed : Result[Json, @json.ParseError] = try? @json.parse(body)
+  match parsed {
+    Ok(request) =>
+      match json_value(request, "method") {
+        Some(String("exit")) => true
+        _ => false
+      }
+    Err(_) => false
+  }
 }

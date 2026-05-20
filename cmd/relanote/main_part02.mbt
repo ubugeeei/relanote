@@ -26,6 +26,6 @@ fn run_render(args : Array[String]) -> Unit {
 }
 
 ///|
-fn run_lsp() -> Unit {
+async fn run_lsp() -> Unit {
   @lsp.run_server()
 }
