@@ -1,6 +1,6 @@
 ///|
 /// Type annotation as written in source code. Mirrors
-/// `relanote_ast::types::TypeAnnotation` in the Rust crate.
+/// `relanote_ast::types::TypeAnnotation` in the legacy implementation.
 pub(all) enum TypeAnnotation {
   /// Named type — `Int`, `String`, `Scale`, …
   Named(Ident)
@@ -48,7 +48,7 @@ pub fn TypeAnnotation::has_type_vars(self : TypeAnnotation) -> Bool {
 
 ///|
 /// Build a curried function type — `a -> b -> c` — from a parameter list
-/// and a return type, matching `TypeAnnotation::function` on the Rust side.
+/// and a return type, matching `TypeAnnotation::function` on the previous implementation.
 pub fn TypeAnnotation::function(
   params : Array[TypeAnnotation],
   ret : TypeAnnotation,

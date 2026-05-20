@@ -4,24 +4,29 @@
 // integration tests (parse → format → parse → format) land alongside
 // the real parser.
 
+///|
 let cfg : FormatConfig = FormatConfig::default()
 
+///|
 fn[T] spanned(node : T) -> @core.Spanned[T] {
   @core.Spanned::dummy(node)
 }
 
-test "default config matches Rust crate" {
+///|
+test "default config matches legacy implementation" {
   assert_eq(cfg.indent_size(), 4)
   assert_eq(cfg.max_line_width(), 80)
   assert_true(cfg.trailing_commas())
   assert_false(cfg.block_multiline())
 }
 
+///|
 test "format on an empty program is the empty string" {
   let prog = @ast.Program::empty()
   assert_eq(format(prog, cfg), "")
 }
 
+///|
 test "scale definition round-trips" {
   let intervals : Array[@core.Spanned[@ast.IntervalLit]] = [
     spanned(@ast.IntervalLit::new(@lexer.Major, 1)),
@@ -34,6 +39,7 @@ test "scale definition round-trips" {
   assert_eq(format(prog, cfg), "scale Major = { M1, M2, M3 }\n")
 }
 
+///|
 test "chord definition round-trips" {
   let intervals : Array[@core.Spanned[@ast.IntervalLit]] = [
     spanned(@ast.IntervalLit::new(@lexer.Perfect, 1)),
@@ -46,6 +52,7 @@ test "chord definition round-trips" {
   assert_eq(format(prog, cfg), "chord MajorTriad = [ P1, M3, P5 ]\n")
 }
 
+///|
 test "let binding with integer value" {
   let pat : @ast.Pattern = @ast.Ident(@ast.Ident::new("x"))
   let value : @ast.Expr = @ast.Integer(42L)
@@ -55,6 +62,7 @@ test "let binding with integer value" {
   assert_eq(format(prog, cfg), "let x = 42\n")
 }
 
+///|
 test "set binding" {
   let s = @ast.SetBinding::new(
     @ast.Ident::new("tempo"),
@@ -65,6 +73,7 @@ test "set binding" {
   assert_eq(format(prog, cfg), "set tempo = 120\n")
 }
 
+///|
 test "interval with accidentals" {
   let iv = @ast.IntervalLit::new(@lexer.Perfect, 5).with_accidentals([
     @lexer.Sharp,
@@ -74,6 +83,7 @@ test "interval with accidentals" {
   assert_eq(format(prog, cfg), "P5+\n")
 }
 
+///|
 test "block with scale-degree slots" {
   let one : @ast.Slot = @ast.Note(
     pitch=spanned(@ast.ScaleIndex(1)),
@@ -96,6 +106,7 @@ test "block with scale-degree slots" {
   assert_eq(format(prog, cfg), "| <1> <3> <5> |\n")
 }
 
+///|
 test "block with rest and explicit duration on a note" {
   let one : @ast.Slot = @ast.Note(
     pitch=spanned(@ast.ScaleIndex(1)),
@@ -103,15 +114,13 @@ test "block with rest and explicit duration on a note" {
     duration=Some(2),
   )
   let rest : @ast.Slot = @ast.Rest(duration=None)
-  let block = @ast.Block::with_beats(
-    [spanned(one), spanned(rest)],
-    4.0,
-  )
+  let block = @ast.Block::with_beats([spanned(one), spanned(rest)], 4.0)
   let item : @ast.Item = @ast.ExprStmt(spanned(@ast.Block(block)))
   let prog = @ast.Program::new([spanned(item)])
   assert_eq(format(prog, cfg), "| <1>:2 - |:4\n")
 }
 
+///|
 test "articulations on a note" {
   let pitch_node : @ast.Pitch = @ast.Interval(
     @ast.IntervalLit::new(@lexer.Major, 3),
@@ -127,22 +136,21 @@ test "articulations on a note" {
   assert_eq(format(prog, cfg), "| M3^* |\n")
 }
 
+///|
 test "pipe expression" {
   let melody : @ast.Expr = @ast.Ident(@ast.Ident::new("melody"))
   let transpose_call : @ast.Expr = @ast.Application(
-    @ast.Application::new(
-      spanned(@ast.Ident(@ast.Ident::new("transpose"))),
-      [spanned(@ast.Interval(@ast.IntervalLit::new(@lexer.Perfect, 5)))],
-    ),
+    @ast.Application::new(spanned(@ast.Ident(@ast.Ident::new("transpose"))), [
+      spanned(@ast.Interval(@ast.IntervalLit::new(@lexer.Perfect, 5))),
+    ]),
   )
-  let pipe = @ast.Pipe(
-    @ast.Pipe::new(spanned(melody), spanned(transpose_call)),
-  )
+  let pipe = @ast.Pipe(@ast.Pipe::new(spanned(melody), spanned(transpose_call)))
   let item : @ast.Item = @ast.ExprStmt(spanned(pipe))
   let prog = @ast.Program::new([spanned(item)])
   assert_eq(format(prog, cfg), "melody |> transpose(P5)\n")
 }
 
+///|
 test "Microtone pitch carries a cents offset" {
   let pitch_node : @ast.Pitch = @ast.Microtone(12.5)
   let slot : @ast.Slot = @ast.Note(
@@ -156,6 +164,7 @@ test "Microtone pitch carries a cents offset" {
   assert_eq(format(prog, cfg), "| +12.5c |\n")
 }
 
+///|
 test "Over expression renders as `a over b`" {
   let three : @ast.Expr = @ast.Integer(3L)
   let four : @ast.Expr = @ast.Integer(4L)
@@ -165,6 +174,7 @@ test "Over expression renders as `a over b`" {
   assert_eq(format(prog, cfg), "3 over 4\n")
 }
 
+///|
 test "Binary expressions space around the operator" {
   let bin = @ast.Binary(
     @ast.Binary::new(
@@ -178,13 +188,12 @@ test "Binary expressions space around the operator" {
   assert_eq(format(prog, cfg), "M3 + m3\n")
 }
 
+///|
 test "Multi-item program separates with a blank line" {
   let scale_def : @ast.Item = @ast.ScaleDef(
-    @ast.ScaleDef::new(
-      @ast.Ident::new("Major"),
-      None,
-      [spanned(@ast.IntervalLit::new(@lexer.Major, 3))],
-    ),
+    @ast.ScaleDef::new(@ast.Ident::new("Major"), None, [
+      spanned(@ast.IntervalLit::new(@lexer.Major, 3)),
+    ]),
   )
   let melody : @ast.Expr = @ast.Ident(@ast.Ident::new("melody"))
   let melody_stmt : @ast.Item = @ast.ExprStmt(spanned(melody))
@@ -192,6 +201,7 @@ test "Multi-item program separates with a blank line" {
   assert_eq(format(prog, cfg), "scale Major = { M3 }\n\nmelody\n")
 }
 
+///|
 test "import single name" {
   let decl = @ast.ImportDecl::new([@ast.Named(@ast.Ident::new("foo"))], "bar")
   let item : @ast.Item = @ast.Import(decl)
@@ -199,11 +209,10 @@ test "import single name" {
   assert_eq(format(prog, cfg), "import foo from \"bar\"\n")
 }
 
+///|
 test "import single aliased name" {
   let decl = @ast.ImportDecl::new(
-    [
-      @ast.Aliased(name=@ast.Ident::new("foo"), as_name=@ast.Ident::new("f")),
-    ],
+    [@ast.Aliased(name=@ast.Ident::new("foo"), as_name=@ast.Ident::new("f"))],
     "bar",
   )
   let item : @ast.Item = @ast.Import(decl)
@@ -211,6 +220,7 @@ test "import single aliased name" {
   assert_eq(format(prog, cfg), "import foo as f from \"bar\"\n")
 }
 
+///|
 test "import group renders with braces" {
   let decl = @ast.ImportDecl::new(
     [
@@ -224,6 +234,7 @@ test "import group renders with braces" {
   assert_eq(format(prog, cfg), "import { a, b as bb } from \"x\"\n")
 }
 
+///|
 test "import wildcard" {
   let decl = @ast.ImportDecl::new([@ast.All], "m")
   let item : @ast.Item = @ast.Import(decl)
@@ -231,16 +242,15 @@ test "import wildcard" {
   assert_eq(format(prog, cfg), "import * from \"m\"\n")
 }
 
+///|
 test "import wildcard with alias" {
-  let decl = @ast.ImportDecl::new(
-    [@ast.AllAliased(@ast.Ident::new("M"))],
-    "m",
-  )
+  let decl = @ast.ImportDecl::new([@ast.AllAliased(@ast.Ident::new("M"))], "m")
   let item : @ast.Item = @ast.Import(decl)
   let prog = @ast.Program::new([spanned(item)])
   assert_eq(format(prog, cfg), "import * as M from \"m\"\n")
 }
 
+///|
 test "export of named symbols renders comma-separated" {
   let decl : @ast.ExportDecl = @ast.Named([
     @ast.Ident::new("foo"),
@@ -251,6 +261,7 @@ test "export of named symbols renders comma-separated" {
   assert_eq(format(prog, cfg), "export foo, bar\n")
 }
 
+///|
 test "export re-export renders with braces and a `from` clause" {
   let decl : @ast.ExportDecl = @ast.ReExport(
     items=[@ast.Ident::new("a"), @ast.Ident::new("b")],
@@ -261,6 +272,7 @@ test "export re-export renders with braces and a `from` clause" {
   assert_eq(format(prog, cfg), "export { a, b } from \"m\"\n")
 }
 
+///|
 test "use simple path joins segments with `::`" {
   let path = @ast.UsePath::new(
     [@ast.Ident::new("foo"), @ast.Ident::new("bar")],
@@ -271,23 +283,19 @@ test "use simple path joins segments with `::`" {
   assert_eq(format(prog, cfg), "use foo::bar\n")
 }
 
+///|
 test "use glob ends with `::*`" {
-  let path = @ast.UsePath::new(
-    [@ast.Ident::new("foo")],
-    @ast.Glob,
-  )
+  let path = @ast.UsePath::new([@ast.Ident::new("foo")], @ast.Glob)
   let item : @ast.Item = @ast.Use(@ast.UseDecl::new(path))
   let prog = @ast.Program::new([spanned(item)])
   assert_eq(format(prog, cfg), "use foo::*\n")
 }
 
+///|
 test "use group renders inside braces with optional alias" {
   let items : Array[@ast.UseItem] = [
     @ast.UseItem::new(@ast.Ident::new("a"), None),
-    @ast.UseItem::new(
-      @ast.Ident::new("b"),
-      Some(@ast.Ident::new("bb")),
-    ),
+    @ast.UseItem::new(@ast.Ident::new("b"), Some(@ast.Ident::new("bb"))),
   ]
   let path = @ast.UsePath::new([@ast.Ident::new("m")], @ast.Group(items))
   let item : @ast.Item = @ast.Use(@ast.UseDecl::new(path))

@@ -19,9 +19,7 @@ pub fn ResolvedModule::program(self : ResolvedModule) -> @ast.Program {
 }
 
 ///|
-pub fn ResolvedModule::diagnostics(
-  self : ResolvedModule,
-) -> @core.Diagnostics {
+pub fn ResolvedModule::diagnostics(self : ResolvedModule) -> @core.Diagnostics {
   self.diagnostics
 }
 
@@ -36,7 +34,7 @@ pub fn ResolvedModule::dependencies(self : ResolvedModule) -> Array[String] {
 pub struct ModuleResolver {
   loader : ModuleLoader
   modules : @hashmap.HashMap[String, ResolvedModule]
-  // Insertion order of `modules`. The Rust crate uses `IndexMap` so
+  // Insertion order of `modules`. The legacy implementation uses `IndexMap` so
   // `modules()` iterates in dependency-discovery order; `@hashmap.HashMap`
   // does not preserve insertion order, so we track it separately.
   order : Array[String]
@@ -59,7 +57,7 @@ pub fn ModuleResolver::loader(self : ModuleResolver) -> ModuleLoader {
 }
 
 ///|
-/// Resolve a module and (recursively) its dependencies. Mirrors the Rust
+/// Resolve a module and (recursively) its dependencies. Mirrors the legacy
 /// `resolve` method's algorithm: circular-dependency check → cache check
 /// → loader → parse → recurse on `Item::Import.from` entries.
 pub fn ModuleResolver::resolve(
@@ -105,10 +103,8 @@ pub fn ModuleResolver::resolve(
 
 ///|
 /// Iterate all resolved modules in dependency-discovery order. Mirrors
-/// `IndexMap`-backed iteration on the Rust side.
-pub fn ModuleResolver::modules(
-  self : ModuleResolver,
-) -> Array[ResolvedModule] {
+/// `IndexMap`-backed iteration on the previous implementation.
+pub fn ModuleResolver::modules(self : ModuleResolver) -> Array[ResolvedModule] {
   let out : Array[ResolvedModule] = []
   for path in self.order {
     match self.modules.get(path) {

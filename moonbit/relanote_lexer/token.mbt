@@ -13,7 +13,7 @@ pub(all) enum IntervalQuality {
 /// Accidental modifier attached to an interval or pitch.
 pub(all) enum Accidental {
   Sharp // +
-  Flat  // -
+  Flat // -
 } derive(Eq)
 
 ///|
@@ -51,7 +51,7 @@ pub fn IntervalData::accidentals(self : IntervalData) -> Array[Accidental] {
 ///|
 /// Absolute pitch payload (e.g. `C4`, `D#3`, `Bb5`).
 ///
-/// `accidental` is -1 (flat), 0 (natural) or +1 (sharp), matching the Rust
+/// `accidental` is -1 (flat), 0 (natural) or +1 (sharp), matching the legacy
 /// representation byte-for-byte.
 pub struct AbsolutePitchData {
   note : Char
@@ -107,7 +107,7 @@ pub fn AbsolutePitchData::to_midi_note(self : AbsolutePitchData) -> Int {
 }
 
 ///|
-/// All token kinds produced by the lexer. Variant names mirror the Rust
+/// All token kinds produced by the lexer. Variant names mirror the legacy
 /// `TokenKind` enum, except that:
 ///
 /// * `Eq` (the `=` sign) is renamed to `Equals` to avoid shadowing the `Eq`
@@ -214,9 +214,31 @@ pub(all) enum TokenKind {
 /// `true` if `self` is a reserved keyword token.
 pub fn TokenKind::is_keyword(self : TokenKind) -> Bool {
   match self {
-    Let | Set | In | If | Then | Else | Match | With | Scale | Chord | Section
-    | Layer | Part | Synth | Osc | Filter | Env | Import | Export | From | As
-    | Mod | Use | True | False => true
+    Let
+    | Set
+    | In
+    | If
+    | Then
+    | Else
+    | Match
+    | With
+    | Scale
+    | Chord
+    | Section
+    | Layer
+    | Part
+    | Synth
+    | Osc
+    | Filter
+    | Env
+    | Import
+    | Export
+    | From
+    | As
+    | Mod
+    | Use
+    | True
+    | False => true
     _ => false
   }
 }
@@ -225,9 +247,28 @@ pub fn TokenKind::is_keyword(self : TokenKind) -> Bool {
 /// `true` if `self` is an operator token.
 pub fn TokenKind::is_operator(self : TokenKind) -> Bool {
   match self {
-    PipeOp | Compose | Arrow | Lambda | Equals | EqEq | NotEq | LtEq | GtEq
-    | AndAnd | OrOr | Bang | ColonColon | Colon | Comma | Dot | Minus
-    | PlusPlus | Plus | Star | Slash | Percent => true
+    PipeOp
+    | Compose
+    | Arrow
+    | Lambda
+    | Equals
+    | EqEq
+    | NotEq
+    | LtEq
+    | GtEq
+    | AndAnd
+    | OrOr
+    | Bang
+    | ColonColon
+    | Colon
+    | Comma
+    | Dot
+    | Minus
+    | PlusPlus
+    | Plus
+    | Star
+    | Slash
+    | Percent => true
     _ => false
   }
 }

@@ -2,6 +2,7 @@
 // stdout and aren't directly observable; the type-check helper returns
 // its error list so we can exercise the wiring.
 
+///|
 test "run_type_check reports undefined identifier" {
   let program = @ast.Program::new([
     @core.Spanned::new(
@@ -23,6 +24,7 @@ test "run_type_check reports undefined identifier" {
 // `run` subcommand drives, so they're the closest thing to a smoke
 // test we have today.
 
+///|
 test "pipeline: integer literal evaluates to itself" {
   match pipeline_for_test("42") {
     Ok(@eval.IntV(42L)) => ()
@@ -31,6 +33,7 @@ test "pipeline: integer literal evaluates to itself" {
   }
 }
 
+///|
 test "pipeline: let binding threads through the env" {
   match pipeline_for_test("let x = 7\nx") {
     Ok(@eval.IntV(7L)) => ()
@@ -39,6 +42,7 @@ test "pipeline: let binding threads through the env" {
   }
 }
 
+///|
 test "pipeline: pipe operator with reverse builtin returns a block" {
   // `reverse` is a Block-only builtin; calling it on a literal block
   // exercises the prelude binding through to the renderer's input.
@@ -49,6 +53,7 @@ test "pipeline: pipe operator with reverse builtin returns a block" {
   }
 }
 
+///|
 test "pipeline: undefined identifier surfaces a type error" {
   match pipeline_for_test("totally_undefined") {
     Err("type error") => ()
@@ -57,6 +62,7 @@ test "pipeline: undefined identifier surfaces a type error" {
   }
 }
 
+///|
 test "pipeline: malformed source surfaces a parse error" {
   match pipeline_for_test("let x 1") {
     Err("parse error") => ()
@@ -65,6 +71,7 @@ test "pipeline: malformed source surfaces a parse error" {
   }
 }
 
+///|
 test "run_type_check is silent on a well-typed builtin call" {
   // `reverse` is bound by `install_prelude` (#54) as `Block -> Block`.
   // Calling it on a literal block should type-check cleanly.
@@ -85,10 +92,7 @@ test "run_type_check is silent on a well-typed builtin call" {
     @core.Span::dummy(),
   )
   let program = @ast.Program::new([
-    @core.Spanned::new(
-      @ast.Item::ExprStmt(reverse_call),
-      @core.Span::dummy(),
-    ),
+    @core.Spanned::new(@ast.Item::ExprStmt(reverse_call), @core.Span::dummy()),
   ])
   let errors = run_type_check_for_test(program)
   assert_eq(errors.length(), 0)

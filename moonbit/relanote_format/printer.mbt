@@ -82,9 +82,12 @@ fn Formatter::format_item(self : Formatter, item : @ast.Item) -> Unit {
     }
     @ast.Use(decl) => self.format_use(decl)
     @ast.ExprStmt(e) => self.format_expr(e.node())
-    @ast.TuningDef(_) => self.write("; <tuning declaration — see guide/microtones>")
-    @ast.GrooveDef(_) => self.write("; <groove declaration — see guide/rhythm>")
-    @ast.EffectDef(_) => self.write("; <effect declaration — see guide/mixing>")
+    @ast.TuningDef(_) =>
+      self.write("; <tuning declaration — see guide/microtones>")
+    @ast.GrooveDef(_) =>
+      self.write("; <groove declaration — see guide/rhythm>")
+    @ast.EffectDef(_) =>
+      self.write("; <effect declaration — see guide/mixing>")
     @ast.MixDef(_) => self.write("; <mix block — see guide/mixing>")
   }
 }
@@ -166,10 +169,7 @@ fn Formatter::format_synth_def(self : Formatter, s : @ast.SynthDef) -> Unit {
 }
 
 ///|
-fn Formatter::format_let_binding(
-  self : Formatter,
-  b : @ast.LetBinding,
-) -> Unit {
+fn Formatter::format_let_binding(self : Formatter, b : @ast.LetBinding) -> Unit {
   self.write("let ")
   self.format_pattern(b.pattern().node())
   match b.type_ann() {
@@ -184,10 +184,7 @@ fn Formatter::format_let_binding(
 }
 
 ///|
-fn Formatter::format_set_binding(
-  self : Formatter,
-  s : @ast.SetBinding,
-) -> Unit {
+fn Formatter::format_set_binding(self : Formatter, s : @ast.SetBinding) -> Unit {
   self.write("set ")
   self.write(s.name().name())
   self.write(" = ")
@@ -201,17 +198,14 @@ fn Formatter::format_set_binding(
 ///   `import foo from "m"`, `import foo as f from "m"`,
 ///   `import * from "m"`, `import * as M from "m"`.
 /// - Multiple named/aliased items render as a brace-group:
-///   `import { a, b as bb } from "m"`. This differs from the Rust
+///   `import { a, b as bb } from "m"`. This differs from the legacy
 ///   crate's implementation, which emits `a, b` without braces — that
 ///   form is rejected by both parsers, so we use the brace shape that
 ///   actually round-trips.
-fn Formatter::format_import(
-  self : Formatter,
-  decl : @ast.ImportDecl,
-) -> Unit {
+fn Formatter::format_import(self : Formatter, decl : @ast.ImportDecl) -> Unit {
   let items = decl.items()
   self.write("import ")
-  let write_item = fn (item : @ast.ImportItem) {
+  let write_item = fn(item : @ast.ImportItem) {
     match item {
       @ast.Named(id) => self.write(id.name())
       @ast.Aliased(name~, as_name~) => {
@@ -250,10 +244,7 @@ fn Formatter::format_import(
 /// - `export name1, name2` (a `Named` list).
 /// - `export <inner-item>` (an inline definition).
 /// - `export { name1, name2 } from "module"` (a re-export).
-fn Formatter::format_export(
-  self : Formatter,
-  decl : @ast.ExportDecl,
-) -> Unit {
+fn Formatter::format_export(self : Formatter, decl : @ast.ExportDecl) -> Unit {
   self.write("export ")
   match decl {
     @ast.Named(items) => {
@@ -289,10 +280,7 @@ fn Formatter::format_export(
 /// - `use a::b::c` (Simple).
 /// - `use a::b::*` (Glob).
 /// - `use a::b::{ c, d as e }` (Group).
-fn Formatter::format_use(
-  self : Formatter,
-  decl : @ast.UseDecl,
-) -> Unit {
+fn Formatter::format_use(self : Formatter, decl : @ast.UseDecl) -> Unit {
   let path = decl.path()
   self.write("use ")
   let segments = path.segments()
@@ -316,9 +304,9 @@ fn Formatter::format_use(
         }
         self.write(items[k].name().name())
         match items[k].as_name() {
-          Some(alias) => {
+          Some(import_alias) => {
             self.write(" as ")
-            self.write(alias.name())
+            self.write(import_alias.name())
           }
           None => ()
         }
@@ -365,12 +353,7 @@ fn Formatter::format_expr(self : Formatter, expr : @ast.Expr) -> Unit {
       self.write(s)
       self.write("\"")
     }
-    @ast.BoolLit(b) =>
-      if b {
-        self.write("true")
-      } else {
-        self.write("false")
-      }
+    @ast.BoolLit(b) => if b { self.write("true") } else { self.write("false") }
     @ast.UnitLit => self.write("()")
     @ast.Ident(id) => self.write(id.name())
     @ast.Root => self.write("R")
@@ -589,10 +572,7 @@ fn Formatter::format_match(self : Formatter, me : @ast.MatchExpr) -> Unit {
 // ============================================================
 
 ///|
-fn Formatter::format_interval(
-  self : Formatter,
-  iv : @ast.IntervalLit,
-) -> Unit {
+fn Formatter::format_interval(self : Formatter, iv : @ast.IntervalLit) -> Unit {
   let q = match iv.quality() {
     @lexer.Major => "M"
     @lexer.Minor => "m"
@@ -776,10 +756,7 @@ fn Formatter::format_tuplet(self : Formatter, t : @ast.Tuplet) -> Unit {
 }
 
 ///|
-fn Formatter::format_envelope(
-  self : Formatter,
-  e : @ast.EnvelopeLit,
-) -> Unit {
+fn Formatter::format_envelope(self : Formatter, e : @ast.EnvelopeLit) -> Unit {
   self.write("env(")
   self.format_expr(e.from().node())
   self.write(", ")
@@ -808,10 +785,7 @@ fn Formatter::format_part(self : Formatter, p : @ast.PartExpr) -> Unit {
 }
 
 ///|
-fn Formatter::format_section(
-  self : Formatter,
-  s : @ast.SectionExpr,
-) -> Unit {
+fn Formatter::format_section(self : Formatter, s : @ast.SectionExpr) -> Unit {
   self.write("section ")
   self.format_expr(s.name().node())
   self.write(" { ")
@@ -838,10 +812,7 @@ fn Formatter::format_layer(self : Formatter, l : @ast.LayerExpr) -> Unit {
 // ============================================================
 
 ///|
-fn Formatter::format_pattern(
-  self : Formatter,
-  p : @ast.Pattern,
-) -> Unit {
+fn Formatter::format_pattern(self : Formatter, p : @ast.Pattern) -> Unit {
   match p {
     @ast.Wildcard => self.write("_")
     @ast.Ident(id) => self.write(id.name())
@@ -929,10 +900,7 @@ fn Formatter::format_pattern(
 // ============================================================
 
 ///|
-fn Formatter::format_type(
-  self : Formatter,
-  t : @ast.TypeAnnotation,
-) -> Unit {
+fn Formatter::format_type(self : Formatter, t : @ast.TypeAnnotation) -> Unit {
   match t {
     @ast.Named(id) => self.write(id.name())
     @ast.Generic(name, args) => {
@@ -984,7 +952,7 @@ fn Formatter::format_type(
 
 ///|
 /// Format an entire program into a string. Mirrors
-/// `relanote_format::format` in the Rust crate.
+/// `relanote_format::format` in the legacy implementation.
 pub fn format(program : @ast.Program, config : FormatConfig) -> String {
   Formatter::new(config).format_program(program)
 }

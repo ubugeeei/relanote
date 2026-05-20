@@ -1,42 +1,37 @@
-# Relanote — MoonBit port
+# Relanote MoonBit workspace
 
-This directory hosts the in-progress MoonBit rewrite of Relanote.
-
-The original Rust implementation under `../crates/` and the Nuxt playground
-under `../web/` continue to be the source of truth while the rewrite lands
-package by package. See the top-level `README.md` "Rewrite roadmap" section
-for status.
+This directory is the Relanote implementation.
 
 ## Packages
 
-| Package            | Mirrors Rust crate       | Status                                                |
-| ------------------ | ------------------------ | ----------------------------------------------------- |
-| `relanote_core`    | `crates/relanote_core`   | Span / SourceId / Source / Spanned / InternedStr      |
-| `relanote_lexer`   | `crates/relanote_lexer`  | TokenKind + tokenizer                                 |
-| `relanote_ast`     | `crates/relanote_ast`    | AST data types (visitor deferred to a follow-up)      |
-| `relanote_stdlib`  | `crates/relanote_stdlib` | Embedded prelude `.rela` modules + combined `PRELUDE` |
-| `relanote_types`   | `crates/relanote_types`  | Type ADT, scheme, context, unify (inference walker deferred) |
-| `relanote_hir`     | `crates/relanote_hir`    | Placeholder mirroring the Rust crate (also a placeholder)    |
-| `relanote_parser`  | `crates/relanote_parser` | Public API + ParseError + Parser skeleton (descent deferred) |
-| `relanote_resolver`| `crates/relanote_resolver`| ResolveError, ModuleLoader, ModuleResolver (filesystem stub) |
-| `relanote_eval`    | `crates/relanote_eval`   | Env, EvalError, Evaluator skeleton (walker + builtins deferred) |
-| `relanote_format`  | `crates/relanote_format` | FormatConfig + Formatter skeleton (AST walker deferred)         |
-| `relanote_render`  | `crates/relanote_render` | MidiConfig + MidiRenderer skeleton (SMF byte writer deferred)   |
-| `relanote_lsp`     | `crates/relanote_lsp`    | LSP server skeleton — JSON-RPC framing + dispatch deferred      |
-| `cmd/relanote`     | `crates/relanote_cli`    | CLI entry point with parse/check/fmt/run/render/lsp dispatchers |
-| `web`              | `web/` (Nuxt)            | Vapor Moon bridge functions (UI components deferred)            |
+| Package             | Responsibility                                      |
+| ------------------- | --------------------------------------------------- |
+| `relanote_core`     | source files, spans, diagnostics, reports           |
+| `relanote_lexer`    | token kinds and tokenizer                           |
+| `relanote_ast`      | program, item, expression, music, and sound nodes    |
+| `relanote_stdlib`   | embedded prelude `.rela` modules                    |
+| `relanote_types`    | type ADT, schemes, contexts, unification, checker    |
+| `relanote_hir`      | lowered representation                              |
+| `relanote_parser`   | parser API and parse diagnostics                    |
+| `relanote_resolver` | module loading and name resolution                  |
+| `relanote_eval`     | evaluator and runtime values                        |
+| `relanote_format`   | formatter                                           |
+| `relanote_render`   | MIDI renderer                                       |
+| `relanote_lsp`      | LSP framing, dispatch, and server entry point       |
+| `cmd/relanote`      | CLI entry point                                     |
+| `web`               | Vapor Moon view and playground bridge               |
 
-Regenerate the stdlib embedding after editing the `.rela` sources with
-`bash moonbit/scripts/gen_stdlib.sh`.
+Regenerate the stdlib embedding after editing the `.rela` sources:
+
+```bash
+bash scripts/gen_stdlib.sh
+```
 
 ## Build
 
 ```bash
-cd moonbit
 moon check
 moon test
+moon run cmd/relanote -- help
+moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv
 ```
-
-The lexer is tested against the same fixtures as the Rust lexer, so any
-behavioural drift between the two implementations should surface
-immediately.

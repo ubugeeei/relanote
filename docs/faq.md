@@ -94,31 +94,29 @@ pnpm setup
 If you don't have Nix, see the [Installation
 guide](/guide/installation) for the per-tool manual setup.
 
-## What's the relationship between the Rust crates and the MoonBit packages?
+## Where does the implementation live?
 
-The Rust crates under `crates/` were the original implementation and
-remain the source of truth while the MoonBit rewrite catches up. The
-MoonBit packages under `moonbit/` mirror the Rust crates one-to-one;
-the goal is parity, then to retire the Rust tree.
+The implementation lives under `moonbit/`. Each package owns one part of
+the language pipeline, from source handling and tokenization through
+type-checking, evaluation, formatting, rendering, and editor support.
 
 Status:
 
-- `core`, `lexer`, `ast`, `stdlib` — full ports.
+- `core`, `lexer`, `ast`, `stdlib` — foundational packages.
 - `types`, `parser`, `resolver`, `eval`, `format`, `render`, `lsp`,
-  `cli` — public surface ported, internals being filled in.
+  `cli`, `web` — user-facing pipeline and tooling packages.
 
-See the rewrite roadmap at the bottom of the
+See the package map in the
 [main README](https://github.com/ubugeeei/relanote/blob/main/README.md).
 
 ## Why MoonBit?
 
 Three reasons that compound:
 
-- **Modern type system + value semantics** without the borrow
-  checker's tax for the things relanote doesn't need to fight (no
-  audio thread, no lifetimes, no `Rc<RefCell<...>>` dance).
-- **First-class WebAssembly** target — the browser playground and
-  the native CLI compile from one source tree.
+- **Modern type system + value semantics** for small compiler passes and
+  musical transformations.
+- **A single source tree** for the command-line tool, editor bridge, and
+  playground-facing functions.
 - **Fast compiles, small binaries.** The whole workspace builds in
   seconds; the playground bundle is small.
 

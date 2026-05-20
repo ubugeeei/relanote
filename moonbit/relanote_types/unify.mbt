@@ -1,7 +1,7 @@
 ///|
 /// Unify `t1` with `t2`. Returns `Ok(())` on success and records the
 /// resulting substitutions on `self`; otherwise returns the appropriate
-/// `TypeError`. Mirrors `TypeContext::unify` in the Rust crate.
+/// `TypeError`. Mirrors `TypeContext::unify` in the legacy implementation.
 pub fn TypeContext::unify(
   self : TypeContext,
   t1 : Type,
@@ -18,21 +18,21 @@ pub fn TypeContext::unify(
       if v1 == v2 {
         Ok(())
       } else if self.occurs_in(v1, Var(v2)) {
-        Err(OccursCheck(span=span))
+        Err(OccursCheck(span~))
       } else {
         self.add_substitution(v1, Var(v2))
         Ok(())
       }
     (Var(v), other) =>
       if self.occurs_in(v, other) {
-        Err(OccursCheck(span=span))
+        Err(OccursCheck(span~))
       } else {
         self.add_substitution(v, other)
         Ok(())
       }
     (other, Var(v)) =>
       if self.occurs_in(v, other) {
-        Err(OccursCheck(span=span))
+        Err(OccursCheck(span~))
       } else {
         self.add_substitution(v, other)
         Ok(())
@@ -64,12 +64,7 @@ pub fn TypeContext::unify(
         }
       }
     (ArrayTy(e1), ArrayTy(e2)) => self.unify(e1, e2, span)
-    (a, b) =>
-      if a == b {
-        Ok(())
-      } else {
-        Err(UnificationError(a, b, span))
-      }
+    (a, b) => if a == b { Ok(()) } else { Err(UnificationError(a, b, span)) }
   }
 }
 
@@ -84,8 +79,7 @@ pub fn TypeContext::occurs_in(
   let ty = self.apply(ty)
   match ty {
     Var(v) => v == needle
-    Function(a, b) =>
-      self.occurs_in(needle, a) || self.occurs_in(needle, b)
+    Function(a, b) => self.occurs_in(needle, a) || self.occurs_in(needle, b)
     Tuple(elems) => {
       for e in elems {
         if self.occurs_in(needle, e) {

@@ -1,6 +1,6 @@
 # Module System
 
-Relanote supports a Rust-style module system for organizing code across multiple files.
+Relanote supports a path-based module system for organizing code across multiple files.
 
 ## Module Declaration
 

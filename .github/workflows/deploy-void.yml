@@ -1,14 +1,8 @@
 name: Deploy to Void
 
-# Replacement candidate for `deploy.yml` (GitHub Pages). For safety the
-# trigger is `workflow_dispatch` only — the owner runs this manually
-# from the Actions tab. Once a manual run proves itself green end-to-end
-# and the `VOID_TOKEN` secret is wired up, a follow-up flips the trigger
-# to `push: branches: [main]` and removes the GitHub Pages workflow.
-#
-# Tracked in #16.
-
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -22,76 +16,58 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Install MoonBit toolchain
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-void-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-void-
+      - name: Check MoonBit workspace
+        working-directory: moonbit
+        run: |
+          moon check
+          moon test
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Compile Vapor Moon playground
+        working-directory: moonbit
+        run: moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile web/App.mbtv > ../dist.playground.snapshot
 
-      - name: Cache pnpm
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-void-${{ hashFiles('docs/pnpm-lock.yaml', 'web/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-void-
-
-      # Until #15 lands (drop the Rust WASM crate), Void's build still
-      # needs `wasm-pack` available. After #15 this step goes away.
-      - name: Install wasm-pack
-        uses: jetli/wasm-pack-action@v0.4.0
-
-      - name: Build WASM
-        run: wasm-pack build crates/relanote_wasm --target web --out-dir ../../web/wasm/pkg --release
-
-      - name: Install docs dependencies
-        run: cd docs && pnpm install
-
-      - name: Build docs
-        run: cd docs && pnpm build
-
-      - name: Install web dependencies
-        run: cd web && pnpm install
-
-      - name: Build web (playground)
-        run: cd web && pnpm generate
-        env:
-          NUXT_APP_BASE_URL: /playground/
-
-      - name: Combine outputs into dist/
+      - name: Assemble static site
         run: |
           mkdir -p dist
-          cp -r docs/.vitepress/dist/* dist/
+          cp README.md dist/README.md
+          cp -R docs dist/docs
+          cp -R examples dist/examples
           mkdir -p dist/playground
-          cp -r web/.output/public/* dist/playground/
+          cp moonbit/web/README.md dist/playground/README.md
+          cp moonbit/web/App.mbtv dist/playground/App.mbtv
+          cp dist.playground.snapshot dist/playground/compile.snapshot
+          cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>relanote</title>
+              <style>
+                body { font-family: system-ui, sans-serif; margin: 3rem auto; max-width: 760px; line-height: 1.6; padding: 0 1.5rem; }
+                code { background: #f3f4f6; padding: 0.15rem 0.3rem; border-radius: 0.25rem; }
+                a { color: #0f766e; }
+              </style>
+            </head>
+            <body>
+              <h1>relanote</h1>
+              <p>relanote is now built from the MoonBit workspace, with the playground view authored as a Vapor Moon component.</p>
+              <p><a href="/README.md">Read the project overview</a> or inspect <a href="/playground/App.mbtv">the playground component</a>.</p>
+            </body>
+          </html>
+          HTML
 
-      # `npx void deploy` reads `void.config.{js,ts,json}` if present and
+      # `npx void deploy` reads `void.config.json` and publishes `dist/`.
       # otherwise defaults to publishing the working tree to Void's edge.
       # The token comes from a repository secret called `VOID_TOKEN`.
       - name: Deploy to Void

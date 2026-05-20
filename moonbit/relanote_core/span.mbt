@@ -13,7 +13,7 @@ pub fn SourceId::new(raw : UInt) -> SourceId {
 
 ///|
 pub fn SourceId::dummy() -> SourceId {
-  { raw: 0xFFFFFFFF, }
+  { raw: 0xFFFFFFFF }
 }
 
 ///|
@@ -103,7 +103,7 @@ pub fn Span::merge(self : Span, other : Span) -> Span {
 
 ///|
 /// A value `node` paired with its `Span`. Mirrors `relanote_core::Spanned<T>`
-/// in the Rust crate.
+/// in the legacy implementation.
 pub struct Spanned[T] {
   node : T
   span : Span
@@ -130,7 +130,7 @@ pub fn[T] Spanned::span(self : Spanned[T]) -> Span {
 }
 
 ///|
-/// Interned identifier text. The Rust crate keeps a global intern table
+/// Interned identifier text. The legacy implementation keeps a global intern table
 /// for fast equality; until the MoonBit port gains a real interner this is
 /// just a `String` alias, so future code that wants to swap in an opaque
 /// handle only needs to update this one definition.

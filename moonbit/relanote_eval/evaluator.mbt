@@ -1,9 +1,8 @@
 ///|
 /// Evaluator — walks an AST `Program` and produces a top-level `Value`.
-/// The Rust crate's evaluator is the largest module in the repository
-/// (~1,500 lines plus 2,200 lines of builtins); the MoonBit port keeps
-/// the public surface stable so downstream call sites can be wired up
-/// before the walker arrives.
+/// The evaluator keeps the public surface stable for CLI, LSP, render,
+/// and playground callers while the language packages share one runtime
+/// value model.
 ///
 /// Tracked in #8.
 pub struct Evaluator {
@@ -94,7 +93,7 @@ fn Evaluator::eval_item(
     ExprStmt(expr) => self.eval_expr(expr)
     // Items the evaluator doesn't yet model — tuning / groove / effect /
     // mix declarations and module-level imports / exports / mod / use.
-    // These produce no value at runtime in the Rust crate either.
+    // These produce no value at runtime in the legacy implementation either.
     TuningDef(_) | GrooveDef(_) | EffectDef(_) | MixDef(_) => Ok(UnitV)
     Import(_) | Export(_) | Mod(_) | Use(_) => Ok(UnitV)
   }
@@ -117,8 +116,7 @@ pub fn Evaluator::eval_expr(
     Ident(ident) =>
       match self.env.lookup(ident.name()) {
         Some(v) => Ok(v)
-        None =>
-          Err(UndefinedVariable(name=ident.name(), span=expr.span()))
+        None => Err(UndefinedVariable(name=ident.name(), span=expr.span()))
       }
     Interval(lit) => Ok(IntervalV(lit.semitones()))
     AbsolutePitch(lit) => Ok(AbsolutePitchV(absolute_pitch_to_midi(lit)))
@@ -173,8 +171,8 @@ pub fn Evaluator::eval_expr(
     Unary(u) => self.eval_unary(u, expr.span())
     With(with_expr) =>
       // `e with { ... }` evaluates to the base; the modifications are
-      // taken care of by the resolver / type checker in the Rust crate.
-      // Matches the Rust evaluator's behaviour.
+      // taken care of by the resolver / type checker in the legacy implementation.
+      // Matches the previous evaluator's behaviour.
       self.eval_expr(with_expr.base())
     Over(left, right) => {
       // `a over b` is a polyrhythm — both sides play simultaneously.
@@ -197,7 +195,7 @@ pub fn Evaluator::eval_expr(
 
 ///|
 /// Evaluate a binary operator. Mirrors the dispatch in
-/// `crates/relanote_eval/src/eval.rs` for the basic arithmetic /
+/// legacy source for the basic arithmetic /
 /// logical / comparison cases. Block-level operators
 /// (`++` for Concat, `>>` for Compose) are deferred until the
 /// renderer-driving block operations land.
@@ -220,18 +218,16 @@ fn Evaluator::eval_binary(
     Mul => arithmetic(left, right, fn(a, b) { a * b }, fn(a, b) { a * b }, span)
     Div =>
       match (left, right) {
-        (IntV(_), IntV(0L)) => Err(DivisionByZero(span=span))
+        (IntV(_), IntV(0L)) => Err(DivisionByZero(span~))
         (IntV(a), IntV(b)) => Ok(IntV(a / b))
         (FloatV(a), FloatV(b)) => Ok(FloatV(a / b))
-        _ =>
-          Err(TypeError(expected="numeric", found="other", span=span))
+        _ => Err(TypeError(expected="numeric", found="other", span~))
       }
     Mod =>
       match (left, right) {
-        (IntV(_), IntV(0L)) => Err(DivisionByZero(span=span))
+        (IntV(_), IntV(0L)) => Err(DivisionByZero(span~))
         (IntV(a), IntV(b)) => Ok(IntV(a % b))
-        _ =>
-          Err(TypeError(expected="Int", found="other", span=span))
+        _ => Err(TypeError(expected="Int", found="other", span~))
       }
     EqOp => Ok(BoolV(values_equal(left, right)))
     NeOp => Ok(BoolV(!values_equal(left, right)))
@@ -242,12 +238,12 @@ fn Evaluator::eval_binary(
     And =>
       match (left, right) {
         (BoolV(a), BoolV(b)) => Ok(BoolV(a && b))
-        _ => Err(TypeError(expected="Bool", found="other", span=span))
+        _ => Err(TypeError(expected="Bool", found="other", span~))
       }
     Or =>
       match (left, right) {
         (BoolV(a), BoolV(b)) => Ok(BoolV(a || b))
-        _ => Err(TypeError(expected="Bool", found="other", span=span))
+        _ => Err(TypeError(expected="Bool", found="other", span~))
       }
     // Block-level operators land alongside the renderer port.
     Concat | Compose => Ok(Placeholder)
@@ -265,7 +261,7 @@ fn arithmetic(
   match (left, right) {
     (IntV(a), IntV(b)) => Ok(IntV(int_op(a, b)))
     (FloatV(a), FloatV(b)) => Ok(FloatV(float_op(a, b)))
-    _ => Err(TypeError(expected="numeric", found="other", span=span))
+    _ => Err(TypeError(expected="numeric", found="other", span~))
   }
 }
 
@@ -280,7 +276,7 @@ fn compare(
   match (left, right) {
     (IntV(a), IntV(b)) => Ok(BoolV(int_op(a, b)))
     (FloatV(a), FloatV(b)) => Ok(BoolV(float_op(a, b)))
-    _ => Err(TypeError(expected="numeric", found="other", span=span))
+    _ => Err(TypeError(expected="numeric", found="other", span~))
   }
 }
 
@@ -319,12 +315,12 @@ fn Evaluator::eval_unary(
       match operand {
         IntV(n) => Ok(IntV(-n))
         FloatV(f) => Ok(FloatV(-f))
-        _ => Err(TypeError(expected="numeric", found="other", span=span))
+        _ => Err(TypeError(expected="numeric", found="other", span~))
       }
     Not =>
       match operand {
         BoolV(b) => Ok(BoolV(!b))
-        _ => Err(TypeError(expected="Bool", found="other", span=span))
+        _ => Err(TypeError(expected="Bool", found="other", span~))
       }
   }
 }
@@ -345,13 +341,10 @@ fn Evaluator::eval_if(
     BoolV(false) =>
       match if_expr.else_branch() {
         Some(else_b) => self.eval_expr(else_b)
-        // `if c then a` with no else returns Unit, matching the Rust crate.
+        // `if c then a` with no else returns Unit, matching the legacy implementation.
         None => Ok(UnitV)
       }
-    _ =>
-      Err(
-        TypeError(expected="Bool", found="other", span=span),
-      )
+    _ => Err(TypeError(expected="Bool", found="other", span~))
   }
 }
 
@@ -400,7 +393,7 @@ fn Evaluator::eval_index(
     (ArrayV(elems), IntV(i)) => {
       let n = elems.length()
       if i < 0L || i.to_int() >= n {
-        Err(IndexOutOfBounds(index=i, len=n, span=span))
+        Err(IndexOutOfBounds(index=i, len=n, span~))
       } else {
         Ok(elems[i.to_int()])
       }
@@ -408,14 +401,18 @@ fn Evaluator::eval_index(
     (TupleV(elems), IntV(i)) => {
       let n = elems.length()
       if i < 0L || i.to_int() >= n {
-        Err(IndexOutOfBounds(index=i, len=n, span=span))
+        Err(IndexOutOfBounds(index=i, len=n, span~))
       } else {
         Ok(elems[i.to_int()])
       }
     }
     _ =>
       Err(
-        TypeError(expected="Array or Tuple with Int index", found="other", span=span),
+        TypeError(
+          expected="Array or Tuple with Int index",
+          found="other",
+          span~,
+        ),
       )
   }
 }
@@ -458,7 +455,7 @@ fn Evaluator::call(
     ClosureV(def, captured) =>
       self.run_function(def.params(), def.body(), captured, args, span)
     BuiltinV(name) => call_builtin(name, args, span)
-    _ => Err(NotAFunction(span=span))
+    _ => Err(NotAFunction(span~))
   }
 }
 
@@ -478,20 +475,14 @@ fn call_builtin(
     "double_time" => builtin_double_time(args, span)
     "octave_up" => builtin_shift_octaves(args, span, 1)
     "octave_down" => builtin_shift_octaves(args, span, -1)
-    other =>
-      Err(
-        Custom(
-          message="unknown builtin: " + other,
-          span=span,
-        ),
-      )
+    other => Err(Custom(message="unknown builtin: " + other, span~))
   }
 }
 
 ///|
 /// `octave_up` / `octave_down` — shift every note in a block by
 /// `delta` octaves (positive for up, negative for down). Mirrors the
-/// `builtin_octave_up` / `builtin_octave_down` helpers in the Rust
+/// `builtin_octave_up` / `builtin_octave_down` helpers in the legacy
 /// crate, which both delegate to a `transpose_slot` walker.
 fn builtin_shift_octaves(
   args : Array[Value],
@@ -499,11 +490,11 @@ fn builtin_shift_octaves(
   delta : Int,
 ) -> Result[Value, EvalError] {
   if args.length() != 1 {
-    return Err(WrongArity(expected=1, got=args.length(), span=span))
+    return Err(WrongArity(expected=1, got=args.length(), span~))
   }
   match args[0] {
     BlockV(block) => Ok(BlockV(shift_block_octaves(block, delta)))
-    _ => Err(TypeError(expected="Block", found="other", span=span))
+    _ => Err(TypeError(expected="Block", found="other", span~))
   }
 }
 
@@ -511,10 +502,12 @@ fn builtin_shift_octaves(
 fn shift_block_octaves(block : @ast.Block, delta : Int) -> @ast.Block {
   let new_slots : Array[@core.Spanned[@ast.Slot]] = []
   for spanned in block.slots() {
-    new_slots.push(@core.Spanned::new(
-      shift_slot_octaves(spanned.node(), delta),
-      spanned.span(),
-    ))
+    new_slots.push(
+      @core.Spanned::new(
+        shift_slot_octaves(spanned.node(), delta),
+        spanned.span(),
+      ),
+    )
   }
   match block.beats() {
     Some(b) => @ast.Block::with_beats(new_slots, b)
@@ -535,10 +528,9 @@ fn shift_slot_octaves(slot : @ast.Slot, delta : Int) -> @ast.Slot {
     @ast.Chord(pitches~, articulations~, duration~) => {
       let new_pitches : Array[@core.Spanned[@ast.Pitch]] = []
       for p in pitches {
-        new_pitches.push(@core.Spanned::new(
-          shift_pitch_octaves(p.node(), delta),
-          p.span(),
-        ))
+        new_pitches.push(
+          @core.Spanned::new(shift_pitch_octaves(p.node(), delta), p.span()),
+        )
       }
       @ast.Chord(pitches=new_pitches, articulations~, duration~)
     }
@@ -555,47 +547,43 @@ fn shift_pitch_octaves(pitch : @ast.Pitch, delta : Int) -> @ast.Pitch {
   let cents_step = (1200 * delta).to_double()
   match pitch {
     @ast.ScaleIndex(n) => @ast.ScaleIndex(n + degree_step)
-    @ast.ScaleIndexMod(n, accs) =>
-      @ast.ScaleIndexMod(n + degree_step, accs)
+    @ast.ScaleIndexMod(n, accs) => @ast.ScaleIndexMod(n + degree_step, accs)
     @ast.Interval(lit) =>
       @ast.Interval(
-        @ast.IntervalLit::new(lit.quality(), lit.degree() + degree_step)
-          .with_accidentals(lit.accidentals()),
+        @ast.IntervalLit::new(lit.quality(), lit.degree() + degree_step).with_accidentals(
+          lit.accidentals(),
+        ),
       )
     @ast.Microtone(c) => @ast.Microtone(c + cents_step)
     @ast.MicrotonalInterval(lit, c) =>
       @ast.MicrotonalInterval(lit, c + cents_step)
-    @ast.ScaleIndexCents(n, c) =>
-      @ast.ScaleIndexCents(n + degree_step, c)
+    @ast.ScaleIndexCents(n, c) => @ast.ScaleIndexCents(n + degree_step, c)
     @ast.Root => @ast.Root
   }
 }
 
 ///|
 /// `rotate : Int -> Block -> Block` — shift slots left by `n` positions.
-/// Negative `n` rotates right. Mirrors the Rust crate's
+/// Negative `n` rotates right. Mirrors the legacy implementation
 /// `builtin_rotate` which accepts either argument order.
 fn builtin_rotate(
   args : Array[Value],
   span : @core.Span,
 ) -> Result[Value, EvalError] {
   if args.length() != 2 {
-    return Err(WrongArity(expected=2, got=args.length(), span=span))
+    return Err(WrongArity(expected=2, got=args.length(), span~))
   }
   let (n_raw, block) = match (args[0], args[1]) {
     (IntV(n), BlockV(b)) => (n.to_int(), b)
     (BlockV(b), IntV(n)) => (n.to_int(), b)
-    _ =>
-      return Err(
-        TypeError(expected="Int and Block", found="other", span=span),
-      )
+    _ => return Err(TypeError(expected="Int and Block", found="other", span~))
   }
   let len = block.slots().length()
   if len == 0 {
     return Ok(BlockV(block))
   }
   // Normalise n to [0, len) — Moonbit `%` keeps the sign of the dividend.
-  let n = ((n_raw % len) + len) % len
+  let n = (n_raw % len + len) % len
   let rotated_slots : Array[@core.Spanned[@ast.Slot]] = []
   let mut i = n
   while i < len {
@@ -616,14 +604,14 @@ fn builtin_rotate(
 
 ///|
 /// `double_time : Block -> Block` — halve the block's beats, keeping
-/// the slot list intact. Mirrors `builtin_double_time` in the Rust
-/// crate's `block.rs` builtins module.
+/// the slot list intact. Mirrors `builtin_double_time` in the legacy
+/// block builtins module.
 fn builtin_double_time(
   args : Array[Value],
   span : @core.Span,
 ) -> Result[Value, EvalError] {
   if args.length() != 1 {
-    return Err(WrongArity(expected=1, got=args.length(), span=span))
+    return Err(WrongArity(expected=1, got=args.length(), span~))
   }
   match args[0] {
     BlockV(block) => {
@@ -633,21 +621,20 @@ fn builtin_double_time(
       }
       Ok(BlockV(@ast.Block::with_beats(block.slots(), new_beats)))
     }
-    _ =>
-      Err(TypeError(expected="Block", found="other", span=span))
+    _ => Err(TypeError(expected="Block", found="other", span~))
   }
 }
 
 ///|
 /// `reverse : Block -> Block` — return a block with its slots reversed
-/// in source order. The Rust crate matches the same shape; see
-/// `crates/relanote_eval/src/builtins/block.rs::builtin_reverse`.
+/// in source order. The legacy implementation matches the same shape; see
+/// legacy source.
 fn builtin_reverse(
   args : Array[Value],
   span : @core.Span,
 ) -> Result[Value, EvalError] {
   if args.length() != 1 {
-    return Err(WrongArity(expected=1, got=args.length(), span=span))
+    return Err(WrongArity(expected=1, got=args.length(), span~))
   }
   match args[0] {
     BlockV(block) => {
@@ -663,10 +650,7 @@ fn builtin_reverse(
       }
       Ok(BlockV(new_block))
     }
-    _ =>
-      Err(
-        TypeError(expected="Block", found="other", span=span),
-      )
+    _ => Err(TypeError(expected="Block", found="other", span~))
   }
 }
 
@@ -678,17 +662,14 @@ fn builtin_repeat(
   span : @core.Span,
 ) -> Result[Value, EvalError] {
   if args.length() != 2 {
-    return Err(WrongArity(expected=2, got=args.length(), span=span))
+    return Err(WrongArity(expected=2, got=args.length(), span~))
   }
   // Support both argument orders: (Int, Block) and (Block, Int) so
   // pipe and direct application both feel natural.
   let (n, block) = match (args[0], args[1]) {
     (IntV(n), BlockV(b)) => (n.to_int(), b)
     (BlockV(b), IntV(n)) => (n.to_int(), b)
-    _ =>
-      return Err(
-        TypeError(expected="Int and Block", found="other", span=span),
-      )
+    _ => return Err(TypeError(expected="Int and Block", found="other", span~))
   }
   let new_slots : Array[@core.Spanned[@ast.Slot]] = []
   let mut k = 0
@@ -719,7 +700,7 @@ fn Evaluator::run_function(
   span : @core.Span,
 ) -> Result[Value, EvalError] {
   if args.length() != params.length() {
-    return Err(WrongArity(expected=params.length(), got=args.length(), span=span))
+    return Err(WrongArity(expected=params.length(), got=args.length(), span~))
   }
   let call_env = Env::with_parent(captured)
   let mut i = 0
@@ -758,7 +739,7 @@ fn absolute_pitch_to_midi(lit : @ast.AbsolutePitchLit) -> Int {
 }
 
 ///|
-/// Seed builtin bindings into the runtime environment. The Rust crate
+/// Seed builtin bindings into the runtime environment. The legacy implementation
 /// evaluates the relanote-source prelude (`@stdlib.PRELUDE`) for scale
 /// / chord / synth definitions; this port seeds the host-implemented
 /// combinators directly as `BuiltinV` values. Future sub-PRs will

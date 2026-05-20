@@ -1,7 +1,8 @@
 // Black-box tests for the MoonBit lexer port. These mirror the assertions
-// in `crates/relanote_lexer/src/lexer.rs` and `token.rs` so any behavioural
+// in the tokenizer and token definitions so any behavioural
 // drift between the two implementations should fail one of these tests.
 
+///|
 fn lex(input : String) -> Array[TokenKind] {
   let source = @core.Source::from_string("test", input)
   let tokens = Lexer::new(source).tokenize()
@@ -16,32 +17,31 @@ fn lex(input : String) -> Array[TokenKind] {
 // Augmented interval vs absolute pitch disambiguation
 // ============================================================
 
+///|
 test "A4 is Augmented 4th, not an absolute pitch" {
   let toks = lex("A4")
-  assert_true(
-    toks[0] ==
-    Interval(IntervalData::new(Augmented, 4, [])),
-  )
+  assert_true(toks[0] == Interval(IntervalData::new(Augmented, 4, [])))
 }
 
+///|
 test "A5 is Augmented 5th" {
   let toks = lex("A5")
-  assert_true(
-    toks[0] ==
-    Interval(IntervalData::new(Augmented, 5, [])),
-  )
+  assert_true(toks[0] == Interval(IntervalData::new(Augmented, 5, [])))
 }
 
+///|
 test "A#4 is the absolute pitch A sharp octave 4" {
   let toks = lex("A#4")
   assert_true(toks[0] == AbsolutePitch(AbsolutePitchData::new('A', 1, 4)))
 }
 
+///|
 test "Ab4 is the absolute pitch A flat octave 4" {
   let toks = lex("Ab4")
   assert_true(toks[0] == AbsolutePitch(AbsolutePitchData::new('A', -1, 4)))
 }
 
+///|
 test "C4 is the absolute pitch C octave 4" {
   let toks = lex("C4")
   assert_true(toks[0] == AbsolutePitch(AbsolutePitchData::new('C', 0, 4)))
@@ -51,26 +51,29 @@ test "C4 is the absolute pitch C octave 4" {
 // Interval payload parsing
 // ============================================================
 
+///|
 test "interval M3 has Major quality, degree 3" {
   let toks = lex("M3")
   assert_true(toks[0] == Interval(IntervalData::new(Major, 3, [])))
 }
 
+///|
 test "interval P5+ has one Sharp accidental" {
   let toks = lex("P5+")
   assert_true(toks[0] == Interval(IntervalData::new(Perfect, 5, [Sharp])))
 }
 
+///|
 test "interval m7- has one Flat accidental" {
   let toks = lex("m7-")
   assert_true(toks[0] == Interval(IntervalData::new(Minor, 7, [Flat])))
 }
 
+///|
 test "interval A4++ has two Sharp accidentals" {
   let toks = lex("A4++")
   assert_true(
-    toks[0] ==
-    Interval(IntervalData::new(Augmented, 4, [Sharp, Sharp])),
+    toks[0] == Interval(IntervalData::new(Augmented, 4, [Sharp, Sharp])),
   )
 }
 
@@ -78,6 +81,7 @@ test "interval A4++ has two Sharp accidentals" {
 // Basic token stream tests
 // ============================================================
 
+///|
 test "let binding lexes to Let Ident Equals Interval" {
   let toks = lex("let x = M3")
   assert_true(toks[0] == Let)
@@ -89,6 +93,7 @@ test "let binding lexes to Let Ident Equals Interval" {
   }
 }
 
+///|
 test "pipe block lexes correctly" {
   let toks = lex("| R M3 P5 |")
   assert_true(toks[0] == Pipe)
@@ -104,6 +109,7 @@ test "pipe block lexes correctly" {
   assert_true(toks[4] == Pipe)
 }
 
+///|
 test "lambda + arrow + pipe operator" {
   let toks = lex("\\x -> x |> reverse")
   assert_true(toks[0] == Lambda)
@@ -114,6 +120,7 @@ test "lambda + arrow + pipe operator" {
   assert_true(toks[5] == Ident("reverse"))
 }
 
+///|
 test "dynamics are plain identifiers" {
   let toks = lex("pp mf ff")
   assert_true(toks[0] == Ident("pp"))
@@ -121,12 +128,14 @@ test "dynamics are plain identifiers" {
   assert_true(toks[2] == Ident("ff"))
 }
 
+///|
 test "string literals" {
   let toks = lex("\"Piano\" \"Hello World\"")
   assert_true(toks[0] == StringLit("Piano"))
   assert_true(toks[1] == StringLit("Hello World"))
 }
 
+///|
 test "line comment is preserved including the leading semicolon" {
   let toks = lex("let x = 1 ; this is a comment\nlet y = 2")
   assert_true(toks[0] == Let)
@@ -142,6 +151,7 @@ test "line comment is preserved including the leading semicolon" {
 // Misc keyword / operator coverage
 // ============================================================
 
+///|
 test "scale definition opening tokens" {
   let toks = lex("scale Major = { R, M2, M3, P4, P5, M6, M7 }")
   assert_true(toks[0] == Scale)
@@ -151,6 +161,7 @@ test "scale definition opening tokens" {
   assert_true(toks[4] == Root)
 }
 
+///|
 test "articulation markers attach to notes" {
   let toks = lex("| R* M3^ P5~ |")
   assert_true(toks[0] == Pipe)
@@ -163,6 +174,7 @@ test "articulation markers attach to notes" {
   assert_true(toks[4] == Accent)
 }
 
+///|
 test "function application with pipe operator" {
   let toks = lex("melody_motif |> repeat(2)")
   assert_true(toks[0] == Ident("melody_motif"))
@@ -173,6 +185,7 @@ test "function application with pipe operator" {
   assert_true(toks[5] == RParen)
 }
 
+///|
 test "set / Key keywords" {
   let toks = lex("set Key = C4")
   assert_true(toks[0] == Set)
@@ -180,12 +193,14 @@ test "set / Key keywords" {
   assert_true(toks[2] == Equals)
 }
 
+///|
 test "set tempo treats tempo as identifier" {
   let toks = lex("set tempo = 120")
   assert_true(toks[0] == Set)
   assert_true(toks[1] == Ident("tempo"))
 }
 
+///|
 test "concat operator ++" {
   let toks = lex("a ++ b")
   assert_true(toks[0] == Ident("a"))
@@ -193,6 +208,7 @@ test "concat operator ++" {
   assert_true(toks[2] == Ident("b"))
 }
 
+///|
 test "arithmetic operators" {
   let toks = lex("* / %")
   assert_true(toks[0] == Star)
@@ -200,6 +216,7 @@ test "arithmetic operators" {
   assert_true(toks[2] == Percent)
 }
 
+///|
 test "comparison operators" {
   let toks = lex("a == b != c <= d >= e < f > g")
   assert_true(toks[1] == EqEq)
@@ -210,6 +227,7 @@ test "comparison operators" {
   assert_true(toks[11] == RAngle)
 }
 
+///|
 test "logical operators" {
   let toks = lex("!a && b || c")
   assert_true(toks[0] == Bang)
@@ -217,6 +235,7 @@ test "logical operators" {
   assert_true(toks[4] == OrOr)
 }
 
+///|
 test "star keeps staccato suffix behaviour" {
   let toks = lex("| R* <3>* |")
   assert_true(toks[0] == Pipe)
@@ -224,6 +243,7 @@ test "star keeps staccato suffix behaviour" {
   assert_true(toks[6] == Staccato)
 }
 
+///|
 test "angle brackets around scale degree" {
   let toks = lex("| <1> <3> <5> |")
   assert_true(toks[0] == Pipe)
@@ -232,6 +252,7 @@ test "angle brackets around scale degree" {
   assert_true(toks[3] == RAngle)
 }
 
+///|
 test "rest dash inside a pipe block" {
   let toks = lex("| R - M3 |")
   assert_true(toks[0] == Pipe)
@@ -239,6 +260,7 @@ test "rest dash inside a pipe block" {
   assert_true(toks[2] == Minus)
 }
 
+///|
 test "duration via colon" {
   let toks = lex("| R:2 M3:4 |")
   assert_true(toks[0] == Pipe)
@@ -247,6 +269,7 @@ test "duration via colon" {
   assert_true(toks[3] == Integer(2))
 }
 
+///|
 test "control flow keywords" {
   let toks = lex("if true then a else b")
   assert_true(toks[0] == If)
@@ -255,6 +278,7 @@ test "control flow keywords" {
   assert_true(toks[4] == Else)
 }
 
+///|
 test "match expression header" {
   let toks = lex("match x with | a -> b")
   assert_true(toks[0] == Match)
@@ -263,6 +287,7 @@ test "match expression header" {
   assert_true(toks[5] == Arrow)
 }
 
+///|
 test "integer literals" {
   let toks = lex("0 42 123")
   assert_true(toks[0] == Integer(0))
@@ -270,6 +295,7 @@ test "integer literals" {
   assert_true(toks[2] == Integer(123))
 }
 
+///|
 test "float literals" {
   let toks = lex("0.0 3.14 0.5")
   assert_true(toks[0] == Float(0.0))
@@ -277,6 +303,7 @@ test "float literals" {
   assert_true(toks[2] == Float(0.5))
 }
 
+///|
 test "bracket family" {
   let toks = lex("( ) [ ] { }")
   assert_true(toks[0] == LParen)
@@ -287,6 +314,7 @@ test "bracket family" {
   assert_true(toks[5] == RBrace)
 }
 
+///|
 test "newlines are preserved between tokens" {
   let toks = lex("let x = 42\nx")
   assert_true(toks[0] == Let)
@@ -297,6 +325,7 @@ test "newlines are preserved between tokens" {
   assert_true(toks[5] == Ident("x"))
 }
 
+///|
 test "consecutive newlines are kept as separate tokens" {
   let toks = lex("a\n\nb")
   assert_true(toks[0] == Ident("a"))
@@ -305,6 +334,7 @@ test "consecutive newlines are kept as separate tokens" {
   assert_true(toks[3] == Ident("b"))
 }
 
+///|
 test "let ... in" {
   let toks = lex("let x = 42 in x")
   assert_true(toks[0] == Let)
@@ -316,6 +346,7 @@ test "let ... in" {
   assert_true(toks[6] == Eof)
 }
 
+///|
 test "logical keywords lex as identifiers" {
   let toks = lex("a and b or not c")
   assert_true(toks[0] == Ident("a"))
@@ -326,6 +357,7 @@ test "logical keywords lex as identifiers" {
   assert_true(toks[5] == Ident("c"))
 }
 
+///|
 test "absolute pitches around the staff" {
   let toks = lex("C4 D4 Bb3 F#5")
   match toks[0] {
@@ -346,6 +378,7 @@ test "absolute pitches around the staff" {
   }
 }
 
+///|
 test "interval list with modifiers" {
   let toks = lex("P5+ M3- P8++")
   match toks[0] {
@@ -362,6 +395,7 @@ test "interval list with modifiers" {
   }
 }
 
+///|
 test "section header" {
   let toks = lex("section \"Intro\" { layer [ ] }")
   assert_true(toks[0] == Section)
@@ -370,6 +404,7 @@ test "section header" {
   assert_true(toks[3] == Layer)
 }
 
+///|
 test "with keyword after a Capitalised identifier" {
   let toks = lex("Major with { P4+ }")
   assert_true(toks[0] == Ident("Major"))
@@ -377,6 +412,7 @@ test "with keyword after a Capitalised identifier" {
   assert_true(toks[2] == LBrace)
 }
 
+///|
 test "env(pp, mf, 4bars)" {
   let toks = lex("env(pp, mf, 4bars)")
   assert_true(toks[0] == Env)
@@ -388,11 +424,13 @@ test "env(pp, mf, 4bars)" {
 // MIDI conversion sanity check
 // ============================================================
 
+///|
 test "C4 maps to MIDI note 60" {
   let p = AbsolutePitchData::new('C', 0, 4)
   assert_eq(p.to_midi_note(), 60)
 }
 
+///|
 test "A4 absolute pitch maps to MIDI note 69" {
   let p = AbsolutePitchData::new('A', 0, 4)
   assert_eq(p.to_midi_note(), 69)
@@ -402,6 +440,7 @@ test "A4 absolute pitch maps to MIDI note 69" {
 // Source / Span smoke tests
 // ============================================================
 
+///|
 test "Source::location maps offsets to 1-based line and column" {
   let s = @core.Source::from_string("test", "hello\nworld\n")
   assert_true(s.location(0) == @core.Location::new(1, 1))
@@ -410,6 +449,7 @@ test "Source::location maps offsets to 1-based line and column" {
   assert_true(s.location(11) == @core.Location::new(2, 6))
 }
 
+///|
 test "Source::line returns each line trimmed of its newline" {
   let s = @core.Source::from_string("test", "hello\nworld\nfoo")
   assert_true(s.line(1) == Some("hello"))
@@ -419,6 +459,7 @@ test "Source::line returns each line trimmed of its newline" {
   assert_true(s.line(0) == None)
 }
 
+///|
 test "Span merge combines two ranges" {
   let a = @core.Span::new(@core.SourceId::dummy(), 5, 10)
   let b = @core.Span::new(@core.SourceId::dummy(), 8, 15)

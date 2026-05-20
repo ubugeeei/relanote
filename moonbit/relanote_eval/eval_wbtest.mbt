@@ -2,6 +2,7 @@
 // don't have value equality), so these tests pattern-match on lookups
 // instead of using `==`.
 
+///|
 test "Env::new is empty" {
   let env = Env::new()
   match env.lookup("x") {
@@ -10,6 +11,7 @@ test "Env::new is empty" {
   }
 }
 
+///|
 test "Env::bind / lookup" {
   let env = Env::new()
   env.bind("x", IntV(42L))
@@ -19,6 +21,7 @@ test "Env::bind / lookup" {
   }
 }
 
+///|
 test "Env::with_parent falls back to parent scope" {
   let outer = Env::new()
   outer.bind("x", IntV(1L))
@@ -34,6 +37,7 @@ test "Env::with_parent falls back to parent scope" {
   }
 }
 
+///|
 test "Evaluator::eval_program returns UnitV on an empty program" {
   let ev = Evaluator::new()
   let prog = @ast.Program::empty()
@@ -44,14 +48,13 @@ test "Evaluator::eval_program returns UnitV on an empty program" {
   }
 }
 
+///|
 test "Evaluator::eval_program threads the final expression" {
   let ev = Evaluator::new()
   let stmt : @ast.Item = @ast.ExprStmt(
     @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy()),
   )
-  let prog = @ast.Program::new([
-    @core.Spanned::new(stmt, @core.Span::dummy()),
-  ])
+  let prog = @ast.Program::new([@core.Spanned::new(stmt, @core.Span::dummy())])
   match ev.eval_program(prog) {
     Ok(IntV(7L)) => ()
     Ok(_) => abort("expected the last expression to surface")
@@ -59,22 +62,16 @@ test "Evaluator::eval_program threads the final expression" {
   }
 }
 
+///|
 test "Evaluator binds let value into the environment" {
   let ev = Evaluator::new()
   let pat = @core.Spanned::new(
     @ast.Pattern::Ident(@ast.Ident::new("count")),
     @core.Span::dummy(),
   )
-  let value = @core.Spanned::new(
-    @ast.Expr::Integer(11L),
-    @core.Span::dummy(),
-  )
-  let item : @ast.Item = @ast.LetBinding(
-    @ast.LetBinding::new(pat, None, value),
-  )
-  let prog = @ast.Program::new([
-    @core.Spanned::new(item, @core.Span::dummy()),
-  ])
+  let value = @core.Spanned::new(@ast.Expr::Integer(11L), @core.Span::dummy())
+  let item : @ast.Item = @ast.LetBinding(@ast.LetBinding::new(pat, None, value))
+  let prog = @ast.Program::new([@core.Spanned::new(item, @core.Span::dummy())])
   match ev.eval_program(prog) {
     Ok(_) => ()
     Err(e) => abort("let binding should evaluate: " + e.message())
@@ -85,13 +82,12 @@ test "Evaluator binds let value into the environment" {
   }
 }
 
+///|
 test "Evaluator binds scale def by name" {
   let ev = Evaluator::new()
   let def = @ast.ScaleDef::new(@ast.Ident::new("Mode"), None, [])
   let item : @ast.Item = @ast.ScaleDef(def)
-  let prog = @ast.Program::new([
-    @core.Spanned::new(item, @core.Span::dummy()),
-  ])
+  let prog = @ast.Program::new([@core.Spanned::new(item, @core.Span::dummy())])
   let _ = ev.eval_program(prog)
   match ev.env().lookup("Mode") {
     Some(ScaleV(_)) => ()
@@ -99,6 +95,7 @@ test "Evaluator binds scale def by name" {
   }
 }
 
+///|
 test "Evaluator reports undefined identifier" {
   let ev = Evaluator::new()
   let expr_item : @ast.Item = @ast.ExprStmt(
@@ -113,11 +110,11 @@ test "Evaluator reports undefined identifier" {
   match ev.eval_program(prog) {
     Ok(_) => abort("expected an UndefinedVariable error")
     Err(UndefinedVariable(name~, ..)) => assert_eq(name, "nope")
-    Err(other) =>
-      abort("expected UndefinedVariable, got " + other.message())
+    Err(other) => abort("expected UndefinedVariable, got " + other.message())
   }
 }
 
+///|
 test "EvalError::span is None for module-level errors" {
   let mn = ModuleNotFound(module_name="m", path="p", reason="r")
   assert_true(mn.span() == None)
@@ -125,26 +122,25 @@ test "EvalError::span is None for module-level errors" {
   assert_true(cd.span() == None)
 }
 
+///|
 test "EvalError::message renders WrongArity verbatim" {
   let err = WrongArity(expected=2, got=3, span=@core.Span::dummy())
   assert_eq(err.message(), "wrong number of arguments: expected 2, got 3")
 }
 
+///|
 test "Interval expr evaluates to a semitone offset" {
   let ev = Evaluator::new()
   let m3 = @ast.IntervalLit::new(@lexer.Major, 3)
-  let expr = @core.Spanned::new(
-    @ast.Expr::Interval(m3),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Interval(m3), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(IntervalV(4)) => ()
-    Ok(IntervalV(n)) =>
-      abort("expected M3 = 4 semitones, got " + n.to_string())
+    Ok(IntervalV(n)) => abort("expected M3 = 4 semitones, got " + n.to_string())
     _ => abort("expected an IntervalV from M3")
   }
 }
 
+///|
 test "Absolute pitch C4 lifts to MIDI 60" {
   let ev = Evaluator::new()
   let c4 = @ast.AbsolutePitchLit::new('C', 0, 4)
@@ -154,12 +150,12 @@ test "Absolute pitch C4 lifts to MIDI 60" {
   )
   match ev.eval_expr(expr) {
     Ok(AbsolutePitchV(60)) => ()
-    Ok(AbsolutePitchV(n)) =>
-      abort("expected C4 = 60, got " + n.to_string())
+    Ok(AbsolutePitchV(n)) => abort("expected C4 = 60, got " + n.to_string())
     _ => abort("expected an AbsolutePitchV from C4")
   }
 }
 
+///|
 test "Absolute pitch A4 lifts to MIDI 69" {
   let ev = Evaluator::new()
   let a4 = @ast.AbsolutePitchLit::new('A', 0, 4)
@@ -169,37 +165,33 @@ test "Absolute pitch A4 lifts to MIDI 69" {
   )
   match ev.eval_expr(expr) {
     Ok(AbsolutePitchV(69)) => ()
-    Ok(AbsolutePitchV(n)) =>
-      abort("expected A4 = 69, got " + n.to_string())
+    Ok(AbsolutePitchV(n)) => abort("expected A4 = 69, got " + n.to_string())
     _ => abort("expected an AbsolutePitchV from A4")
   }
 }
 
+///|
 test "Block expr surfaces the AST block" {
   let ev = Evaluator::new()
   let block = @ast.Block::new([])
-  let expr = @core.Spanned::new(
-    @ast.Expr::Block(block),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(BlockV(_)) => ()
     _ => abort("expected a BlockV")
   }
 }
 
+///|
 test "Root expr produces RootV" {
   let ev = Evaluator::new()
-  let expr = @core.Spanned::new(
-    @ast.Expr::Root,
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Root, @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(RootV) => ()
     _ => abort("expected RootV")
   }
 }
 
+///|
 test "Identity lambda applied to an int returns the int" {
   let ev = Evaluator::new()
   let pat = @core.Spanned::new(
@@ -214,10 +206,7 @@ test "Identity lambda applied to an int returns the int" {
     @ast.Expr::Lambda(@ast.Lambda::new([pat], body)),
     @core.Span::dummy(),
   )
-  let arg = @core.Spanned::new(
-    @ast.Expr::Integer(99L),
-    @core.Span::dummy(),
-  )
+  let arg = @core.Spanned::new(@ast.Expr::Integer(99L), @core.Span::dummy())
   let app = @core.Spanned::new(
     @ast.Expr::Application(@ast.Application::new(lambda, [arg])),
     @core.Span::dummy(),
@@ -229,6 +218,7 @@ test "Identity lambda applied to an int returns the int" {
   }
 }
 
+///|
 test "Pipe `x |> f` desugars to f(x)" {
   let ev = Evaluator::new()
   // f = \v -> v
@@ -256,10 +246,7 @@ test "Pipe `x |> f` desugars to f(x)" {
     @ast.Pattern::Ident(@ast.Ident::new("x")),
     @core.Span::dummy(),
   )
-  let x_value = @core.Spanned::new(
-    @ast.Expr::Integer(7L),
-    @core.Span::dummy(),
-  )
+  let x_value = @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy())
   let let_x : @ast.Item = @ast.LetBinding(
     @ast.LetBinding::new(x_pat, None, x_value),
   )
@@ -292,21 +279,14 @@ test "Pipe `x |> f` desugars to f(x)" {
   }
 }
 
+///|
 test "Calling a non-function reports NotAFunction" {
   let ev = Evaluator::new()
   let app = @core.Spanned::new(
     @ast.Expr::Application(
       @ast.Application::new(
-        @core.Spanned::new(
-          @ast.Expr::Integer(5L),
-          @core.Span::dummy(),
-        ),
-        [
-          @core.Spanned::new(
-            @ast.Expr::Integer(1L),
-            @core.Span::dummy(),
-          ),
-        ],
+        @core.Spanned::new(@ast.Expr::Integer(5L), @core.Span::dummy()),
+        [@core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy())],
       ),
     ),
     @core.Span::dummy(),
@@ -314,11 +294,11 @@ test "Calling a non-function reports NotAFunction" {
   match ev.eval_expr(app) {
     Ok(_) => abort("calling 5 should not succeed")
     Err(NotAFunction(_)) => ()
-    Err(other) =>
-      abort("expected NotAFunction, got " + other.message())
+    Err(other) => abort("expected NotAFunction, got " + other.message())
   }
 }
 
+///|
 test "Prelude binds reverse as a BuiltinV" {
   let ev = Evaluator::new()
   match ev.env().lookup("reverse") {
@@ -327,14 +307,12 @@ test "Prelude binds reverse as a BuiltinV" {
   }
 }
 
+///|
 test "Builtin reverse on a 3-note block reverses the slots" {
   let ev = Evaluator::new()
   let one = @core.Spanned::new(
     @ast.Slot::Note(
-      pitch=@core.Spanned::new(
-        @ast.Pitch::ScaleIndex(1),
-        @core.Span::dummy(),
-      ),
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(1), @core.Span::dummy()),
       articulations=[],
       duration=None,
     ),
@@ -342,10 +320,7 @@ test "Builtin reverse on a 3-note block reverses the slots" {
   )
   let two = @core.Spanned::new(
     @ast.Slot::Note(
-      pitch=@core.Spanned::new(
-        @ast.Pitch::ScaleIndex(2),
-        @core.Span::dummy(),
-      ),
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(2), @core.Span::dummy()),
       articulations=[],
       duration=None,
     ),
@@ -353,10 +328,7 @@ test "Builtin reverse on a 3-note block reverses the slots" {
   )
   let three = @core.Spanned::new(
     @ast.Slot::Note(
-      pitch=@core.Spanned::new(
-        @ast.Pitch::ScaleIndex(3),
-        @core.Span::dummy(),
-      ),
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(3), @core.Span::dummy()),
       articulations=[],
       duration=None,
     ),
@@ -397,6 +369,7 @@ test "Builtin reverse on a 3-note block reverses the slots" {
   }
 }
 
+///|
 test "Builtin repeat doubles a 2-slot block to 4 slots" {
   let ev = Evaluator::new()
   let rest = @core.Spanned::new(
@@ -408,10 +381,7 @@ test "Builtin repeat doubles a 2-slot block to 4 slots" {
     @ast.Expr::Block(block),
     @core.Span::dummy(),
   )
-  let two = @core.Spanned::new(
-    @ast.Expr::Integer(2L),
-    @core.Span::dummy(),
-  )
+  let two = @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy())
   let call_expr = @core.Spanned::new(
     @ast.Expr::Application(
       @ast.Application::new(
@@ -431,6 +401,7 @@ test "Builtin repeat doubles a 2-slot block to 4 slots" {
   }
 }
 
+///|
 test "Unknown builtin name surfaces a clear error" {
   let span = @core.Span::dummy()
   match call_builtin("not_a_builtin", [], span) {
@@ -441,6 +412,7 @@ test "Unknown builtin name surfaces a clear error" {
   }
 }
 
+///|
 test "Builtin rotate(1) shifts a 3-slot block left by one" {
   let ev = Evaluator::new()
   let a = @core.Spanned::new(
@@ -497,6 +469,7 @@ test "Builtin rotate(1) shifts a 3-slot block left by one" {
   }
 }
 
+///|
 test "Builtin double_time halves the block beats" {
   let ev = Evaluator::new()
   let block = @ast.Block::with_beats([], 4.0)
@@ -507,9 +480,7 @@ test "Builtin double_time halves the block beats" {
           @ast.Expr::Ident(@ast.Ident::new("double_time")),
           @core.Span::dummy(),
         ),
-        [
-          @core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy()),
-        ],
+        [@core.Spanned::new(@ast.Expr::Block(block), @core.Span::dummy())],
       ),
     ),
     @core.Span::dummy(),
@@ -524,6 +495,7 @@ test "Builtin double_time halves the block beats" {
   }
 }
 
+///|
 test "Prelude binds rotate and double_time as BuiltinV" {
   let ev = Evaluator::new()
   match ev.env().lookup("rotate") {
@@ -536,6 +508,7 @@ test "Prelude binds rotate and double_time as BuiltinV" {
   }
 }
 
+///|
 test "Builtin octave_up shifts every ScaleIndex by 7" {
   let ev = Evaluator::new()
   let one = @core.Spanned::new(
@@ -575,6 +548,7 @@ test "Builtin octave_up shifts every ScaleIndex by 7" {
   }
 }
 
+///|
 test "Builtin octave_down shifts Microtone by -1200 cents" {
   let ev = Evaluator::new()
   let slot = @core.Spanned::new(
@@ -607,8 +581,7 @@ test "Builtin octave_down shifts Microtone by -1200 cents" {
         Note(pitch~, ..) =>
           match pitch.node() {
             Microtone(-650.0) => ()
-            Microtone(c) =>
-              abort("expected -650.0 cents, got " + c.to_string())
+            Microtone(c) => abort("expected -650.0 cents, got " + c.to_string())
             _ => abort("expected Microtone pitch")
           }
         _ => abort("expected Note slot")
@@ -617,6 +590,7 @@ test "Builtin octave_down shifts Microtone by -1200 cents" {
   }
 }
 
+///|
 test "Array literal evaluates element-wise" {
   let ev = Evaluator::new()
   let elements : Array[@core.Spanned[@ast.Expr]] = [
@@ -624,10 +598,7 @@ test "Array literal evaluates element-wise" {
     @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
     @core.Spanned::new(@ast.Expr::Integer(3L), @core.Span::dummy()),
   ]
-  let expr = @core.Spanned::new(
-    @ast.Expr::Array(elements),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Array(elements), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(ArrayV(vs)) => {
       assert_eq(vs.length(), 3)
@@ -640,22 +611,21 @@ test "Array literal evaluates element-wise" {
   }
 }
 
+///|
 test "Tuple literal evaluates element-wise" {
   let ev = Evaluator::new()
   let elements : Array[@core.Spanned[@ast.Expr]] = [
     @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy()),
     @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
   ]
-  let expr = @core.Spanned::new(
-    @ast.Expr::Tuple(elements),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Tuple(elements), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(TupleV(vs)) => assert_eq(vs.length(), 2)
     _ => abort("expected TupleV")
   }
 }
 
+///|
 test "If true selects the then branch" {
   let ev = Evaluator::new()
   let if_expr = @ast.IfExpr::new(
@@ -670,6 +640,7 @@ test "If true selects the then branch" {
   }
 }
 
+///|
 test "If false with no else returns Unit" {
   let ev = Evaluator::new()
   let if_expr = @ast.IfExpr::new(
@@ -684,6 +655,7 @@ test "If false with no else returns Unit" {
   }
 }
 
+///|
 test "If non-Bool condition is a TypeError" {
   let ev = Evaluator::new()
   let if_expr = @ast.IfExpr::new(
@@ -699,6 +671,7 @@ test "If non-Bool condition is a TypeError" {
   }
 }
 
+///|
 test "Let-in binds and evaluates body in the new scope" {
   let ev = Evaluator::new()
   let let_expr = @ast.LetExpr::new(
@@ -720,6 +693,7 @@ test "Let-in binds and evaluates body in the new scope" {
   }
 }
 
+///|
 test "Array indexing returns the element" {
   let ev = Evaluator::new()
   let arr = @core.Spanned::new(
@@ -745,6 +719,7 @@ test "Array indexing returns the element" {
   }
 }
 
+///|
 test "Binary Add on two ints yields IntV" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -759,6 +734,7 @@ test "Binary Add on two ints yields IntV" {
   }
 }
 
+///|
 test "Binary Mul on two floats yields FloatV" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -773,6 +749,7 @@ test "Binary Mul on two floats yields FloatV" {
   }
 }
 
+///|
 test "Binary Div by zero surfaces DivisionByZero" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -788,6 +765,7 @@ test "Binary Div by zero surfaces DivisionByZero" {
   }
 }
 
+///|
 test "Binary EqOp returns BoolV for equal ints" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -802,6 +780,7 @@ test "Binary EqOp returns BoolV for equal ints" {
   }
 }
 
+///|
 test "Binary Lt compares correctly" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -816,6 +795,7 @@ test "Binary Lt compares correctly" {
   }
 }
 
+///|
 test "Binary And on two booleans" {
   let ev = Evaluator::new()
   let bin = @ast.Binary::new(
@@ -830,6 +810,7 @@ test "Binary And on two booleans" {
   }
 }
 
+///|
 test "Unary Neg negates an integer" {
   let ev = Evaluator::new()
   let u = @ast.Unary::new(
@@ -843,6 +824,7 @@ test "Unary Neg negates an integer" {
   }
 }
 
+///|
 test "Unary Not on a Bool" {
   let ev = Evaluator::new()
   let u = @ast.Unary::new(
@@ -856,6 +838,7 @@ test "Unary Not on a Bool" {
   }
 }
 
+///|
 test "Articulation expression evaluates to ArticulationV" {
   let ev = Evaluator::new()
   let expr = @core.Spanned::new(
@@ -868,46 +851,34 @@ test "Articulation expression evaluates to ArticulationV" {
   }
 }
 
+///|
 test "Layer expression evaluates to LayerV" {
   let ev = Evaluator::new()
   let layer = @ast.LayerExpr::new([])
-  let expr = @core.Spanned::new(
-    @ast.Expr::Layer(layer),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::Layer(layer), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(LayerV(_)) => ()
     _ => abort("expected LayerV")
   }
 }
 
+///|
 test "With expression returns the base" {
   let ev = Evaluator::new()
-  let base = @core.Spanned::new(
-    @ast.Expr::Integer(42L),
-    @core.Span::dummy(),
-  )
+  let base = @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy())
   let with_expr = @ast.WithExpr::new(base, [])
-  let expr = @core.Spanned::new(
-    @ast.Expr::With(with_expr),
-    @core.Span::dummy(),
-  )
+  let expr = @core.Spanned::new(@ast.Expr::With(with_expr), @core.Span::dummy())
   match ev.eval_expr(expr) {
     Ok(IntV(42L)) => ()
     _ => abort("expected with-expr to return the base IntV(42)")
   }
 }
 
+///|
 test "Over expression returns the left value" {
   let ev = Evaluator::new()
-  let three = @core.Spanned::new(
-    @ast.Expr::Integer(3L),
-    @core.Span::dummy(),
-  )
-  let four = @core.Spanned::new(
-    @ast.Expr::Integer(4L),
-    @core.Span::dummy(),
-  )
+  let three = @core.Spanned::new(@ast.Expr::Integer(3L), @core.Span::dummy())
+  let four = @core.Spanned::new(@ast.Expr::Integer(4L), @core.Span::dummy())
   let expr = @core.Spanned::new(
     @ast.Expr::Over(three, four),
     @core.Span::dummy(),
@@ -918,6 +889,7 @@ test "Over expression returns the left value" {
   }
 }
 
+///|
 test "Error expression evaluates to Placeholder" {
   let ev = Evaluator::new()
   let expr = @core.Spanned::new(@ast.Expr::Error, @core.Span::dummy())
@@ -927,6 +899,7 @@ test "Error expression evaluates to Placeholder" {
   }
 }
 
+///|
 test "Out-of-bounds index surfaces IndexOutOfBounds" {
   let ev = Evaluator::new()
   let arr = @core.Spanned::new(
@@ -951,6 +924,7 @@ test "Out-of-bounds index surfaces IndexOutOfBounds" {
   }
 }
 
+///|
 test "Wrong arity reports WrongArity" {
   let ev = Evaluator::new()
   let x_pat = @core.Spanned::new(
@@ -967,13 +941,10 @@ test "Wrong arity reports WrongArity" {
   )
   let app = @core.Spanned::new(
     @ast.Expr::Application(
-      @ast.Application::new(
-        lambda,
-        [
-          @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
-          @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
-        ],
-      ),
+      @ast.Application::new(lambda, [
+        @core.Spanned::new(@ast.Expr::Integer(1L), @core.Span::dummy()),
+        @core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy()),
+      ]),
     ),
     @core.Span::dummy(),
   )

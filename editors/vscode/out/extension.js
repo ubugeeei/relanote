@@ -96,4 +96,3 @@ async function activate(context) {
 async function deactivate() {
     await (0, client_1.stopClient)();
 }
-//# sourceMappingURL=extension.js.map

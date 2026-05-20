@@ -1,11 +1,11 @@
 ///|
 /// Parser error type. Mirrors `relanote_parser::error::ParseError` in the
-/// Rust crate, including the constructor helpers used by recovery code.
+/// legacy implementation, including the constructor helpers used by recovery code.
 pub(all) enum ParseError {
   UnexpectedToken(
     expected~ : String,
     found~ : @lexer.TokenKind,
-    span~ : @core.Span,
+    span~ : @core.Span
   )
   UnexpectedEof(span~ : @core.Span)
   InvalidInterval(message~ : String, span~ : @core.Span)
@@ -34,14 +34,14 @@ pub fn ParseError::unexpected_token(
   found : @lexer.TokenKind,
   span : @core.Span,
 ) -> ParseError {
-  UnexpectedToken(expected=expected, found=found, span=span)
+  UnexpectedToken(expected~, found~, span~)
 }
 
 ///|
 pub fn ParseError::custom(message : String, span : @core.Span) -> ParseError {
-  Custom(message=message, span=span)
+  Custom(message~, span~)
 }
 
 ///|
-/// `Result[T, ParseError]` — mirrors the Rust type alias.
+/// `Result[T, ParseError]` — mirrors the legacy type alias.
 pub type ParseResult[T] = Result[T, ParseError]

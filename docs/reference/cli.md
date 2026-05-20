@@ -1,77 +1,56 @@
-# CLI reference
+# CLI Reference
 
-`relanote` is one binary with a small set of subcommands. Run it
-against a `.rela` file or feed source on stdin.
-
-## Install
-
-From source:
+`relanote` is one MoonBit command with a small set of subcommands. Run
+it against a `.rela` file from the `moonbit/` directory:
 
 ```bash
-cargo install --path crates/relanote_cli
-relanote --version
+moon run cmd/relanote -- help
 ```
 
-Or in the Nix dev shell, which always picks the right Rust:
+From the repository root you can also use the pnpm alias:
 
 ```bash
-nix develop
-cargo install --path crates/relanote_cli
+pnpm cli -- help
 ```
 
 ## Subcommands
 
 | Command | What it does |
 | --- | --- |
-| `relanote parse <file>` | Parse and print the AST. |
-| `relanote check <file>` | Type-check; exit non-zero on error. |
-| `relanote run <file>` | Evaluate the program. Prints the top-level value. |
+| `relanote parse <file>` | Parse and print diagnostics. |
+| `relanote check <file>` | Parse and type-check the file. |
+| `relanote run <file>` | Evaluate the program. |
 | `relanote fmt <file>` | Pretty-print the file to stdout. |
-| `relanote render <file> -o out.mid` | Render to a standard MIDI file. |
+| `relanote render <file> [output.mid]` | Render to a standard MIDI file. |
 | `relanote lsp` | Start the LSP server on stdio. |
 | `relanote help` | Print usage. |
-
-`<file>` defaults to stdin when omitted, so `cat foo.rela \| relanote check` works.
 
 ## Examples
 
 ```bash
 # Run a file and print the result.
-relanote run examples/tutorials/01_hello.rela
+moon run cmd/relanote -- run ../examples/tutorials/01_hello.rela
 
-# Render to MIDI and open in any DAW.
-relanote render examples/showcases/showcase_floating_points.rela -o fp.mid
+# Render to MIDI.
+moon run cmd/relanote -- render ../examples/tutorials/01_hello.rela output.mid
 
 # Type-check before committing.
-relanote check src/main.rela
+moon run cmd/relanote -- check ../examples/tutorials/01_hello.rela
 
-# Format in place.
-relanote fmt src/main.rela > src/main.rela.tmp && mv src/main.rela.tmp src/main.rela
+# Format and write through a temporary file.
+moon run cmd/relanote -- fmt ../examples/tutorials/01_hello.rela > /tmp/hello.rela
 ```
 
-## Editor integration
+## Editor Integration
 
-`relanote lsp` reads JSON-RPC frames from stdin and writes diagnostics
-+ completions to stdout. Configure your editor to launch
-`relanote lsp` as a language server for `.rela` files and you get:
+`relanote lsp` reads JSON-RPC frames from stdin and writes responses to
+stdout. Configure your editor to launch it as a language server for
+`.rela` files.
 
-- Real-time parse errors.
-- Hover-doc for builtins and presets.
-- Symbol completion for names in scope.
-- Go-to-definition for `let` / `scale` / `chord` / `synth` / `effect` declarations.
-
-## Exit codes
+## Exit Codes
 
 | Code | Meaning |
 | --- | --- |
 | 0 | Success. |
-| 1 | Error (parse, type, IO, or runtime). |
-| 2 | Usage error (bad flags). |
-
-## Status
-
-The CLI surface above is locked in. Subcommands that the MoonBit port
-hasn't finished — `run`, `render`, `lsp` — return early with an
-informational diagnostic until the evaluator / renderer / LSP land.
-The Rust crate (`crates/relanote_cli`) implements every subcommand
-end-to-end today.
+| 1 | Error in a pipeline phase. |
+| 2 | Usage error. |

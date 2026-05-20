@@ -3,9 +3,8 @@
 ///
 /// The bridge exposes the four pipeline phases the playground UI
 /// drives — diagnose, format, run, render — as JS-callable functions
-/// operating on plain strings / byte arrays. The Vapor Moon component
-/// layer talks to these through generated JS interop, so a Vue
-/// component's "play" handler is a single call here.
+/// operating on plain strings and byte arrays. The Vapor Moon component
+/// layer calls these functions from `App.mbtv`.
 ///
 /// Tracked in #14.
 

@@ -1,37 +1,44 @@
 // Black-box tests for the MoonBit AST port. The interesting bits of
 // behavioural parity (mostly inside `music.mbt`) are mirrored from
-// `crates/relanote_ast/src/music.rs`'s `test_interval_semitones`.
+// legacy source's `test_interval_semitones`.
 
 // ============================================================
 // IntervalLit::semitones
 // ============================================================
 
+///|
 test "M3 = 4 semitones" {
   assert_eq(IntervalLit::new(@lexer.Major, 3).semitones(), 4)
 }
 
+///|
 test "P5 = 7 semitones" {
   assert_eq(IntervalLit::new(@lexer.Perfect, 5).semitones(), 7)
 }
 
+///|
 test "m7 = 10 semitones" {
   assert_eq(IntervalLit::new(@lexer.Minor, 7).semitones(), 10)
 }
 
+///|
 test "A4 = 6 semitones" {
   assert_eq(IntervalLit::new(@lexer.Augmented, 4).semitones(), 6)
 }
 
+///|
 test "P5+ = 8 semitones (one sharp)" {
   let iv = IntervalLit::new(@lexer.Perfect, 5).with_accidentals([@lexer.Sharp])
   assert_eq(iv.semitones(), 8)
 }
 
+///|
 test "M3- = 3 semitones (one flat)" {
   let iv = IntervalLit::new(@lexer.Major, 3).with_accidentals([@lexer.Flat])
   assert_eq(iv.semitones(), 3)
 }
 
+///|
 test "cents == semitones * 100" {
   let iv = IntervalLit::new(@lexer.Major, 3)
   assert_eq(iv.cents(), 400.0)
@@ -41,14 +48,17 @@ test "cents == semitones * 100" {
 // AbsolutePitchLit
 // ============================================================
 
+///|
 test "C4 maps to MIDI 60" {
   assert_eq(AbsolutePitchLit::new('C', 0, 4).to_midi_note(), 60)
 }
 
+///|
 test "A4 (the pitch, not the interval) maps to MIDI 69" {
   assert_eq(AbsolutePitchLit::new('A', 0, 4).to_midi_note(), 69)
 }
 
+///|
 test "MIDI clamps below 0 to 0 and above 127 to 127" {
   // Octave -2 with C clamps to 0.
   assert_eq(AbsolutePitchLit::new('C', 0, -2).to_midi_note(), 0)
@@ -56,6 +66,7 @@ test "MIDI clamps below 0 to 0 and above 127 to 127" {
   assert_eq(AbsolutePitchLit::new('B', 0, 12).to_midi_note(), 127)
 }
 
+///|
 test "AbsolutePitchLit::from_data lossless round-trips lexer payload" {
   let data = @lexer.AbsolutePitchData::new('F', 1, 5)
   let lit = AbsolutePitchLit::from_data(data)
@@ -68,6 +79,7 @@ test "AbsolutePitchLit::from_data lossless round-trips lexer payload" {
 // Dynamic::from_str
 // ============================================================
 
+///|
 test "Dynamic::from_str parses every defined level" {
   assert_true(Dynamic::from_str("ppp") == Some(Pianississimo))
   assert_true(Dynamic::from_str("pp") == Some(Pianissimo))
@@ -79,6 +91,7 @@ test "Dynamic::from_str parses every defined level" {
   assert_true(Dynamic::from_str("fff") == Some(Fortississimo))
 }
 
+///|
 test "Dynamic::from_str rejects unknown markings" {
   assert_true(Dynamic::from_str("mff") == None)
   assert_true(Dynamic::from_str("") == None)
@@ -88,10 +101,12 @@ test "Dynamic::from_str rejects unknown markings" {
 // DurationUnit::to_beats
 // ============================================================
 
+///|
 test "Bars(2) at 4 beats per bar = 8.0 beats" {
   assert_eq(DurationUnit::Bars(2).to_beats(4), 8.0)
 }
 
+///|
 test "Beats(3) = 3.0 beats regardless of time signature" {
   assert_eq(DurationUnit::Beats(3).to_beats(4), 3.0)
   assert_eq(DurationUnit::Beats(3).to_beats(7), 3.0)
@@ -101,6 +116,7 @@ test "Beats(3) = 3.0 beats regardless of time signature" {
 // Pattern::is_irrefutable
 // ============================================================
 
+///|
 test "wildcard and ident are irrefutable" {
   let span = @core.Span::dummy()
   let id = Ident::new("x")
@@ -109,6 +125,7 @@ test "wildcard and ident are irrefutable" {
   let _ = span
 }
 
+///|
 test "tuple of irrefutable patterns is irrefutable" {
   let span = @core.Span::dummy()
   let a : @core.Spanned[Pattern] = @core.Spanned::new(Pattern::Wildcard, span)
@@ -119,6 +136,7 @@ test "tuple of irrefutable patterns is irrefutable" {
   assert_true(Pattern::Tuple([a, b]).is_irrefutable())
 }
 
+///|
 test "literal patterns are refutable" {
   assert_true(!Pattern::Literal(LiteralPattern::Integer(42)).is_irrefutable())
 }
@@ -127,6 +145,7 @@ test "literal patterns are refutable" {
 // TypeAnnotation::has_type_vars and ::function
 // ============================================================
 
+///|
 test "Named is monomorphic; Var introduces a type variable" {
   let int_ann : TypeAnnotation = Named(Ident::new("Int"))
   let var_ann : TypeAnnotation = Var(Ident::new("a"))
@@ -134,6 +153,7 @@ test "Named is monomorphic; Var introduces a type variable" {
   assert_true(var_ann.has_type_vars())
 }
 
+///|
 test "TypeAnnotation::function curries left-to-right" {
   let int_ann : TypeAnnotation = Named(Ident::new("Int"))
   let str_ann : TypeAnnotation = Named(Ident::new("String"))
@@ -154,12 +174,14 @@ test "TypeAnnotation::function curries left-to-right" {
 // Expr::is_simple / is_error
 // ============================================================
 
+///|
 test "literal and ident expressions are simple" {
   assert_true(Expr::Integer(1L).is_simple())
   assert_true(Expr::Root.is_simple())
   assert_true(Expr::Ident(Ident::new("x")).is_simple())
 }
 
+///|
 test "binary expressions are not simple" {
   let span = @core.Span::dummy()
   let one : @core.Spanned[Expr] = @core.Spanned::new(Expr::Integer(1L), span)
@@ -168,6 +190,7 @@ test "binary expressions are not simple" {
   assert_false(bin.is_simple())
 }
 
+///|
 test "Expr::Error is detected" {
   assert_true(Expr::Error.is_error())
   assert_false(Expr::Integer(0L).is_error())
@@ -177,6 +200,7 @@ test "Expr::Error is detected" {
 // Sound-design extensions
 // ============================================================
 
+///|
 test "Pitch::Microtone carries a cents offset" {
   let p : Pitch = Microtone(12.5)
   match p {
@@ -185,6 +209,7 @@ test "Pitch::Microtone carries a cents offset" {
   }
 }
 
+///|
 test "Pitch::MicrotonalInterval pairs an interval with cents fine-tuning" {
   let iv = IntervalLit::new(@lexer.Major, 3)
   let p : Pitch = MicrotonalInterval(iv, -14.0)
@@ -194,6 +219,7 @@ test "Pitch::MicrotonalInterval pairs an interval with cents fine-tuning" {
   }
 }
 
+///|
 test "TuningDef::Equal preserves the step count" {
   let t = TuningDef::new(Ident::new("EDO24"), Equal(24))
   assert_eq(t.name().name(), "EDO24")
@@ -203,6 +229,7 @@ test "TuningDef::Equal preserves the step count" {
   }
 }
 
+///|
 test "TuningDef::Ratios round-trips ratio pairs" {
   let ratios : Array[(Int, Int)] = [(1, 1), (9, 8), (5, 4), (4, 3)]
   let t = TuningDef::new(Ident::new("JustIntonation"), Ratios(ratios))
@@ -212,6 +239,7 @@ test "TuningDef::Ratios round-trips ratio pairs" {
   }
 }
 
+///|
 test "GrooveDef captures per-slot offsets" {
   let g = GrooveDef::new(Ident::new("Swing67"), 2, [0.0, 0.17])
   assert_eq(g.length(), 2)
@@ -219,6 +247,7 @@ test "GrooveDef captures per-slot offsets" {
   assert_eq(g.steps()[1], 0.17)
 }
 
+///|
 test "MixDef::empty has no tracks or buses" {
   let m = MixDef::empty()
   assert_eq(m.tracks().length(), 0)
@@ -231,6 +260,7 @@ test "MixDef::empty has no tracks or buses" {
   }
 }
 
+///|
 test "MixDef::new threads tracks / buses / sends / sidechains" {
   let span = @core.Span::dummy()
   let track : @core.Spanned[Expr] = @core.Spanned::new(
@@ -253,6 +283,7 @@ test "MixDef::new threads tracks / buses / sends / sidechains" {
   assert_eq(m.sidechains().length(), 1)
 }
 
+///|
 test "Expr::Over constructs a polyrhythm node" {
   let span = @core.Span::dummy()
   let three : @core.Spanned[Expr] = @core.Spanned::new(Expr::Integer(3L), span)

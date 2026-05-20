@@ -14,7 +14,7 @@ Language support for [Relanote](https://github.com/ubugeeei/relanote) - a pure f
 ## Requirements
 
 - Relanote CLI installed and available in PATH
-- Run `cargo install --path crates/relanote_cli` from the relanote repository or install from crates.io when available
+- From this repository, run `cd moonbit && moon run cmd/relanote -- lsp` to check the language server entry point
 
 ## Extension Settings
 
@@ -48,17 +48,8 @@ let phrase = melody |> repeat(2) |> transpose(P5)
 ## Development
 
 ```bash
-# Install dependencies
-npm install
-
-# Compile
-npm run compile
-
-# Watch mode
-npm run watch
-
-# Package extension
-npm run package
+# Syntax-check the checked-in extension output
+npm run check
 ```
 
 ## Links

@@ -1,77 +1,71 @@
 # Installation
 
-## With Nix (recommended)
+## With Nix
 
-The repo ships a Nix flake that pins every dev tool to the versions the
-project was built against — Rust 1.83, Node 22, pnpm, `wasm-pack`,
-`pnpm tasks` — so you get the same environment as CI.
+The repo ships a Nix flake for the local helper tools used by root
+scripts and deployment.
 
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
-
-# Enter the dev shell.
 nix develop
-
-# First-time setup: web + docs deps, build WASM, prepare Nuxt types.
-pnpm setup
 ```
 
-If you use [direnv](https://direnv.net/), `direnv allow` activates the
-shell automatically every time you `cd` into the repo.
-
-MoonBit isn't on nixpkgs yet — install it once with:
+MoonBit is installed with the upstream compiler installer:
 
 ```bash
 curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+export PATH="$HOME/.moon/bin:$PATH"
 ```
 
-The dev shell adds `~/.moon/bin` to `PATH` automatically when MoonBit is
-installed, so `moon check` and `moon test` just work.
+The dev shell adds `~/.moon/bin` to `PATH` automatically when it exists.
 
 ## Without Nix
 
-Make sure the following are on your `PATH`:
+Install:
 
-- [Rust](https://rustup.rs/) 1.83 or later, with the `wasm32-unknown-unknown` target.
-- [Node.js](https://nodejs.org/) 22+ and [pnpm](https://pnpm.io/).
-- [`wasm-pack`](https://rustwasm.github.io/wasm-pack/) for the playground WASM build.
-- After cloning, the repo's `pnpm install` brings in `vite-node` so every workflow runs through `pnpm <task>` (see [`tasks/`](https://github.com/ubugeeei/relanote/tree/main/tasks)).
-- [MoonBit](https://www.moonbitlang.com/) toolchain — `curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash`.
+- [MoonBit](https://www.moonbitlang.com/) toolchain.
+- [Node.js](https://nodejs.org/) 22+ and [pnpm](https://pnpm.io/) if you want the root task aliases.
 
-Then clone and set up:
+Then clone and check the workspace:
 
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
-pnpm setup
+cd moonbit
+moon check
+moon test
 ```
 
-## Building just the CLI
-
-If all you want is the `relanote` binary:
+## Running the CLI
 
 ```bash
-cargo install --path crates/relanote_cli
-relanote --version
+cd moonbit
+moon run cmd/relanote -- help
+moon run cmd/relanote -- check ../examples/tutorials/01_hello.rela
+moon run cmd/relanote -- render ../examples/tutorials/01_hello.rela output.mid
 ```
 
-Or build from source:
+From the repository root, the same commands are available through pnpm:
 
 ```bash
-cargo build --release        # → target/release/relanote
+pnpm check
+pnpm test
+pnpm cli -- check examples/tutorials/01_hello.rela
+pnpm cli -- render examples/tutorials/01_hello.rela output.mid
 ```
 
-## Editor support
+## Editor Support
 
-The CLI ships an LSP server (`relanote lsp`) over stdio. Wire it into
-your editor as a language server for `.rela` files and you get
-diagnostics, hover docs and completion.
+The CLI exposes an LSP entry point with `relanote lsp`. Configure your
+editor to launch it as the language server for `.rela` files to get
+diagnostics, hover docs, formatting, and completion as the MoonBit server
+surface grows.
 
-## Web playground locally
+## Web Playground
+
+The view lives in `moonbit/web/App.mbtv` and is built with Vapor Moon:
 
 ```bash
-pnpm dev
+pnpm web:build
 ```
-
-This builds the WASM module and starts Nuxt on `http://localhost:3000`.

@@ -10,7 +10,7 @@ pub struct FormatConfig {
 
 ///|
 /// Default config: 4-space indent, 80-column wrap, trailing commas,
-/// inline blocks — matches the Rust crate's `Default` impl.
+/// inline blocks — matches the legacy implementation `Default` impl.
 pub fn FormatConfig::default() -> FormatConfig {
   {
     indent_size: 4,

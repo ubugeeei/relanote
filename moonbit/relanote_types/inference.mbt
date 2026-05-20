@@ -1,7 +1,7 @@
 ///|
 /// Inference engine — walks an AST expression and returns its type, threading
 /// unification state through `TypeContext`. Mirrors the implementation in
-/// `crates/relanote_types/src/inference.rs`.
+/// legacy source.
 
 ///|
 pub fn TypeContext::infer_expr(
@@ -20,8 +20,7 @@ pub fn TypeContext::infer_expr(
     Ident(ident) =>
       match self.lookup(ident.name()) {
         Some(scheme) => Ok(self.instantiate(scheme))
-        None =>
-          Err(UndefinedVariable(name=ident.name(), span=expr.span()))
+        None => Err(UndefinedVariable(name=ident.name(), span=expr.span()))
       }
 
     // Music primitives
@@ -72,11 +71,7 @@ pub fn TypeContext::infer_expr(
           Err(e) => return Err(e)
         }
         let ret_ty = self.fresh_var()
-        match self.unify(
-          result_ty,
-          Function(arg_ty, ret_ty),
-          expr.span(),
-        ) {
+        match self.unify(result_ty, Function(arg_ty, ret_ty), expr.span()) {
           Ok(_) => ()
           Err(e) => return Err(e)
         }
@@ -96,11 +91,7 @@ pub fn TypeContext::infer_expr(
         Err(e) => return Err(e)
       }
       let ret_ty = self.fresh_var()
-      match self.unify(
-        func_ty,
-        Function(arg_ty, ret_ty),
-        expr.span(),
-      ) {
+      match self.unify(func_ty, Function(arg_ty, ret_ty), expr.span()) {
         Ok(_) => ()
         Err(e) => return Err(e)
       }
@@ -170,12 +161,11 @@ pub fn TypeContext::infer_expr(
       }
       // Try array indexing
       match self.apply(base_ty) {
-        ArrayTy(inner) => {
+        ArrayTy(inner) =>
           match self.unify(index_ty, IntTy, expr.span()) {
             Ok(_) => Ok(inner)
             Err(e) => Err(e)
           }
-        }
         Scale =>
           match self.unify(index_ty, IntTy, expr.span()) {
             Ok(_) => Ok(Interval)

@@ -2,6 +2,7 @@
 // ported yet — the test coverage here is for the data types and the
 // unification / context machinery they need.
 
+///|
 test "Type::function curries" {
   let t = Type::function(IntTy, Type::function(BoolTy, StringTy))
   match t {
@@ -14,6 +15,7 @@ test "Type::function curries" {
   }
 }
 
+///|
 test "Type::function_n is right-associative" {
   let t = Type::function_n([IntTy, BoolTy], StringTy)
   // (Int, Bool) -> String == Int -> (Bool -> String)
@@ -27,6 +29,7 @@ test "Type::function_n is right-associative" {
   }
 }
 
+///|
 test "has_vars / free_vars" {
   let v0 = TyVar::new(0)
   let v1 = TyVar::new(1)
@@ -40,13 +43,11 @@ test "has_vars / free_vars" {
   assert_true(frees[1] == v1)
 }
 
-test "Type::to_display_string matches Rust crate" {
+///|
+test "Type::to_display_string matches legacy implementation" {
   assert_eq(IntTy.to_display_string(), "Int")
   assert_eq(Type::array(BoolTy).to_display_string(), "[Bool]")
-  assert_eq(
-    Type::function(IntTy, BoolTy).to_display_string(),
-    "Int -> Bool",
-  )
+  assert_eq(Type::function(IntTy, BoolTy).to_display_string(), "Int -> Bool")
   assert_eq(
     Type::function(Type::function(IntTy, IntTy), BoolTy).to_display_string(),
     "(Int -> Int) -> Bool",
@@ -54,6 +55,7 @@ test "Type::to_display_string matches Rust crate" {
   assert_eq(Var(TyVar::new(7)).to_display_string(), "t7")
 }
 
+///|
 test "TypeContext bind / lookup / pop_scope" {
   let ctx = TypeContext::new()
   ctx.push_scope()
@@ -76,6 +78,7 @@ test "TypeContext bind / lookup / pop_scope" {
   }
 }
 
+///|
 test "TypeContext fresh_var hands out fresh ids" {
   let ctx = TypeContext::new()
   let a = ctx.fresh_var()
@@ -89,6 +92,7 @@ test "TypeContext fresh_var hands out fresh ids" {
   }
 }
 
+///|
 test "unify of two equal primitives succeeds" {
   let ctx = TypeContext::new()
   let span = @core.Span::dummy()
@@ -98,6 +102,7 @@ test "unify of two equal primitives succeeds" {
   }
 }
 
+///|
 test "unify of variable with primitive records substitution" {
   let ctx = TypeContext::new()
   let span = @core.Span::dummy()
@@ -112,6 +117,7 @@ test "unify of variable with primitive records substitution" {
   }
 }
 
+///|
 test "unify mismatched primitives reports UnificationError" {
   let ctx = TypeContext::new()
   let span = @core.Span::dummy()
@@ -122,6 +128,7 @@ test "unify mismatched primitives reports UnificationError" {
   }
 }
 
+///|
 test "occurs check rejects infinite types" {
   let ctx = TypeContext::new()
   let span = @core.Span::dummy()
@@ -138,11 +145,13 @@ test "occurs check rejects infinite types" {
   }
 }
 
+///|
 test "TypeScheme::mono has no quantifiers" {
   let s = TypeScheme::mono(IntTy)
   assert_eq(s.quantifiers().length(), 0)
 }
 
+///|
 test "TypeScheme::poly retains its quantifiers" {
   let v0 = TyVar::new(0)
   let s = TypeScheme::poly([v0], Function(Var(v0), Var(v0)))
@@ -150,6 +159,7 @@ test "TypeScheme::poly retains its quantifiers" {
   assert_true(s.quantifiers()[0] == v0)
 }
 
+///|
 test "instantiate replaces quantifiers with fresh vars" {
   let ctx = TypeContext::new()
   // Build the quantifier through `fresh_var` so the context's counter
@@ -173,9 +183,10 @@ test "instantiate replaces quantifiers with fresh vars" {
   }
 }
 
+///|
 test "TypeError::span returns the right span variant" {
   let span = @core.Span::dummy()
-  let err = OccursCheck(span=span)
+  let err = OccursCheck(span~)
   assert_true(err.span() == span)
 }
 
@@ -183,6 +194,7 @@ test "TypeError::span returns the right span variant" {
 // tests through the public entry point and look up bindings in the
 // checker's context.
 
+///|
 test "install_prelude seeds reverse : Block -> Block" {
   let checker = TypeChecker::new()
   match checker.context().lookup("reverse") {
@@ -196,6 +208,7 @@ test "install_prelude seeds reverse : Block -> Block" {
   }
 }
 
+///|
 test "install_prelude seeds a monomorphic synth preset" {
   let checker = TypeChecker::new()
   match checker.context().lookup("Chiptune") {
@@ -203,25 +216,25 @@ test "install_prelude seeds a monomorphic synth preset" {
       assert_eq(scheme.quantifiers().length(), 0)
       match scheme.ty() {
         Synth => ()
-        other =>
-          abort("expected Synth, got " + other.to_display_string())
+        other => abort("expected Synth, got " + other.to_display_string())
       }
     }
     None => abort("expected Chiptune to be in scope")
   }
 }
 
+///|
 test "install_prelude seeds polymorphic map with two quantifiers" {
   let checker = TypeChecker::new()
   match checker.context().lookup("map") {
-    Some(scheme) => {
+    Some(scheme) =>
       // `map : forall a b. (a -> b) -> [a] -> [b]` — two quantifiers.
       assert_eq(scheme.quantifiers().length(), 2)
-    }
     None => abort("expected map to be in scope")
   }
 }
 
+///|
 test "check_program reports undefined variable" {
   let program = @ast.Program::new([
     @core.Spanned::new(
@@ -243,14 +256,12 @@ test "check_program reports undefined variable" {
   }
 }
 
+///|
 test "check_program accepts integer literal as no-op item" {
   let program = @ast.Program::new([
     @core.Spanned::new(
       @ast.Item::ExprStmt(
-        @core.Spanned::new(
-          @ast.Expr::Integer(42L),
-          @core.Span::dummy(),
-        ),
+        @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
       ),
       @core.Span::dummy(),
     ),
@@ -260,15 +271,13 @@ test "check_program accepts integer literal as no-op item" {
   assert_eq(errors.length(), 0)
 }
 
+///|
 test "check_program binds let value type for downstream lookups" {
   let pattern = @core.Spanned::new(
     @ast.Pattern::Ident(@ast.Ident::new("x")),
     @core.Span::dummy(),
   )
-  let value = @core.Spanned::new(
-    @ast.Expr::Integer(7L),
-    @core.Span::dummy(),
-  )
+  let value = @core.Spanned::new(@ast.Expr::Integer(7L), @core.Span::dummy())
   let program = @ast.Program::new([
     @core.Spanned::new(
       @ast.Item::LetBinding(@ast.LetBinding::new(pattern, None, value)),
@@ -284,6 +293,7 @@ test "check_program binds let value type for downstream lookups" {
   }
 }
 
+///|
 test "infer_expr flags type mismatch in if branches" {
   let condition = @core.Spanned::new(
     @ast.Expr::BoolLit(true),
@@ -298,9 +308,7 @@ test "infer_expr flags type mismatch in if branches" {
     @core.Span::dummy(),
   )
   let if_expr = @core.Spanned::new(
-    @ast.Expr::If(
-      @ast.IfExpr::new(condition, then_branch, Some(else_branch)),
-    ),
+    @ast.Expr::If(@ast.IfExpr::new(condition, then_branch, Some(else_branch))),
     @core.Span::dummy(),
   )
   let ctx = TypeContext::new()
@@ -312,6 +320,7 @@ test "infer_expr flags type mismatch in if branches" {
   }
 }
 
+///|
 test "install_prelude seeds compose : [Section] -> Song" {
   let checker = TypeChecker::new()
   match checker.context().lookup("compose") {

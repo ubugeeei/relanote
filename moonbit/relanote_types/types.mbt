@@ -19,7 +19,7 @@ pub fn TyVar::id(self : TyVar) -> UInt {
 /// Core type representation — primitive types, music-specific primitives,
 /// compound types and the `Var` / `Error` recovery cases.
 ///
-/// Mirrors `crates/relanote_types::types::Type` one-to-one.
+/// Mirrors legacy source one-to-one.
 pub(all) enum Type {
   // Primitives
   Unit
@@ -125,7 +125,7 @@ fn collect_free_vars(ty : Type, acc : Array[TyVar]) -> Unit {
 }
 
 ///|
-/// Human-readable display string, matching `Display for Type` in the Rust
+/// Human-readable display string, matching `Display for Type` in the legacy
 /// crate. Used for diagnostics.
 pub fn Type::to_display_string(self : Type) -> String {
   match self {

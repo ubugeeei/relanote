@@ -1,3 +1,4 @@
+///|
 test "render_diagnostic prints kind + message + source-context block" {
   let source = Source::from_string("input.rela", "let x 42\n")
   let diag = Diagnostic::error(
@@ -12,6 +13,7 @@ test "render_diagnostic prints kind + message + source-context block" {
   assert_true(rendered.contains("^^"))
 }
 
+///|
 test "render_diagnostic falls back to one-liner for dummy spans" {
   let source = Source::from_string("input.rela", "")
   let diag = Diagnostic::error("module not found", Span::dummy())
@@ -21,6 +23,7 @@ test "render_diagnostic falls back to one-liner for dummy spans" {
   assert_false(rendered.contains("╭─"))
 }
 
+///|
 test "render_diagnostics joins each report with a blank line" {
   let source = Source::from_string("input.rela", "let x 42\nlet y 7\n")
   let diags = Diagnostics::new()

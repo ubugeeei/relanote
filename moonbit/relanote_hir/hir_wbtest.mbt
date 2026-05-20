@@ -1,11 +1,13 @@
 // HIR lowering tests. The lowering pass shares the type checker's
 // context so each typed expression carries a real `@types.Type`.
 
+///|
 test "TypedProgram::empty has zero items" {
   let p = TypedProgram::empty()
   assert_eq(p.items().length(), 0)
 }
 
+///|
 test "TypedExpr::new keeps its kind and type" {
   let e = TypedExpr::new(Placeholder, @types.Unit)
   match e.kind() {
@@ -18,19 +20,19 @@ test "TypedExpr::new keeps its kind and type" {
   }
 }
 
+///|
 test "lower_program on an empty program is empty" {
   let prog = @ast.Program::empty()
   let lowered = lower_program(prog)
   assert_eq(lowered.items().length(), 0)
 }
 
+///|
 test "lower_program annotates an integer expression statement with Int" {
   let item : @ast.Item = @ast.ExprStmt(
     @core.Spanned::new(@ast.Expr::Integer(42L), @core.Span::dummy()),
   )
-  let prog = @ast.Program::new([
-    @core.Spanned::new(item, @core.Span::dummy()),
-  ])
+  let prog = @ast.Program::new([@core.Spanned::new(item, @core.Span::dummy())])
   let lowered = lower_program(prog)
   assert_eq(lowered.items().length(), 1)
   match lowered.items()[0] {
@@ -48,12 +50,11 @@ test "lower_program annotates an integer expression statement with Int" {
   }
 }
 
+///|
 test "lower_program lowers a scale definition to TScaleDef" {
   let def = @ast.ScaleDef::new(@ast.Ident::new("Major"), None, [])
   let item : @ast.Item = @ast.ScaleDef(def)
-  let prog = @ast.Program::new([
-    @core.Spanned::new(item, @core.Span::dummy()),
-  ])
+  let prog = @ast.Program::new([@core.Spanned::new(item, @core.Span::dummy())])
   let lowered = lower_program(prog)
   match lowered.items()[0] {
     TScaleDef(name, ty) => {
@@ -67,21 +68,15 @@ test "lower_program lowers a scale definition to TScaleDef" {
   }
 }
 
+///|
 test "lower_program lowers a let binding with the value's inferred type" {
   let pat = @core.Spanned::new(
     @ast.Pattern::Ident(@ast.Ident::new("x")),
     @core.Span::dummy(),
   )
-  let value = @core.Spanned::new(
-    @ast.Expr::BoolLit(true),
-    @core.Span::dummy(),
-  )
-  let item : @ast.Item = @ast.LetBinding(
-    @ast.LetBinding::new(pat, None, value),
-  )
-  let prog = @ast.Program::new([
-    @core.Spanned::new(item, @core.Span::dummy()),
-  ])
+  let value = @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy())
+  let item : @ast.Item = @ast.LetBinding(@ast.LetBinding::new(pat, None, value))
+  let prog = @ast.Program::new([@core.Spanned::new(item, @core.Span::dummy())])
   let lowered = lower_program(prog)
   match lowered.items()[0] {
     TLetBinding(name, expr) => {
@@ -99,6 +94,7 @@ test "lower_program lowers a let binding with the value's inferred type" {
   }
 }
 
+///|
 test "lower_program lowers an if expression with both branches typed" {
   let if_expr = @ast.IfExpr::new(
     @core.Spanned::new(@ast.Expr::BoolLit(true), @core.Span::dummy()),
@@ -108,9 +104,7 @@ test "lower_program lowers an if expression with both branches typed" {
   let stmt : @ast.Item = @ast.ExprStmt(
     @core.Spanned::new(@ast.Expr::If(if_expr), @core.Span::dummy()),
   )
-  let prog = @ast.Program::new([
-    @core.Spanned::new(stmt, @core.Span::dummy()),
-  ])
+  let prog = @ast.Program::new([@core.Spanned::new(stmt, @core.Span::dummy())])
   let lowered = lower_program(prog)
   match lowered.items()[0] {
     TExprStmt(e) =>
