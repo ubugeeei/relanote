@@ -164,3 +164,60 @@ test "textDocument/diagnostic returns full-kind report" {
     None => abort("diagnostic should produce a response")
   }
 }
+
+///|
+test "didOpen stores text and publishes diagnostics" {
+  let s = RelanoteLanguageServer::new()
+  let request = @json.parse(
+    "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/didOpen\",\"params\":{\"textDocument\":{\"uri\":\"file:///x.rela\",\"text\":\"let x 1\"}}}",
+  )
+  match s.handle_request(request) {
+    Some(response) =>
+      match json_value(response, "method") {
+        Some(String("textDocument/publishDiagnostics")) => ()
+        _ => abort("expected publishDiagnostics notification")
+      }
+    None => abort("didOpen should publish diagnostics")
+  }
+  match s.document("file:///x.rela") {
+    Some("let x 1") => ()
+    _ => abort("document text should be stored")
+  }
+}
+
+///|
+test "didChange updates text for later formatting request" {
+  let s = RelanoteLanguageServer::new()
+  let open = @json.parse(
+    "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/didOpen\",\"params\":{\"textDocument\":{\"uri\":\"file:///x.rela\",\"text\":\"let x=1\"}}}",
+  )
+  ignore(s.handle_request(open))
+  let change = @json.parse(
+    "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/didChange\",\"params\":{\"textDocument\":{\"uri\":\"file:///x.rela\"},\"contentChanges\":[{\"text\":\"let x = 2\"}]}}",
+  )
+  ignore(s.handle_request(change))
+  let fmt = @json.parse(
+    "{\"jsonrpc\":\"2.0\",\"id\":9,\"method\":\"textDocument/formatting\",\"params\":{\"textDocument\":{\"uri\":\"file:///x.rela\"}}}",
+  )
+  match s.handle_request(fmt) {
+    Some(response) =>
+      match json_value(response, "result") {
+        Some(Array(edits)) => assert_true(edits.length() > 0)
+        _ => abort("expected formatting edits")
+      }
+    None => abort("formatting should return edits")
+  }
+}
+
+///|
+test "handle_body returns parse error frame for invalid json" {
+  let s = RelanoteLanguageServer::new()
+  match s.handle_body("{") {
+    Some(frame) =>
+      match read_frame(frame) {
+        Some(decoded) => assert_true(decoded.body().contains("-32700"))
+        None => abort("expected parse error frame")
+      }
+    None => abort("invalid json should produce a response")
+  }
+}

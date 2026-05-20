@@ -15,7 +15,7 @@ hero:
       link: /guide/introduction
     - theme: alt
       text: Open playground
-      link: https://ubugeeei.github.io/relanote/playground/
+      link: /playground/
     - theme: alt
       text: GitHub
       link: https://github.com/ubugeeei/relanote

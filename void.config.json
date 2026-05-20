@@ -1,5 +1,6 @@
 {
   "name": "relanote",
+  "domain": "relanote.void.app",
   "build": {
     "dir": "dist"
   },
