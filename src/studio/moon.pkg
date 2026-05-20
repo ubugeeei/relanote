@@ -1,11 +1,11 @@
 import {
   "ubugeeei/relanote/src/core" @core,
   "ubugeeei/relanote/src/parser" @parser,
-  "ubugeeei/relanote/src/ast" @ast,
   "ubugeeei/relanote/src/format" @format,
   "ubugeeei/relanote/src/types" @types,
   "ubugeeei/relanote/src/eval" @eval,
   "ubugeeei/relanote/src/render" @render,
+  "ubugeeei/relanote/src/preview" @preview,
   "mizchi/js/core" @js,
 }
 

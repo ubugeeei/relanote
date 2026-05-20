@@ -51,7 +51,7 @@ not the notes themselves.
 
 ## Relative all the way down
 
-Chords are intervals over a root. Sections are blocks over a beat-grid.
+Chords are intervals over a root. Sections are blocks over a pulse.
 Parts are sections over an instrument. Layers are parts over time.
 Everything in the language is described by what it relates to — never by
 where it absolutely sits.

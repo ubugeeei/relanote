@@ -221,6 +221,8 @@ function writeCss() {
   fs.copyFileSync(path.join(site, "site.js"), path.join(dist, "site.js"));
 }
 
+function writeRuntime() { execFileSync("moon", ["build", "--target", "wasm-gc", "src/preview_wasm"], { stdio: "inherit" }); fs.copyFileSync(path.join(root, "_build", "wasm-gc", "debug", "build", "src", "preview_wasm", "preview_wasm.wasm"), path.join(dist, "preview.wasm")); }
+
 function build() {
   clean();
   const files = walk(docs).sort((a, b) => rank(a) - rank(b) || slug(a).localeCompare(slug(b)));
@@ -234,6 +236,7 @@ function build() {
   }
   fs.copyFileSync(path.join(dist, "docs", "index.html"), path.join(dist, "index.html"));
   writeCss();
+  writeRuntime();
   copyIfExists(path.join(root, "assets"), path.join(dist, "assets"));
   copyIfExists(path.join(root, "assets", "diagrams"), path.join(dist, "diagrams"));
   copyIfExists(path.join(root, "examples"), path.join(dist, "examples"));
