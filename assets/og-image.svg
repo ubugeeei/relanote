@@ -2,32 +2,57 @@
   <defs>
     <linearGradient id="field" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="#2a0c1a"/>
-      <stop offset=".45" stop-color="#09080c"/>
-      <stop offset="1" stop-color="#202917"/>
+      <stop offset=".5" stop-color="#08070b"/>
+      <stop offset="1" stop-color="#141911"/>
     </linearGradient>
     <linearGradient id="signal" x1="0" x2="1">
       <stop stop-color="#ff4f7a"/>
-      <stop offset=".54" stop-color="#ffd05a"/>
+      <stop offset=".52" stop-color="#ffd05a"/>
       <stop offset="1" stop-color="#caff55"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" x2="1">
+      <stop stop-color="#0d0b12" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#0d0b12" stop-opacity=".5"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#field)"/>
-  <path d="M0 118H1200M0 206H1200M0 294H1200M0 382H1200M0 470H1200M0 558H1200M118 0V630M236 0V630M354 0V630M472 0V630M590 0V630M708 0V630M826 0V630M944 0V630M1062 0V630" stroke="#fff8ed" stroke-opacity=".08"/>
-  <path d="M584 0H1200V630H254Z" fill="url(#signal)" opacity=".82"/>
-  <path d="M698 150H1082L944 566H560Z" fill="#0b0a0f" opacity=".72"/>
-  <path d="M798 236H1100L1032 518H730Z" fill="#ff4f7a" opacity=".32"/>
-  <path d="M650 298H946L880 564H584Z" fill="#caff55" opacity=".42"/>
+  <path d="M760 0H1200V630H704Z" fill="url(#signal)" opacity=".84"/>
+  <path d="M704 0L640 630" stroke="#fff8ed" stroke-opacity=".14" stroke-width="2"/>
+  <g opacity=".16" stroke="#fff8ed" stroke-width="1">
+    <path d="M64 118H594M64 206H594M64 294H594M64 382H594"/>
+    <path d="M846 96H1160M806 186H1120M766 276H1080M726 366H1040M686 456H1000"/>
+  </g>
   <g transform="translate(72 62)">
-    <path d="M0 24 C20 -10 44 -14 70 10" fill="none" stroke="#fff8ed" stroke-width="7"/>
+    <path d="M0 24C20-10 44-14 70 10" fill="none" stroke="#fff8ed" stroke-width="7"/>
     <circle cx="0" cy="24" r="9" fill="#ff4f7a"/>
     <circle cx="70" cy="10" r="9" fill="#ff4f7a"/>
     <text x="94" y="28" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="28" font-weight="760" fill="#fff8ed">relanote</text>
   </g>
-  <text x="72" y="398" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="178" font-weight="800" fill="#fff8ed">relanote</text>
-  <text x="78" y="468" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="36" fill="#d8d0c4">Relative music structure, typed through MoonBit.</text>
-  <g transform="translate(712 354)">
-    <rect width="344" height="96" fill="#0d0b12" opacity=".88"/>
-    <text x="24" y="36" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="20" fill="#caff55">main.rela</text>
-    <text x="24" y="70" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="22" fill="#fff8ed">theme <tspan fill="#ff4f7a">|&gt;</tspan> transpose P5 <tspan fill="#ff4f7a">|&gt;</tspan> repeat 2</text>
+  <text x="72" y="304" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="142" font-weight="820" fill="#fff8ed">relanote</text>
+  <text x="78" y="370" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="34" fill="#d8d0c4">Relative music structure.</text>
+  <text x="78" y="414" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="34" fill="#d8d0c4">Typed as relationships.</text>
+  <text x="78" y="458" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="34" fill="#d8d0c4">Rendered as sound.</text>
+  <path d="M78 502H170" stroke="url(#signal)" stroke-width="8" stroke-linecap="round"/>
+  <g transform="translate(720 126)">
+    <path d="M0 356C82 264 150 162 300 34" fill="none" stroke="#fff8ed" stroke-opacity=".9" stroke-width="7"/>
+    <path d="M84 352H356L430 74H158Z" fill="#0d0b12" opacity=".72"/>
+    <path d="M132 292H362L420 156H190Z" fill="#ff4f7a" opacity=".34"/>
+    <path d="M54 382H324L384 240H114Z" fill="#caff55" opacity=".42"/>
+    <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="24" font-weight="760">
+      <g transform="translate(0 356)">
+        <circle r="24" fill="#ff4f7a"/><text x="-8" y="8" fill="#0d0b12">R</text>
+      </g>
+      <g transform="translate(154 178)">
+        <circle r="30" fill="#ffd05a"/><text x="-25" y="8" fill="#0d0b12">+M3</text>
+      </g>
+      <g transform="translate(300 34)">
+        <circle r="34" fill="#caff55"/><text x="-25" y="8" fill="#0d0b12">+P5</text>
+      </g>
+    </g>
+    <g transform="translate(112 318)">
+      <rect width="360" height="106" fill="url(#glass)"/>
+      <text x="24" y="38" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="20" font-weight="760" fill="#caff55">main.rela</text>
+      <text x="24" y="74" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="22" fill="#fff8ed">theme <tspan fill="#ff4f7a">|&gt;</tspan> transpose P5</text>
+    </g>
   </g>
 </svg>
