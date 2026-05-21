@@ -94,6 +94,17 @@ fn install_prelude(env : Env) -> Unit {
   env.bind("double_time", BuiltinV("double_time"))
   env.bind("octave_up", BuiltinV("octave_up"))
   env.bind("octave_down", BuiltinV("octave_down"))
+  env.bind("voice", BuiltinV("voice"))
+  for
+    name in [
+      "Lead", "Pluck", "SoftPad", "FatBass", "FMBell", "FMRhodes", "FMKalimba",
+      "WaveVapor", "WaveDriftPad", "WaveFormant", "WaveAcid", "WaveSupersaw",
+      "GrainDrift", "GrainVocal", "GrainShimmer", "ModularLead", "BassMoog",
+      "AcidBass", "SubBass", "Chiptune", "NES", "GameBoy", "FloatingBloom",
+      "FloatingGlass", "LofiKick", "LofiSnare", "LofiHat",
+    ] {
+    env.bind(name, SynthV(@ast.SynthDef::new(@ast.Ident::new(name), [])))
+  }
   // TODO(#8): parse + evaluate `@stdlib.PRELUDE` once block resolution
   // is in place, to bind the scale / chord / synth presets.
   let _ = @stdlib.PRELUDE

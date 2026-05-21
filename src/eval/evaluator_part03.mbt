@@ -49,6 +49,7 @@ fn call_builtin(
     "double_time" => builtin_double_time(args, span)
     "octave_up" => builtin_shift_octaves(args, span, 1)
     "octave_down" => builtin_shift_octaves(args, span, -1)
+    "voice" => builtin_voice(args, span)
     other => Err(Custom(message="unknown builtin: " + other, span~))
   }
 }
@@ -57,7 +58,7 @@ fn call_builtin(
 fn builtin_arity(name : String) -> Int? {
   match name {
     "reverse" | "double_time" | "octave_up" | "octave_down" => Some(1)
-    "repeat" | "rotate" => Some(2)
+    "repeat" | "rotate" | "voice" => Some(2)
     _ => None
   }
 }

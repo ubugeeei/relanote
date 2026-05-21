@@ -51,6 +51,9 @@ pub(all) enum Value {
   /// Sequential composition produced by `++`. Keeping each child value
   /// separate preserves its own relative rhythm.
   SequenceV(Array[Value])
+  /// Preview/render voice annotation produced by `voice(Synth)`.
+  /// Carries the named synth alongside the musical value it colors.
+  VoicedV(String, Value)
   /// Tuplet of slots — like `BlockV` but with an explicit target-beat
   /// expression that has already been evaluated to a number.
   TupletV(@ast.Tuplet)

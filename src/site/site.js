@@ -66,7 +66,46 @@ function stopPreview() {
   previewAudio = null;
 }
 
+function patchFor(voice, lane) {
+  const v = (voice || "").toLowerCase();
+  const patch = {
+    osc: lane % 2 ? "sawtooth" : "triangle",
+    sub: "sine",
+    filter: "lowpass",
+    cutoff: 5200,
+    q: 5,
+    gain: .15,
+    attack: .018,
+    release: .06,
+    detune: 0,
+    pan: (lane % 3 - 1) * .22,
+  };
+  if (v.includes("bass") || v.includes("acid") || v.includes("moog")) {
+    return { ...patch, osc: "sawtooth", cutoff: 820, q: 11, gain: .18, attack: .006, release: .12, detune: -4 };
+  }
+  if (v.includes("pad") || v.includes("bloom") || v.includes("glass") || v.includes("drift")) {
+    return { ...patch, osc: "sawtooth", sub: "triangle", cutoff: 2400, q: 3, gain: .105, attack: .16, release: .42, detune: 7 };
+  }
+  if (v.includes("fm") || v.includes("bell") || v.includes("rhodes") || v.includes("kalimba")) {
+    return { ...patch, osc: "sine", sub: "triangle", cutoff: 9400, q: 2, gain: .13, attack: .003, release: .32, detune: 12 };
+  }
+  if (v.includes("wave")) {
+    return { ...patch, osc: "sawtooth", sub: "square", filter: "bandpass", cutoff: 3600, q: 8, attack: .025, release: .18, detune: 10 };
+  }
+  if (v.includes("grain")) {
+    return { ...patch, osc: "triangle", sub: "sawtooth", filter: "bandpass", cutoff: 2100, q: 10, gain: .12, attack: .05, release: .28, detune: lane % 2 ? 17 : -11 };
+  }
+  if (v.includes("chip") || v.includes("nes") || v.includes("gameboy")) {
+    return { ...patch, osc: "square", sub: "square", cutoff: 7200, q: 1, gain: .12, attack: .002, release: .025 };
+  }
+  if (v.includes("kick") || v.includes("snare") || v.includes("hat")) {
+    return { ...patch, osc: "square", sub: "triangle", filter: "highpass", cutoff: v.includes("hat") ? 5800 : 1200, q: 7, gain: .16, attack: .001, release: .045 };
+  }
+  return patch;
+}
+
 function schedule(ctx, note, base, bps, lane) {
+  const patch = patchFor(note.voice, lane);
   const freq = 440 * Math.pow(2, (note.pitch - 69) / 12);
   const t0 = base + note.start / bps;
   const t1 = t0 + note.duration / bps;
@@ -75,20 +114,21 @@ function schedule(ctx, note, base, bps, lane) {
   const filter = ctx.createBiquadFilter();
   const gain = ctx.createGain();
   const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-  osc.type = lane % 2 ? "sawtooth" : "triangle";
-  sub.type = "sine";
+  osc.type = patch.osc;
+  sub.type = patch.sub;
   osc.frequency.value = freq;
   sub.frequency.value = freq / 2;
-  filter.type = "lowpass";
-  filter.frequency.setValueAtTime(480 + (note.pitch - 48) * 42, t0);
-  filter.Q.value = 8;
+  osc.detune.value = patch.detune;
+  filter.type = patch.filter;
+  filter.frequency.setValueAtTime(patch.cutoff + (note.pitch - 60) * 28, t0);
+  filter.Q.value = patch.q;
   gain.gain.setValueAtTime(.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(.16, t0 + .018);
-  gain.gain.exponentialRampToValueAtTime(.0001, t1);
-  if (pan) pan.pan.value = (lane % 3 - 1) * .22;
+  gain.gain.exponentialRampToValueAtTime(patch.gain, t0 + patch.attack);
+  gain.gain.exponentialRampToValueAtTime(.0001, t1 + patch.release);
+  if (pan) pan.pan.value = patch.pan;
   osc.connect(filter); sub.connect(filter); filter.connect(gain);
   gain.connect(pan || ctx.destination); if (pan) pan.connect(ctx.destination);
-  osc.start(t0); sub.start(t0); osc.stop(t1 + .04); sub.stop(t1 + .04);
+  osc.start(t0); sub.start(t0); osc.stop(t1 + patch.release + .04); sub.stop(t1 + patch.release + .04);
 }
 
 async function playSource(source) {

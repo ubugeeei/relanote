@@ -4,11 +4,17 @@ pub struct NoteEvent {
   start : Double
   duration : Double
   velocity : Int
+  voice : String
 }
 
 ///|
-fn NoteEvent::new(pitch : Int, start : Double, duration : Double) -> NoteEvent {
-  { pitch, start, duration, velocity: 100 }
+fn NoteEvent::new(
+  pitch : Int,
+  start : Double,
+  duration : Double,
+  voice : String,
+) -> NoteEvent {
+  { pitch, start, duration, velocity: 100, voice }
 }
 
 ///|
@@ -25,6 +31,9 @@ pub fn NoteEvent::start(self : NoteEvent) -> Double {
 pub fn NoteEvent::duration(self : NoteEvent) -> Double {
   self.duration
 }
+
+///|
+pub fn NoteEvent::voice(self : NoteEvent) -> String { self.voice }
 
 ///|
 pub fn note_events(source : String) -> Array[NoteEvent] {
@@ -47,16 +56,20 @@ fn collect_value(
 ) -> Double {
   match value {
     @eval.BlockV(block) => collect_block(block, out, start, context)
+    @eval.VoicedV(name, value) =>
+      collect_value(value, out, start, context.with_voice(name))
     @eval.IntervalV(semitones) => {
-      out.push(NoteEvent::new(context.root_midi() + semitones, start, 1.0))
+      out.push(
+        NoteEvent::new(context.root_midi() + semitones, start, 1.0, context.voice()),
+      )
       start + 1.0
     }
     @eval.AbsolutePitchV(midi) => {
-      out.push(NoteEvent::new(midi, start, 1.0))
+      out.push(NoteEvent::new(midi, start, 1.0, context.voice()))
       start + 1.0
     }
     @eval.RootV => {
-      out.push(NoteEvent::new(context.root_midi(), start, 1.0))
+      out.push(NoteEvent::new(context.root_midi(), start, 1.0, context.voice()))
       start + 1.0
     }
     @eval.TupletV(tuplet) => collect_tuplet(tuplet, out, start, context)
@@ -127,10 +140,14 @@ fn collect_slots(
     }
     match spanned.node() {
       @ast.Note(pitch~, ..) =>
-        out.push(NoteEvent::new(pitch_to_midi(pitch.node(), context), cursor, dur))
+        out.push(
+          NoteEvent::new(pitch_to_midi(pitch.node(), context), cursor, dur, context.voice()),
+        )
       @ast.Chord(pitches~, ..) =>
         for p in pitches {
-          out.push(NoteEvent::new(pitch_to_midi(p.node(), context), cursor, dur))
+          out.push(
+            NoteEvent::new(pitch_to_midi(p.node(), context), cursor, dur, context.voice()),
+          )
         }
       @ast.Tuplet(tuplet) => {
         let _ = collect_tuplet(tuplet, out, cursor, context)
@@ -216,6 +233,7 @@ pub fn events_json(source : String) -> String {
     } else {
       out = out + ","
     }
+    let voice = if n.voice() == "" { "" } else { ",\"voice\":\"" + n.voice() + "\"" }
     out = out +
       "{\"pitch\":" +
       n.pitch().to_string() +
@@ -223,7 +241,9 @@ pub fn events_json(source : String) -> String {
       n.start().to_string() +
       ",\"duration\":" +
       n.duration().to_string() +
-      ",\"velocity\":100}"
+      ",\"velocity\":100" +
+      voice +
+      "}"
   }
   out + "]"
 }

@@ -3,13 +3,13 @@
 A *synth* in relanote is a record of how a note becomes sound:
 oscillator(s), envelope, filter, optional modulation, optional inline
 effects. Apply one to anything that produces notes — a block, a part,
-a section — with `|> voice <Name>`.
+a section — with `|> voice(Name)`.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
 let melody = | <1> <3> <5> <3> |
-melody |> voice Lead
+melody |> voice(Lead)
 ```
 
 Everything below is a different *shape* the oscillator / envelope /
@@ -28,6 +28,21 @@ synth Subtractive = {
 }
 ```
 
+Audition the basic contrast: a bright lead, a plucked transient and a
+slow pad playing the same pitch material.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let motif = | <1> <3> <5> <8> <5> <3> |:3
+
+let bright = motif |> voice(Lead)
+let plucked = motif |> voice(Pluck)
+let pad = motif |> voice(SoftPad)
+
+bright ++ plucked ++ pad
+```
+
 Stack oscillators with `+` and detune them for thickness:
 
 ```rela
@@ -37,6 +52,21 @@ synth FatSaw = {
   env: { A: 0.02, D: 0.3, S: 0.8, R: 0.4 },
   filter: LowPass(3500, 0.3)
 }
+```
+
+Use the thicker saw family for bass and body. The preview keeps the
+same notes but changes the oscillator/filter envelope for each voice.
+
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+let line = | <1> - <1> <5> <7> <5> <3> - |:4
+
+let round = line |> voice(FatBass)
+let acid = line |> voice(AcidBass)
+let moog = line |> voice(BassMoog)
+
+round ++ acid ++ moog
 ```
 
 See [`synths_basic.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_basic.rela)
@@ -61,6 +91,21 @@ synth FMBell = {
   env: { A: 0.001, D: 1.6, S: 0.0, R: 1.2 },
   filter: LowPass(9000, 0.1)
 }
+```
+
+FM voices are more percussive and glassy. Compare a bell, an electric
+piano and a kalimba-style attack:
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let arp = | <1> <3> <5> <8> <10> <8> <5> <3> |:4
+
+let bell = arp |> voice(FMBell)
+let rhodes = arp |> voice(FMRhodes)
+let kalimba = arp |> voice(FMKalimba)
+
+bell ++ rhodes ++ kalimba
 ```
 
 The combinatorics are wide: low `op2_ratio` + high `op2_level` is an
@@ -91,6 +136,18 @@ synth WaveLead = {
 ships six — `WaveVapor`, `WaveDriftPad`, `WaveFormant`, `WaveBellPad`,
 `WaveAcid`, `WaveSupersaw`.
 
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let hook = | <1> <2> <3> <5> <6> <5> <3> <2> |:4
+
+let vapor = hook |> voice(WaveVapor)
+let formant = hook |> voice(WaveFormant)
+let supersaw = hook |> voice(WaveSupersaw)
+
+vapor ++ formant ++ supersaw
+```
+
 ## Granular — clouds of micro-grains
 
 Granular oscillators chop a source into 5-100 ms grains and
@@ -116,6 +173,18 @@ shimmer reverbs all live here.
 See [`synths_granular.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/synths_granular.rela)
 and [`pads_floating.rela`](https://github.com/ubugeeei/relanote/blob/main/src/stdlib/prelude/pads_floating.rela).
 
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+let cloud = | <1> <5> <7> <8> <7> <5> <3> <1> |:8
+
+let drift = cloud |> voice(GrainDrift)
+let vocal = cloud |> voice(GrainVocal)
+let shimmer = cloud |> voice(GrainShimmer)
+
+drift ++ vocal ++ shimmer
+```
+
 ## Modulation matrix
 
 `mod: [ ... ]` describes a list of routings — each entry connects a
@@ -134,6 +203,21 @@ synth Breathing = {
     env(target: filter.cutoff, attack: 2.0, depth: 2500)
   ]
 }
+```
+
+Pad voices need longer attacks and releases, so they read better with
+held chords:
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let chords = | [R, M3, P5] [P4, M6, R] [P5, M7, M2] [R, M3, P5] |:8
+
+let soft = chords |> voice(SoftPad)
+let bloom = chords |> voice(FloatingBloom)
+let glass = chords |> voice(FloatingGlass)
+
+soft ++ bloom ++ glass
 ```
 
 | Source | Description |
@@ -160,6 +244,17 @@ synth Kick = {
 }
 ```
 
+For transient synths, keep the phrase sparse and let the attack do the
+work:
+
+```rela
+let kick = | R - R - R - R - |:4 |> voice(LofiKick)
+let snare = | - R - R - R - R |:4 |> voice(LofiSnare)
+let hat = | R R R R R R R R |:4 |> voice(LofiHat)
+
+kick ++ snare ++ hat
+```
+
 ## Inline effects on a synth
 
 Synths can declare per-voice effects. They run *inside* the synth,
@@ -182,12 +277,12 @@ guide instead.
 
 ## Applying a synth — `voice`, then parameters
 
-`voice X` picks the synth. After that, pipe through one or more
+`voice(X)` picks the synth. After that, pipe through one or more
 parameter functions to tweak this *instance*:
 
 ```rela
 melody
-  |> voice Lead
+  |> voice(Lead)
   |> cutoff 800
   |> resonance 0.4
   |> detune 12
@@ -209,19 +304,19 @@ scale Minor = { R, M2, m3, P4, P5, m6, m7 }
 section "Main" {
   part "Lead" {
     | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
-  } |> voice ModularLead |> volume 0.8
+  } |> voice(ModularLead) |> volume 0.8
 
   part "Pad" {
     | [<1> m3 P5] | ++ | [<1> m3 P5] |
-  } |> voice FloatingBloom |> volume 0.5
+  } |> voice(FloatingBloom) |> volume 0.5
 
   part "Bass" {
     | <1> - <1> <5> | ++ | <4> - <4> <1> |
-  } |> voice BassMoog |> volume 0.7
+  } |> voice(BassMoog) |> volume 0.7
 
   part "Drums" {
     | R - R - | ++ | R - R R |
-  } |> voice LofiKick
+  } |> voice(LofiKick)
 }
 ```
 
@@ -252,11 +347,11 @@ change three numbers, ship a new sound.
 
 ## Status
 
-The synth declaration syntax above is on the AST today —
-`synth`, `SynthProperty`, modulation routings, FM / wavetable /
-granular oscillator forms all parse. The DSP underneath lands
-alongside the evaluator port; at that point each preset becomes
-audible.
+The browser preview has an intentionally small timbre model today: it
+recognises the preset passed to `voice(...)` and maps it to a matching
+WebAudio patch family. The full declaration parser / DSP evaluator will
+make custom `synth { ... }` records audible later, but the guide examples
+above are already playable and useful for choosing a sound direction.
 
 ## Listen-through example
 
@@ -270,5 +365,9 @@ let pluck = | <5>* <6>* <5>* <3>* |:2
 let pad   = | [R, m3, P5] [P4, m6, R] |:4
 let bass  = | <1> - <5> <1> |:4
 
-pluck ++ pad ++ bass
+let front = pluck |> voice(Pluck)
+let bloom = pad |> voice(FloatingBloom)
+let low = bass |> voice(BassMoog)
+
+front ++ bloom ++ low
 ```

@@ -2,11 +2,12 @@
 pub struct PreviewContext {
   root_midi : Int
   tempo : Int
+  voice : String
 }
 
 ///|
 pub fn PreviewContext::default() -> PreviewContext {
-  { root_midi: 60, tempo: 0 }
+  { root_midi: 60, tempo: 0, voice: "" }
 }
 
 ///|
@@ -17,6 +18,16 @@ pub fn PreviewContext::root_midi(self : PreviewContext) -> Int {
 ///|
 pub fn PreviewContext::tempo(self : PreviewContext) -> Int {
   self.tempo
+}
+
+///|
+pub fn PreviewContext::voice(self : PreviewContext) -> String {
+  self.voice
+}
+
+///|
+pub fn PreviewContext::with_voice(self : PreviewContext, voice : String) -> PreviewContext {
+  { root_midi: self.root_midi, tempo: self.tempo, voice }
 }
 
 ///|
@@ -58,6 +69,7 @@ fn context_from_env(env : @eval.Env) -> PreviewContext {
   {
     root_midi: key_from_env(env),
     tempo: tempo_from_env(env),
+    voice: "",
   }
 }
 

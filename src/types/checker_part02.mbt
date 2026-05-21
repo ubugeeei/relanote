@@ -124,7 +124,11 @@ fn install_prelude(ctx : TypeContext) -> Unit {
        "HandClap", "TightClap", "RoomClap", "Clap808", "Clap909", "VintageClap",
       "SharpClap", "SoftClap", "StadiumClap", "FingerSnap",
       // additional
-       "Piano", "EPiano", "WarmPad", "AcidBass",
+       "Piano", "EPiano", "WarmPad", "AcidBass", "SubBass", "BassMoog",
+      "FMBell", "FMRhodes", "FMKalimba", "WaveVapor", "WaveDriftPad",
+      "WaveFormant", "WaveAcid", "WaveSupersaw", "GrainDrift", "GrainVocal",
+      "GrainShimmer", "ModularLead", "FloatingBloom", "FloatingGlass",
+      "LofiKick", "LofiSnare", "LofiHat",
     ] {
     ctx.bind_mono(name, Synth)
   }
