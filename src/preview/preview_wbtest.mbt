@@ -80,6 +80,19 @@ test "preview carries synth voice metadata" {
 }
 
 ///|
+test "preview carries declared synth voice metadata" {
+  let src =
+    #|synth DeepSub = {
+    #|  osc: Sine,
+    #|  env: envelope(0.01, 0.2, 0.95, 0.3),
+    #|  filter: LowPass(54, 0.0)
+    #|}
+    #|| R P5 |:4 |> voice(DeepSub)
+  assert_true(events_json(src).contains("\"voice\":\"DeepSub\""))
+  inspect(playground_summary(src), content="2 notes / 4 beats")
+}
+
+///|
 test "preview layers voices in parallel" {
   let src =
     #|layer [
