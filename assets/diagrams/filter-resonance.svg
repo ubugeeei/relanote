@@ -1,22 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
-<title id="title">Filter Resonance</title>
-<desc id="desc">A focused peak turns filtering into tone.</desc>
+<title id="title">Filter resonance</title>
+<desc id="desc">Q boosts the edge of the filter.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="context-stroke"/></marker></defs>
 <style>
-  :root{color-scheme:light dark}.bg{fill:#fff8ed}.grid{stroke:#0c0b0d;stroke-opacity:.06}.ink{fill:#0c0b0d}.muted{fill:#756c62}.rail{fill:none;stroke-linecap:square;stroke-width:18;mix-blend-mode:multiply}.r0{stroke:#ff4f7a}.r1{stroke:#caff55}.r2{stroke:#ffd05a}.tick{fill:#0c0b0d}.node rect{filter:url(#soft)}.node text{fill:#0c0b0d;font:700 18px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-anchor:middle}.mono{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}@media(prefers-color-scheme:dark){.bg{fill:#08070a}.grid{stroke:#fff8ed;stroke-opacity:.07}.ink{fill:#fff8ed}.muted{fill:#b5aca1}.rail{mix-blend-mode:screen;opacity:.88}.tick{fill:#fff8ed}.node text{fill:#08070a}}
+:root{color-scheme:light dark}.bg{fill:#fbfbfd}.panel{fill:#fff;stroke:#d8d8df}.soft{fill:#f2f2f7}.ink{fill:#17171b}.muted{fill:#6e6e73}.label{fill:#242428;font:650 16px -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}.small{fill:#6e6e73;font:600 12px -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}.title{fill:#111115;font:760 34px -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}.desc{fill:#6e6e73;font:500 16px -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}.mono{fill:#55555b;font:650 13px ui-monospace,SFMono-Regular,Menlo,monospace}.axis{stroke:#8e8e93;stroke-width:1.5}.arrow{stroke:#55555b;stroke-width:2.2;fill:none;marker-end:url(#arrow)}.line{fill:none;stroke:#17171b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.hot{stroke:#ff4f7a}.mint{stroke:#00a887}.gold{stroke:#c78800}.violet{stroke:#8e6bff}.hotf{fill:#ff4f7a}.mintf{fill:#00a887}.goldf{fill:#f2a900}.violetf{fill:#8e6bff}.darkf{fill:#242428}.lightf{fill:#fff}.fade{opacity:.22}.fillHot{fill:#ff4f7a;opacity:.12}.fillMint{fill:#00a887;opacity:.13}.fillGold{fill:#f2a900;opacity:.16}.fillViolet{fill:#8e6bff;opacity:.13}.mid{text-anchor:middle}.right{text-anchor:end}@media(prefers-color-scheme:dark){.bg{fill:#08090d}.panel{fill:#121319;stroke:#2d2e36}.soft{fill:#1b1c23}.ink,.title{fill:#f5f5f7}.muted,.desc,.small,.mono{fill:#a1a1aa}.label{fill:#f1f1f4}.axis{stroke:#696a73}.arrow{stroke:#bbbcc6}.line{stroke:#f5f5f7}.darkf{fill:#f5f5f7}.lightf{fill:#121319}}
 </style>
-<defs><filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
 <rect class="bg" width="960" height="540"/>
-<path class="grid" d="M0 98H960M0 178H960M0 258H960M0 338H960M0 418H960M118 0V540M238 0V540M358 0V540M478 0V540M598 0V540M718 0V540M838 0V540"/>
-<rect class="tick" x="99" y="92" width="2" height="346" opacity="0.16"/>
-  <rect class="tick" x="479" y="92" width="2" height="346" opacity="0.24"/>
-  <rect class="tick" x="859" y="92" width="2" height="346" opacity="0.32"/>
-<text class="ink" x="72" y="74" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="42" font-weight="760">Filter Resonance</text>
-<text class="muted" x="74" y="108" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="17">A focused peak turns filtering into tone.</text>
-<text class="muted mono" x="74" y="482">relative structure -> signal -> render</text>
-<path class="rail r0" d="M 100.0 296.0 L 480.0 354.6 L 860.0 346.7"/>
-  <path class="rail r1" d="M 100.0 330.0 L 480.0 396.6 L 860.0 380.7"/>
-  <path class="rail r2" d="M 100.0 364.0 L 480.0 438.6 L 860.0 414.7"/>
-<g class="node" transform="translate(42 292)"><rect fill="#caff55" width="116" height="76"/><text x="58" y="45">Soft</text></g>
-  <g class="node" transform="translate(422 358.57163289337745)"><rect fill="#ffd05a" width="116" height="76"/><text x="58" y="45">Peak</text></g>
-  <g class="node" transform="translate(802 342.7175751354527)"><rect fill="#00d29e" width="116" height="76"/><text x="58" y="45">Self Tone</text></g>
+<text class="title" x="64" y="62" >Filter resonance</text>
+<text class="desc" x="66" y="92" >Q boosts the edge of the filter.</text>
+<rect class="panel" x="90" y="136" width="740" height="300" rx="16"/><line class="axis" x1="130" y1="382" x2="780" y2="382" /><line class="axis" x1="130" y1="172" x2="130" y2="382" /><path class="line mint" d="M 130 242 L 445 242 C 520 242 528 330 610 330 L 780 330" /><path class="line gold" d="M 130 262 L 450 262 C 494 180 530 348 610 348 L 780 348" /><path class="line hot" d="M 130 282 L 450 282 C 500 114 522 364 610 364 L 780 364" /><line class="axis fade" x1="505" y1="160" x2="505" y2="386" /><text class="small mid" x="505" y="408" >cutoff</text><text class="small" x="610" y="214" >higher resonance = sharper peak</text><text class="small" x="610" y="238" >use carefully for acid / vowel tones</text>
 </svg>
