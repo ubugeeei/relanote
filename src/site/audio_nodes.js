@@ -19,6 +19,11 @@ function wave(ctx, name) {
       wood: [0, 1, .32, .12, .08, .045, .025, .014],
       brass: [0, 1, .56, .22, .31, .14, .09, .04],
       metal: [0, .55, .2, .64, .12, .36, .08, .2, .05],
+      felt: [0, 1, .22, .12, .055, .036, .018, .012, .007],
+      air: [0, .35, .18, .09, .045, .025, .014, .008],
+      dust: [0, .62, -.18, .3, -.12, .17, -.06, .08, -.03],
+      string: [0, 1, .44, .2, .12, .07, .04, .025, .016],
+      plasma: [0, .86, .48, -.18, .26, -.09, .13, -.04, .06],
     }[name] || [0, 1, .24, .09, .04];
     bank.forEach((value, i) => { if (i < imag.length) imag[i] = value; });
     return ctx.createPeriodicWave(real, imag, { disableNormalization: false });
@@ -45,9 +50,11 @@ function impulse(ctx, seconds) {
     for (let c = 0; c < 2; c++) {
       const data = buffer.getChannelData(c);
       for (let i = 0; i < length; i++) {
-        const tail = Math.pow(1 - i / length, 2.7);
+        const age = i / length;
+        const tail = Math.pow(1 - age, 2.7);
         const early = i < ctx.sampleRate * .08 ? .34 : 1;
-        data[i] = (Math.random() * 2 - 1) * tail * early * (c ? .78 : 1);
+        const sway = 1 + Math.sin(age * 41 + c * 1.7) * .09;
+        data[i] = (Math.random() * 2 - 1) * tail * early * sway * (c ? .78 : 1);
       }
     }
     return buffer;
@@ -111,26 +118,64 @@ function addVibrato(ctx, osc, t0, t1, patch) {
   return [lfo];
 }
 
-function connectSpace(ctx, amp, bus, patch, freq) {
+function clamp(v, lo, hi) {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+function connectSpace(ctx, amp, bus, patch, freq, t0 = 0, t1 = 0) {
+  const mods = [];
   const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
   const room = ctx.createGain();
   const send = patch.room * (freq < 135 ? .12 : 1);
   room.gain.value = send;
   if (pan) {
-    pan.pan.value = freq < 150 ? patch.pan * .08 : Math.max(-.85, Math.min(.85, patch.pan));
+    const basePan = freq < 150 ? patch.pan * .08 : clamp(patch.pan, -.88, .88);
+    pan.pan.setValueAtTime(basePan, t0 || ctx.currentTime);
+    if (patch.panDrift && t1 > t0) {
+      const lfo = ctx.createOscillator();
+      const depth = ctx.createGain();
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(patch.panRate || .08, t0);
+      depth.gain.setValueAtTime((freq < 150 ? .1 : 1) * patch.panDrift, t0);
+      lfo.connect(depth);
+      depth.connect(pan.pan);
+      mods.push(lfo);
+    }
     amp.connect(pan); pan.connect(bus.dry);
   } else {
     amp.connect(bus.dry);
   }
-  amp.connect(room); room.connect(bus.room);
-  if (!ctx.createDelay || !ctx.createStereoPanner || patch.width < .12) return;
+  if (patch.preDelay && ctx.createDelay) {
+    const pre = ctx.createDelay(.12);
+    pre.delayTime.value = patch.preDelay;
+    amp.connect(pre);
+    pre.connect(room);
+  } else {
+    amp.connect(room);
+  }
+  room.connect(bus.room);
+  if (!ctx.createDelay || !ctx.createStereoPanner) return mods;
+  if (patch.echo) {
+    const echo = ctx.createDelay(.9);
+    const echoGain = ctx.createGain();
+    const echoPan = ctx.createStereoPanner();
+    echo.delayTime.value = patch.echoTime || .23;
+    echoGain.gain.value = patch.echo * (freq < 150 ? .15 : 1);
+    echoPan.pan.value = clamp(-(patch.pan || .35) + (patch.echoSide || 0), -.9, .9);
+    amp.connect(echo);
+    echo.connect(echoGain);
+    echoGain.connect(echoPan);
+    echoPan.connect(bus.room);
+  }
+  if (patch.width < .12) return mods;
   const a = ctx.createDelay(.07);
   const b = ctx.createGain();
   const p = ctx.createStereoPanner();
-  a.delayTime.value = .012 + patch.width * .021;
-  b.gain.value = patch.width * (freq < 180 ? .05 : .16);
+  a.delayTime.value = .009 + patch.width * .024;
+  b.gain.value = patch.width * (freq < 180 ? .04 : .18);
   p.pan.value = patch.pan > 0 ? -.7 : .7;
   amp.connect(a); a.connect(b); b.connect(p); p.connect(bus.dry);
+  return mods;
 }
 
 function addFm(ctx, osc, freq, t0, t1, patch) {

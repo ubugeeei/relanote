@@ -31,6 +31,7 @@ export function shell({ title, content, navHtml, pageClass = "doc" }) {
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/chromatic.css">
 <script defer src="/audio_nodes.js"></script>
+<script defer src="/audio_patches.js"></script>
 <script defer src="/audio.js"></script>
 <script defer src="/site.js"></script>
 </head>

@@ -17,6 +17,446 @@ bass, guitar, and sax are split into attack, body, resonance, air, and
 overtone layers. It is still synthesis, but the palette leans toward
 the acoustic cues that make real instruments feel alive.
 
+## Micro Detail Maximal Mix
+
+A dense, high-tempo mix study where the arrangement is intentionally
+too large to feel like a single preset. The parts are split into close
+transients, body layers, ghost reflections, orbiting leads, delayed bell
+throws, grain dust, and far-room pads so the preview engine can turn
+small named details into spatial motion.
+
+```rela
+synth KickSubCenter = {
+  osc: (Sine |> mix 0.86) +
+       (Triangle |> mix 0.14),
+  env: envelope(0.001, 0.18, 0.0, 0.14),
+  filter: LowPass(92, 0.08),
+  pitch_env: (165, 38, 0.07)
+}
+
+synth KickClickNear = {
+  osc: (Noise |> mix 0.22) +
+       (Triangle |> mix 0.5) +
+       (Sine |> mix 0.28 |> octave 1),
+  env: envelope(0.001, 0.055, 0.0, 0.05),
+  filter: BandPass(3400, 0.46)
+}
+
+synth SnareBodyNear = {
+  osc: (Noise |> mix 0.52) +
+       (Triangle |> mix 0.34) +
+       (Sine |> mix 0.14),
+  env: envelope(0.001, 0.13, 0.0, 0.24),
+  filter: BandPass(2100, 0.52),
+  detune: 7
+}
+
+synth SnareGhostFar = {
+  osc: (Noise |> mix 0.72) +
+       (Triangle |> mix 0.18) +
+       (Sine |> mix 0.1 |> octave 1),
+  env: envelope(0.004, 0.28, 0.0, 0.45),
+  filter: BandPass(3100, 0.42),
+  detune: 13
+}
+
+synth HatTickLeft = {
+  osc: Noise,
+  env: envelope(0.001, 0.035, 0.0, 0.05),
+  filter: HighPass(8200, 0.42)
+}
+
+synth HatTickRight = {
+  osc: Noise,
+  env: envelope(0.001, 0.035, 0.0, 0.05),
+  filter: HighPass(9000, 0.36)
+}
+
+synth HatAirScatter = {
+  osc: (Noise |> mix 0.8) +
+       (Triangle |> mix 0.2 |> octave 2),
+  env: envelope(0.001, 0.07, 0.0, 0.12),
+  filter: HighPass(7200, 0.28),
+  detune: 21
+}
+
+synth DustTickScatter = {
+  osc: (Noise |> mix 0.64) +
+       (FM(Sine, 7.01, 0.16) |> mix 0.36),
+  env: envelope(0.001, 0.045, 0.0, 0.12),
+  filter: HighPass(6400, 0.5),
+  detune: 24
+}
+
+synth SubCenter = {
+  osc: (Sine |> mix 0.78) +
+       (Triangle |> mix 0.22 |> octave (-1)),
+  env: envelope(0.008, 0.24, 0.9, 0.38),
+  filter: LowPass(120, 0.06)
+}
+
+synth BassGrowlCenter = {
+  osc: (Saw |> mix 0.42) +
+       (Triangle |> mix 0.32) +
+       (Sine |> mix 0.26 |> octave (-1)),
+  env: envelope(0.01, 0.2, 0.72, 0.28),
+  filter: LowPass(680, 0.7),
+  detune: 12
+}
+
+synth BassFingerMicro = {
+  osc: (Triangle |> mix 0.42) +
+       (Noise |> mix 0.2) +
+       (Sine |> mix 0.38 |> octave 1),
+  env: envelope(0.004, 0.12, 0.22, 0.18),
+  filter: BandPass(1600, 0.42),
+  detune: 5
+}
+
+synth FeltPianoNear = {
+  osc: (Triangle |> mix 0.38) +
+       (Sine |> mix 0.28) +
+       (Noise |> mix 0.14) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.004, 0.42, 0.26, 1.0),
+  filter: LowPass(5600, 0.2),
+  detune: 2
+}
+
+synth FeltPianoRoom = {
+  osc: (Triangle |> mix 0.4) +
+       (Sine |> mix 0.34 |> octave (-1)) +
+       (Sine |> mix 0.26 |> octave 1),
+  env: envelope(0.03, 0.8, 0.5, 1.6),
+  filter: LowPass(3800, 0.16),
+  detune: 5
+}
+
+synth EPianoTineOrbit = {
+  osc: (FM(Sine, 2.98, 0.36) |> mix 0.48) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.18 |> octave 1) +
+       (Sine |> mix 0.12 |> octave 2),
+  env: envelope(0.006, 0.72, 0.34, 1.2),
+  filter: LowPass(6600, 0.18),
+  detune: 4
+}
+
+synth EPianoBarkRight = {
+  osc: (FM(Sine, 1.99, 0.52) |> mix 0.34) +
+       (Saw |> mix 0.26) +
+       (Triangle |> mix 0.22) +
+       (Noise |> mix 0.18),
+  env: envelope(0.004, 0.2, 0.24, 0.5),
+  filter: BandPass(2800, 0.36),
+  detune: 8
+}
+
+synth GuitarPickLeft = {
+  osc: (Noise |> mix 0.12) +
+       (Triangle |> mix 0.36) +
+       (Sine |> mix 0.28 |> octave 1) +
+       (Saw |> mix 0.24 |> osc_detune (-5)),
+  env: envelope(0.004, 0.24, 0.24, 0.4),
+  filter: BandPass(3400, 0.38)
+}
+
+synth GuitarGhostFar = {
+  osc: (Triangle |> mix 0.36) +
+       (Sine |> mix 0.28) +
+       (Saw |> mix 0.2 |> osc_detune 7) +
+       (Sine |> mix 0.16 |> octave 2),
+  env: envelope(0.02, 0.42, 0.36, 0.82),
+  filter: HighPass(1700, 0.26),
+  detune: 9
+}
+
+synth SaxReedNear = {
+  osc: (Saw |> mix 0.34) +
+       (Triangle |> mix 0.28) +
+       (Square |> mix 0.16) +
+       (Sine |> mix 0.22 |> octave 1),
+  env: envelope(0.07, 0.2, 0.84, 0.68),
+  filter: BandPass(1700, 0.46),
+  detune: 4
+}
+
+synth SaxBellDelay = {
+  osc: (Triangle |> mix 0.4) +
+       (Saw |> mix 0.32 |> osc_detune 5) +
+       (Sine |> mix 0.28 |> octave 1),
+  env: envelope(0.08, 0.34, 0.72, 0.95),
+  filter: LowPass(5600, 0.18),
+  detune: 6
+}
+
+synth LeadCenter = {
+  osc: (Saw |> mix 0.32 |> osc_detune (-6)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (FM(Sine, 1.51, 0.12) |> mix 0.18),
+  env: envelope(0.035, 0.28, 0.74, 0.62),
+  filter: LowPass(5200, 0.28),
+  detune: 7
+}
+
+synth LeadOrbit = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.26 |> osc_detune 11) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.045, 0.34, 0.72, 0.82),
+  filter: LowPass(6800, 0.24),
+  detune: 14
+}
+
+synth FormantSwerve = {
+  osc: (Wavetable(Formant) |> mix 0.46) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.26 |> octave 1),
+  env: envelope(0.05, 0.32, 0.66, 0.8),
+  filter: BandPass(3200, 0.42),
+  detune: 11
+}
+
+synth StringHaloFar = {
+  osc: (Saw |> mix 0.26 |> osc_detune (-8)) +
+       (Saw |> mix 0.26 |> osc_detune 8) +
+       (Triangle |> mix 0.26) +
+       (Sine |> mix 0.22 |> octave 1),
+  env: envelope(0.2, 0.42, 0.82, 1.5),
+  filter: LowPass(4200, 0.2),
+  detune: 17
+}
+
+synth PadWashFar = {
+  osc: (Wavetable(Vapor) |> mix 0.3) +
+       (Saw |> mix 0.24 |> osc_detune (-13)) +
+       (Saw |> mix 0.24 |> osc_detune 13) +
+       (Sine |> mix 0.22 |> octave 1),
+  env: envelope(0.45, 0.5, 0.84, 1.8),
+  filter: LowPass(2400, 0.2),
+  detune: 24
+}
+
+synth DustMistFar = {
+  osc: (Granular(Drift) |> mix 0.5) +
+       (Noise |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 2),
+  env: envelope(0.12, 0.36, 0.58, 1.2),
+  filter: BandPass(4200, 0.58),
+  detune: 30
+}
+
+synth BellThrowLeft = {
+  osc: (FM(Sine, 3.97, 0.44) |> mix 0.5) +
+       (Sine |> mix 0.28 |> octave 1) +
+       (Triangle |> mix 0.22),
+  env: envelope(0.006, 0.85, 0.2, 1.2),
+  filter: LowPass(9300, 0.12)
+}
+
+synth BellThrowRight = {
+  osc: (FM(Sine, 4.21, 0.38) |> mix 0.52) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.24 |> octave 1),
+  env: envelope(0.005, 0.62, 0.18, 1.0),
+  filter: LowPass(8800, 0.12)
+}
+
+synth VocalGrainFar = {
+  osc: (Granular(Vocal) |> mix 0.54) +
+       (Triangle |> mix 0.24) +
+       (Noise |> mix 0.22),
+  env: envelope(0.08, 0.35, 0.62, 1.1),
+  filter: BandPass(2200, 0.72),
+  detune: 18
+}
+
+synth ShimmerAirPan = {
+  osc: (Granular(Shimmer) |> mix 0.56) +
+       (Sine |> mix 0.24 |> octave 2) +
+       (Noise |> mix 0.2),
+  env: envelope(0.08, 0.28, 0.52, 1.0),
+  filter: HighPass(5200, 0.24),
+  detune: 31
+}
+
+synth RoomBloomFar = {
+  osc: (Triangle |> mix 0.36) +
+       (Sine |> mix 0.3 |> octave (-1)) +
+       (Wavetable(Vapor) |> mix 0.34),
+  env: envelope(0.36, 0.48, 0.86, 1.7),
+  filter: LowPass(2100, 0.18),
+  detune: 16
+}
+
+set key = D1
+set tempo = 184
+
+let kick_sub = |
+  R - - - - R - - - - R - - - R -
+  R - - - - - R - - R - - - - R -
+|:16 |> repeat(4) |> voice(KickSubCenter)
+
+let kick_click = |
+  P8 - - - - P8 - - - - P8 - - - P8 -
+  P8 - - - - - P8 - - P8 - - - - P8 -
+|:16 |> repeat(4) |> voice(KickClickNear)
+
+let snare_body = |
+  - - - - P8 - - - - - - - P8 - - -
+  - - - - P8 - - P8 - - - - P8 - P8 -
+|:16 |> repeat(4) |> voice(SnareBodyNear)
+
+let snare_ghost = |
+  - - - - - - P8 - - - - - - - - P8
+  - P8 - - - - - - - - P8 - - - - -
+|:16 |> repeat(4) |> voice(SnareGhostFar)
+
+let hats_left = |
+  P15 - P15 - P15 - P15 P15 - P15 - P15 P15 - P15 -
+  P15 P15 - P15 - P15 P15 - P15 - P15 P15 - P15 - P15
+|:16 |> repeat(4) |> voice(HatTickLeft)
+
+let hats_right = |
+  - P15 - P15 P15 - P15 - P15 - P15 - - P15 - P15
+  P15 - P15 P15 - P15 - P15 - P15 P15 - P15 - P15 -
+|:16 |> repeat(4) |> voice(HatTickRight)
+
+let hat_air = |
+  - - P22 - - P24 - - P22 - - P19 - - P21 -
+  P24 - - P22 - - P21 - - P19 - P22 - - P24 -
+|:16 |> repeat(4) |> voice(HatAirScatter)
+
+let dust_tick = |
+  - P26 - - P24 - P22 - - P26 - P24 - - P21 -
+  P24 - - P26 - P22 - - P24 - P21 - - P26 - -
+|:16 |> repeat(4) |> voice(DustTickScatter)
+
+let sub = |
+  R~ - - - P5 - R - m7~ - - - P5 - R -
+  R - P5 - M6~ - - - P5 - P4 - M3 - R -
+|:16 |> repeat(4) |> voice(SubCenter)
+
+let bass_growl = |
+  P8 - P5 P8 - m7 P8 M10 P8 - P12 - M10 - P8 -
+  P8 - M10 - P12 - M14 P12 - M10 - P8 - P5 -
+|:16 |> repeat(4) |> voice(BassGrowlCenter)
+
+let bass_finger = |
+  - P8 - P5 - M10 - P8 - P12 - M10 - P8 -
+  - M10 - P12 - M14 - P12 - M10 - P8 - P5 -
+|:16 |> repeat(4) |> voice(BassFingerMicro)
+
+let piano_near = |
+  [P8, M10, P12, M14] - [M9, P12, M14] - [P5, M7, P9, M13] -
+  [M6, P8, M10, P15] - [P4, M6, P8, M14] - [P5, M7, M10, P14] -
+|:16 |> repeat(4) |> voice(FeltPianoNear)
+
+let piano_room = |
+  [P12, M14, P15] - - - [M9, P12, M14] - - -
+  [P8, M10, P12] - - - [M6, P8, M10] - - -
+|:16 |> repeat(4) |> voice(FeltPianoRoom)
+
+let epiano_tine = |
+  - P12 M14 - P15 - M17 P19 - M17 P15 - M14 - P12 -
+  - M10 P12 - M14 - P15 M17 - P15 M14 - P12 - M10 -
+|:16 |> repeat(4) |> voice(EPianoTineOrbit)
+
+let epiano_bark = |
+  - - [P12, M14] - - [P15, M17] - - [M10, P12] - - [M14, P15] -
+  - [P8, M10] - - [P12, M14] - - [P15, M17] - [M14, P15] - -
+|:16 |> repeat(4) |> voice(EPianoBarkRight)
+
+let guitar_pick = |
+  P12 P15 M17 P19 M17 P15 P12 M10 P12 M14 P15 M17 P15 M14 P12 M10
+  M9 P12 M14 P15 M14 P12 M9 P8 P12 M14 P15 M17 M14 P12 M10 P8
+|:16 |> repeat(4) |> voice(GuitarPickLeft)
+
+let guitar_ghost = |
+  - P19 - M21 - P22 - P19 - M17 - P15 - M14 -
+  - P22 - P24 - M21 - P19 - M17 - P15 - P12 -
+|:16 |> repeat(4) |> voice(GuitarGhostFar)
+
+let sax_reed = |
+  - - P12 M14 P15 - M17 P19 - M17 P15 M14 P12 - M10 -
+  P12 - M14 P15 M17 - P19 M21 P22 - M21 P19 M17 P15 M14 -
+|:16 |> repeat(4) |> voice(SaxReedNear)
+
+let sax_bell = |
+  - - - P24 - - M21 - - P22 - - P19 - - M17
+  - P22 - - P24 - M21 - P19 - - M17 - P15 - -
+|:16 |> repeat(4) |> voice(SaxBellDelay)
+
+let lead_center = |
+  P12 - M14 P15 - M17 P19 - M17 - P15 M14 P12 - M10 -
+  P12 M14 P15 - M17 P19 - P22 M21 P19 - M17 P15 M14 P12 -
+|:16 |> repeat(4) |> voice(LeadCenter)
+
+let lead_orbit = |
+  - P19 - P22 M21 - P19 - M17 P19 - P22 - P24 - M21
+  - P22 M21 P19 - M17 P15 - M14 P15 - M17 - P19 - P22
+|:16 |> repeat(4) |> voice(LeadOrbit)
+
+let formant_swerve = |
+  - P15 - M17 - P19 - M17 - M14 - P15 - M17 - P19
+  - P22 - M21 - P19 - M17 - P15 - M14 - P12 -
+|:16 |> repeat(4) |> voice(FormantSwerve)
+
+let strings = |
+  [P8, P12, P15] - - - [M9, M14, M17] - - -
+  [P5, P12, M17] - - - [M6, M10, P15] - - -
+|:16 |> repeat(4) |> voice(StringHaloFar)
+
+let pad = |
+  [P12, M14, P15, M17] - - - [M10, P12, M14, P19] - - -
+  [P8, M10, P12, P17] - - - [M6, P8, M10, M14] - - -
+|:16 |> repeat(4) |> voice(PadWashFar)
+
+let dust_mist = |
+  - - P24 - - M21 - - P22 - - P19 - - M17 -
+  - P22 - - P24 - - M21 - P19 - - M17 - P15 -
+|:16 |> repeat(4) |> voice(DustMistFar)
+
+let bells_left = |
+  - - P24 - - - M21 - - P22 - - - P19 - -
+  - P22 - - - P24 - - M21 - - P19 - - M17 -
+|:16 |> repeat(4) |> voice(BellThrowLeft)
+
+let bells_right = |
+  - P26 - - P24 - - P22 - - P21 - - P19 - -
+  P24 - - P26 - - P22 - P24 - - P21 - - P19 -
+|:16 |> repeat(4) |> voice(BellThrowRight)
+
+let vocal_grain = |
+  - - P17~ - - P19~ - - M21~ - - P22~ - - P19~ -
+  - M17~ - - P19~ - - P22~ - - P24~ - - M21~ -
+|:16 |> repeat(4) |> voice(VocalGrainFar)
+
+let shimmer = |
+  - - - P29 - - P31 - - M28 - - P26 - - P24
+  - P31 - - P29 - - P26 - P24 - - M21 - - P22
+|:16 |> repeat(4) |> voice(ShimmerAirPan)
+
+let room_bloom = |
+  [P5, P8, P12] - - - [M6, M10, M14] - - -
+  [P4, M9, P12] - - - [P5, M10, P14] - - -
+|:16 |> repeat(4) |> voice(RoomBloomFar)
+
+layer [
+  kick_sub, kick_click, snare_body, snare_ghost,
+  hats_left, hats_right, hat_air, dust_tick,
+  sub, bass_growl, bass_finger,
+  piano_near, piano_room, epiano_tine, epiano_bark,
+  guitar_pick, guitar_ghost,
+  sax_reed, sax_bell,
+  lead_center, lead_orbit, formant_swerve,
+  strings, pad, dust_mist,
+  bells_left, bells_right, vocal_grain, shimmer, room_bloom
+]
+```
+
 ## Synthetic Session Sample
 
 A high-tempo fusion study built from component models instead of single
