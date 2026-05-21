@@ -165,6 +165,7 @@ fn Parser::parse_item(self : Parser) -> @core.Spanned[@ast.Item]? {
     @lexer.Set => self.parse_set_item(start)
     @lexer.Scale => self.parse_scale_item(start)
     @lexer.Chord => self.parse_chord_item(start)
+    @lexer.Synth => self.parse_synth_item(start)
     @lexer.Import => self.parse_import_item(start)
     _ =>
       match self.parse_expr() {

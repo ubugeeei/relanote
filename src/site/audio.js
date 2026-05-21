@@ -9,30 +9,30 @@ function patchFor(voice, lane) {
   const v = (voice || "").toLowerCase();
   const base = {
     wave: "velvet", filter: "lowpass", cutoff: 5200, q: 3, gain: .105,
-    attack: .018, release: .14, subGain: .06, bodyGain: .08, pan: (lane % 7 - 3) * .11,
-    room: .28, width: .22, drive: .05, fm: 0, fmRatio: 2.01, click: 0, kind: "tone",
+    attack: .018, release: .14, subGain: .08, bodyGain: .08, pan: (lane % 9 - 4) * .18,
+    room: .34, width: .3, drive: .05, fm: 0, fmRatio: 2.01, click: 0, kind: "tone",
   };
-  if (v.includes("kick")) return { ...base, kind: "kick", gain: .2, room: .025, width: 0, pan: 0, click: .12 };
-  if (v.includes("snare")) return { ...base, kind: "snare", gain: .11, room: .3, width: .3, click: .33 };
-  if (v.includes("hat")) return { ...base, kind: "hat", gain: .042, room: .18, width: .52, click: .24 };
-  if (v.includes("sub")) return { ...base, wave: "silk", cutoff: 360, q: 8, gain: .145, subGain: .55, bodyGain: .03, attack: .006, release: .18, pan: 0, room: .035, width: .01, drive: .08 };
-  if (v.includes("acid")) return { ...base, wave: "reed", cutoff: 1150, q: 15, gain: .12, subGain: .32, bodyGain: .1, attack: .006, release: .2, room: .08, width: .07, drive: .18, fm: .025, sweep: 2.6 };
-  if (v.includes("bass") || v.includes("moog")) return { ...base, wave: "bloom", cutoff: 780, q: 10, gain: .125, subGain: .38, bodyGain: .11, attack: .008, release: .22, pan: base.pan * .15, room: .06, width: .05, drive: .14 };
+  if (v.includes("kick")) return { ...base, kind: "kick", gain: .22, room: .035, width: 0, pan: 0, click: .14 };
+  if (v.includes("snare")) return { ...base, kind: "snare", gain: .11, room: .42, width: .42, click: .34 };
+  if (v.includes("hat")) return { ...base, kind: "hat", gain: .04, room: .32, width: .68, click: .24 };
+  if (v.includes("sub")) return { ...base, wave: "silk", cutoff: 300, q: 9, gain: .17, subGain: .76, bodyGain: .04, attack: .008, release: .24, pan: 0, room: .025, width: 0, drive: .09 };
+  if (v.includes("acid")) return { ...base, wave: "reed", cutoff: 1150, q: 15, gain: .115, subGain: .38, bodyGain: .11, attack: .006, release: .22, room: .12, width: .12, drive: .18, fm: .025, sweep: 2.6 };
+  if (v.includes("bass") || v.includes("moog")) return { ...base, wave: "bloom", cutoff: 720, q: 10, gain: .13, subGain: .46, bodyGain: .12, attack: .008, release: .24, pan: base.pan * .12, room: .08, width: .08, drive: .14 };
   if (v.includes("rhodes")) return { ...base, wave: "glass", cutoff: 7600, q: 2, gain: .075, attack: .006, release: .78, room: .44, width: .62, drive: .04, fm: .33, fmRatio: 2.98, click: .014 };
   if (v.includes("bell") || v.includes("kalimba")) return { ...base, wave: "glass", cutoff: 10400, q: 2, gain: .064, attack: .003, release: .72, room: .54, width: .76, drive: .025, fm: .58, fmRatio: 3.97, click: .025 };
-  if (v.includes("pad") || v.includes("bloom") || v.includes("glass") || v.includes("drift")) return { ...base, wave: "bloom", cutoff: 2400, q: 2.4, gain: .062, attack: .34, release: 1.12, subGain: .04, bodyGain: .1, room: .66, width: .9, drive: .035, fm: .018, fmRatio: 1.5 };
-  if (v.includes("wave") || v.includes("supersaw") || v.includes("formant")) return { ...base, wave: v.includes("formant") ? "reed" : "fold", filter: "bandpass", cutoff: 3600, q: 7, gain: .079, attack: .02, release: .36, subGain: .035, bodyGain: .08, room: .4, width: .74, drive: .09, fm: .035, fmRatio: 1.99, sweep: 1.35 };
-  if (v.includes("grain") || v.includes("vocal") || v.includes("shimmer")) return { ...base, wave: "glass", filter: "bandpass", cutoff: 2600, q: 9, gain: .061, attack: .075, release: .72, subGain: .02, bodyGain: .06, room: .72, width: .95, drive: .03, fm: .08, fmRatio: 2.52, click: .03 };
-  if (v.includes("modular") || v.includes("lead")) return { ...base, wave: "reed", filter: "bandpass", cutoff: 4200, q: 8, gain: .082, attack: .015, release: .28, room: .32, width: .52, drive: .1, fm: .055, fmRatio: 2.01 };
+  if (v.includes("pad") || v.includes("bloom") || v.includes("glass") || v.includes("drift")) return { ...base, wave: "bloom", cutoff: 2300, q: 2.4, gain: .062, attack: .34, release: 1.28, subGain: .045, bodyGain: .1, room: .78, width: .98, drive: .035, fm: .018, fmRatio: 1.5 };
+  if (v.includes("wave") || v.includes("supersaw") || v.includes("formant")) return { ...base, wave: v.includes("formant") ? "reed" : "fold", filter: "bandpass", cutoff: 3600, q: 7, gain: .076, attack: .02, release: .4, subGain: .04, bodyGain: .08, room: .62, width: .94, pan: base.pan * 1.2, drive: .09, fm: .035, fmRatio: 1.99, sweep: 1.35 };
+  if (v.includes("grain") || v.includes("vocal") || v.includes("shimmer") || v.includes("far")) return { ...base, wave: "glass", filter: "bandpass", cutoff: 2600, q: 9, gain: .058, attack: .075, release: .86, subGain: .02, bodyGain: .06, room: .9, width: 1, pan: base.pan * 1.35, drive: .03, fm: .08, fmRatio: 2.52, click: .03 };
+  if (v.includes("modular") || v.includes("lead")) return { ...base, wave: "reed", filter: "bandpass", cutoff: 4200, q: 8, gain: .08, attack: .015, release: .32, room: .5, width: .78, pan: base.pan * 1.1, drive: .1, fm: .055, fmRatio: 2.01 };
   if (v.includes("chip") || v.includes("nes") || v.includes("gameboy")) return { ...base, wave: "fold", cutoff: 5300, q: 4, gain: .052, attack: .004, release: .08, room: .2, width: .42, drive: .045, fm: .03 };
   return base;
 }
 
 function registerGain(freq, voice) {
   let gain = 1;
-  if (freq < 38) gain *= .38;
-  else if (freq < 60) gain *= .62;
-  else if (freq < 120) gain *= .8;
+  if (freq < 38) gain *= .5;
+  else if (freq < 60) gain *= .8;
+  else if (freq < 120) gain *= .94;
   else if (freq > 5600) gain *= .2;
   else if (freq > 3000) gain *= .33;
   else if (freq > 1500) gain *= .52;
@@ -57,14 +57,14 @@ function mixer(ctx) {
   const mud = ctx.createBiquadFilter();
   const air = ctx.createBiquadFilter();
   const comp = ctx.createDynamicsCompressor();
-  dry.gain.value = .82; room.gain.value = .74; wet.gain.value = .21;
+  dry.gain.value = .78; room.gain.value = .9; wet.gain.value = .3;
   pre.type = "highpass"; pre.frequency.value = 165;
   verb.buffer = n.impulse(ctx, 3.2);
   delay.delayTime.value = .37; fb.gain.value = .22;
-  low.type = "lowshelf"; low.frequency.value = 68; low.gain.value = -1.6;
+  low.type = "lowshelf"; low.frequency.value = 58; low.gain.value = 1.4;
   mud.type = "peaking"; mud.frequency.value = 285; mud.Q.value = .85; mud.gain.value = -2.7;
   air.type = "highshelf"; air.frequency.value = 7800; air.gain.value = -1;
-  comp.threshold.value = -18; comp.knee.value = 25; comp.ratio.value = 3.2; comp.attack.value = .005; comp.release.value = .18;
+  comp.threshold.value = -20; comp.knee.value = 26; comp.ratio.value = 3.4; comp.attack.value = .005; comp.release.value = .22;
   dry.connect(low); low.connect(mud); mud.connect(air); air.connect(glue); glue.connect(comp);
   room.connect(pre); pre.connect(verb); verb.connect(wet); wet.connect(comp);
   room.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet);

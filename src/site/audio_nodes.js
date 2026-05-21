@@ -86,7 +86,7 @@ function connectSpace(ctx, amp, bus, patch, freq) {
   const send = patch.room * (freq < 135 ? .12 : 1);
   room.gain.value = send;
   if (pan) {
-    pan.pan.value = freq < 150 ? patch.pan * .1 : patch.pan;
+    pan.pan.value = freq < 150 ? patch.pan * .08 : Math.max(-.85, Math.min(.85, patch.pan));
     amp.connect(pan); pan.connect(bus.dry);
   } else {
     amp.connect(bus.dry);
