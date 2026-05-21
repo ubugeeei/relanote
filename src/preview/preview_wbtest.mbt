@@ -61,6 +61,19 @@ test "events_json covers scalar preview values and errors" {
 }
 
 ///|
+test "preview applies key context to relative pitches" {
+  let src = "set key = D4\n| <1> <3> R M3 |"
+  assert_true(events_json(src).contains("\"pitch\":62"))
+  assert_true(events_json(src).contains("\"pitch\":66"))
+}
+
+///|
+test "preview exposes written tempo" {
+  inspect(preview_tempo("set tempo = 96\n| <1> |"), content="96")
+  inspect(preview_tempo("| <1> |"), content="0")
+}
+
+///|
 test "preview hears concat chord and tuplet examples" {
   let src = "| [R, M3, P5] | ++ | { <1> <2> <3> }:2 |"
   assert_true(events_json(src).contains("\"pitch\":67"))

@@ -124,7 +124,9 @@ fn share_source() -> Unit {
 }
 
 fn play() -> Unit {
-  @playground.play_sequence(@playground.events_json(source.get()), bpm.get())
+  let written = @playground.preview_tempo(source.get())
+  let tempo = if written > 0 { written } else { bpm.get() }
+  @playground.play_sequence(@playground.events_json(source.get()), tempo)
   result.set("Playing preview")
 }
 

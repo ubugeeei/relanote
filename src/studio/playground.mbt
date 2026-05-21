@@ -107,6 +107,11 @@ pub fn playground_summary(source : String) -> String {
 }
 
 ///|
+pub fn preview_tempo(source : String) -> Int {
+  @preview.preview_tempo(source)
+}
+
+///|
 pub fn staff_html(source : String, beat : Double) -> String {
   @preview.staff_html(source, beat)
 }

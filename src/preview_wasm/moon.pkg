@@ -12,6 +12,7 @@ options(
         "main",
         "events_json",
         "playground_summary",
+        "preview_tempo",
         "staff_html",
         "piano_html",
       ],
