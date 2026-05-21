@@ -12,6 +12,282 @@ Chords split into keys, pad wash, formant motion, and grain air rather
 than asking one synth to do the whole job. Low voices are kept centered;
 air, grains, formants, and bells carry the wider pan and reverb field.
 
+The first sketch is a synthetic session sample: piano, drums, upright
+bass, guitar, and sax are split into attack, body, resonance, air, and
+overtone layers. It is still synthesis, but the palette leans toward
+the acoustic cues that make real instruments feel alive.
+
+## Synthetic Session Sample
+
+A high-tempo fusion study built from component models instead of single
+presets. Piano is hammer noise, string body, and soundboard bloom;
+drums are shell, wire, metal, and room; bass is fundamental, finger
+attack, and wood resonance; guitar is pick, body, and upper harmonics;
+sax is reed pressure, breath noise, and bell air.
+
+```rela
+synth PianoHammer = {
+  osc: (Noise |> mix 0.12) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.6),
+  env: envelope(0.004, 0.18, 0.12, 0.28),
+  filter: BandPass(4100, 0.32)
+}
+
+synth PianoStrings = {
+  osc: (Sine |> mix 0.42) +
+       (Triangle |> mix 0.28 |> octave 1) +
+       (Sine |> mix 0.2 |> octave 2) +
+       (Saw |> mix 0.1 |> osc_detune 3),
+  env: envelope(0.006, 0.72, 0.3, 1.1),
+  filter: LowPass(6800, 0.18)
+}
+
+synth PianoSoundboard = {
+  osc: (Triangle |> mix 0.46) +
+       (Sine |> mix 0.34 |> octave (-1)) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.9, 0.42, 1.4),
+  filter: LowPass(4200, 0.16),
+  detune: 4
+}
+
+synth EPianoTine = {
+  osc: (FM(Sine, 2.98, 0.32) |> mix 0.44) +
+       (Sine |> mix 0.2) +
+       (Triangle |> mix 0.2 |> octave 1) +
+       (Sine |> mix 0.16 |> octave 2),
+  env: envelope(0.006, 0.72, 0.28, 1.15),
+  filter: LowPass(6400, 0.18),
+  detune: 3
+}
+
+synth EPianoPickup = {
+  osc: (Triangle |> mix 0.34) +
+       (Saw |> mix 0.22 |> osc_detune (-5)) +
+       (Sine |> mix 0.24 |> octave 1) +
+       (Noise |> mix 0.2),
+  env: envelope(0.005, 0.34, 0.34, 0.72),
+  filter: BandPass(3200, 0.36),
+  detune: 5
+}
+
+synth EPianoBark = {
+  osc: (FM(Sine, 1.99, 0.5) |> mix 0.36) +
+       (Saw |> mix 0.24) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.004, 0.24, 0.22, 0.55),
+  filter: LowPass(5200, 0.28),
+  detune: 7
+}
+
+synth StudioKickShell = {
+  osc: (Sine |> mix 0.82) + (Triangle |> mix 0.18),
+  env: envelope(0.001, 0.18, 0.0, 0.12),
+  filter: LowPass(120, 0.18),
+  pitch_env: (155, 42, 0.075)
+}
+
+synth StudioSnareWire = {
+  osc: (Noise |> mix 0.68) + (Triangle |> mix 0.32),
+  env: envelope(0.001, 0.12, 0.0, 0.22),
+  filter: BandPass(2300, 0.48)
+}
+
+synth StudioHatMetal = {
+  osc: Noise,
+  env: envelope(0.001, 0.055, 0.0, 0.08),
+  filter: HighPass(7600, 0.38)
+}
+
+synth UprightBassFund = {
+  osc: (Sine |> mix 0.58) +
+       (Triangle |> mix 0.28) +
+       (Saw |> mix 0.14 |> octave (-1)),
+  env: envelope(0.025, 0.28, 0.72, 0.5),
+  filter: LowPass(920, 0.24)
+}
+
+synth UprightBassFinger = {
+  osc: (Triangle |> mix 0.48) +
+       (Noise |> mix 0.18) +
+       (Sine |> mix 0.34 |> octave 1),
+  env: envelope(0.006, 0.16, 0.18, 0.24),
+  filter: BandPass(1450, 0.42)
+}
+
+synth UprightBassWood = {
+  osc: (Sine |> mix 0.44 |> octave (-1)) +
+       (Triangle |> mix 0.36) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.04, 0.5, 0.64, 0.75),
+  filter: LowPass(1500, 0.18),
+  detune: 3
+}
+
+synth GuitarPick = {
+  osc: (Noise |> mix 0.12) +
+       (Triangle |> mix 0.36) +
+       (Sine |> mix 0.28 |> octave 1) +
+       (Saw |> mix 0.24 |> osc_detune (-4)),
+  env: envelope(0.004, 0.26, 0.28, 0.42),
+  filter: BandPass(3300, 0.38)
+}
+
+synth GuitarBody = {
+  osc: (Triangle |> mix 0.42) +
+       (Sine |> mix 0.38) +
+       (Sine |> mix 0.2 |> octave (-1)),
+  env: envelope(0.012, 0.38, 0.48, 0.7),
+  filter: LowPass(3600, 0.16)
+}
+
+synth GuitarHarmonics = {
+  osc: (Sine |> mix 0.42 |> octave 1) +
+       (Triangle |> mix 0.28 |> octave 2) +
+       (Saw |> mix 0.3 |> osc_detune 6),
+  env: envelope(0.01, 0.34, 0.2, 0.58),
+  filter: HighPass(2400, 0.24),
+  detune: 5
+}
+
+synth SaxReedCore = {
+  osc: (Saw |> mix 0.32) +
+       (Triangle |> mix 0.3) +
+       (Square |> mix 0.18) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.075, 0.22, 0.86, 0.7),
+  filter: BandPass(1750, 0.46),
+  detune: 3
+}
+
+synth SaxBreathNoise = {
+  osc: (Noise |> mix 0.36) +
+       (Triangle |> mix 0.34) +
+       (Sine |> mix 0.3),
+  env: envelope(0.08, 0.2, 0.58, 0.85),
+  filter: BandPass(2650, 0.34)
+}
+
+synth SaxBellAir = {
+  osc: (Triangle |> mix 0.4) +
+       (Sine |> mix 0.28 |> octave 1) +
+       (Saw |> mix 0.32 |> osc_detune 5),
+  env: envelope(0.09, 0.3, 0.76, 0.9),
+  filter: LowPass(5400, 0.2),
+  detune: 4
+}
+
+set key = Bb1
+set tempo = 168
+
+let kick = |
+  R - - - - R - - - - R - - - R -
+  R - - - - - R - - R - - - - R -
+|:16 |> repeat(3) |> voice(StudioKickShell)
+
+let snare = |
+  - - - - P8 - - - - - - - P8 - - -
+  - - - - P8 - - P8 - - - - P8 - P8 -
+|:16 |> repeat(3) |> voice(StudioSnareWire)
+
+let hats = |
+  P15 - P15 P15 - P15 - P15 P15 - P15 - - P15 P15 -
+  P15 P15 - P15 - P15 P15 - P15 - P15 P15 - P15 - P15
+|:16 |> repeat(3) |> voice(StudioHatMetal)
+
+let piano_hammers = |
+  [R, M3, P5, M7] - [M2, P4, M6] - [P4, M6, M7, P12] -
+  [P5, M7, M9, P12] - [M6, P8, M10, M14] - [P4, M6, P9] -
+  [R, M3, P5, M9] - [M2, P4, M6, P11] - [P5, M7, P12] -
+  [M6, P8, M10] - [P4, M6, M9, P12] - [P5, M7, M10] -
+|:16 |> repeat(1) |> voice(PianoHammer)
+
+let piano_strings = |
+  [R, M3, P5, M7] - - [M2, P4, M6, M9] - - [P4, M6, P8, P12] -
+  [P5, M7, M9, P12] - - [M6, P8, M10, M14] - [P4, M6, P9, P12] -
+  [R, M3, P5, M9] - - [M2, P4, M6, P11] - - [P5, M7, P12, M14] -
+  [M6, P8, M10, P15] - [P4, M6, M9, P12] - [P5, M7, M10, P14] -
+|:16 |> repeat(1) |> voice(PianoStrings)
+
+let piano_board = |
+  [P8, M10, P12] - - - [M9, P12, M14] - - -
+  [P12, M14, P15] - - - [M10, P12, M14] - - -
+|:16 |> repeat(3) |> voice(PianoSoundboard)
+
+let epiano_tine = |
+  [P8, M10, P12, M14] - [M9, P12, M14] - [P5, M7, P9, M13] -
+  [M6, P8, M10, P15] - [P4, M6, P8, M14] - [P5, M7, M10, P14] -
+|:16 |> repeat(3) |> voice(EPianoTine)
+
+let epiano_pickup = |
+  - P12 M14 - P15 - M17 P19 - M17 P15 - M14 - P12 -
+  - M10 P12 - M14 - P15 M17 - P15 M14 - P12 - M10 -
+|:16 |> repeat(3) |> voice(EPianoPickup)
+
+let epiano_bark = |
+  - - [P12, M14] - - [P15, M17] - - [M10, P12] - - [M14, P15] -
+  - [P8, M10] - - [P12, M14] - - [P15, M17] - [M14, P15] - -
+|:16 |> repeat(3) |> voice(EPianoBark)
+
+let bass_fund = |
+  R - P5 - M6 - P5 - P4 - R - P5 - M3 -
+  R - M7 - P5 - M6 - P5 - P4 - M3 - P5 -
+|:16 |> repeat(3) |> voice(UprightBassFund)
+
+let bass_finger = |
+  - P8 - P5 - M10 - P8 - P12 - M10 - P8 -
+  - M10 - P12 - M14 - P12 - M10 - P8 - P5 -
+|:16 |> repeat(3) |> voice(UprightBassFinger)
+
+let bass_wood = |
+  R~ - - - P5 - - - P4~ - - - P5 - M3 -
+  R~ - - - M7 - - - M6~ - - - P5 - R -
+|:16 |> repeat(3) |> voice(UprightBassWood)
+
+let guitar_pick = |
+  P12 P15 M17 P19 M17 P15 P12 M10 P12 M14 P15 M17 P15 M14 P12 M10
+  M9 P12 M14 P15 M14 P12 M9 P8 P12 M14 P15 M17 M14 P12 M10 P8
+|:16 |> repeat(3) |> voice(GuitarPick)
+
+let guitar_body = |
+  [P5, M10, P12] - - [P8, M12, P15] - - [P4, M9, P12] -
+  [P5, M10, M14] - - [M6, P9, P12] - [P4, M7, P11] -
+|:16 |> repeat(3) |> voice(GuitarBody)
+
+let guitar_harmonics = |
+  - P19 - M21 - P22 - P19 - M17 - P15 - M14 -
+  - P22 - P24 - M21 - P19 - M17 - P15 - P12 -
+|:16 |> repeat(3) |> voice(GuitarHarmonics)
+
+let sax_reed = |
+  - - P12 M14 P15 - M17 P19 - M17 P15 M14 P12 - M10 -
+  P12 - M14 P15 M17 - P19 M21 P22 - M21 P19 M17 P15 M14 -
+  - P15 M17 P19 P22 - M21 P19 - M17 P15 M14 P12 - M10 -
+  P12 M14 P15 - M17 P19 - P22 M21 P19 - M17 P15 M14 P12 -
+|:16 |> voice(SaxReedCore)
+
+let sax_breath = |
+  - - P12~ - P15~ - M17~ - - P19~ - M17~ - P15~ -
+  P12~ - M14~ - P15~ - M17~ - P19~ - M21~ - P22~ -
+|:16 |> repeat(2) |> voice(SaxBreathNoise)
+
+let sax_air = |
+  - - - P24 - - M21 - - P22 - - P19 - - M17
+  - P22 - - P24 - M21 - P19 - - M17 - P15 - -
+|:16 |> repeat(3) |> voice(SaxBellAir)
+
+layer [
+  kick, snare, hats,
+  piano_hammers, piano_strings, piano_board,
+  epiano_tine, epiano_pickup, epiano_bark,
+  bass_fund, bass_finger, bass_wood,
+  guitar_pick, guitar_body, guitar_harmonics,
+  sax_reed, sax_breath, sax_air
+]
+```
+
 ## Composite Timbre Stack
 
 A compact study in layered synthesis: every musical role is built from
@@ -19,29 +295,158 @@ several complementary synths instead of one preset carrying the whole
 texture.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = F1
-set tempo = 124
+set tempo = 154
 
 let kick = | R - - - R - - - - - R - - R - - |:4 |> repeat(8) |> voice(DeepKick)
 let snare = | - - - - P8 - - - - - - - P8 - - - |:4 |> repeat(8) |> voice(RoomSnare)
@@ -92,29 +497,158 @@ wide harmonic fog, glassy high detail, and small negative spaces so the
 mix keeps depth instead of turning into a flat wall.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = D1
-set tempo = 172
+set tempo = 176
 
 let kick = |
   R - - - - - R - - - R - - - - -
@@ -187,29 +721,158 @@ bass keeps the root motion clear. The repeated pass gives the preview
 room tail and delay enough time to become audible.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = C2
-set tempo = 108
+set tempo = 150
 
 let bass = |
   R - P5 - M6 - P5 - P4 - R - P5 - M3 -
@@ -256,29 +919,158 @@ The arrangement leaves holes so the space processor has somewhere to
 move instead of smearing every transient.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = A1
-set tempo = 138
+set tempo = 156
 
 let kick = | R - - - R - - - - - R - - - - - |:4 |> repeat(8) |> voice(DeepKick)
 let snare = | - - - - P8 - - - - - - - P8 - - - |:4 |> repeat(8) |> voice(RoomSnare)
@@ -314,29 +1106,158 @@ clouds, quiet glass hits, and a high shimmer layer that lives above
 the chords without taking over the mix.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = F1
-set tempo = 68
+set tempo = 144
 
 let drone = |
   R~ - - - P5~ - - - m7~ - - - P5~ - - -
@@ -373,29 +1294,158 @@ weight, glass FM attacks, wavetable motion, and grain detail moving
 around the upper register.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = E2
-set tempo = 148
+set tempo = 168
 
 let pulse = | R - R - R - R - |:4 |> repeat(8) |> voice(DeepKick)
 let snap = | - - P8 - - - P8 - |:4 |> repeat(8) |> voice(RoomSnare)
@@ -451,29 +1501,158 @@ snare pressure, animated hats, a wide pad, and a lead that jumps across
 registers instead of sitting in one narrow strip.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = G1
-set tempo = 126
+set tempo = 158
 
 let kick = | R - - R - - R - |:5 |> repeat(8) |> voice(DeepKick)
 let snare = | - - P8 - - P8 - |:7 |> repeat(6) |> voice(RoomSnare)
@@ -509,29 +1688,158 @@ parts test whether the preview can stay bright without becoming cheap
 or brittle.
 
 ```rela
-synth DeepKick = { osc: Sine, env: envelope(0.001, 0.12, 0.0, 0.08), filter: LowPass(55, 0.1) }
-synth RoomSnare = { osc: Noise, env: envelope(0.001, 0.11, 0.0, 0.18), filter: BandPass(1900, 0.55), detune: 8 }
-synth WideHat = { osc: Noise, env: envelope(0.001, 0.045, 0.0, 0.08), filter: HighPass(8200, 0.7), detune: 18 }
-synth DeepSub = { osc: Sine, env: envelope(0.01, 0.22, 0.95, 0.35), filter: LowPass(54, 0.0) }
-synth BassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.82, 0.25), filter: LowPass(640, 0.65), detune: 14 }
-synth AcidEdge = { osc: Saw, env: envelope(0.004, 0.12, 0.7, 0.18), filter: LowPass(1180, 0.92), detune: 9 }
-synth RhodesBody = { osc: FM(Sine, 2.98, 0.33), env: envelope(0.006, 0.24, 0.58, 0.8), filter: LowPass(7600, 0.25) }
-synth PadBloom = { osc: Saw, env: envelope(0.34, 0.4, 0.82, 1.4), filter: LowPass(2300, 0.32), detune: 22 }
-synth GlassPad = { osc: Triangle, env: envelope(0.28, 0.35, 0.76, 1.2), filter: LowPass(3400, 0.2), detune: 18 }
-synth WaveFormantPan = { osc: Wavetable(Formant), env: envelope(0.02, 0.22, 0.62, 0.45), filter: BandPass(3600, 0.7), detune: 20 }
-synth WaveVaporPan = { osc: Wavetable(Vapor), env: envelope(0.02, 0.18, 0.65, 0.4), filter: BandPass(4200, 0.56), detune: 24 }
-synth WaveSupersawPan = { osc: Saw, env: envelope(0.02, 0.25, 0.7, 0.5), filter: BandPass(3900, 0.5), detune: 34 }
-synth GrainFarShimmer = { osc: Granular(Shimmer), env: envelope(0.08, 0.25, 0.55, 0.95), filter: BandPass(5200, 0.75), detune: 28 }
-synth GrainFarDrift = { osc: Granular(Drift), env: envelope(0.18, 0.4, 0.68, 1.3), filter: BandPass(2600, 0.55), detune: 24 }
-synth GrainFarVocal = { osc: Granular(Vocal), env: envelope(0.06, 0.3, 0.6, 0.9), filter: BandPass(2100, 0.8), detune: 16 }
-synth BellGlass = { osc: FM(Sine, 3.97, 0.58), env: envelope(0.003, 0.28, 0.18, 0.8), filter: LowPass(10400, 0.2) }
-synth KalimbaBell = { osc: FM(Sine, 4.2, 0.5), env: envelope(0.003, 0.2, 0.22, 0.62), filter: LowPass(9800, 0.18) }
-synth FatBassBody = { osc: Saw, env: envelope(0.006, 0.18, 0.84, 0.28), filter: LowPass(520, 0.72), detune: 18 }
-synth SoftPadAir = { osc: Triangle, env: envelope(0.38, 0.35, 0.8, 1.5), filter: LowPass(2100, 0.28), detune: 16 }
-synth ModularLeadPan = { osc: Saw, env: envelope(0.01, 0.16, 0.55, 0.35), filter: BandPass(4200, 0.78), detune: 21 }
+synth DeepKick = {
+  osc: Sine,
+  env: envelope(0.001, 0.12, 0.0, 0.08),
+  filter: LowPass(55, 0.1)
+}
+
+synth RoomSnare = {
+  osc: Noise,
+  env: envelope(0.001, 0.11, 0.0, 0.18),
+  filter: BandPass(1900, 0.55),
+  detune: 8
+}
+
+synth WideHat = {
+  osc: Noise,
+  env: envelope(0.001, 0.045, 0.0, 0.08),
+  filter: HighPass(8200, 0.7),
+  detune: 18
+}
+
+synth DeepSub = {
+  osc: Sine,
+  env: envelope(0.01, 0.22, 0.95, 0.35),
+  filter: LowPass(54, 0.0)
+}
+
+synth BassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.82, 0.25),
+  filter: LowPass(640, 0.65),
+  detune: 14
+}
+
+synth AcidEdge = {
+  osc: Saw,
+  env: envelope(0.004, 0.12, 0.7, 0.18),
+  filter: LowPass(1180, 0.92),
+  detune: 9
+}
+
+synth RhodesBody = {
+  osc: FM(Sine, 2.98, 0.33),
+  env: envelope(0.006, 0.24, 0.58, 0.8),
+  filter: LowPass(7600, 0.25)
+}
+
+synth PadBloom = {
+  osc: Saw,
+  env: envelope(0.34, 0.4, 0.82, 1.4),
+  filter: LowPass(2300, 0.32),
+  detune: 22
+}
+
+synth GlassPad = {
+  osc: Triangle,
+  env: envelope(0.28, 0.35, 0.76, 1.2),
+  filter: LowPass(3400, 0.2),
+  detune: 18
+}
+
+synth WaveFormantPan = {
+  osc: (Wavetable(Formant) |> mix 0.45) +
+       (Triangle |> mix 0.3) +
+       (Sine |> mix 0.25 |> octave 1),
+  env: envelope(0.04, 0.32, 0.68, 0.75),
+  filter: BandPass(3100, 0.42),
+  detune: 10
+}
+
+synth WaveVaporPan = {
+  osc: (Wavetable(Vapor) |> mix 0.34) +
+       (Saw |> mix 0.24 |> osc_detune (-7)) +
+       (Triangle |> mix 0.22) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.045, 0.38, 0.72, 0.82),
+  filter: LowPass(6100, 0.22),
+  detune: 12
+}
+
+synth WaveSupersawPan = {
+  osc: (Saw |> mix 0.28 |> osc_detune (-14)) +
+       (Saw |> mix 0.28 |> osc_detune 14) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.2 |> octave 1),
+  env: envelope(0.035, 0.32, 0.76, 0.7),
+  filter: LowPass(6800, 0.24),
+  detune: 18
+}
+
+synth GrainFarShimmer = {
+  osc: Granular(Shimmer),
+  env: envelope(0.08, 0.25, 0.55, 0.95),
+  filter: BandPass(5200, 0.75),
+  detune: 28
+}
+
+synth GrainFarDrift = {
+  osc: Granular(Drift),
+  env: envelope(0.18, 0.4, 0.68, 1.3),
+  filter: BandPass(2600, 0.55),
+  detune: 24
+}
+
+synth GrainFarVocal = {
+  osc: Granular(Vocal),
+  env: envelope(0.06, 0.3, 0.6, 0.9),
+  filter: BandPass(2100, 0.8),
+  detune: 16
+}
+
+synth BellGlass = {
+  osc: (FM(Sine, 3.97, 0.42) |> mix 0.55) +
+       (Sine |> mix 0.25 |> octave 1) +
+       (Triangle |> mix 0.2),
+  env: envelope(0.006, 0.9, 0.22, 1.25),
+  filter: LowPass(9200, 0.12)
+}
+
+synth KalimbaBell = {
+  osc: (FM(Sine, 4.2, 0.38) |> mix 0.58) +
+       (Triangle |> mix 0.24) +
+       (Sine |> mix 0.18 |> octave 1),
+  env: envelope(0.005, 0.52, 0.18, 0.9),
+  filter: LowPass(8600, 0.12)
+}
+
+synth FatBassBody = {
+  osc: Saw,
+  env: envelope(0.006, 0.18, 0.84, 0.28),
+  filter: LowPass(520, 0.72),
+  detune: 18
+}
+
+synth SoftPadAir = {
+  osc: Triangle,
+  env: envelope(0.38, 0.35, 0.8, 1.5),
+  filter: LowPass(2100, 0.28),
+  detune: 16
+}
+
+synth ModularLeadPan = {
+  osc: (Saw |> mix 0.34 |> osc_detune (-9)) +
+       (Triangle |> mix 0.28) +
+       (Sine |> mix 0.22 |> octave 1) +
+       (Saw |> mix 0.16 |> osc_detune 11),
+  env: envelope(0.055, 0.32, 0.78, 0.85),
+  filter: LowPass(5200, 0.28),
+  detune: 9
+}
 
 set key = B1
-set tempo = 132
+set tempo = 164
 
 let root = |
   R - P5 - M7 - P5 - R - M3 - P5 - M7 -

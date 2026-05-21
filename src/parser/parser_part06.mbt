@@ -1,16 +1,15 @@
 ///|
-/// Parse left-associative block concatenation. This intentionally keeps
-/// the first binary tier narrow: `++` is the operator the docs preview
-/// needs for audible phrase examples.
+/// Parse left-associative block concatenation above arithmetic terms.
 fn Parser::parse_concat(self : Parser) -> @core.Spanned[@ast.Expr]? {
-  let initial = self.parse_postfix()
+  let initial = self.parse_term()
   match initial {
     None => None
     Some(first) => {
       let mut left = first
       while self.peek_kind() == @lexer.PlusPlus {
         let _ = self.advance()
-        match self.parse_postfix() {
+        self.skip_newlines()
+        match self.parse_term() {
           None => return None
           Some(right) => {
             let span = left.span()

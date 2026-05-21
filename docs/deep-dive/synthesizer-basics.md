@@ -62,11 +62,33 @@ Each waveform has unique characteristics:
 
 ```rela
 ; Different oscillator examples
-synth PureTone = { osc: Sine, env: envelope 0.01 0.1 0.8 0.3 }
-synth Clarinet = { osc: Square, env: envelope 0.08 0.2 0.7 0.2, filter: LowPass 2000 0.3 }
-synth BrightLead = { osc: Saw, env: envelope 0.01 0.15 0.7 0.2, filter: LowPass 4000 0.5 }
-synth GameBoy = { osc: Pulse 0.125, env: envelope 0.001 0.1 0.5 0.1 }
-synth HiHat = { osc: Noise, env: envelope 0.001 0.05 0.0 0.05, filter: HighPass 8000 0.5 }
+synth PureTone = {
+  osc: Sine,
+  env: envelope 0.01 0.1 0.8 0.3
+}
+
+synth Clarinet = {
+  osc: Square,
+  env: envelope 0.08 0.2 0.7 0.2,
+  filter: LowPass 2000 0.3
+}
+
+synth BrightLead = {
+  osc: Saw,
+  env: envelope 0.01 0.15 0.7 0.2,
+  filter: LowPass 4000 0.5
+}
+
+synth GameBoy = {
+  osc: Pulse 0.125,
+  env: envelope 0.001 0.1 0.5 0.1
+}
+
+synth HiHat = {
+  osc: Noise,
+  env: envelope 0.001 0.05 0.0 0.05,
+  filter: HighPass 8000 0.5
+}
 ```
 
 ### Combining Oscillators

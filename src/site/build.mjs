@@ -69,12 +69,7 @@ function titleOf(file) {
   return path.basename(file, ".md").replaceAll("-", " ");
 }
 
-function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
+function escapeHtml(text) { return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"); }
 
 function href(raw, fromFile) {
   if (/^(https?:|mailto:|#)/.test(raw)) return raw;
@@ -110,9 +105,7 @@ function renderMarkdown(src, fromFile) {
   let inCode = false;
   let code = [];
   let codeLang = "";
-  let inUl = false;
-  let inOl = false;
-  let inTable = false;
+  let inUl = false, inOl = false, inTable = false, svg = [];
   let para = [];
   const closePara = () => {
     if (para.length) html.push(`<p>${inline(para.join(" "), fromFile)}</p>`);
@@ -124,7 +117,7 @@ function renderMarkdown(src, fromFile) {
     if (inTable) html.push("</tbody></table>");
     inUl = inOl = inTable = false;
   };
-  const attr = (text) => escapeHtml(text).replaceAll('"', "&quot;");
+  const attr = (text) => escapeHtml(text).replaceAll('"', "&quot;"), emitSvg = () => { html.push(`<figure class="doc-figure doc-svg">${svg.join("\n")}</figure>`); svg = []; };
   for (const line of lines) {
     if (line.startsWith("```")) {
       closePara();
@@ -136,9 +129,17 @@ function renderMarkdown(src, fromFile) {
       continue;
     }
     if (inCode) { code.push(line); continue; }
+    if (svg.length) { svg.push(line); if (line.includes("</svg>")) emitSvg(); continue; }
     if (!line.trim()) {
       closePara();
       closeLists();
+      continue;
+    }
+    if (line.trim().startsWith("<svg")) {
+      closePara();
+      closeLists();
+      svg = [line];
+      if (line.includes("</svg>")) emitSvg();
       continue;
     }
     const image = line.trim().match(/^<img\s+[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[^>]*\/?>$/);

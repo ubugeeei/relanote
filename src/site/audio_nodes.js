@@ -15,6 +15,10 @@ function wave(ctx, name) {
       bloom: [0, 1, .38, .19, .12, .08, .045, .03, .018],
       fold: [0, .82, .52, -.24, .18, -.13, .07, -.045],
       silk: [0, 1, .18, .08, .04, .025, .016, .01],
+      tine: [0, 1, .04, .34, .025, .22, .018, .11, .012],
+      wood: [0, 1, .32, .12, .08, .045, .025, .014],
+      brass: [0, 1, .56, .22, .31, .14, .09, .04],
+      metal: [0, .55, .2, .64, .12, .36, .08, .2, .05],
     }[name] || [0, 1, .24, .09, .04];
     bank.forEach((value, i) => { if (i < imag.length) imag[i] = value; });
     return ctx.createPeriodicWave(real, imag, { disableNormalization: false });
@@ -80,6 +84,33 @@ function noiseBurst(ctx, dest, t0, t1, amount, filterType = "bandpass", cutoff =
   src.start(t0); src.stop(t1);
 }
 
+function toneTap(ctx, dest, t0, t1, freq, amount, waveName = "silk") {
+  if (!amount || freq < 18) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.setPeriodicWave(wave(ctx, waveName));
+  osc.frequency.setValueAtTime(Math.min(15000, freq), t0);
+  gain.gain.setValueAtTime(.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(amount, t0 + .006);
+  gain.gain.exponentialRampToValueAtTime(.0001, t1);
+  osc.connect(gain); gain.connect(dest);
+  osc.start(t0); osc.stop(t1 + .04);
+}
+
+function addVibrato(ctx, osc, t0, t1, patch) {
+  if (!patch.vibratoDepth) return [];
+  const lfo = ctx.createOscillator();
+  const depth = ctx.createGain();
+  lfo.type = "sine";
+  lfo.frequency.setValueAtTime(patch.vibratoRate || 5.2, t0);
+  depth.gain.setValueAtTime(.0001, t0);
+  depth.gain.linearRampToValueAtTime(.0001, t0 + (patch.vibratoDelay || .04));
+  depth.gain.linearRampToValueAtTime(patch.vibratoDepth, t0 + (patch.vibratoDelay || .04) + .08);
+  depth.gain.linearRampToValueAtTime(.0001, t1 + patch.release);
+  lfo.connect(depth); depth.connect(osc.detune);
+  return [lfo];
+}
+
 function connectSpace(ctx, amp, bus, patch, freq) {
   const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
   const room = ctx.createGain();
@@ -118,4 +149,4 @@ function startStop(nodes, t0, t1) {
   nodes.forEach((node) => { node.start(t0); node.stop(t1); });
 }
 
-window.RelanoteNodes = { addFm, connectSpace, drive, impulse, noiseBurst, startStop, wave };
+window.RelanoteNodes = { addFm, addVibrato, connectSpace, drive, impulse, noiseBurst, startStop, toneTap, wave };

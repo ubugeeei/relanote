@@ -11,6 +11,7 @@ fn Parser::parse_expr(self : Parser) -> @core.Spanned[@ast.Expr]? {
       let mut left = first
       while self.peek_kind() == @lexer.PipeOp {
         let _ = self.advance()
+        self.skip_newlines()
         match self.parse_concat() {
           None => return None
           Some(right) => {
@@ -21,84 +22,6 @@ fn Parser::parse_expr(self : Parser) -> @core.Spanned[@ast.Expr]? {
         }
       }
       Some(left)
-    }
-  }
-}
-
-///|
-/// Parse a primary expression followed by zero or more postfix call
-/// applications `expr(args, ...)`. Mirrors `parse_postfix_expr` in the
-/// legacy implementation — the Haskell-style space-separated form lands in a
-/// follow-up because it needs the full `can_start_argument` analysis.
-fn Parser::parse_postfix(self : Parser) -> @core.Spanned[@ast.Expr]? {
-  let initial = self.parse_primary()
-  match initial {
-    None => None
-    Some(first) => {
-      let mut head = first
-      while true {
-        match self.peek_kind() {
-          @lexer.LParen => {
-            let _ = self.advance() // `(`
-            let args : Array[@core.Spanned[@ast.Expr]] = []
-            if self.peek_kind() != @lexer.RParen {
-              while true {
-                match self.parse_expr() {
-                  None => return None
-                  Some(arg) => args.push(arg)
-                }
-                if !self.eat(@lexer.Comma) {
-                  break
-                }
-              }
-            }
-            if !self.eat(@lexer.RParen) {
-              self.error("expected `)` to close call arguments")
-              return None
-            }
-            let span = head.span()
-            head = @core.Spanned::new(
-              @ast.Application(@ast.Application::new(head, args)),
-              span,
-            )
-          }
-          @lexer.Dot => {
-            let _ = self.advance() // `.`
-            match self.parse_ident_token() {
-              None => {
-                self.error("expected an identifier after `.`")
-                return None
-              }
-              Some(field_name) => {
-                let span = head.span()
-                head = @core.Spanned::new(
-                  @ast.Field(@ast.Field::new(head, field_name)),
-                  span,
-                )
-              }
-            }
-          }
-          @lexer.LBracket => {
-            let _ = self.advance() // `[`
-            match self.parse_expr() {
-              None => return None
-              Some(index) => {
-                if !self.eat(@lexer.RBracket) {
-                  self.error("expected `]` to close index expression")
-                  return None
-                }
-                let span = head.span()
-                head = @core.Spanned::new(
-                  @ast.Index(@ast.Index::new(head, index)),
-                  span,
-                )
-              }
-            }
-          }
-          _ => break
-        }
-      }
-      Some(head)
     }
   }
 }
