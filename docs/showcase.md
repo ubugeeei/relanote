@@ -177,11 +177,11 @@ let stones = |
 layer [drone, cloud_a, cloud_b, shimmer, stones]
 ```
 
-## Pixel Counterpoint
+## Carbon Counterpoint
 
-The square waves are still sharp, but the arrangement treats them like
-a full mix: centered bass, two mid/high counter-lines, percussion, and
-a quieter bell layer for vertical scale.
+A modern counterpoint study instead of a retro chip sketch: low analog
+weight, glass FM attacks, wavetable motion, and grain detail moving
+around the upper register.
 
 ```rela
 set key = E3
@@ -194,24 +194,29 @@ let ticks = | P15 - P15 P15 - P15 - P15 |:4 |> repeat(8) |> voice(LofiHat)
 let bass = |
   R R P5 R M3 R P5 R P4 P4 R P4 P5 R M3 R
   R P5 M6 P5 R M3 P5 R P4 R M3 R P5 M6 P5 R
-|:16 |> repeat(2) |> voice(GameBoy)
+|:16 |> repeat(2) |> voice(BassMoog)
 
 let lead = |
   P8 M9 M10 P12 M10 M9 P8 - P12 M14 P15 M14 P12 M10 M9 -
   P15 M17 P19 M17 P15 M14 P12 - P19 M21 P22 P19 M17 P15 M14 -
-|:16 |> repeat(2) |> voice(NES)
+|:16 |> repeat(2) |> voice(WaveVapor)
 
 let answer = |
   - P5 - M6 - M7 - P8 - M10 - P12 - M10 P8 -
   - P12 - M14 - P15 - M14 - P12 - M10 - P8 P5 -
-|:16 |> repeat(2) |> voice(Chiptune)
+|:16 |> repeat(2) |> voice(FMRhodes)
 
 let stars = |
   - - P22 - - P24 - - - M21 - P19 - - P17 -
   - P19 - - P22 - - P24 - M21 - P19 - P17 - -
 |:16 |> repeat(2) |> voice(FMBell)
 
-layer [pulse, snap, ticks, bass, lead, answer, stars]
+let frost = |
+  - - P24 - M21 - - P22 - - P19 - P17 - - P15 -
+  - P22 - - P24 - - M21 - P19 - - P17 - M14 - -
+|:16 |> repeat(2) |> voice(GrainShimmer)
+
+layer [pulse, snap, ticks, bass, lead, answer, stars, frost]
 ```
 
 ## Broken Modal Machine
