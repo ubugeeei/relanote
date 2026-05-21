@@ -210,13 +210,13 @@ test "Articulation expression evaluates to ArticulationV" {
 }
 
 ///|
-test "Layer expression evaluates to LayerV" {
+test "Layer expression evaluates to ParallelV" {
   let ev = Evaluator::new()
   let layer = @ast.LayerExpr::new([])
   let expr = @core.Spanned::new(@ast.Expr::Layer(layer), @core.Span::dummy())
   match ev.eval_expr(expr) {
-    Ok(LayerV(_)) => ()
-    _ => abort("expected LayerV")
+    Ok(ParallelV(values)) => inspect(values.length(), content="0")
+    _ => abort("expected ParallelV")
   }
 }
 

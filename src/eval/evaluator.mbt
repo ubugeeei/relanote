@@ -127,7 +127,16 @@ pub fn Evaluator::eval_expr(
     Envelope(e) => Ok(EnvelopeV(e))
     Part(p) => Ok(PartV(p))
     Section(s) => Ok(SectionV(s))
-    Layer(l) => Ok(LayerV(l))
+    Layer(l) => {
+      let values : Array[Value] = []
+      for part in l.parts() {
+        match self.eval_expr(part) {
+          Ok(v) => values.push(v)
+          Err(e) => return Err(e)
+        }
+      }
+      Ok(ParallelV(values))
+    }
     Lambda(lambda) => Ok(LambdaV(lambda.params(), lambda.body(), self.env))
     Application(app) => self.eval_application(app, expr.span())
     Pipe(pipe) => {

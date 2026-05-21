@@ -80,6 +80,18 @@ test "preview carries synth voice metadata" {
 }
 
 ///|
+test "preview layers voices in parallel" {
+  let src =
+    #|layer [
+    #|  | <1> <3> | |> voice(Lead),
+    #|  | <5> |:2 |> voice(FatBass)
+    #|]
+  assert_true(events_json(src).contains("\"start\":0"))
+  assert_true(events_json(src).contains("\"voice\":\"FatBass\""))
+  inspect(playground_summary(src), content="3 notes / 2 beats")
+}
+
+///|
 test "preview hears concat chord and tuplet examples" {
   let src = "| [R, M3, P5] | ++ | { <1> <2> <3> }:2 |"
   assert_true(events_json(src).contains("\"pitch\":67"))

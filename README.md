@@ -11,7 +11,7 @@
   <a href="#what-is-relanote">What</a> •
   <a href="#example">Example</a> •
   <a href="#quick-start">Quick start</a> •
-  <a href="#playground">Playground</a> •
+  <a href="#showcase">Showcase</a> •
   <a href="#documentation">Docs</a>
 </p>
 
@@ -47,7 +47,7 @@ theme |> transpose P5 |> repeat 2
 - **Pipes for composition.** `theme |> transpose P5 |> repeat 2 |> reverb 0.3`
   builds pieces by composing small functions.
 - **MoonBit end to end.** The compiler pipeline, CLI, MIDI renderer, LSP
-  entry point, and playground bridge live at the repository root.
+  entry point, preview bridge, and Studio source live at the repository root.
 
 ## Quick Start
 
@@ -124,11 +124,18 @@ repeated
 - [Installation](docs/guide/installation.md)
 - [Quick Start](docs/guide/quick-start.md)
 - [Tutorial](docs/tutorial/getting-started.md)
+- [Showcase](docs/showcase.md)
 - [CLI Reference](docs/reference/cli.md)
 
-## Playground
+## Showcase
 
-The playground view is authored with
+The docs showcase is the public listening surface while Studio is being
+rebuilt: polished `.rela` sketches, browser playback, and code you can
+inspect.
+
+## Studio Source
+
+The hidden Studio view is authored with
 [Vapor Moon](https://github.com/ubugeeei/vapor-moon) as
 `src/studio/App.mbtv`. The callable bridge functions for diagnostics,
 formatting, evaluation, and MIDI rendering live in `src/studio/playground.mbt`.

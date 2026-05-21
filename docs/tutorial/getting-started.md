@@ -11,8 +11,8 @@ By the end you'll have written:
 4. A MIDI file you can drop into any DAW.
 
 If you don't have relanote installed locally, follow the
-[Installation guide](/guide/installation), or just open the
-[Studio](/playground/) and follow along in the browser.
+[Installation guide](/guide/installation), or open the
+[Showcase](/showcase) and listen in the browser first.
 
 ## Your first program
 

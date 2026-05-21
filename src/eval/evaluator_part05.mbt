@@ -9,7 +9,9 @@ fn eval_concat(
       if concat_value(left) && concat_value(right) {
         Ok(SequenceV(sequence_values(left, right)))
       } else {
-        Err(TypeError(expected="matching concat operands", found="other", span~))
+        Err(
+          TypeError(expected="matching concat operands", found="other", span~),
+        )
       }
   }
 }
@@ -18,8 +20,7 @@ fn eval_concat(
 fn concat_value(value : Value) -> Bool {
   match value {
     BlockV(_) | SequenceV(_) | VoicedV(_, _) => true
-    _ =>
-      false
+    _ => false
   }
 }
 
@@ -56,6 +57,22 @@ fn builtin_voice(
       Ok(VoicedV(synth.name().name(), value))
     (value, SynthV(synth)) if concat_value(value) =>
       Ok(VoicedV(synth.name().name(), value))
-    _ => Err(TypeError(expected="Synth and playable value", found="other", span~))
+    _ =>
+      Err(TypeError(expected="Synth and playable value", found="other", span~))
+  }
+}
+
+///|
+fn builtin_layer(
+  args : Array[Value],
+  span : @core.Span,
+) -> Result[Value, EvalError] {
+  if args.length() != 1 {
+    return Err(WrongArity(expected=1, got=args.length(), span~))
+  }
+  match args[0] {
+    ArrayV(values) | TupleV(values) => Ok(ParallelV(values))
+    _ =>
+      Err(TypeError(expected="array of playable values", found="other", span~))
   }
 }

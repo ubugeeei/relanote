@@ -95,13 +95,14 @@ fn install_prelude(env : Env) -> Unit {
   env.bind("octave_up", BuiltinV("octave_up"))
   env.bind("octave_down", BuiltinV("octave_down"))
   env.bind("voice", BuiltinV("voice"))
+  env.bind("layer", BuiltinV("layer"))
   for
     name in [
-      "Lead", "Pluck", "SoftPad", "FatBass", "FMBell", "FMRhodes", "FMKalimba",
-      "WaveVapor", "WaveDriftPad", "WaveFormant", "WaveAcid", "WaveSupersaw",
-      "GrainDrift", "GrainVocal", "GrainShimmer", "ModularLead", "BassMoog",
-      "AcidBass", "SubBass", "Chiptune", "NES", "GameBoy", "FloatingBloom",
-      "FloatingGlass", "LofiKick", "LofiSnare", "LofiHat",
+      "Lead", "Pluck", "SoftPad", "FatBass", "FMBell", "FMRhodes", "FMKalimba", "WaveVapor",
+      "WaveDriftPad", "WaveFormant", "WaveAcid", "WaveSupersaw", "GrainDrift", "GrainVocal",
+      "GrainShimmer", "ModularLead", "BassMoog", "AcidBass", "SubBass", "Chiptune",
+      "NES", "GameBoy", "FloatingBloom", "FloatingGlass", "LofiKick", "LofiSnare",
+      "LofiHat",
     ] {
     env.bind(name, SynthV(@ast.SynthDef::new(@ast.Ident::new(name), [])))
   }

@@ -20,7 +20,7 @@ Run it locally:
 relanote run hello.rela
 ```
 
-Or skip the install and open the [Studio](/playground/).
+Or skip the install and hear the [Showcase](/showcase).
 
 ## What each line is doing
 

@@ -61,9 +61,10 @@ editor to launch it as the language server for `.rela` files to get
 diagnostics, hover docs, formatting, and completion as the MoonBit server
 surface grows.
 
-## Studio
+## Studio source
 
-The view lives in `src/studio/App.mbtv` and is built with Vapor Moon:
+The Studio surface is temporarily hidden while it is rebuilt. The Vapor
+Moon source still lives in `src/studio/App.mbtv` and can be compiled:
 
 ```bash
 pnpm studio:build
@@ -71,9 +72,9 @@ pnpm studio:build
 
 ## Listen-through example
 
-After the toolchain is installed, this tiny smoke test should render and
-play in Studio. It uses only the first vocabulary you need: a scale,
-relative rhythm, rests and concatenation.
+After the toolchain is installed, this tiny smoke test should render in
+the CLI and play in docs previews. It uses only the first vocabulary you
+need: a scale, relative rhythm, rests and concatenation.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }

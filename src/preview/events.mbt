@@ -33,7 +33,9 @@ pub fn NoteEvent::duration(self : NoteEvent) -> Double {
 }
 
 ///|
-pub fn NoteEvent::voice(self : NoteEvent) -> String { self.voice }
+pub fn NoteEvent::voice(self : NoteEvent) -> String {
+  self.voice
+}
 
 ///|
 pub fn note_events(source : String) -> Array[NoteEvent] {
@@ -60,7 +62,12 @@ fn collect_value(
       collect_value(value, out, start, context.with_voice(name))
     @eval.IntervalV(semitones) => {
       out.push(
-        NoteEvent::new(context.root_midi() + semitones, start, 1.0, context.voice()),
+        NoteEvent::new(
+          context.root_midi() + semitones,
+          start,
+          1.0,
+          context.voice(),
+        ),
       )
       start + 1.0
     }
@@ -74,6 +81,7 @@ fn collect_value(
     }
     @eval.TupletV(tuplet) => collect_tuplet(tuplet, out, start, context)
     @eval.SequenceV(values) => collect_sequence(values, out, start, context)
+    @eval.ParallelV(values) => collect_parallel(values, out, start, context)
     @eval.ArrayV(values) | @eval.TupleV(values) => {
       let mut cursor = start
       for v in values {
@@ -141,12 +149,22 @@ fn collect_slots(
     match spanned.node() {
       @ast.Note(pitch~, ..) =>
         out.push(
-          NoteEvent::new(pitch_to_midi(pitch.node(), context), cursor, dur, context.voice()),
+          NoteEvent::new(
+            pitch_to_midi(pitch.node(), context),
+            cursor,
+            dur,
+            context.voice(),
+          ),
         )
       @ast.Chord(pitches~, ..) =>
         for p in pitches {
           out.push(
-            NoteEvent::new(pitch_to_midi(p.node(), context), cursor, dur, context.voice()),
+            NoteEvent::new(
+              pitch_to_midi(p.node(), context),
+              cursor,
+              dur,
+              context.voice(),
+            ),
           )
         }
       @ast.Tuplet(tuplet) => {
@@ -209,41 +227,4 @@ fn scale_degree(n : Int) -> Int {
     7 => 11
     _ => 0
   }
-}
-
-///|
-pub fn total_beats(source : String) -> Double {
-  let mut end_ = 0.0
-  for n in note_events(source) {
-    let note_end = n.start() + n.duration()
-    if note_end > end_ {
-      end_ = note_end
-    }
-  }
-  end_
-}
-
-///|
-pub fn events_json(source : String) -> String {
-  let mut out = "["
-  let mut first = true
-  for n in note_events(source) {
-    if first {
-      first = false
-    } else {
-      out = out + ","
-    }
-    let voice = if n.voice() == "" { "" } else { ",\"voice\":\"" + n.voice() + "\"" }
-    out = out +
-      "{\"pitch\":" +
-      n.pitch().to_string() +
-      ",\"start\":" +
-      n.start().to_string() +
-      ",\"duration\":" +
-      n.duration().to_string() +
-      ",\"velocity\":100" +
-      voice +
-      "}"
-  }
-  out + "]"
 }

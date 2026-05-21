@@ -124,11 +124,10 @@ fn install_prelude(ctx : TypeContext) -> Unit {
        "HandClap", "TightClap", "RoomClap", "Clap808", "Clap909", "VintageClap",
       "SharpClap", "SoftClap", "StadiumClap", "FingerSnap",
       // additional
-       "Piano", "EPiano", "WarmPad", "AcidBass", "SubBass", "BassMoog",
-      "FMBell", "FMRhodes", "FMKalimba", "WaveVapor", "WaveDriftPad",
-      "WaveFormant", "WaveAcid", "WaveSupersaw", "GrainDrift", "GrainVocal",
-      "GrainShimmer", "ModularLead", "FloatingBloom", "FloatingGlass",
-      "LofiKick", "LofiSnare", "LofiHat",
+       "Piano", "EPiano", "WarmPad", "AcidBass", "SubBass", "BassMoog", "FMBell",
+      "FMRhodes", "FMKalimba", "WaveVapor", "WaveDriftPad", "WaveFormant", "WaveAcid",
+      "WaveSupersaw", "GrainDrift", "GrainVocal", "GrainShimmer", "ModularLead",
+      "FloatingBloom", "FloatingGlass", "LofiKick", "LofiSnare", "LofiHat",
     ] {
     ctx.bind_mono(name, Synth)
   }
@@ -155,6 +154,19 @@ fn install_prelude(ctx : TypeContext) -> Unit {
 
   // compose : [Section] -> Song
   ctx.bind_mono("compose", Type::function(Type::array(Section), Song))
+  let layer_item = ctx.fresh_var()
+  let layer_quantifiers : Array[TyVar] = []
+  match layer_item {
+    Var(v) => layer_quantifiers.push(v)
+    _ => ()
+  }
+  ctx.bind(
+    "layer",
+    TypeScheme::poly(
+      layer_quantifiers,
+      Type::function(Type::array(layer_item), Section),
+    ),
+  )
 
   // play : Block -> Part -> Part
   ctx.bind_mono("play", Type::function_n([Block, Part], Part))
