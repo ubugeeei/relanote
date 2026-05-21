@@ -3,7 +3,7 @@
 ## With Nix
 
 The repo ships a Nix flake for the local helper tools used by root
-scripts and deployment.
+tasks and deployment.
 
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
@@ -19,13 +19,20 @@ export PATH="$HOME/.moon/bin:$PATH"
 ```
 
 The dev shell adds `~/.moon/bin` to `PATH` automatically when it exists.
+Install Vite+ once for task running:
+
+```bash
+curl -fsSL https://vite.plus | bash
+vp install
+```
 
 ## Without Nix
 
 Install:
 
 - [MoonBit](https://www.moonbitlang.com/) toolchain.
-- [Node.js](https://nodejs.org/) 22+ and [pnpm](https://pnpm.io/) if you want the root task aliases.
+- [Vite+](https://viteplus.dev/) for the root Vite Task workflow.
+- Node.js 24, which Vite+ can pin from `.node-version`.
 
 Then clone and check the workspace:
 
@@ -45,13 +52,14 @@ moon run src/cmd -- check examples/tutorials/01_hello.rela
 moon run src/cmd -- render examples/tutorials/01_hello.rela output.mid
 ```
 
-From the repository root, the same commands are available through pnpm:
+From the repository root, the same commands are available through Vite
+Task:
 
 ```bash
-pnpm check
-pnpm test
-pnpm cli -- check examples/tutorials/01_hello.rela
-pnpm cli -- render examples/tutorials/01_hello.rela output.mid
+vp run check
+vp run test
+vp run cli check examples/tutorials/01_hello.rela
+vp run cli render examples/tutorials/01_hello.rela output.mid
 ```
 
 ## Editor Support
@@ -67,7 +75,7 @@ The Studio surface is temporarily hidden while it is rebuilt. The Vapor
 Moon source still lives in `src/studio/App.mbtv` and can be compiled:
 
 ```bash
-pnpm studio:build
+vp run studio:build
 ```
 
 ## Listen-through example

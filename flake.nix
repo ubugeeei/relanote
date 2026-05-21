@@ -20,7 +20,7 @@
       {
         devShells.default = pkgs.mkShell {
           packages = [
-            pkgs.nodejs_22
+            pkgs.nodejs_24
             pkgs.pnpm
             pkgs.curl
             pkgs.git
@@ -37,13 +37,15 @@
               pnpm : `pnpm --version`
 
             Common tasks:
-              pnpm tasks     # list every task with its command
-              pnpm check     # moon check
-              pnpm test      # moon test
-              pnpm studio:build # compile the Vapor Moon playground component
+              vp run         # interactive Vite Task picker
+              vp run ci      # full local CI task graph
+              vp run check   # moon check
+              vp run test    # moon test
+              vp run studio:build # compile the Vapor Moon component
 
-            MoonBit toolchain is installed separately:
+            Toolchains installed separately:
               curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+              curl -fsSL https://vite.plus | bash
             BANNER
           '';
         };

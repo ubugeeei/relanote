@@ -85,7 +85,7 @@ library, drop a new file into
 `src/stdlib/prelude/` and rerun the embed:
 
 ```bash
-pnpm stdlib:regen
+vp run stdlib:regen
 ```
 
 The generator (`scripts/gen_stdlib.sh`) reads every `.rela`

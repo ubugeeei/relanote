@@ -87,8 +87,8 @@ The Nix flake gives you everything:
 
 ```bash
 nix develop
-pnpm install
-pnpm setup
+vp install
+vp run ci
 ```
 
 If you don't have Nix, see the [Installation
@@ -124,7 +124,7 @@ Three reasons that compound:
 
 Yes — drop a new `.rela` file into
 [`src/stdlib/prelude/`](https://github.com/ubugeeei/relanote/tree/main/src/stdlib/prelude),
-run `pnpm stdlib:regen`, commit the regenerated `prelude_data_*.mbt`
+run `vp run stdlib:regen`, commit the regenerated `prelude_data_*.mbt`
 files.
 That's the whole flow.
 

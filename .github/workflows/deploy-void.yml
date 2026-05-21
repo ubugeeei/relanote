@@ -16,10 +16,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: 22
+          node-version: 24
+          cache: true
+          run-install: false
+
+      - name: Install workspace dependencies
+        run: vp install --frozen-lockfile
 
       - name: Install MoonBit toolchain
         run: |
@@ -29,17 +34,15 @@ jobs:
       - name: Check MoonBit workspace
         run: |
           moon update
-          moon check
-          moon test
+          vp run check
+          vp run test
 
-      - name: Build static docs site
-        run: node src/site/build.mjs
-
-      # `npx void deploy` reads `void.config.json` and publishes `dist/`.
+      # Vite Task builds docs, then `vp dlx void deploy` reads
+      # `void.config.json` and publishes `dist/`.
       # otherwise defaults to publishing the working tree to Void's edge.
       # The token comes from a repository secret called `VOID_TOKEN`.
       - name: Deploy to Void
-        run: npx -y void deploy --project relanote --dir dist --spa
+        run: vp run --no-cache deploy:void
         env:
           VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
           VOID_PROJECT: relanote
