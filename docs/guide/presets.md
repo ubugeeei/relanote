@@ -96,3 +96,20 @@ string the runtime loads at startup.
 If you add a new category, also extend `PRELUDE`'s ordering in
 `prelude.mbt` so it ends up in the right place (theory before
 synthesis before effects).
+
+## Listen-through example
+
+Use this as a first-listen preset sketch: a bass gesture, bright chord
+stabs and a moving lead line. The browser preview focuses on the
+pitch/rhythm layer, so you can check the musical idea before choosing
+the final synth and effects preset.
+
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+let bass  = | <1> - <1> <5> |:4
+let stabs = | [R, m3, P5] - [P4, m6, R] - |:4
+let lead  = | <5> <7> <8> <7> <5> <3> <4> <5> |:4
+
+bass ++ stabs ++ lead
+```

@@ -153,3 +153,18 @@ let in_d = Major |> transpose M2     ; D major
 | Mixolydian | `R, M2, M3, P4, P5, M6, m7` |
 | Whole Tone | `R, M2, M3, A4, A5, A6` |
 | Diminished (whole-half) | `R, M2, m3, P4, A4, m6, M6, M7` |
+
+## Listen-through example
+
+The line uses scale degrees; the answer turns the same degrees into
+chord slots so you can hear melody and harmony as two views of one
+relative shape.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let melody = | <1> <3> <5> <7> <6> <5> <3> <1> |:4
+let chords = | [R, M3, P5] [P4, M6, R] [P5, M7, M2] [R, M3, P5] |:4
+
+melody ++ chords
+```

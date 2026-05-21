@@ -23,7 +23,7 @@ fn builtin_repeat(
   }
   let new_block = match block.beats() {
     Some(b) => @ast.Block::with_beats(new_slots, b * n.to_double())
-    None => @ast.Block::new(new_slots)
+    None => @ast.Block::with_beats(new_slots, n.to_double())
   }
   Ok(BlockV(new_block))
 }

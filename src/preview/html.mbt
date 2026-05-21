@@ -3,8 +3,40 @@ pub fn playground_summary(source : String) -> String {
   let notes = note_events(source)
   notes.length().to_string() +
   " notes / " +
-  total_beats(source).to_string() +
+  clean_beats(total_beats(source)) +
   " beats"
+}
+
+///|
+fn clean_beats(value : Double) -> String {
+  let rounded = (value * 1000.0 + 0.5).to_int()
+  let whole = rounded / 1000
+  let frac = rounded % 1000
+  if frac == 0 {
+    whole.to_string()
+  } else if frac % 100 == 0 {
+    whole.to_string() + "." + (frac / 100).to_string()
+  } else if frac % 10 == 0 {
+    whole.to_string() + "." + pad2(frac / 10)
+  } else {
+    whole.to_string() + "." + pad3(frac)
+  }
+}
+
+///|
+fn pad2(n : Int) -> String {
+  if n < 10 { "0" + n.to_string() } else { n.to_string() }
+}
+
+///|
+fn pad3(n : Int) -> String {
+  if n < 10 {
+    "00" + n.to_string()
+  } else if n < 100 {
+    "0" + n.to_string()
+  } else {
+    n.to_string()
+  }
 }
 
 ///|

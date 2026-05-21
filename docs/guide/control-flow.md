@@ -146,3 +146,18 @@ If you find a conditional inside a hot loop or at the top of every
 section, consider whether the underlying *shape* should change —
 maybe two parts in a layer, two sections in sequence, or two
 expressions parameterised by an interval.
+
+## Listen-through example
+
+The branch chooses one phrase, then the coda proves that branching is
+still just value selection.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let energetic = true
+let phrase = if energetic then | <1> <3> <5> <7> |:2 else | <1> - <5> - |:2
+let coda = if false then | <7> <6> <5> <3> |:2 else | <5> <3> <1> <1> |:2
+
+phrase ++ coda
+```

@@ -145,3 +145,18 @@ scale Major = { R, M2, M3, P4, P5, M6, M7 }
 - [Blocks](/guide/blocks) — rhythm and density in detail.
 - [Tutorial](/tutorial/getting-started) — a guided walk through a
   finished piece.
+
+## Listen-through example
+
+This is the whole quick-start vocabulary in one playable line:
+scale-degree notes, rests, block duration and concatenation.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let hello  = | <1> <2> <3> <5> |:2
+let breath = | <5> - <3> - |:2
+let close  = | <1> |:2
+
+hello ++ breath ++ close
+```

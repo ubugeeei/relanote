@@ -153,3 +153,20 @@ the AST today
 The parser and evaluator skeletons accept the syntax but don't yet
 route audio through it — the routing graph is built and walked once
 the evaluator port lands.
+
+## Listen-through example
+
+Before routing, listen to the roles dry: lead, bass, kick/snare space
+and a hat pulse. The mix graph above decides where these roles go.
+
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+let lead  = | <5> <6> <5> <3> | ++ | <1> <2> <3> <1> |
+let bass  = | <1>:2 - <5>:2 - |:4
+let kick  = | R - - - |:2 |> repeat(2)
+let snare = | - - R - |:2 |> repeat(2)
+let hats  = | R R R R |:2 |> repeat(2)
+
+lead ++ bass ++ kick ++ snare ++ hats
+```

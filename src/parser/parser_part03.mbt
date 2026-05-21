@@ -1,16 +1,17 @@
 ///|
 fn Parser::parse_expr(self : Parser) -> @core.Spanned[@ast.Expr]? {
   // Pipe (`|>`) is the lowest-precedence operator wired today. Each
-  // pipe segment is `parse_postfix`, which handles `expr(args)`
+  // pipe segment is `parse_concat`, which handles block concatenation
+  // over postfix calls so `a ++ b |> reverse` parses naturally.
   // application calls so `arg |> f(x)` parses naturally.
-  let initial = self.parse_postfix()
+  let initial = self.parse_concat()
   match initial {
     None => None
     Some(first) => {
       let mut left = first
       while self.peek_kind() == @lexer.PipeOp {
         let _ = self.advance()
-        match self.parse_postfix() {
+        match self.parse_concat() {
           None => return None
           Some(right) => {
             let span = left.span()

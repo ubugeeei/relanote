@@ -81,3 +81,90 @@ test "Wrong arity reports WrongArity" {
     Err(other) => abort("expected WrongArity, got " + other.message())
   }
 }
+
+///|
+test "Concat joins block slots and durations" {
+  let ev = Evaluator::new()
+  let one = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(1), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let five = @core.Spanned::new(
+    @ast.Slot::Note(
+      pitch=@core.Spanned::new(@ast.Pitch::ScaleIndex(5), @core.Span::dummy()),
+      articulations=[],
+      duration=None,
+    ),
+    @core.Span::dummy(),
+  )
+  let expr = @core.Spanned::new(
+    @ast.Expr::Binary(
+      @ast.Binary::new(
+        @ast.Concat,
+        @core.Spanned::new(
+          @ast.Expr::Block(@ast.Block::new([one])),
+          @core.Span::dummy(),
+        ),
+        @core.Spanned::new(
+          @ast.Expr::Block(@ast.Block::with_beats([five], 2.0)),
+          @core.Span::dummy(),
+        ),
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(expr) {
+    Ok(SequenceV(values)) => assert_eq(values.length(), 2)
+    Ok(_) => abort("expected concatenated SequenceV")
+    Err(err) => abort(err.message())
+  }
+}
+
+///|
+test "Partial builtin supports pipe-friendly repeat calls" {
+  let ev = Evaluator::new()
+  let block = @core.Spanned::new(
+    @ast.Expr::Block(
+      @ast.Block::new([
+        @core.Spanned::new(
+          @ast.Slot::Note(
+            pitch=@core.Spanned::new(
+              @ast.Pitch::ScaleIndex(1),
+              @core.Span::dummy(),
+            ),
+            articulations=[],
+            duration=None,
+          ),
+          @core.Span::dummy(),
+        ),
+        @core.Spanned::new(@ast.Slot::Rest(duration=None), @core.Span::dummy()),
+      ]),
+    ),
+    @core.Span::dummy(),
+  )
+  let repeat_two = @core.Spanned::new(
+    @ast.Expr::Application(
+      @ast.Application::new(
+        @core.Spanned::new(
+          @ast.Expr::Ident(@ast.Ident::new("repeat")),
+          @core.Span::dummy(),
+        ),
+        [@core.Spanned::new(@ast.Expr::Integer(2L), @core.Span::dummy())],
+      ),
+    ),
+    @core.Span::dummy(),
+  )
+  let pipe = @core.Spanned::new(
+    @ast.Expr::Pipe(@ast.Pipe::new(block, repeat_two)),
+    @core.Span::dummy(),
+  )
+  match ev.eval_expr(pipe) {
+    Ok(BlockV(block)) => assert_eq(block.slots().length(), 4)
+    Ok(_) => abort("expected repeated BlockV")
+    Err(err) => abort(err.message())
+  }
+}

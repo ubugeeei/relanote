@@ -68,3 +68,19 @@ The view lives in `src/studio/App.mbtv` and is built with Vapor Moon:
 ```bash
 pnpm studio:build
 ```
+
+## Listen-through example
+
+After the toolchain is installed, this tiny smoke test should render and
+play in Studio. It uses only the first vocabulary you need: a scale,
+relative rhythm, rests and concatenation.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let check  = | <1> <3> <5> <8> |:2
+let breath = | <5> - <3> - |:2
+let close  = | <1> |:2
+
+check ++ breath ++ close
+```

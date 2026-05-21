@@ -142,3 +142,16 @@ Two intervals with the same semitone distance compare equal:
 ```rela
 A4 == d5    ; both six semitones (tritone)
 ```
+
+## Listen-through example
+
+Hear the page as interval color: a major outline, a minor outline and a
+chromatic neighbor-tone turn.
+
+```rela
+let major_outline = | P1 M3 P5 P8 |:4
+let minor_outline = | P1 m3 P5 P8 |:4
+let color_turn    = | P4 P4+ P5 P5- P4 |:4
+
+major_outline ++ minor_outline ++ color_turn
+```

@@ -109,3 +109,19 @@ let melody     = | <1> <3> <5> |
 let transposed = melody     |> transpose P5
 let repeated   = transposed |> repeat 2
 ```
+
+## Listen-through example
+
+Same phrase, read left to right: repeat it, reverse it, then accelerate
+the repeated form.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let melody   = | <1> <2> <3> <5> |:2
+let doubled  = melody |> repeat(2)
+let reversed = melody |> reverse
+let fast     = doubled |> double_time
+
+melody ++ reversed ++ fast
+```

@@ -257,3 +257,18 @@ The synth declaration syntax above is on the AST today —
 granular oscillator forms all parse. The DSP underneath lands
 alongside the evaluator port; at that point each preset becomes
 audible.
+
+## Listen-through example
+
+Audition the musical material before choosing a synth: pluck-like
+short notes, a sustained pad chord movement and a bass answer.
+
+```rela
+scale Minor = { R, M2, m3, P4, P5, m6, m7 }
+
+let pluck = | <5>* <6>* <5>* <3>* |:2
+let pad   = | [R, m3, P5] [P4, m6, R] |:4
+let bass  = | <1> - <5> <1> |:4
+
+pluck ++ pad ++ bass
+```

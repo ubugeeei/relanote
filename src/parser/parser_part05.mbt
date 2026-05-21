@@ -10,6 +10,8 @@ fn Parser::parse_slot(self : Parser) -> @core.Spanned[@ast.Slot]? {
       let duration = self.parse_optional_slot_duration()
       Some(@core.Spanned::new(@ast.Rest(duration~), span))
     }
+    @lexer.LBrace => self.parse_tuplet_slot(span)
+    @lexer.LBracket => self.parse_chord_slot(span)
     @lexer.LAngle => {
       let _ = self.advance()
       let degree = match self.peek_kind() {
@@ -54,6 +56,101 @@ fn Parser::parse_slot(self : Parser) -> @core.Spanned[@ast.Slot]? {
     _ => {
       self.error("unexpected token inside block")
       let _ = self.advance()
+      None
+    }
+  }
+}
+
+///|
+fn Parser::parse_chord_slot(
+  self : Parser,
+  span : @core.Span,
+) -> @core.Spanned[@ast.Slot]? {
+  let _ = self.advance()
+  let pitches : Array[@core.Spanned[@ast.Pitch]] = []
+  while self.peek_kind() != @lexer.RBracket && !self.at_eof() {
+    match self.parse_pitch_atom() {
+      None => return None
+      Some(pitch) => pitches.push(pitch)
+    }
+    let _ = self.eat(@lexer.Comma)
+  }
+  if !self.eat(@lexer.RBracket) {
+    self.error("expected `]` to close chord slot")
+    return None
+  }
+  let articulations = self.parse_optional_articulations()
+  let duration = self.parse_optional_slot_duration()
+  Some(
+    @core.Spanned::new(@ast.Chord(pitches~, articulations~, duration~), span),
+  )
+}
+
+///|
+fn Parser::parse_tuplet_slot(
+  self : Parser,
+  span : @core.Span,
+) -> @core.Spanned[@ast.Slot]? {
+  let _ = self.advance()
+  let contents : Array[@core.Spanned[@ast.Slot]] = []
+  while self.peek_kind() != @lexer.RBrace && !self.at_eof() {
+    match self.parse_slot() {
+      None => return None
+      Some(slot) => contents.push(slot)
+    }
+  }
+  if !self.eat(@lexer.RBrace) {
+    self.error("expected `}` to close tuplet")
+    return None
+  }
+  if !self.eat(@lexer.Colon) {
+    self.error("expected `:` after tuplet")
+    return None
+  }
+  match self.parse_expr() {
+    None => None
+    Some(target) => {
+      let tuplet = @ast.Tuplet::new(contents, target)
+      Some(@core.Spanned::new(@ast.Tuplet(tuplet), span))
+    }
+  }
+}
+
+///|
+fn Parser::parse_pitch_atom(self : Parser) -> @core.Spanned[@ast.Pitch]? {
+  let span = self.peek().span()
+  match self.peek_kind() {
+    @lexer.LAngle => {
+      let _ = self.advance()
+      let degree = match self.peek_kind() {
+        @lexer.Integer(n) => {
+          let _ = self.advance()
+          n
+        }
+        _ => {
+          self.error("expected a scale degree after `<`")
+          return None
+        }
+      }
+      if !self.eat(@lexer.RAngle) {
+        self.error("expected `>` to close scale-degree reference")
+        return None
+      }
+      Some(@core.Spanned::new(@ast.ScaleIndex(degree), span))
+    }
+    @lexer.Interval(data) => {
+      let _ = self.advance()
+      let iv = @ast.IntervalLit::new(data.quality(), data.degree()).with_accidentals(
+        data.accidentals(),
+      )
+      Some(@core.Spanned::new(@ast.Interval(iv), span))
+    }
+    @lexer.Root => {
+      let _ = self.advance()
+      Some(@core.Spanned::new(@ast.Root, span))
+    }
+    _ => {
+      self.error("expected a pitch inside chord")
       None
     }
   }

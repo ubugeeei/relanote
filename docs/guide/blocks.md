@@ -14,8 +14,10 @@ four-beat slot.
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-| R M3 P5 M3 |             ; intervals
-let melody = | <1> <2> <3> <4> <5> |  ; scale-degree references
+let intervals = | R M3 P5 M3 |
+let melody = | <1> <2> <3> <4> <5> |
+
+intervals ++ melody
 ```
 
 ## Rests
@@ -25,6 +27,8 @@ note:
 
 ```rela
 let with_breath = | <1> - <3> - <5> |
+
+with_breath
 ```
 
 ## Relative rhythm
@@ -32,26 +36,32 @@ let with_breath = | <1> - <3> - <5> |
 A block defaults to one beat. The shape inside it is what changes:
 
 ```rela
-| <1> <2> <3> <4> |                ; 4 share 1 beat   → 16th notes
-| <1> <2> |                        ; 2 share 1 beat   → 8th  notes
-| <1> |                            ; 1 fills 1 beat   → quarter note
-| <1> <2> <3> <4> <5> <6> <7> <8> |; 8 share 1 beat   → 32nd notes
+let dense  = | <1> <2> <3> <4> |
+let medium = | <1> <2> |
+let held   = | <1> |
+let ripple = | <1> <2> <3> <4> <5> <6> <7> <8> |
+
+dense ++ medium ++ held ++ ripple
 ```
 
 Pin the block's total time with `:n`:
 
 ```rela
-| <1> <2> <3> |:2     ; 3 over 2 beats
-| <1> <2> <3> <4> |:4 ; 4 over 4 beats → quarter notes
-| <1> <2> |:0.5       ; 2 over half a beat
+let three_over_two = | <1> <2> <3> |:2
+let quarters       = | <1> <2> <3> <4> |:4
+let halfbeat       = | <1> <2> |:0.5
+
+three_over_two ++ quarters ++ halfbeat
 ```
 
 Pin an individual note's share with `:n` directly after it:
 
 ```rela
-| <1>:2 <2> <3> |     ; first note holds 2 slot-positions, others 1
-| <1>:4 |             ; one held note across 4 slot-positions
-| <1> -:2 <3> |       ; rests carry durations too
+let held_first = | <1>:2 <2> <3> |
+let long_root  = | <1>:4 |
+let rest_hold  = | <1> -:2 <3> |
+
+held_first ++ long_root ++ rest_hold
 ```
 
 ## Articulations
@@ -59,9 +69,11 @@ Pin an individual note's share with `:n` directly after it:
 After the note, before any duration:
 
 ```rela
-| <1>* <3>* <5> |     ; staccato — short, detached
-| <1>^ <3>^ <5> |     ; accent   — emphasised
-| <1>~ <3>~ <5> |     ; portamento — connected / sliding
+let staccato = | <1>* <3>* <5> |
+let accent   = | <1>^ <3>^ <5> |
+let glide    = | <1>~ <3>~ <5> |
+
+staccato ++ accent ++ glide
 ```
 
 ## Concatenation preserves shape
@@ -69,11 +81,11 @@ After the note, before any duration:
 `++` glues blocks; **each side keeps the rhythm it was written in**:
 
 ```rela
-let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |   ; 8 share 1 beat
-let slow = | <1> <5> |                            ; 2 share 1 beat
-let held = | <1> |:2                              ; 1 over 2 beats
+let fast = | <1> <2> <3> <4> <5> <4> <3> <2> |
+let slow = | <1> <5> |
+let held = | <1> |:2
 
-let phrase = fast ++ slow ++ held
+fast ++ slow ++ held
 ```
 
 This is what makes `++` more interesting than string concatenation —
@@ -87,8 +99,10 @@ triplet, septuplet or any odd grouping without breaking the surrounding
 metre:
 
 ```rela
-let triplet  = | { <1> <2> <3> }:2 |                 ; 3 in 2 beats
-let turn     = | <5>~ { <6> <5> <4> }:2 <5>~ - |     ; ornamental turn
+let triplet = | { <1> <2> <3> }:2 |
+let turn    = | <5>~ { <6> <5> <4> }:2 <5>~ - |
+
+triplet ++ turn
 ```
 
 ## Transformations on blocks
@@ -98,10 +112,11 @@ works:
 
 ```rela
 let pattern   = | <1> <3> <5> |
-let repeated  = pattern |> repeat 4
+let repeated  = pattern |> repeat(4)
 let backwards = pattern |> reverse
-let higher    = pattern |> transpose P5
-let octave_up = pattern |> map (\n -> n + P8)
+let faster    = pattern |> double_time
+
+repeated ++ backwards ++ faster
 ```
 
 ## Chords inside blocks
@@ -113,7 +128,25 @@ one into a slot and the slot plays the whole chord at once:
 let triad        = | [R, M3, P5] |
 
 let progression  = | [R, M3, P5]  [P4, M6, R]  [P5, M7, M2]  [R, M3, P5] |
+
+progression
 ```
 
 A block of chords obeys the same relative-rhythm rules — four chords in
 the slot are each played for a quarter of it.
+
+## Listen-through example
+
+This phrase uses the whole page: density changes, held slots, rests,
+articulations, tuplets, concatenation and chord slots. The final line is
+the value the preview plays.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let pulse  = | <1>:2 - <5> - |:4
+let turn   = | <5>~ { <6> <5> <4> }:2 <3>* - |:4
+let answer = | [R, M3, P5]^ [P4, M6, R] [P5, M7, M2] [R, M3, P5] |:4
+
+pulse ++ turn ++ answer
+```

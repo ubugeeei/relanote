@@ -115,3 +115,17 @@ The parser and evaluator still treat them as forward-declarations —
 they parse and round-trip but don't yet shift MIDI pitch bend or change
 synthesis frequencies. The audible behaviour lands alongside the
 parser / evaluator ports.
+
+## Listen-through example
+
+The current preview can already expose the neighboring pitch colors that
+microtonal writing grows from: minor/major thirds and sharpened/flatted
+neighbors around the fifth.
+
+```rela
+let tempered = | P1 M3 P5 P8 |:4
+let blue     = | P1 m3 P4 P4+ P5 P5- P4 |:4
+let answer   = | P1 m3 P5 m7 P8 |:4
+
+tempered ++ blue ++ answer
+```
