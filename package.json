@@ -17,6 +17,7 @@
     "lsp:test": "bash scripts/test_lsp_stdio.sh",
     "coverage": "moon coverage analyze -- -f summary",
     "coverage:html": "moon coverage analyze -- -f html -o coverage.html",
+    "diagrams:regen": "node scripts/generate_diagrams.mjs",
     "stdlib:regen": "bash scripts/gen_stdlib.sh",
     "docs:build": "node src/site/build.mjs",
     "studio:build": "moon run .mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon -- compile src/studio/App.mbtv",
