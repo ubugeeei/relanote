@@ -66,3 +66,54 @@ test "use group renders inside braces with optional alias" {
   let prog = @ast.Program::new([spanned(item)])
   assert_eq(format(prog, cfg), "use m::{ a, b as bb }\n")
 }
+
+///|
+test "array pattern with rest formats in let binding" {
+  let pat : @ast.Pattern = @ast.Array(
+    @ast.ArrayPattern::new(
+      [
+        spanned(@ast.Pattern::Ident(@ast.Ident::new("head"))),
+        spanned(@ast.Pattern::Literal(@ast.LiteralPattern::Integer(1L))),
+      ],
+      Some(spanned(@ast.Pattern::Ident(@ast.Ident::new("tail")))),
+    ),
+  )
+  let b = @ast.LetBinding::new(spanned(pat), None, spanned(@ast.Expr::Ident(@ast.Ident::new("xs"))))
+  let prog = @ast.Program::new([spanned(@ast.Item::LetBinding(b))])
+  assert_eq(format(prog, cfg), "let [head, 1, ...tail] = xs\n")
+}
+
+///|
+test "constructor and tuple patterns format recursively" {
+  let inner : @ast.Pattern = @ast.Tuple([
+    spanned(@ast.Pattern::Ident(@ast.Ident::new("x"))),
+    spanned(@ast.Pattern::Literal(@ast.LiteralPattern::BoolLit(true))),
+  ])
+  let pat : @ast.Pattern = @ast.Constructor(
+    name=@ast.Ident::new("Some"),
+    args=[spanned(inner)],
+  )
+  let b = @ast.LetBinding::new(spanned(pat), None, spanned(@ast.Expr::Integer(1L)))
+  let prog = @ast.Program::new([spanned(@ast.Item::LetBinding(b))])
+  assert_eq(format(prog, cfg), "let Some((x, true)) = 1\n")
+}
+
+///|
+test "composite type annotation formats on let binding" {
+  let ty : @ast.TypeAnnotation = @ast.Function(
+    @ast.Generic(@ast.Ident::new("List"), [
+      @ast.Tuple([
+        @ast.Named(@ast.Ident::new("Int")),
+        @ast.Array(@ast.Var(@ast.Ident::new("a"))),
+      ]),
+    ]),
+    @ast.Unit,
+  )
+  let b = @ast.LetBinding::new(
+    spanned(@ast.Pattern::Ident(@ast.Ident::new("f"))),
+    Some(ty),
+    spanned(@ast.Expr::UnitLit),
+  )
+  let prog = @ast.Program::new([spanned(@ast.Item::LetBinding(b))])
+  assert_eq(format(prog, cfg), "let f : List<(Int, ['a])> -> () = ()\n")
+}
