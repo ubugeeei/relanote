@@ -218,6 +218,7 @@ function nav(files, activeFile = null) {
 function writeCss() {
   fs.copyFileSync(path.join(site, "site.css"), path.join(dist, "site.css"));
   fs.copyFileSync(path.join(site, "chromatic.css"), path.join(dist, "chromatic.css"));
+  fs.copyFileSync(path.join(site, "audio_nodes.js"), path.join(dist, "audio_nodes.js"));
   fs.copyFileSync(path.join(site, "audio.js"), path.join(dist, "audio.js"));
   fs.copyFileSync(path.join(site, "site.js"), path.join(dist, "site.js"));
 }

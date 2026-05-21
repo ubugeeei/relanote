@@ -27,8 +27,10 @@ export function shell({ title, content, navHtml, pageClass = "doc" }) {
 <meta property="og:description" content="Relative music structure, typed and rendered through MoonBit.">
 <meta property="og:image" content="https://relanote.void.app/assets/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/chromatic.css">
+<script defer src="/audio_nodes.js"></script>
 <script defer src="/audio.js"></script>
 <script defer src="/site.js"></script>
 </head>
