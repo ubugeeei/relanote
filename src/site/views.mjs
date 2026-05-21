@@ -29,6 +29,7 @@ export function shell({ title, content, navHtml, pageClass = "doc" }) {
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="/chromatic.css">
+<script defer src="/audio.js"></script>
 <script defer src="/site.js"></script>
 </head>
 <body>
