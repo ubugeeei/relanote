@@ -74,6 +74,12 @@ test "preview exposes written tempo" {
 }
 
 ///|
+test "preview carries synth voice metadata" {
+  let src = "| <1> <3> | |> voice(Lead)"
+  assert_true(events_json(src).contains("\"voice\":\"Lead\""))
+}
+
+///|
 test "preview hears concat chord and tuplet examples" {
   let src = "| [R, M3, P5] | ++ | { <1> <2> <3> }:2 |"
   assert_true(events_json(src).contains("\"pitch\":67"))
