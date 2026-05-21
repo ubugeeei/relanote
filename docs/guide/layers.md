@@ -131,16 +131,16 @@ The whole `layer` becomes a single addressable track called
 
 ## Listen-through example
 
-Until full layer playback lands, this audition folds the layer idea into
-chord slots and call-response space: stacked notes first, separated
-lines second.
+The docs preview plays `layer [ ... ]` as simultaneous voices, so this
+example keeps the bass, harmony and lead independent while still fitting
+inside a tiny program.
 
 ```rela
 scale Major = { R, M2, M3, P4, P5, M6, M7 }
 
-let stack = | [<1>, <3>, <5>] - [<2>, <4>, <6>] - |:4
-let call  = | <5> - <6> - <5> - <3> - |:4
-let reply = | - <3> - <2> - <1> - <5> |:4
+let bass = | R - P5 - |:4 |> voice(FatBass)
+let keys = | [R, M3, P5] - [P4, M6, P8] - |:4 |> voice(FMRhodes)
+let lead = | P8 M10 P12 M10 P8 - M7 - |:4 |> voice(Lead)
 
-stack ++ call ++ reply
+layer [bass, keys, lead]
 ```

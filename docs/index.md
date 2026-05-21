@@ -14,8 +14,8 @@ hero:
       text: Read the guide
       link: /guide/introduction
     - theme: alt
-      text: Open studio
-      link: /playground/
+      text: Hear showcase
+      link: /showcase
     - theme: alt
       text: GitHub
       link: https://github.com/ubugeeei/relanote

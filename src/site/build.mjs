@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { highlightCode } from "./highlight.mjs";
-import { homeIntro, playgroundContent, shell } from "./views.mjs";
+import { homeIntro, shell } from "./views.mjs";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
@@ -16,7 +16,7 @@ const groups = [
   ["Deep Dive", "deep-dive"],
   ["More", ""],
 ];
-const orderedSlugs = "guide/introduction guide/installation guide/quick-start guide/blocks guide/intervals guide/scales-and-chords guide/rhythm guide/functions guide/control-flow guide/pipes guide/layers guide/parts-and-sections guide/mixing guide/synth guide/presets guide/microtones tutorial/getting-started tutorial/first-melody tutorial/building-chords tutorial/creating-a-song tutorial/synth-sounds reference/syntax reference/types reference/intervals reference/builtins reference/modules reference/cli deep-dive/architecture deep-dive/language-design deep-dive/moonbit-implementation deep-dive/music-theory deep-dive/advanced-harmony deep-dive/synthesizer-basics deep-dive/sound-synthesis deep-dive/preset-reference cookbook glossary faq".split(" ");
+const orderedSlugs = "guide/introduction guide/installation guide/quick-start guide/blocks guide/intervals guide/scales-and-chords guide/rhythm guide/functions guide/control-flow guide/pipes guide/layers guide/parts-and-sections guide/mixing guide/synth guide/presets guide/microtones tutorial/getting-started tutorial/first-melody tutorial/building-chords tutorial/creating-a-song tutorial/synth-sounds reference/syntax reference/types reference/intervals reference/builtins reference/modules reference/cli deep-dive/architecture deep-dive/language-design deep-dive/moonbit-implementation deep-dive/music-theory deep-dive/advanced-harmony deep-dive/synthesizer-basics deep-dive/sound-synthesis deep-dive/preset-reference showcase cookbook glossary faq".split(" ");
 
 function clean() {
   fs.rmSync(dist, { recursive: true, force: true });
@@ -241,9 +241,7 @@ function build() {
   copyIfExists(path.join(root, "assets", "diagrams"), path.join(dist, "diagrams"));
   copyIfExists(path.join(root, "examples"), path.join(dist, "examples"));
   fs.mkdirSync(path.join(dist, "playground"), { recursive: true });
-  fs.copyFileSync(path.join(root, "src", "studio", "App.mbtv"), path.join(dist, "playground", "App.mbtv"));
-  execFileSync("moon", ["run", ".mooncakes/ubugeeei/vapor_moon/src/cmd/vapor_moon", "--", "compile", "src/studio/App.mbtv"], { stdio: ["ignore", fs.openSync(path.join(dist, "playground", "compile.snapshot"), "w"), "inherit"] });
-  fs.writeFileSync(path.join(dist, "playground", "index.html"), shell({ title: "Playground", navHtml: nav(files), pageClass: "playground", content: playgroundContent() }));
+  fs.writeFileSync(path.join(dist, "playground", "index.html"), shell({ title: "Studio", navHtml: nav(files), content: `<p class="eyebrow">Studio is backstage</p><h1>Studio is being rebuilt.</h1><p class="lede">The public surface is temporarily hidden while the editor, synth, and DAW experience are redesigned. The showcase carries the listening experience for now.</p><p><a class="pill primary" href="/docs/showcase.html">Hear the showcase</a></p>` }));
 }
 
 build();

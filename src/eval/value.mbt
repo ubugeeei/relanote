@@ -51,6 +51,8 @@ pub(all) enum Value {
   /// Sequential composition produced by `++`. Keeping each child value
   /// separate preserves its own relative rhythm.
   SequenceV(Array[Value])
+  /// Parallel composition produced by `layer [ ... ]` for preview/render.
+  ParallelV(Array[Value])
   /// Preview/render voice annotation produced by `voice(Synth)`.
   /// Carries the named synth alongside the musical value it colors.
   VoicedV(String, Value)

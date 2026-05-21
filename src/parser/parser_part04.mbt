@@ -162,12 +162,14 @@ fn Parser::parse_block_expr(
   start : @core.Span,
 ) -> @core.Spanned[@ast.Expr]? {
   let _ = self.advance() // opening `|`
+  self.skip_newlines()
   let slots : Array[@core.Spanned[@ast.Slot]] = []
   while self.peek_kind() != @lexer.Pipe && !self.at_eof() {
     match self.parse_slot() {
       Some(slot) => slots.push(slot)
       None => break
     }
+    self.skip_newlines()
   }
   if !self.eat(@lexer.Pipe) {
     self.error("expected closing `|`")

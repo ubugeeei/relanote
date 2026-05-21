@@ -57,3 +57,22 @@ test "tuplet slots parse inside blocks" {
     _ => abort("expected expression statement")
   }
 }
+
+///|
+test "multiline blocks skip layout newlines" {
+  let src =
+    #||
+    #|  <1> <3>
+    #|  <5>:2
+    #||
+  let (program, diags) = parse(src)
+  assert_false(diags.has_errors())
+  match program.items()[0].node() {
+    @ast.ExprStmt(expr) =>
+      match expr.node() {
+        @ast.Block(block) => assert_eq(block.slots().length(), 3)
+        _ => abort("expected block")
+      }
+    _ => abort("expected expression statement")
+  }
+}

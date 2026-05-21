@@ -202,6 +202,7 @@ fn Parser::parse_primary(self : Parser) -> @core.Spanned[@ast.Expr]? {
       Some(@core.Spanned::new(@ast.Array(elements), span))
     }
     @lexer.Pipe => self.parse_block_expr(span)
+    @lexer.Layer => self.parse_layer_expr(span)
     @lexer.Lambda => self.parse_lambda_expr(span)
     @lexer.If => self.parse_if_expr(span)
     @lexer.Let => self.parse_let_expr(span)
