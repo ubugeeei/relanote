@@ -129,3 +129,19 @@ intro ++ verse ++ chorus ++ verse ++ chorus
 - **Reach for the [mix](./mixing) block when routing gets hairy.**
   Per-part effects pipes are fine for single concerns; the
   `mix { ... }` block is where buses and sidechains live.
+
+## Listen-through example
+
+This reduces a section arrangement to audible blocks: intro, lead role,
+bass role and chorus cadence in sequence.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let intro = | [R, M3, P5] - [P4, M6, R] - |:4
+let lead  = | <1> <2> <3> <5> <6> <5> <3> <2> |:4
+let bass  = | <1> - <5> <1> |:4
+let hook  = | <5> <6> <7> <6> <5> <3> <1> <1> |:4
+
+intro ++ lead ++ bass ++ hook
+```

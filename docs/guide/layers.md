@@ -128,3 +128,19 @@ The whole `layer` becomes a single addressable track called
 - **Mind the mix**: if you're routing reverb or sidechaining,
   promote the layer to a named `part` so the [mix](./mixing) block
   can address it.
+
+## Listen-through example
+
+Until full layer playback lands, this audition folds the layer idea into
+chord slots and call-response space: stacked notes first, separated
+lines second.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let stack = | [<1>, <3>, <5>] - [<2>, <4>, <6>] - |:4
+let call  = | <5> - <6> - <5> - <3> - |:4
+let reply = | - <3> - <2> - <1> - <5> |:4
+
+stack ++ call ++ reply
+```

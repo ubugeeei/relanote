@@ -112,3 +112,18 @@ phrase                                ; grooved sixteenths around a triplet turn
 preset grooves are in the stdlib. The parser and evaluator skeletons
 recognise the shapes but don't yet apply them at render time — that
 lands alongside the parser / evaluator ports.
+
+## Listen-through example
+
+This keeps the examples audible today: straight pulse, a 3-in-2 tuplet
+and a denser answer phrase.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let pulse = | <1> - <5> - |:4
+let trip  = | { <1> <3> <5> }:2 |
+let push  = | <1> <2> <3> - <5> <6> - <5> |:4
+
+pulse ++ trip ++ push
+```

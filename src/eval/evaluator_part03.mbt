@@ -15,6 +15,16 @@ fn Evaluator::call(
     ClosureV(def, captured) =>
       self.run_function(def.params(), def.body(), captured, args, span)
     BuiltinV(name) => call_builtin(name, args, span)
+    PartialBuiltinV(name, saved) => {
+      let all : Array[Value] = []
+      for arg in saved {
+        all.push(arg)
+      }
+      for arg in args {
+        all.push(arg)
+      }
+      call_builtin(name, all, span)
+    }
     _ => Err(NotAFunction(span~))
   }
 }
@@ -28,6 +38,10 @@ fn call_builtin(
   args : Array[Value],
   span : @core.Span,
 ) -> Result[Value, EvalError] {
+  match builtin_arity(name) {
+    None => return Err(Custom(message="unknown builtin: " + name, span~))
+    Some(n) => if args.length() < n { return Ok(PartialBuiltinV(name, args)) }
+  }
   match name {
     "reverse" => builtin_reverse(args, span)
     "repeat" => builtin_repeat(args, span)
@@ -36,6 +50,15 @@ fn call_builtin(
     "octave_up" => builtin_shift_octaves(args, span, 1)
     "octave_down" => builtin_shift_octaves(args, span, -1)
     other => Err(Custom(message="unknown builtin: " + other, span~))
+  }
+}
+
+///|
+fn builtin_arity(name : String) -> Int? {
+  match name {
+    "reverse" | "double_time" | "octave_up" | "octave_down" => Some(1)
+    "repeat" | "rotate" => Some(2)
+    _ => None
   }
 }
 

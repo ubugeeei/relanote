@@ -72,8 +72,30 @@ fn collect_value(
       out.push(NoteEvent::new(60, start, 1.0))
       start + 1.0
     }
+    @eval.TupletV(tuplet) => collect_tuplet(tuplet, out, start)
+    @eval.SequenceV(values) => collect_sequence(values, out, start)
+    @eval.ArrayV(values) | @eval.TupleV(values) => {
+      let mut cursor = start
+      for v in values {
+        cursor = collect_value(v, out, cursor)
+      }
+      cursor
+    }
     _ => start
   }
+}
+
+///|
+fn collect_sequence(
+  values : Array[@eval.Value],
+  out : Array[NoteEvent],
+  start : Double,
+) -> Double {
+  let mut cursor = start
+  for v in values {
+    cursor = collect_value(v, out, cursor)
+  }
+  cursor
 }
 
 ///|
@@ -82,14 +104,36 @@ fn collect_block(
   out : Array[NoteEvent],
   start : Double,
 ) -> Double {
-  let count = block.slots().length()
+  collect_slots(block.slots(), block.duration_beats(), out, start)
+}
+
+///|
+fn collect_tuplet(
+  tuplet : @ast.Tuplet,
+  out : Array[NoteEvent],
+  start : Double,
+) -> Double {
+  collect_slots(tuplet.contents(), tuplet_beats(tuplet), out, start)
+}
+
+///|
+fn collect_slots(
+  slots : Array[@core.Spanned[@ast.Slot]],
+  beats : Double,
+  out : Array[NoteEvent],
+  start : Double,
+) -> Double {
+  let count = slots.length()
   if count == 0 {
     return start
   }
-  let per = block.duration_beats() / count.to_double()
+  let per = beats / count.to_double()
   let mut cursor = start
-  for spanned in block.slots() {
-    let dur = slot_duration(spanned.node(), per)
+  for spanned in slots {
+    let dur = match spanned.node() {
+      @ast.Tuplet(tuplet) => tuplet_beats(tuplet)
+      other => slot_duration(other, per)
+    }
     match spanned.node() {
       @ast.Note(pitch~, ..) =>
         out.push(NoteEvent::new(pitch_to_midi(pitch.node()), cursor, dur))
@@ -97,7 +141,10 @@ fn collect_block(
         for p in pitches {
           out.push(NoteEvent::new(pitch_to_midi(p.node()), cursor, dur))
         }
-      @ast.Rest(_) | @ast.Tuplet(_) => ()
+      @ast.Tuplet(tuplet) => {
+        let _ = collect_tuplet(tuplet, out, cursor)
+      }
+      @ast.Rest(_) => ()
     }
     cursor += dur
   }
@@ -119,6 +166,15 @@ fn slot_duration(slot : @ast.Slot, per : Double) -> Double {
 }
 
 ///|
+fn tuplet_beats(tuplet : @ast.Tuplet) -> Double {
+  match tuplet.target_beats().node() {
+    @ast.Integer(n) => n.to_double()
+    @ast.Float(f) => f
+    _ => 1.0
+  }
+}
+
+///|
 fn pitch_to_midi(pitch : @ast.Pitch) -> Int {
   match pitch {
     @ast.Interval(lit) => 60 + lit.semitones()
@@ -127,7 +183,7 @@ fn pitch_to_midi(pitch : @ast.Pitch) -> Int {
     @ast.MicrotonalInterval(lit, _) => 60 + lit.semitones()
     @ast.ScaleIndexCents(n, _) => 60 + scale_degree(n)
     @ast.Root => 60
-    @ast.Microtone(_) => 60
+    @ast.Microtone(cents) => 60 + (cents / 100.0).to_int()
   }
 }
 

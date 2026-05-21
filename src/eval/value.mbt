@@ -29,6 +29,10 @@ pub(all) enum Value {
   /// can call host-implemented combinators (reverse, transpose,
   /// repeat, …) without reflecting them through closures.
   BuiltinV(String)
+  /// Built-in with some arguments already supplied. This keeps preview
+  /// snippets like `melody |> repeat(2)` audible before the full
+  /// currying runtime lands.
+  PartialBuiltinV(String, Array[Value])
   /// Interval value, stored as a signed semitone offset from the root.
   /// Mirrors the legacy implementation `IntervalValue` flattening.
   IntervalV(Int)
@@ -44,6 +48,9 @@ pub(all) enum Value {
   /// against the current scale / chord / tuplet context happens at
   /// render time.
   BlockV(@ast.Block)
+  /// Sequential composition produced by `++`. Keeping each child value
+  /// separate preserves its own relative rhythm.
+  SequenceV(Array[Value])
   /// Tuplet of slots — like `BlockV` but with an explicit target-beat
   /// expression that has already been evaluated to a number.
   TupletV(@ast.Tuplet)

@@ -94,3 +94,17 @@ let correct = Major |> transpose P5
 - Standard MIDI files ready for any DAW.
 
 Ready to write one? Start with the [Quick Start](./quick-start).
+
+## Listen-through example
+
+The first half is a relative pitch idea; the second half changes the
+rhythmic density while keeping the same center.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let question = | <1> <3> <5> <3> |:2
+let answer   = | <6> <5> <3> <1> - <1> |:4
+
+question ++ answer
+```

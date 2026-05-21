@@ -45,8 +45,9 @@ fn Evaluator::eval_binary(
         (BoolV(a), BoolV(b)) => Ok(BoolV(a || b))
         _ => Err(TypeError(expected="Bool", found="other", span~))
       }
-    // Block-level operators land alongside the renderer port.
-    Concat | Compose => Ok(Placeholder)
+    Concat => eval_concat(left, right, span)
+    // Function composition lands with the full callable value model.
+    Compose => Ok(Placeholder)
   }
 }
 

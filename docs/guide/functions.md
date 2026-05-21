@@ -146,3 +146,18 @@ piece is the structure of the code.
   output. Stay there and the type checker remains useful.
 - **Reach for `let ... in`** for true locals. Top-level `let`
   exports a name; `let ... in` keeps it private to one expression.
+
+## Listen-through example
+
+The transformations are values: original, reversed, repeated and
+double-time versions of the same block.
+
+```rela
+scale Major = { R, M2, M3, P4, P5, M6, M7 }
+
+let theme      = | <1> <3> <5> <3> |:2
+let retrograde = theme |> reverse
+let drive      = theme |> repeat(2) |> double_time
+
+theme ++ retrograde ++ drive
+```
