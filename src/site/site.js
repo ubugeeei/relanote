@@ -31,6 +31,13 @@ async function summary(source) {
   return wasm.playground_summary(source);
 }
 
+async function tempo(source) {
+  const wasm = await runtime();
+  if (!wasm) return 120;
+  const bpm = wasm.preview_tempo(source);
+  return bpm > 0 ? bpm : 120;
+}
+
 function draw(preview, notes, text) {
   const kit = preview.closest(".code-kit");
   const empty = notes.length === 0;
@@ -92,9 +99,10 @@ async function playSource(source) {
   const ctx = new Audio();
   previewAudio = ctx;
   await ctx.resume();
-  notes.forEach((note, i) => schedule(ctx, note, ctx.currentTime + .04, 2, i));
+  const bps = await tempo(source) / 60;
+  notes.forEach((note, i) => schedule(ctx, note, ctx.currentTime + .04, bps, i));
   const end = Math.max(0, ...notes.map((note) => note.start + note.duration));
-  setTimeout(stopPreview, end / 2 * 1000 + 360);
+  setTimeout(stopPreview, end / bps * 1000 + 360);
 }
 
 function play(kit) {

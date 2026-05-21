@@ -28,10 +28,10 @@ pub fn NoteEvent::duration(self : NoteEvent) -> Double {
 
 ///|
 pub fn note_events(source : String) -> Array[NoteEvent] {
-  match eval_source(source) {
-    Ok(value) => {
+  match eval_preview(source) {
+    Ok(program) => {
       let out : Array[NoteEvent] = []
-      collect_value(value, out, 0.0) |> ignore
+      collect_value(program.value(), out, 0.0, program.context()) |> ignore
       out
     }
     Err(_) => []
@@ -39,29 +39,16 @@ pub fn note_events(source : String) -> Array[NoteEvent] {
 }
 
 ///|
-fn eval_source(source : String) -> Result[@eval.Value, String] {
-  let src = @core.Source::from_string("<preview>", source)
-  let (program, parse_diags) = @parser.parse_source(src)
-  if parse_diags.has_errors() {
-    return Err("parse error")
-  }
-  let checker = @types.TypeChecker::new()
-  if checker.check_program(program).length() > 0 {
-    return Err("type error")
-  }
-  @eval.Evaluator::new().eval_program(program).map_err(fn(e) { e.message() })
-}
-
-///|
 fn collect_value(
   value : @eval.Value,
   out : Array[NoteEvent],
   start : Double,
+  context : PreviewContext,
 ) -> Double {
   match value {
-    @eval.BlockV(block) => collect_block(block, out, start)
+    @eval.BlockV(block) => collect_block(block, out, start, context)
     @eval.IntervalV(semitones) => {
-      out.push(NoteEvent::new(60 + semitones, start, 1.0))
+      out.push(NoteEvent::new(context.root_midi() + semitones, start, 1.0))
       start + 1.0
     }
     @eval.AbsolutePitchV(midi) => {
@@ -69,15 +56,15 @@ fn collect_value(
       start + 1.0
     }
     @eval.RootV => {
-      out.push(NoteEvent::new(60, start, 1.0))
+      out.push(NoteEvent::new(context.root_midi(), start, 1.0))
       start + 1.0
     }
-    @eval.TupletV(tuplet) => collect_tuplet(tuplet, out, start)
-    @eval.SequenceV(values) => collect_sequence(values, out, start)
+    @eval.TupletV(tuplet) => collect_tuplet(tuplet, out, start, context)
+    @eval.SequenceV(values) => collect_sequence(values, out, start, context)
     @eval.ArrayV(values) | @eval.TupleV(values) => {
       let mut cursor = start
       for v in values {
-        cursor = collect_value(v, out, cursor)
+        cursor = collect_value(v, out, cursor, context)
       }
       cursor
     }
@@ -90,10 +77,11 @@ fn collect_sequence(
   values : Array[@eval.Value],
   out : Array[NoteEvent],
   start : Double,
+  context : PreviewContext,
 ) -> Double {
   let mut cursor = start
   for v in values {
-    cursor = collect_value(v, out, cursor)
+    cursor = collect_value(v, out, cursor, context)
   }
   cursor
 }
@@ -103,8 +91,9 @@ fn collect_block(
   block : @ast.Block,
   out : Array[NoteEvent],
   start : Double,
+  context : PreviewContext,
 ) -> Double {
-  collect_slots(block.slots(), block.duration_beats(), out, start)
+  collect_slots(block.slots(), block.duration_beats(), out, start, context)
 }
 
 ///|
@@ -112,8 +101,9 @@ fn collect_tuplet(
   tuplet : @ast.Tuplet,
   out : Array[NoteEvent],
   start : Double,
+  context : PreviewContext,
 ) -> Double {
-  collect_slots(tuplet.contents(), tuplet_beats(tuplet), out, start)
+  collect_slots(tuplet.contents(), tuplet_beats(tuplet), out, start, context)
 }
 
 ///|
@@ -122,6 +112,7 @@ fn collect_slots(
   beats : Double,
   out : Array[NoteEvent],
   start : Double,
+  context : PreviewContext,
 ) -> Double {
   let count = slots.length()
   if count == 0 {
@@ -136,13 +127,13 @@ fn collect_slots(
     }
     match spanned.node() {
       @ast.Note(pitch~, ..) =>
-        out.push(NoteEvent::new(pitch_to_midi(pitch.node()), cursor, dur))
+        out.push(NoteEvent::new(pitch_to_midi(pitch.node(), context), cursor, dur))
       @ast.Chord(pitches~, ..) =>
         for p in pitches {
-          out.push(NoteEvent::new(pitch_to_midi(p.node()), cursor, dur))
+          out.push(NoteEvent::new(pitch_to_midi(p.node(), context), cursor, dur))
         }
       @ast.Tuplet(tuplet) => {
-        let _ = collect_tuplet(tuplet, out, cursor)
+        let _ = collect_tuplet(tuplet, out, cursor, context)
       }
       @ast.Rest(_) => ()
     }
@@ -175,14 +166,16 @@ fn tuplet_beats(tuplet : @ast.Tuplet) -> Double {
 }
 
 ///|
-fn pitch_to_midi(pitch : @ast.Pitch) -> Int {
+fn pitch_to_midi(pitch : @ast.Pitch, context : PreviewContext) -> Int {
   match pitch {
-    @ast.Interval(lit) => 60 + lit.semitones()
-    @ast.ScaleIndex(n) => 60 + scale_degree(n)
-    @ast.ScaleIndexMod(n, _) => 60 + scale_degree(n)
-    @ast.MicrotonalInterval(lit, _) => 60 + lit.semitones()
-    @ast.ScaleIndexCents(n, _) => 60 + scale_degree(n)
-    @ast.Root => 60
+    @ast.Interval(lit) => context.root_midi() + lit.semitones()
+    @ast.ScaleIndex(n) => context.root_midi() + scale_degree(n)
+    @ast.ScaleIndexMod(n, _) => context.root_midi() + scale_degree(n)
+    @ast.MicrotonalInterval(lit, cents) =>
+      context.root_midi() + lit.semitones() + (cents / 100.0).to_int()
+    @ast.ScaleIndexCents(n, cents) =>
+      context.root_midi() + scale_degree(n) + (cents / 100.0).to_int()
+    @ast.Root => context.root_midi()
     @ast.Microtone(cents) => 60 + (cents / 100.0).to_int()
   }
 }
