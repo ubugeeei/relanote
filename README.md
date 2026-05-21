@@ -58,27 +58,34 @@ curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 export PATH="$HOME/.moon/bin:$PATH"
 ```
 
+Install Vite+ once for workspace tasks:
+
+```bash
+curl -fsSL https://vite.plus | bash
+vp install
+```
+
 Then build and test the workspace:
 
 ```bash
 git clone https://github.com/ubugeeei/relanote.git
 cd relanote
-moon check
-moon test
-moon run src/cmd -- help
+vp run check
+vp run test
+vp run cli help
 ```
 
-The root `package.json` is a thin task alias layer around MoonBit:
+Root tasks live in `vite.config.mjs` and run through Vite Task:
 
 ```bash
-pnpm check
-pnpm test
-pnpm cli -- run examples/tutorials/01_hello.rela
-pnpm studio:build
+vp run ci
+vp run cli run examples/tutorials/01_hello.rela
+vp run studio:build
 ```
 
-If you use Nix, `nix develop` provides Node, pnpm, and helper tools. The
-MoonBit installer above is still the source for the compiler toolchain.
+If you use Nix, `nix develop` provides Node 24, pnpm, and helper tools.
+The MoonBit and Vite+ installers above remain the sources for those
+toolchains.
 
 ## Example
 
@@ -143,7 +150,7 @@ formatting, evaluation, and MIDI rendering live in `src/studio/playground.mbt`.
 Build the component snapshot with:
 
 ```bash
-pnpm studio:build
+vp run studio:build
 ```
 
 ## Project Structure
@@ -174,13 +181,13 @@ relanote/
 ## Development
 
 ```bash
-pnpm check
-pnpm test
-pnpm fmt
-pnpm studio:build
+vp run check
+vp run test
+vp run fmt
+vp run studio:build
 ```
 
-`pnpm tasks` lists every root task.
+`vp run` opens the interactive Vite Task picker.
 
 ## License
 

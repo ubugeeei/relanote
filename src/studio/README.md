@@ -14,5 +14,5 @@ The bridge exposes the operations the UI needs:
 Build the component snapshot from the workspace root:
 
 ```bash
-pnpm studio:build
+vp run studio:build
 ```

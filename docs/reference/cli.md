@@ -7,10 +7,10 @@ it against a `.rela` file from the repository root:
 moon run src/cmd -- help
 ```
 
-From the repository root you can also use the pnpm alias:
+From the repository root you can also use the Vite Task alias:
 
 ```bash
-pnpm cli -- help
+vp run cli help
 ```
 
 ## Subcommands
