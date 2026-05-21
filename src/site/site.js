@@ -1,5 +1,4 @@
 let previewRuntime;
-let previewAudio;
 
 async function runtime() {
   if (!previewRuntime) {
@@ -61,141 +60,8 @@ async function renderPreview(kit) {
   draw(preview, await events(source), await summary(source));
 }
 
-function stopPreview() {
-  if (previewAudio) previewAudio.close();
-  previewAudio = null;
-}
-
-function patchFor(voice, lane) {
-  const v = (voice || "").toLowerCase();
-  const patch = {
-    osc: lane % 2 ? "sawtooth" : "triangle",
-    sub: "sine",
-    filter: "lowpass",
-    cutoff: 5200,
-    q: 5,
-    gain: .15,
-    attack: .018,
-    release: .06,
-    subGain: .16,
-    noise: 0,
-    detune: 0,
-    pan: (lane % 3 - 1) * .22,
-  };
-  if (v.includes("bass") || v.includes("acid") || v.includes("moog")) {
-    return { ...patch, osc: "sawtooth", cutoff: 760, q: 12, gain: .17, subGain: .42, attack: .006, release: .14, detune: -4, pan: patch.pan * .22 };
-  }
-  if (v.includes("pad") || v.includes("bloom") || v.includes("glass") || v.includes("drift")) {
-    return { ...patch, osc: "sawtooth", sub: "triangle", cutoff: 2300, q: 3, gain: .082, subGain: .08, attack: .24, release: .58, detune: 8 };
-  }
-  if (v.includes("fm") || v.includes("bell") || v.includes("rhodes") || v.includes("kalimba")) {
-    return { ...patch, osc: "sine", sub: "triangle", cutoff: 9800, q: 2, gain: .105, subGain: .04, attack: .003, release: .36, detune: 12 };
-  }
-  if (v.includes("wave")) {
-    return { ...patch, osc: "sawtooth", sub: "square", filter: "bandpass", cutoff: 3600, q: 8, gain: .11, subGain: .06, attack: .025, release: .2, detune: 10 };
-  }
-  if (v.includes("grain")) {
-    return { ...patch, osc: "triangle", sub: "sawtooth", filter: "bandpass", cutoff: 2100, q: 10, gain: .095, subGain: .05, attack: .06, release: .32, detune: lane % 2 ? 17 : -11, noise: .05 };
-  }
-  if (v.includes("chip") || v.includes("nes") || v.includes("gameboy")) {
-    return { ...patch, osc: "square", sub: "square", cutoff: 7000, q: 1, gain: .09, subGain: 0, attack: .002, release: .025 };
-  }
-  if (v.includes("kick") || v.includes("snare") || v.includes("hat")) {
-    return { ...patch, osc: v.includes("kick") ? "sine" : "square", sub: "triangle", filter: v.includes("kick") ? "lowpass" : "highpass", cutoff: v.includes("hat") ? 6800 : v.includes("snare") ? 1600 : 140, q: 7, gain: v.includes("hat") ? .045 : .12, subGain: v.includes("kick") ? .5 : 0, attack: .001, release: v.includes("hat") ? .035 : .08, noise: v.includes("kick") ? .03 : .22, pan: v.includes("kick") ? 0 : patch.pan };
-  }
-  return patch;
-}
-
-function registerGain(freq, voice) {
-  let gain = 1;
-  if (freq < 55) gain *= .62;
-  else if (freq < 120) gain *= .82;
-  else if (freq > 2600) gain *= .38;
-  else if (freq > 1200) gain *= .58;
-  const v = (voice || "").toLowerCase();
-  if (v.includes("pad") || v.includes("bloom") || v.includes("glass")) gain *= .72;
-  if (v.includes("hat") || v.includes("bell") || v.includes("kalimba")) gain *= .55;
-  return gain;
-}
-
-function noiseBurst(ctx, dest, t0, t1, amount) {
-  if (!amount) return;
-  const n = Math.max(1, Math.ceil((t1 - t0) * ctx.sampleRate));
-  const buffer = ctx.createBuffer(1, n, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / n);
-  const src = ctx.createBufferSource();
-  const gain = ctx.createGain();
-  src.buffer = buffer;
-  gain.gain.value = amount;
-  src.connect(gain); gain.connect(dest);
-  src.start(t0); src.stop(t1);
-}
-
-function schedule(ctx, note, base, bps, lane, master) {
-  const patch = patchFor(note.voice, lane);
-  const freq = 440 * Math.pow(2, (note.pitch - 69) / 12);
-  const t0 = base + note.start / bps;
-  const t1 = t0 + note.duration / bps;
-  const osc = ctx.createOscillator();
-  const sub = ctx.createOscillator();
-  const oscGain = ctx.createGain();
-  const subGain = ctx.createGain();
-  const filter = ctx.createBiquadFilter();
-  const gain = ctx.createGain();
-  const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-  osc.type = patch.osc;
-  sub.type = patch.sub;
-  osc.frequency.value = freq;
-  sub.frequency.value = freq / 2;
-  osc.detune.value = patch.detune;
-  filter.type = patch.filter;
-  filter.frequency.setValueAtTime(Math.max(50, Math.min(16000, patch.cutoff + Math.log2(freq / 220) * 420)), t0);
-  filter.Q.value = patch.q;
-  oscGain.gain.value = .86;
-  subGain.gain.value = freq < 900 ? patch.subGain : 0;
-  gain.gain.setValueAtTime(.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(patch.gain * registerGain(freq, note.voice), t0 + patch.attack);
-  gain.gain.exponentialRampToValueAtTime(.0001, t1 + patch.release);
-  if (pan) pan.pan.value = freq < 140 ? patch.pan * .18 : patch.pan;
-  noiseBurst(ctx, filter, t0, t1 + patch.release, patch.noise);
-  osc.connect(oscGain); sub.connect(subGain);
-  oscGain.connect(filter); subGain.connect(filter); filter.connect(gain);
-  gain.connect(pan || master); if (pan) pan.connect(master);
-  osc.start(t0); sub.start(t0); osc.stop(t1 + patch.release + .04); sub.stop(t1 + patch.release + .04);
-}
-
-async function playSource(source) {
-  stopPreview();
-  const Audio = window.AudioContext || window.webkitAudioContext;
-  if (!Audio) return;
-  const notes = await events(source);
-  const ctx = new Audio();
-  previewAudio = ctx;
-  await ctx.resume();
-  const master = ctx.createGain();
-  const low = ctx.createBiquadFilter();
-  const high = ctx.createBiquadFilter();
-  const delay = ctx.createDelay(.8);
-  const wet = ctx.createGain();
-  const fb = ctx.createGain();
-  const comp = ctx.createDynamicsCompressor();
-  master.gain.value = .86;
-  low.type = "lowshelf"; low.frequency.value = 85; low.gain.value = -1.3;
-  high.type = "highshelf"; high.frequency.value = 5200; high.gain.value = -1.8;
-  delay.delayTime.value = .28; wet.gain.value = .16; fb.gain.value = .2;
-  comp.threshold.value = -18; comp.knee.value = 18; comp.ratio.value = 3.2;
-  master.connect(low); low.connect(high); high.connect(comp);
-  master.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(comp);
-  comp.connect(ctx.destination);
-  const bps = await tempo(source) / 60;
-  notes.forEach((note, i) => schedule(ctx, note, ctx.currentTime + .04, bps, i, master));
-  const end = Math.max(0, ...notes.map((note) => note.start + note.duration));
-  setTimeout(stopPreview, end / bps * 1000 + 360);
-}
-
 function play(kit) {
-  return playSource(sourceOf(kit));
+  return window.RelanoteAudio?.playSource(sourceOf(kit), events, tempo);
 }
 
 function drawStudioRoll(frame, notes) {
@@ -234,7 +100,10 @@ document.addEventListener("click", async (event) => {
   const playButton = event.target.closest(".preview-play");
   if (playButton) return play(playButton.closest(".code-kit"));
   const studioPlay = event.target.closest(".studio-play");
-  if (studioPlay) return playSource(studioPlay.closest(".studio-frame").querySelector(".studio-editor code")?.innerText ?? "");
+  if (studioPlay) {
+    const source = studioPlay.closest(".studio-frame").querySelector(".studio-editor code")?.innerText ?? "";
+    return window.RelanoteAudio?.playSource(source, events, tempo);
+  }
   const button = event.target.closest(".code-copy");
   if (!button) return;
   const code = sourceOf(button.closest(".code-kit"));
