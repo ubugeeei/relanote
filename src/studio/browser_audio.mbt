@@ -154,14 +154,24 @@ fn detune_for(family : Int, lane : Int) -> Double {
 ///|
 pub fn stop_audio() -> Unit {
   let nodes = g()["__relanoteNodes"]
+  g()["__relanoteNodes"] = @js.null()
+  let ctx = g()["__relanoteContext"]
+  g()["__relanoteContext"] = @js.null()
   if !@js.is_nullish(nodes) {
     let len : Int = nodes["length"].cast()
     for i = 0; i < len; i = i + 1 {
-      nodes._get_by_index(i)._call("stop", []) |> ignore
+      @js.try_sync(fn() {
+        nodes._get_by_index(i)._call("stop", [])
+      }) catch {
+        @js.JsError(_) => @js.undefined()
+      }
+      |> ignore
     }
   }
-  let ctx = g()["__relanoteContext"]
   if !@js.is_nullish(ctx) {
-    ctx._call("close", []) |> ignore
+    @js.try_sync(fn() { ctx._call("close", []) }) catch {
+      @js.JsError(_) => @js.undefined()
+    }
+    |> ignore
   }
 }

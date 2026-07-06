@@ -1,8 +1,38 @@
 let previewAudio;
+let previewTimer;
+let previewSession = 0;
+
+function clearPreviewTimer() {
+  if (previewTimer) clearTimeout(previewTimer);
+  previewTimer = null;
+}
+
+function closePreviewContext(ctx) {
+  if (!ctx) return;
+  try {
+    if (ctx.state !== "closed") ctx.close().catch(() => {});
+  } catch {}
+}
+
+function beginPreview() {
+  previewSession += 1;
+  clearPreviewTimer();
+  const ctx = previewAudio;
+  previewAudio = null;
+  closePreviewContext(ctx);
+  return previewSession;
+}
+
+function finishPreview(session) {
+  if (session !== previewSession) return;
+  clearPreviewTimer();
+  const ctx = previewAudio;
+  previewAudio = null;
+  closePreviewContext(ctx);
+}
 
 function stopPreview() {
-  if (previewAudio) previewAudio.close();
-  previewAudio = null;
+  beginPreview();
 }
 
 function patchFor(voice, lane) {
@@ -143,19 +173,43 @@ function schedule(ctx, note, base, bps, lane, bus) {
 }
 
 async function playSource(source, eventReader, tempoReader) {
-  stopPreview();
+  const session = beginPreview();
   const Audio = window.AudioContext || window.webkitAudioContext;
   if (!Audio || !window.RelanoteNodes) return;
-  const notes = await eventReader(source);
-  if (!notes.length) return;
-  const ctx = new Audio();
+  const [notes, tempo] = await Promise.all([
+    eventReader(source).catch(() => []),
+    tempoReader(source).catch(() => 120),
+  ]);
+  if (session !== previewSession) return;
+  const playable = Array.isArray(notes) ? notes : [];
+  if (!playable.length) return;
+  let ctx;
+  try {
+    ctx = new Audio();
+  } catch {
+    return;
+  }
+  if (session !== previewSession) {
+    closePreviewContext(ctx);
+    return;
+  }
   previewAudio = ctx;
-  await ctx.resume();
-  const bus = mixer(ctx);
-  const bps = await tempoReader(source) / 60;
-  notes.forEach((note, i) => schedule(ctx, note, ctx.currentTime + .06, bps, i, bus));
-  const end = Math.max(0, ...notes.map((note) => note.start + note.duration));
-  setTimeout(stopPreview, end / bps * 1000 + 1700);
+  try {
+    await ctx.resume();
+    if (session !== previewSession) {
+      closePreviewContext(ctx);
+      return;
+    }
+    const bus = mixer(ctx);
+    const bpm = Number.isFinite(tempo) && tempo > 0 ? tempo : 120;
+    const bps = bpm / 60;
+    const base = ctx.currentTime + .06;
+    playable.forEach((note, i) => schedule(ctx, note, base, bps, i, bus));
+    const end = Math.max(0, ...playable.map((note) => note.start + note.duration));
+    previewTimer = setTimeout(() => finishPreview(session), end / bps * 1000 + 1700);
+  } catch {
+    finishPreview(session);
+  }
 }
 
 window.RelanoteAudio = { playSource, stopPreview };
